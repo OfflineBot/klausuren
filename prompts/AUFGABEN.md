@@ -109,6 +109,9 @@ der Überprüfung.
 ## Wichtige Hinweise
 
 - Arbeite **nur** im aktuellen Fach-Ordner; gehe nicht in andere Fächer.
+- **Git-Hinweis:** Die Ordner `output/aufgaben/` und `results/aufgaben/` existieren bereits.
+  `output/` wird versioniert (kommt auf GitHub), die **Inhalte** von `results/` sind per `.gitignore`
+  ausgenommen und bleiben lokal. Das ändert für dich nichts – schreibe einfach wie oben beschrieben.
 - Erfinde keinen Stoff, der nicht zur Vorlesung passt – im Zweifel an den Materialien orientieren.
 - Du darfst Hilfsdateien (`.tex`, `.aux`, `.log`) erzeugen, aber **nur innerhalb von `output/aufgaben/`
   und `results/aufgaben/`**.

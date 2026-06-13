@@ -127,6 +127,9 @@ Anzahl der Abfragefragen und das Ergebnis der Überprüfung.
 ## Wichtige Hinweise
 
 - Arbeite **nur** im aktuellen Fach-Ordner; gehe nicht in andere Fächer.
+- **Git-Hinweis:** Die Ordner `output/erklaerung/` und `results/erklaerung/` existieren bereits.
+  `output/` wird versioniert (kommt auf GitHub), die **Inhalte** von `results/` sind per `.gitignore`
+  ausgenommen und bleiben lokal. Das ändert für dich nichts – schreibe einfach wie oben beschrieben.
 - Bei sehr viel Stoff darfst du mehrere PDFs pro Themenblock erzeugen
   (`erklaerung_<NN>_<thema>.pdf`) – immer **nur in `output/erklaerung/`** und ohne Überschreiben.
 - Du darfst Hilfsdateien (`.tex`, `.aux`, `.toc`, `.log`) erzeugen, aber **nur innerhalb von
