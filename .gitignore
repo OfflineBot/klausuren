@@ -1,4 +1,13 @@
 # Projektbericht – soll nicht auf GitHub liegen
 projektbericht/Projektbericht_Docker_vs_Nix_v3.pdf
 
-# results/ darf bewusst auf GitHub bleiben (nicht ignorieren)
+# results/ : Ordnerstruktur bleibt auf GitHub, die generierten Dateien darin aber nicht
+**/results/**
+!**/results/**/
+!**/results/**/.gitkeep
+
+# LaTeX-Hilfsdateien (auch in output/)
+*.aux
+*.log
+*.toc
+*.out
