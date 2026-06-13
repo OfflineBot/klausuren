@@ -1,0 +1,125 @@
+# Prompt: Alle Themen erklären (Lernskript als PDF)
+
+> **So benutzt du diesen Prompt:** Starte Claude Code im jeweiligen Fach-Ordner
+> (z. B. `analysis_2/`, `numerik/`, `logik/` …) und sage einfach:
+> *„Schau dir `../prompts/ERKLÄRUNG.md` an und führe es aus.“*
+> Alle Pfade in diesem Prompt sind **relativ zum aktuellen Fach-Ordner**.
+> Folge den Schritten von oben nach unten – ohne Rückfragen, außer es geht gar nicht anders.
+
+---
+
+## ⛔ Sicherheitsregeln (oberste Priorität)
+
+- **Verändere, verschiebe oder lösche KEINE vorhandenen Dateien oder Ordner.** Alle bestehenden
+  Materialien werden **nur gelesen**.
+- Du darfst **ausschließlich** einen **neuen** Ordner `output/` im aktuellen Fach-Ordner anlegen und
+  **nur dort hinein** schreiben.
+- Schreibe nichts außerhalb von `output/`.
+- Wenn `output/` schon existiert: bestehende Dateien darin **nicht überschreiben**, sondern
+  fortlaufend weiternummerieren.
+
+---
+
+## Ziel
+
+Erstelle ein **vollständiges, gut verständliches Lernskript** als **PDF**, das **alle Themen** des Fachs
+erklärt – plus einen **Abfrage-/Quiz-Teil** zum Selbsttesten.
+
+Das Skript soll **erklären, nicht nur auflisten**: jedes Thema mit Intuition, Definition, den wichtigsten
+Sätzen/Formeln, einem durchgerechneten Beispiel und typischen Fehlerquellen.
+
+Der Abfrage-Teil soll mir helfen, das Gelernte **aktiv abzufragen** (Frage → selbst überlegen →
+Lösung kontrollieren).
+
+---
+
+## Ablauf
+
+### Schritt 1 – Vorlesungsmaterialien analysieren (nur lesen)
+
+1. Liste **alle** Dateien in `vorlesungs_materialien/` auf und analysiere sie gründlich
+   (PDF, Folien, Tafelaufschriebe, Bilder, HTML …).
+2. Erstelle eine **vollständige Themenliste / Gliederung** in der Reihenfolge der Vorlesung, inkl. der
+   zentralen **Definitionen, Sätze, Formeln, Verfahren** und der verwendeten **Notation** (1:1 übernehmen).
+
+### Schritt 2 – Weitere Materialien analysieren (nur lesen)
+
+1. Liste **alle** Dateien in `andere_materialien/` auf und analysiere sie gründlich
+   (Skripte, Zusammenfassungen, Quizze, Notizen, ZIP-Inhalte, Bilder …).
+2. Ziehe `openbook/` als **vertiefende Quelle** heran, **falls** vorhanden.
+3. Sieh dir vorhandene `übungen/` (bzw. `uebungen/`) und `probeklausuren/` an, um zu erkennen, **welche
+   Themen besonders prüfungsrelevant** sind und worauf der Fokus liegen sollte.
+4. Leeren oder fehlenden Ordner kurz vermerken und überspringen.
+
+### Schritt 3 – Erklärungen ausarbeiten
+
+Arbeite die Gliederung aus Schritt 1 vollständig durch. Für **jedes Thema**:
+
+- **Intuition / Motivation:** Worum geht es, wozu braucht man das? (in einfachen Worten)
+- **Definition(en):** präzise, mit der Notation der Vorlesung.
+- **Wichtige Sätze / Formeln / Verfahren:** kurz erklärt, wann/wie man sie anwendet.
+- **Durchgerechnetes Beispiel:** mindestens eines, Schritt für Schritt.
+- **Typische Fehler / Merkhilfen:** worauf man achten muss.
+- Querverweise zu verwandten Themen, wo sinnvoll.
+
+Regeln:
+- **Decke wirklich alle Themen** des Stoffs ab – nichts auslassen.
+- **Gleiche Notation und Fachsprache** wie in der Vorlesung.
+- Erkläre **verständlich und vom Einfachen zum Schweren**; lieber ein Beispiel mehr.
+- Erfinde keinen Stoff, der nicht in den Materialien vorkommt.
+
+### Schritt 4 – Abfrage-/Quiz-Teil entwerfen
+
+Erstelle zum Selbsttesten einen Satz **Abfragefragen** über **alle** Themen:
+
+- Pro Thema mehrere Fragen, gemischte Art: kurze **Verständnisfragen**, **Definitionen abfragen**,
+  kleine **Rechen-/Beweisaufgaben** und einige **Ankreuz-/Wahr-Falsch-Fragen**.
+- Schwierigkeit mischen (leicht → schwer), nach Themen gruppiert.
+- Zu **jeder** Frage eine **kurze, korrekte Lösung** (kommt in den separaten Lösungsteil).
+- Geeignet zum aktiven Abfragen: erst die Frage, Lösung erst auf separater Seite / in separater Datei.
+
+### Schritt 5 – Als PDF erzeugen
+
+Erzeuge im Ordner `output/erklaerungen/` (Ordner bei Bedarf neu anlegen):
+
+1. **`erklaerung_<NN>.pdf`** – das vollständige Lernskript.
+2. **`abfrage_<NN>.pdf`** – die Abfragefragen (mit etwas Platz zum Notieren), Lösungen **am Ende auf
+   eigenen Seiten** oder als separate Datei **`abfrage_<NN>_loesung.pdf`**.
+
+`<NN>` ist eine fortlaufende Nummer (`01`, `02`, …); **nie eine vorhandene Datei überschreiben**.
+
+**Vorgehen:**
+
+1. Schreibe die LaTeX-Dokumente (`erklaerung_<NN>.tex`, `abfrage_<NN>.tex`) nach `output/erklaerungen/`.
+   - `\documentclass[a4paper,11pt]{article}`, `amsmath`, `amssymb`, `amsthm`.
+   - Umlaute: bei **xelatex** `\usepackage{fontspec}`; bei **pdflatex** `\usepackage[utf8]{inputenc}`,
+     `\usepackage[T1]{fontenc}`, `\usepackage[ngerman]{babel}`.
+   - **Inhaltsverzeichnis** (`\tableofcontents`) und klare Abschnitte (`\section`/`\subsection`) pro Thema.
+   - Definitionen/Sätze/Beispiele optisch hervorheben (z. B. `\theoremstyle` + `\newtheorem` oder Boxen).
+2. Kompiliere **jedes** Dokument mit **xelatex** (bevorzugt wegen Umlauten), sonst **pdflatex**, z. B.:
+   `xelatex -interaction=nonstopmode -output-directory=output/erklaerungen erklaerung_<NN>.tex`
+   (zweimal laufen lassen wegen Inhaltsverzeichnis). Bei Fehlern Log lesen, `.tex` korrigieren, neu kompilieren.
+3. Mathematik konsequent in LaTeX-Mathematikumgebungen setzen.
+
+### Schritt 6 – Überprüfen (Pflicht)
+
+1. **PDF-Check:** Bestätige, dass `erklaerung_<NN>.pdf` **und** die Abfrage-PDF(s) existieren, fehlerfrei
+   kompiliert wurden und Seitenzahl > 0 haben; das Inhaltsverzeichnis wurde erzeugt.
+2. **Vollständigkeit:** Gleiche die Abschnitte mit deiner Themenliste aus Schritt 1 ab – **kein Thema fehlt**;
+   auch der Abfrage-Teil deckt alle Themen ab.
+3. **Korrektheit:** Prüfe Definitionen, Formeln, durchgerechnete Beispiele **und alle Abfrage-Lösungen** auf
+   Richtigkeit. Korrigiere Fehler in der `.tex`-Datei und kompiliere neu, bis alles stimmt.
+
+### Schritt 7 – Zusammenfassung ausgeben
+
+Gib am Ende kurz aus: die abgedeckten Themen (als Liste), die erzeugten Dateien (mit Pfad), Seitenzahlen,
+Anzahl der Abfragefragen und das Ergebnis der Überprüfung.
+
+---
+
+## Wichtige Hinweise
+
+- Arbeite **nur** im aktuellen Fach-Ordner; gehe nicht in andere Fächer.
+- Bei sehr viel Stoff darfst du mehrere PDFs pro Themenblock erzeugen
+  (`erklaerung_<NN>_<thema>.pdf`) – immer **nur in `output/erklaerungen/`** und ohne Überschreiben.
+- Du darfst Hilfsdateien (`.tex`, `.aux`, `.toc`, `.log`) erzeugen, aber **nur innerhalb von `output/`**.
