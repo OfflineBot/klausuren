@@ -1,0 +1,140 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage{geometry}
+\geometry{a4paper,margin=2cm}
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{accent}{HTML}{6CB6FF}
+\definecolor{accent2}{HTML}{F2A65A}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{linecol}{HTML}{8A8A8A}
+\pagecolor{bgdark}
+\color{fgtext}
+\arrayrulecolor{linecol}
+\newcommand{\karo}[1]{\par\noindent\begin{tikzpicture}\draw[step=5mm, gridcol, very thin] (0,0) grid (\linewidth,#1);\end{tikzpicture}\par}
+\newcommand{\aufgabe}[2]{\medskip\par\noindent{\color{accent}\large\textbf{Aufgabe #1}}\hfill{\color{accent2}\small #2}\par\vspace{0.3em}\hrule height0.4pt\vspace{0.6em}}
+\newcommand{\kopf}[1]{\noindent{\color{accent}\Large\textbf{Numerik — #1}}\par\vspace{0.4em}\noindent\textbf{Name:}~\rule[-2pt]{5cm}{0.4pt}\hfill\textbf{Datum:}~\rule[-2pt]{3cm}{0.4pt}\par\vspace{0.3em}\hrule height0.8pt\vspace{1em}}
+\setlength{\parindent}{0pt}
+\begin{document}
+\kopf{Newton- \& Sekantenverfahren}
+
+\aufgabe{1}{leicht}
+Gegeben sei $f(x)=x^2-3$ mit der Nullstelle $x^\ast=\sqrt{3}$. Führen Sie ausgehend vom
+Startwert $x_0=2$ \textbf{zwei} Schritte des Newton-Raphson-Verfahrens
+\[
+x_{n+1}=x_n-\frac{f(x_n)}{f'(x_n)}
+\]
+von Hand durch. Berechnen Sie $x_1$ und $x_2$ und vergleichen Sie $x_2$ mit
+$\sqrt{3}=1{,}7320508\ldots$
+\karo{7cm}
+
+\aufgabe{2}{mittel}
+Das Newton-Verfahren soll zur Berechnung von $\sqrt{5}$ genutzt werden, also zur
+Bestimmung der positiven Nullstelle von $f(x)=x^2-5$.
+\begin{enumerate}[label=(\alph*)]
+  \item Leiten Sie aus der Newton-Vorschrift die spezielle Iterationsformel
+        \[
+        x_{n+1}=\tfrac12\!\left(x_n+\frac{5}{x_n}\right)
+        \]
+        her (Babylonisches Wurzelziehen).
+  \item Rechnen Sie ausgehend von $x_0=2$ die Schritte $x_1$ und $x_2$ und geben Sie den
+        absoluten Fehler $|x_2-\sqrt{5}|$ an ($\sqrt{5}=2{,}2360680\ldots$).
+\end{enumerate}
+\karo{8cm}
+
+\aufgabe{3}{mittel}
+Betrachten Sie $f(x)=x^3-x$ mit den drei Nullstellen $-1,\,0,\,1$.
+Führen Sie das Newton-Verfahren ausgehend vom Startwert $x_0=2$ für zwei Schritte aus
+($f'(x)=3x^2-1$). Berechnen Sie $x_1$ und $x_2$ und begründen Sie, zu welcher der drei
+Nullstellen die Folge konvergiert.
+\karo{7cm}
+
+\aufgabe{4}{mittel}
+Entwickeln Sie die Funktion $f(x)=e^x$ um den Entwicklungspunkt $x_n=0$ mit Hilfe der
+Taylor-Reihe
+\[
+f(x)=\sum_{k=0}^{\infty}\frac{f^{(k)}(x_n)}{k!}\,(x-x_n)^k.
+\]
+\begin{enumerate}[label=(\alph*)]
+  \item Geben Sie die \emph{lineare} Näherung $f(x)\approx f(x_n)+f'(x_n)(x-x_n)$ an.
+  \item Geben Sie die \emph{quadratische} Näherung (Glieder bis $k=2$) an.
+  \item Werten Sie beide Näherungen an der Stelle $x=0{,}5$ aus und vergleichen Sie mit
+        dem exakten Wert $e^{0{,}5}=1{,}648721\ldots$
+\end{enumerate}
+\karo{8cm}
+
+\aufgabe{5}{schwer}
+Leiten Sie die Newton-Raphson-Formel aus der linearen Taylor-Näherung her. Gehen Sie
+schrittweise vor:
+\begin{enumerate}[label=(\alph*)]
+  \item Ersetzen Sie $f$ in der Nähe von $x_n$ durch die Tangente
+        $f(x)\approx f(x_n)+f'(x_n)(x-x_n)$.
+  \item Setzen Sie diese lineare Näherung gleich $0$ und lösen Sie nach $x$ auf.
+  \item Bezeichnen Sie diese Nullstelle der Tangente als $x_{n+1}$ und zeigen Sie, dass
+        sich genau $x_{n+1}=x_n-\dfrac{f(x_n)}{f'(x_n)}$ ergibt. Welche geometrische
+        Bedeutung hat $x_{n+1}$?
+\end{enumerate}
+\karo{7cm}
+
+\aufgabe{6}{schwer}
+Das Newton-Verfahren konvergiert (in der Nähe einer einfachen Nullstelle)
+\emph{quadratisch}, d.\,h.\ für den Fehler $e_n=x_n-x^\ast$ gilt
+\[
+|e_{n+1}|\le C\,|e_n|^2 .
+\]
+\begin{enumerate}[label=(\alph*)]
+  \item Sei $C=1$ und der Startfehler $|e_0|=10^{-1}$. Berechnen Sie die garantierten
+        Fehlerschranken $|e_1|,|e_2|,|e_3|,|e_4|$.
+  \item Quadratische Konvergenz bedeutet anschaulich, dass sich die Anzahl korrekter
+        Stellen pro Schritt etwa \emph{verdoppelt}. Wie viele Iterationen sind ungefähr
+        nötig, um von einer Genauigkeit von $10^{-1}$ auf $10^{-16}$ zu gelangen?
+  \item Vergleichen Sie dies mit linearer Konvergenz $|e_{n+1}|\le \tfrac12|e_n|$:
+        Wie viele Schritte wären dort nötig?
+\end{enumerate}
+\karo{7cm}
+
+\aufgabe{7}{mittel}
+Bestimmen Sie eine Näherung der Nullstelle $x^\ast=\sqrt{2}$ von $f(x)=x^2-2$ mit dem
+\textbf{Sekantenverfahren}
+\[
+x_{n+1}=x_n-f(x_n)\cdot\frac{x_n-x_{n-1}}{f(x_n)-f(x_{n-1})}.
+\]
+Verwenden Sie die beiden Startwerte $x_0=1$ und $x_1=2$ und berechnen Sie von Hand die
+Schritte $x_2$, $x_3$ und $x_4$. Vergleichen Sie $x_4$ mit $\sqrt{2}=1{,}4142136\ldots$
+\karo{8cm}
+
+\aufgabe{8}{schwer}
+Das Newton-Verfahren kann versagen. Finden bzw.\ beschreiben Sie \textbf{drei}
+unterschiedliche Situationen, in denen es nicht (oder nicht zur gewünschten Nullstelle)
+konvergiert. Begründen Sie jeweils kurz. Orientieren Sie sich an $f(x)=x^3-x$:
+\begin{enumerate}[label=(\alph*)]
+  \item Ein Startpunkt mit $f'(x_0)=0$ (horizontale Tangente). Welcher Startwert tut das
+        und was passiert in der Formel?
+  \item Der spezielle Startwert $x_0=\dfrac{1}{\sqrt{5}}$ führt zu einem Zyklus
+        $x_0\to -x_0\to x_0\to\dots$ (Oszillation). Rechnen Sie $x_1$ nach und erklären Sie,
+        warum das Verfahren hier nie konvergiert.
+  \item Nennen Sie ein Beispiel, bei dem das Verfahren zwar konvergiert, aber zur
+        \emph{„falschen``} Nullstelle (z.\,B.\ man sucht $+1$, landet aber bei $-1$).
+\end{enumerate}
+\karo{7cm}
+
+\aufgabe{9}{leicht}
+Vergleichen Sie die drei Verfahren \emph{Newton}, \emph{Sekanten} und \emph{Grid Search}
+(systematisches Absuchen eines Gitters) hinsichtlich:
+\begin{enumerate}[label=(\alph*)]
+  \item Konvergenzgeschwindigkeit / Ordnung,
+  \item Bedarf an der Ableitung $f'$,
+  \item Robustheit bzw.\ Abhängigkeit vom Startwert.
+\end{enumerate}
+Geben Sie an, in welcher Situation Sie welches Verfahren bevorzugen würden.
+\karo{6cm}
+
+\end{document}

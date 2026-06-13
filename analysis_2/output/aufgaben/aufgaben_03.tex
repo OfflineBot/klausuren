@@ -1,0 +1,128 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{array}
+\usepackage[a4paper,margin=2.2cm]{geometry}
+
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{accent}{HTML}{6CB6FF}
+\definecolor{leicht}{HTML}{7BD88F}
+\definecolor{mittel}{HTML}{E6C07B}
+\definecolor{schwer}{HTML}{E06C75}
+\pagecolor{bgdark}
+\color{fgtext}
+
+\newcommand{\karo}[1]{\par\noindent
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcol, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par}
+\newcommand{\aufgabe}[4]{\vspace{0.6em}\par\noindent
+  \textbf{\large Aufgabe #1}\quad #2 \hfill {\color{#3}\textbf{[#4]}}\par\smallskip}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+\begin{center}
+  {\color{accent}\Huge\bfseries Analysis II}\\[0.3em]
+  {\Large Übungsaufgaben 03 — Integralrechnung}\\[0.8em]
+\end{center}
+
+\noindent\textbf{Name:} \rule{6cm}{0.4pt} \hfill \textbf{Datum:} \rule{3.5cm}{0.4pt}
+\vspace{0.4em}
+{\color{gridcol}\hrule height 1pt}
+\vspace{0.3em}
+
+\small\textit{Hilfsmittel: partielle Integration
+$\int_a^b f'(x)g(x)\,dx = \big[f(x)g(x)\big]_a^b - \int_a^b f(x)g'(x)\,dx$;
+Substitution $\int_a^b f(g(x))\,g'(x)\,dx = \int_{g(a)}^{g(b)} f(u)\,du$.}
+\normalsize
+\vspace{0.5em}
+
+%==================================================================
+\aufgabe{1}{Bestimmtes Integral (Potenzregel)}{leicht}{leicht}
+Berechne
+\[
+  \int_{1}^{2} \left( 3x^2 - \frac{1}{x^2} \right) dx.
+\]
+\karo{5cm}
+
+%==================================================================
+\aufgabe{2}{Partielle Integration}{mittel}{mittel}
+Berechne das unbestimmte Integral
+\[
+  \int x\,e^{2x}\,dx.
+\]
+\karo{5.5cm}
+
+%==================================================================
+\aufgabe{3}{Partielle Integration mit Logarithmus}{mittel}{mittel}
+Berechne das unbestimmte Integral
+\[
+  \int x\,\ln(x)\,dx.
+\]
+\karo{5.5cm}
+
+%==================================================================
+\aufgabe{4}{Substitution}{mittel}{mittel}
+Berechne das unbestimmte Integral
+\[
+  \int \frac{x^2}{x^3+1}\,dx.
+\]
+\karo{6cm}
+
+%==================================================================
+\aufgabe{5}{Trigonometrisches Integral mit Umformung}{schwer}{schwer}
+Berechne das unbestimmte Integral
+\[
+  \int \left( \cos^3(x) + \frac{\sin^3(x)}{\tan(x)} \right) dx.
+\]
+\textit{Hinweis: Forme den Integranden zuerst geschickt um.}
+\karo{6cm}
+
+%==================================================================
+\aufgabe{6}{Substitution mit Logarithmus}{mittel}{mittel}
+Berechne das unbestimmte Integral
+\[
+  \int \frac{\ln(x)}{x}\,dx.
+\]
+\karo{5cm}
+
+%==================================================================
+\aufgabe{7}{Doppelintegral (separierbar)}{leicht}{leicht}
+Berechne
+\[
+  \int_{0}^{2}\!\int_{0}^{1} x^2 y \;dx\,dy.
+\]
+\karo{5.5cm}
+
+%==================================================================
+\aufgabe{8}{Doppelintegral über eine Summe}{mittel}{mittel}
+Berechne
+\[
+  \int_{0}^{1}\!\int_{0}^{2} (x + y) \;dx\,dy.
+\]
+\karo{5.5cm}
+
+%==================================================================
+\aufgabe{9}{Doppelintegral über ein Skalarfeld}{schwer}{schwer}
+Berechne
+\[
+  \int_{0}^{1}\!\int_{0}^{1} (x^2 + y^2) \;dx\,dy.
+\]
+\karo{6cm}
+
+%==================================================================
+\aufgabe{10}{Zweifache partielle Integration}{schwer}{schwer}
+Berechne das unbestimmte Integral
+\[
+  \int x^2\,e^{x}\,dx.
+\]
+\karo{6.5cm}
+
+\end{document}

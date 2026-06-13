@@ -81,9 +81,32 @@ Erzeuge **zwei** PDFs in **getrennten** Ordnern:
    - Nutze `\documentclass[a4paper,11pt]{article}`, `amsmath`, `amssymb`.
    - Für Umlaute: bei **xelatex** `\usepackage{fontspec}`; bei **pdflatex** `\usepackage[utf8]{inputenc}`
      und `\usepackage[T1]{fontenc}`, `\usepackage[ngerman]{babel}`.
-2. **Platz zum Ausfüllen** im Aufgaben-PDF: nach jeder Aufgabe abhängig vom Aufwand Leerraum lassen,
-   z. B. `\vspace{5cm}` bzw. für Rechenaufgaben mehr. Optional Linien zum Schreiben (z. B. via
-   `\hrulefill` in Wiederholung). Kopfzeile mit Feldern **Name** und **Datum**.
+   - **Dark Mode (Pflicht):** Das PDF hat einen **dunklen Hintergrund mit hellem Text** (guter Kontrast).
+     Setze dazu im Preamble z. B.:
+     ```latex
+     \usepackage{xcolor}
+     \definecolor{bgdark}{HTML}{1E1E1E}   % dunkler Hintergrund
+     \definecolor{fgtext}{HTML}{E6E6E6}   % heller Text
+     \pagecolor{bgdark}
+     \color{fgtext}
+     ```
+     Sorge dafür, dass **alle** Elemente (Überschriften, Mathematik, Tabellen, ggf. `\hline`/Rahmen)
+     auf dem dunklen Hintergrund gut lesbar sind (helle Linien-/Rahmenfarbe verwenden, nicht schwarz).
+2. **Platz zum Ausfüllen** im Aufgaben-PDF: nach jeder Aufgabe abhängig vom Aufwand Platz lassen
+   (für Rechenaufgaben mehr). Der Platz ist **nicht leer**, sondern ein **kariertes Gitter (Karomuster,
+   wie Karopapier)** – **keine** einzelnen Schreib-/Hilfslinien und **kein** `\hrulefill`, sondern ein
+   durchgehendes Karo-Raster. Setze es z. B. mit TikZ um und definiere einen wiederverwendbaren Befehl:
+   ```latex
+   \usepackage{tikz}
+   \definecolor{gridcol}{HTML}{4A4A4A}   % gedämpfte, helle Gitterfarbe (auf dunklem Grund sichtbar)
+   % #1 = Höhe des Karobereichs (z. B. 5cm)
+   \newcommand{\karo}[1]{\par\noindent
+     \begin{tikzpicture}
+       \draw[step=5mm, gridcol, very thin] (0,0) grid (\linewidth,#1);
+     \end{tikzpicture}\par}
+   ```
+   Verwende nach jeder Aufgabe `\karo{5cm}` (Höhe je nach Aufwand anpassen), Karo-Schrittweite ca. 5 mm.
+   Kopfzeile mit Feldern **Name** und **Datum**.
 3. Kompiliere mit **xelatex** (bevorzugt wegen Umlauten), sonst **pdflatex**, jeweils in den passenden Ordner:
    `xelatex -interaction=nonstopmode -output-directory=output/aufgaben aufgaben_<NN>.tex`
    und `xelatex -interaction=nonstopmode -output-directory=results/aufgaben loesungen_<NN>.tex`

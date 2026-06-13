@@ -1,0 +1,75 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage[margin=2cm]{geometry}
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{accent}{HTML}{6CB6FF}
+\definecolor{loescol}{HTML}{7FD18C}
+\pagecolor{bgdark}
+\color{fgtext}
+\arrayrulecolor{fgtext}
+\setlength{\parindent}{0pt}
+\newcommand{\karo}[1]{\par\noindent\begin{tikzpicture}\draw[step=5mm,gridcol,very thin](0,0) grid (\linewidth,#1);\end{tikzpicture}\par\vspace{2mm}}
+\newcommand{\aufgabe}[2]{\vspace{4mm}\par\noindent{\large\color{accent}\textbf{Aufgabe #1}}\hfill{\color{gridcol}\normalsize #2}\par\vspace{1mm}}
+\newcommand{\titel}[1]{\begin{center}{\LARGE\color{accent}\textbf{Optimierungsverfahren}}\\[3pt]{\large #1}\end{center}\vspace{1mm}\noindent\textbf{Name:}\ \underline{\hspace{6cm}}\hfill\textbf{Datum:}\ \underline{\hspace{4cm}}\\[3pt]{\color{gridcol}\rule{\linewidth}{0.4pt}}\vspace{2mm}}
+
+\begin{document}
+\titel{Übungsaufgaben --- Blatt 02: Klassisches Transportproblem}
+
+Für die Aufgaben 1, 3--6 gilt dasselbe Transportproblem: drei Werke $W_1,W_2,W_3$ liefern an drei Läden
+$L_1,L_2,L_3$. Angebot $a=(30,50,20)$, Nachfrage $b=(20,40,40)$. Die Transportkosten $c_{ij}$ (Werk $i$, Laden $j$):
+\[
+C=\bordermatrix{
+   & L_1 & L_2 & L_3 \cr
+W_1 & 4 & 6 & 8 \cr
+W_2 & 5 & 7 & 6 \cr
+W_3 & 3 & 9 & 7 \cr}
+\]
+
+\aufgabe{1 --- Kosten \& Zulässigkeit}{leicht}
+Gegeben ist der folgende Lösungsvorschlag (Mengen $x_{ij}$):
+\[
+X=\begin{pmatrix} 20 & 10 & 0 \\ 0 & 30 & 20 \\ 0 & 0 & 15 \end{pmatrix}
+\]
+\begin{enumerate}[label=(\alph*)]
+  \item Berechnen Sie die Gesamttransportkosten $\sum_{i,j}c_{ij}x_{ij}$ dieses Vorschlags.
+  \item Ist der Vorschlag eine \emph{zulässige} Lösung? Begründen Sie über Zeilen- und Spaltensummen.
+  \item Ändern Sie \emph{eine} Zelle so, dass der Vorschlag zulässig wird.
+\end{enumerate}
+\karo{6cm}
+
+\aufgabe{2 --- Balanciertheit \& Dummy}{leicht}
+Ein anderes Problem hat Angebot $a=(40,30,30)$ und Nachfrage $b=(20,30,20)$.
+Ist das Problem \emph{balanciert}? Falls nicht: Wie stellt man Balanciertheit her (Dummy)?
+Geben Sie Größe und Kosten der Dummy-Zeile/-Spalte an.
+\karo{4.5cm}
+
+\aufgabe{3 --- Nord-West-Ecken-Regel (NWER)}{mittel}
+Bestimmen Sie eine zulässige Startlösung mit der \textbf{Nord-West-Ecken-Regel} und ihre Kosten.
+\karo{7cm}
+
+\aufgabe{4 --- Matrixminimum-Methode (MMM)}{mittel}
+Bestimmen Sie eine zulässige Startlösung mit der \textbf{Matrixminimum-Methode} und ihre Kosten.
+\karo{7cm}
+
+\aufgabe{5 --- Vogelsche Approximation (VAM)}{mittel--schwer}
+Bestimmen Sie eine Startlösung mit der \textbf{Vogel'schen Approximationsmethode}.
+Notieren Sie in jeder Iteration die Opportunitätskosten (Penalty = zweitkleinste $-$ kleinste Kosten)
+pro Zeile/Spalte. Geben Sie die Gesamtkosten an.
+\karo{9cm}
+
+\aufgabe{6 --- Vergleich}{mittel}
+Vergleichen Sie die Gesamtkosten der drei Startlösungen aus den Aufgaben 3--5.
+Welche Methode liefert hier die günstigste Startlösung? Ist die günstigste Startlösung damit automatisch optimal?
+\karo{4.5cm}
+
+\end{document}

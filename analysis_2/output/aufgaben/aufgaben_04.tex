@@ -1,0 +1,129 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{array}
+\usepackage[a4paper,margin=2.2cm]{geometry}
+
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{accent}{HTML}{6CB6FF}
+\definecolor{leicht}{HTML}{7BD88F}
+\definecolor{mittel}{HTML}{E6C07B}
+\definecolor{schwer}{HTML}{E06C75}
+\pagecolor{bgdark}
+\color{fgtext}
+
+\newcommand{\karo}[1]{\par\noindent
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcol, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par}
+\newcommand{\aufgabe}[4]{\vspace{0.6em}\par\noindent
+  \textbf{\large Aufgabe #1}\quad #2 \hfill {\color{#3}\textbf{[#4]}}\par\smallskip}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+\begin{center}
+  {\color{accent}\Huge\bfseries Analysis II}\\[0.3em]
+  {\Large Übungsaufgaben 04 — Trigonometrie, Komplexe Zahlen \& Fourieranalyse}\\[0.8em]
+\end{center}
+
+\noindent\textbf{Name:} \rule{6cm}{0.4pt} \hfill \textbf{Datum:} \rule{3.5cm}{0.4pt}
+\vspace{0.4em}
+{\color{gridcol}\hrule height 1pt}
+\vspace{0.3em}
+
+\small\textit{Nützlich: $\sin^2 x+\cos^2 x=1$, $\tan x=\tfrac{\sin x}{\cos x}$, $\sec x=\tfrac{1}{\cos x}$;
+Eulersche Formel $z=a+ib=r(\cos\varphi+i\sin\varphi)=r\,e^{i\varphi}$ mit
+$r=\sqrt{a^2+b^2}$, $\varphi=\arctan(b/a)$.}
+\normalsize
+\vspace{0.4em}
+
+{\color{accent}\large\bfseries Teil A — Trigonometrie}\par\vspace{0.3em}
+
+%==================================================================
+\aufgabe{1}{Bogenmaß}{leicht}{leicht}
+Rechne in das jeweils andere Maß um:
+$\ 60^\circ,\ 120^\circ,\ 270^\circ$ in Bogenmaß sowie
+$\ \tfrac{\pi}{6}$ und $\tfrac{3\pi}{2}$ in Grad.
+\karo{5cm}
+
+%==================================================================
+\aufgabe{2}{Wellenparameter}{mittel}{mittel}
+Gegeben sei die Schwingung $f(t) = 3\sin(4\pi t)$. Bestimme Amplitude $A$,
+Kreisfrequenz $\omega$, Frequenz $f$ und Wellenlänge $\lambda$.
+\karo{5cm}
+
+%==================================================================
+\aufgabe{3}{Ableitungen trigonometrischer Funktionen}{mittel}{mittel}
+Berechne die Ableitungen:
+\[
+  f(x)=\sin(x)\cos(x), \quad
+  g(x)=\arctan(x), \quad
+  h(x)=x\sin(x), \quad
+  k(x)=\tanh(x).
+\]
+\karo{6.5cm}
+
+%==================================================================
+\aufgabe{4}{Trigonometrische Identitäten}{schwer}{schwer}
+Zeige durch geeignete Umformungen:
+\[
+  \text{(a)}\quad 1 + \tan^2(x) = \sec^2(x)
+  \qquad\qquad
+  \text{(b)}\quad \cosh^2(x) - \sinh^2(x) = 1.
+\]
+\textit{Hinweis zu (b): $\sinh(x)=\tfrac{e^x-e^{-x}}{2}$, $\cosh(x)=\tfrac{e^x+e^{-x}}{2}$.}
+\karo{6cm}
+
+\vspace{0.4em}
+{\color{accent}\large\bfseries Teil B — Komplexe Zahlen}\par\vspace{0.3em}
+\textit{In den Aufgaben 5 und 6 sei $z_1 = 3+2i$ und $z_2 = 1-4i$.}
+\vspace{0.3em}
+
+%==================================================================
+\aufgabe{5}{Grundrechenarten}{leicht}{leicht}
+Berechne $z_1+z_2$, $z_1-z_2$ und $z_1\cdot z_2$. Gib außerdem $\operatorname{Re}(z_1)$,
+$\operatorname{Im}(z_1)$ und die komplex Konjugierte $\overline{z_1}$ an.
+\karo{6cm}
+
+%==================================================================
+\aufgabe{6}{Betrag und Division}{mittel}{mittel}
+Berechne $|z_1|$ sowie den Quotienten $\dfrac{z_1}{z_2}$ (in der Form $a+ib$).
+\karo{6cm}
+
+%==================================================================
+\aufgabe{7}{Polarform / Eulersche Formel}{mittel}{mittel}
+Schreibe $z=1+i$ und $z=2i$ in Polarform $r\,e^{i\varphi}$. Wandle umgekehrt
+$2\,e^{i\pi/3}$ in die Form $a+ib$ um.
+\karo{6cm}
+
+%==================================================================
+\aufgabe{8}{Potenzieren mit der Eulerschen Formel}{schwer}{schwer}
+Berechne $(1+i)^4$ mithilfe der Polarform und überprüfe das Ergebnis durch
+direktes Ausmultiplizieren.
+\karo{6cm}
+
+\vspace{0.4em}
+{\color{accent}\large\bfseries Teil C — Fourieranalyse}\par\vspace{0.3em}
+
+%==================================================================
+\aufgabe{9}{Konzeptfragen}{leicht}{leicht}
+(a) Schreibe $A\cos(\omega t) + i\,A\sin(\omega t)$ als komplexe Exponentialfunktion. \\
+(b) Was bildet die Fouriertransformation $F(\omega)=\int_{-\infty}^{\infty} f(t)\,e^{-i\omega t}\,dt$
+    ineinander ab, und was beschreibt $|F(\omega)|$? \\
+(c) Erkläre kurz konstruktive und destruktive Interferenz.
+\karo{6cm}
+
+%==================================================================
+\aufgabe{10}{Werte der komplexen Exponentialfunktion}{mittel}{mittel}
+Berechne $e^{i\pi}$, $e^{i\pi/2}$ und $e^{i2\pi}$ mithilfe der Eulerschen Formel
+und gib die berühmte Identität für $e^{i\pi}$ an.
+\karo{5.5cm}
+
+\end{document}

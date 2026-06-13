@@ -1,0 +1,138 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage{geometry}
+\geometry{a4paper,margin=2cm}
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{accent}{HTML}{6CB6FF}
+\definecolor{accent2}{HTML}{F2A65A}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{linecol}{HTML}{8A8A8A}
+\pagecolor{bgdark}
+\color{fgtext}
+\arrayrulecolor{linecol}
+\newcommand{\karo}[1]{\par\noindent\begin{tikzpicture}\draw[step=5mm, gridcol, very thin] (0,0) grid (\linewidth,#1);\end{tikzpicture}\par}
+\newcommand{\aufgabe}[2]{\medskip\par\noindent{\color{accent}\large\textbf{Aufgabe #1}}\hfill{\color{accent2}\small #2}\par\vspace{0.3em}\hrule height0.4pt\vspace{0.6em}}
+\newcommand{\kopf}[1]{\noindent{\color{accent}\Large\textbf{Numerik — #1}}\par\vspace{0.4em}\noindent\textbf{Name:}~\rule[-2pt]{5cm}{0.4pt}\hfill\textbf{Datum:}~\rule[-2pt]{3cm}{0.4pt}\par\vspace{0.3em}\hrule height0.8pt\vspace{1em}}
+\setlength{\parindent}{0pt}
+\begin{document}
+\kopf{Grundlagen \& Brute Force}
+
+\aufgabe{1}{leicht}
+Gegeben sei das Intervall $[a,b]=[-2,3]$, das in $N=5$ gleich große Teilintervalle
+zerlegt wird. Berechnen Sie die Schrittweite $h=\frac{b-a}{N}$ sowie alle Stützstellen
+$x_i = a + i\,h$ für $i=0,1,\dots,5$. Geben Sie die Werte explizit an.
+\karo{5cm}
+
+\aufgabe{2}{mittel}
+Die Funktion $f(x)=\cos(x)$ soll auf dem Intervall $[3,4]$ per Brute-Force / Grid Search
+minimiert werden. Verwenden Sie das Gitter mit Schrittweite $h=0{,}25$, also die
+Stützstellen $x_i = 3 + i\cdot 0{,}25$ für $i=0,\dots,4$.
+\begin{enumerate}[label=(\alph*)]
+  \item Werten Sie $f$ an allen Gitterpunkten aus und bestimmen Sie den approximierten
+        Minimalwert sowie die zugehörige Stelle.
+  \item Die analytische Minimalstelle auf diesem Intervall ist $x^\ast=\pi$ mit
+        $f(x^\ast)=-1$. Geben Sie den absoluten Approximationsfehler
+        $|x_{\min}-\pi|$ der gefundenen Stelle an.
+\end{enumerate}
+\karo{6cm}
+
+\aufgabe{3}{schwer}
+Für ein lineares Modell $g(w)=a\,w+b$ sollen die Parameter $a$ und $b$ per Grid Search
+geschätzt werden. Es liegen die Messpunkte $(w,y)$ vor:
+\[
+(0,1),\quad (1,3),\quad (2,5).
+\]
+Der Fehler eines Parameterpaares ist
+$\text{error}(a,b)=\sum_{k}\bigl|a\,w_k+b-y_k\bigr|$.
+Durchsuchen Sie das Gitter $a\in\{1,2,3\}$ und $b\in\{0,1,2\}$ (alle $9$ Kombinationen),
+bestimmen Sie das Paar $(a,b)$ mit minimalem Fehler und geben Sie diesen Fehler an.
+\karo{7cm}
+
+\aufgabe{4}{mittel}
+Eine Gleitkommazahl wird gemäß $x=(-1)^s\cdot m\cdot 2^{e}$ dargestellt. Im
+IEEE-754 Single-Precision-Format gibt es $1$ Vorzeichenbit, $8$ Exponentenbits
+(mit Bias $127$) und $23$ Mantissenbits.
+\begin{enumerate}[label=(\alph*)]
+  \item Wie viele Bits belegt eine Single-Precision-Zahl insgesamt?
+  \item Der gespeicherte Exponent betrage $E=130$. Berechnen Sie den echten Exponenten
+        $e=E-127$.
+  \item Welcher gespeicherte Exponent $E$ gehört zu einem echten Exponenten $e=-4$?
+\end{enumerate}
+\karo{4cm}
+
+\aufgabe{5}{mittel}
+Das Maschinenepsilon ist durch $\varepsilon_{\text{mach}}=2^{-t}$ gegeben, wobei $t$ die
+Anzahl der Mantissenbits ist.
+\begin{enumerate}[label=(\alph*)]
+  \item Berechnen Sie $\varepsilon_{\text{mach}}$ für eine $3$-Bit-Mantisse ($t=3$).
+  \item Im Intervall $[1,2)$ haben die Zahlen die Form $1{,}b_1b_2b_3\cdot 2^0$ in Binär.
+        Listen Sie alle mit einer $3$-Bit-Mantisse darstellbaren Zahlen zwischen
+        $1$ (einschließlich) und $2$ (ausschließlich) auf und geben Sie ihren Abstand an.
+\end{enumerate}
+\karo{5cm}
+
+\aufgabe{6}{leicht}
+Die absolute Präzision (Abstand zur nächsten darstellbaren Zahl) beträgt etwa
+$\varepsilon_{\text{mach}}\cdot|x|$. Verwenden Sie $\varepsilon_{\text{mach}}=2^{-23}$
+(Single Precision).
+\begin{enumerate}[label=(\alph*)]
+  \item Berechnen Sie die absolute Präzision für $x=1{,}0$ und für $x=1\,000\,000$.
+  \item Erklären Sie kurz, warum große Zahlen größere Lücken zwischen darstellbaren
+        Werten haben.
+\end{enumerate}
+\karo{4cm}
+
+\aufgabe{7}{mittel}
+Festkommazahlen werden als ganze Zahl mit festem Skalierungsfaktor gespeichert. Der
+Wertebereich $[-1000,1000]$ werde mit Skalierung $10^{-6}$ in $32$-Bit-Integern abgelegt,
+d.\,h.\ der gespeicherte Integer ist $\operatorname{round}(x\cdot 10^{6})$.
+\begin{enumerate}[label=(\alph*)]
+  \item Speichern Sie die Zahl $x=1{,}234567$. Welcher Integer wird abgelegt?
+  \item Welcher Wert wird beim Auslesen rekonstruiert und wie groß ist der maximale
+        Rundungsfehler ($0{,}5\cdot 10^{-6}$)?
+\end{enumerate}
+\karo{5cm}
+
+\aufgabe{8}{leicht}
+Der exakte Wert $\frac{20}{3}=6{,}6666\overline{6}$ wird auf $3$ Nachkommastellen gerundet
+zu $6{,}667$ gespeichert.
+\begin{enumerate}[label=(\alph*)]
+  \item Geben Sie den absoluten Rundungsfehler $\bigl|\tfrac{20}{3}-6{,}667\bigr|$ an.
+  \item Wiederholen Sie dies für $\frac{1}{7}$ auf $4$ Nachkommastellen gerundet.
+\end{enumerate}
+\karo{4cm}
+
+\aufgabe{9}{schwer}
+Auslöschung (catastrophic cancellation): Gegeben seien die exakten Zahlen
+$a=98765432{,}7$ und $b=98765432{,}1$. Es soll $a-b$ berechnet werden, jedoch werden
+beide Zahlen zuvor auf $8$ signifikante Stellen gerundet gespeichert.
+\begin{enumerate}[label=(\alph*)]
+  \item Bestimmen Sie die gerundeten Werte $\tilde a$ und $\tilde b$.
+  \item Berechnen Sie das wahre Ergebnis $a-b$ und das berechnete Ergebnis
+        $\tilde a-\tilde b$ und vergleichen Sie beide.
+  \item Erklären Sie kurz, warum hier so wenige signifikante Stellen übrig bleiben.
+\end{enumerate}
+\karo{6cm}
+
+\aufgabe{10}{mittel}
+Ordnen Sie jedes der folgenden Szenarien genau einem Fehlertyp zu --
+\emph{Modellfehler}, \emph{Abschneidefehler (truncation)} oder \emph{Rundungsfehler}:
+\begin{enumerate}[label=(\alph*)]
+  \item Eine unendliche Reihe $\sum_{k=0}^{\infty}\frac{1}{k!}$ wird nach $5$ Gliedern
+        abgebrochen.
+  \item Die reibungsfreie Bewegung eines Pendels wird angenommen, obwohl in der Realität
+        Luftwiderstand wirkt.
+  \item Das Ergebnis $\frac{1}{3}$ wird in einem Computer mit endlich vielen Bits gespeichert.
+\end{enumerate}
+\karo{3cm}
+
+\end{document}

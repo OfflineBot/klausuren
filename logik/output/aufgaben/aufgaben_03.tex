@@ -1,0 +1,146 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage[margin=2.3cm]{geometry}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{array}
+\usepackage[table]{xcolor}
+\usepackage{tikz}
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\pagecolor{bgdark}
+\arrayrulecolor{fgtext}
+\AtBeginDocument{\color{fgtext}}
+\renewcommand{\headrule}{\color{fgtext}\hrule height \headrulewidth}
+\newcommand{\karo}[1]{\par\noindent
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcol, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par}
+
+\newcommand{\diff}[1]{\hfill\normalfont\textbf{[#1]}}
+\newcommand{\aufg}[2]{\subsection*{Aufgabe #1 \diff{#2}}}
+\renewcommand{\arraystretch}{1.2}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{RADM -- Boolesche Algebra \& Schaltalgebra}
+\rhead{Übungsblatt 03}
+\cfoot{\thepage}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries Übungsaufgaben Boolesche Algebra \& Schaltalgebra}\\[2pt]
+  {\large Relationen, Algebra, Diskrete Mathematik -- Teil 4}\\[10pt]
+\end{center}
+
+\noindent
+\begin{tabular}{@{}p{0.6\textwidth}@{}p{0.4\textwidth}@{}}
+  \textbf{Name:} \hrulefill & \textbf{Datum:} \hrulefill
+\end{tabular}
+
+\vspace{4pt}
+\noindent\rule{\textwidth}{0.4pt}
+\vspace{4pt}
+
+\noindent\textit{Themen: Boolesche Terme, Schalttabellen, Boolesche Gesetze,
+kDN/kKN aus Wertetabellen, KV-Diagramme (auch mit don't-care), Halb-/Volladdierer,
+Axiome \& Dualitätsprinzip. Negation als Apostroph $a'$.}
+
+\vspace{6pt}
+
+% ---------------------------------------------------------------
+\aufg{1}{leicht}
+Welche der folgenden Ausdrücke sind syntaktisch korrekte Boolesche Terme
+(Variablen $a,b,c$)?
+\[
+\text{(a) } (a\vee b')\wedge c \qquad
+\text{(b) } a\wedge\vee b \qquad
+\text{(c) } (a\wedge b)' \qquad
+\text{(d) } ()' \qquad
+\text{(e) } a'b'\vee c
+\]
+\karo{4.5cm}
+
+% ---------------------------------------------------------------
+\aufg{2}{leicht}
+Erstelle die Wertetabellen (Schalttabellen) für
+\[ f(a,b)=a\vee b' \qquad\text{und}\qquad g(a,b)=(a\wedge b)'. \]
+\karo{5.5cm}
+
+% ---------------------------------------------------------------
+\aufg{3}{mittel}
+Vereinfache mit den Gesetzen der Booleschen Algebra:
+\[ f(a,b) = ab \vee ab' \vee a'b. \]
+\karo{5.5cm}
+
+% ---------------------------------------------------------------
+\aufg{4}{mittel}
+Die ,,Mehrheitsfunktion`` $f(a,b,c)$ ist $1$, wenn mindestens zwei der drei
+Eingänge $1$ sind:
+\begin{center}
+\begin{tabular}{ccc|c}
+$a$&$b$&$c$&$f$\\\hline
+0&0&0&0\\ 0&0&1&0\\ 0&1&0&0\\ 0&1&1&1\\
+1&0&0&0\\ 1&0&1&1\\ 1&1&0&1\\ 1&1&1&1\\
+\end{tabular}
+\end{center}
+Lies aus der Wertetabelle die \textbf{kDN} und die \textbf{kKN} ab.
+\karo{5.5cm}
+
+% ---------------------------------------------------------------
+\aufg{5}{mittel}
+Minimiere die Mehrheitsfunktion aus Aufgabe~4 mit einem KV-Diagramm
+zur disjunktiven Minimalform (DM).
+\karo{6cm}
+
+% ---------------------------------------------------------------
+\aufg{6}{mittel}
+Eine Funktion $f(a,b,c,d)$ ist genau für die Belegungen $1$, bei denen
+($a=1$ und $b=1$) \emph{oder} ($c=0$ und $d=0$) gilt. Bestimme mit einem
+KV-Diagramm die disjunktive Minimalform (DM).
+\karo{6.5cm}
+
+% ---------------------------------------------------------------
+\aufg{7}{mittel}
+Gegeben eine unvollständig definierte Schaltfunktion ($d$ = don't care):
+\begin{center}
+\begin{tabular}{ccc|c}
+$a$&$b$&$c$&$f$\\\hline
+0&0&0&0\\ 0&0&1&0\\ 0&1&0&0\\ 0&1&1&0\\
+1&0&0&0\\ 1&0&1&1\\ 1&1&0&$d$\\ 1&1&1&$d$\\
+\end{tabular}
+\end{center}
+Bestimme mit dem KV-Diagramm die DM (nutze die $d$-Felder geeignet).
+\karo{5.5cm}
+
+% ---------------------------------------------------------------
+\aufg{8}{mittel}
+\textbf{Halbaddierer.} Stelle die Wertetabelle eines Halbaddierers auf
+(Eingänge $a,b$; Ausgänge Summe $s$ und Übertrag $\ddot u$) und gib die
+\emph{minimierten} Schaltfunktionen für $s$ und $\ddot u$ an.
+\karo{5.5cm}
+
+% ---------------------------------------------------------------
+\aufg{9}{schwer}
+\textbf{Volladdierer.} Eingänge $a,b,\ddot u_1$; Ausgänge Summe $s$ und Übertrag $\ddot u_2$.
+\begin{enumerate}[label=(\alph*)]
+  \item Stelle die Wertetabelle auf.
+  \item Gib die kDN für $s$ an.
+  \item Minimiere $\ddot u_2$ mit einem KV-Diagramm.
+\end{enumerate}
+\karo{6.5cm}
+
+% ---------------------------------------------------------------
+\aufg{10}{schwer}
+Beweise mit den \emph{Axiomen} der Booleschen Algebra (Kommutativ-, Distributiv-,
+Neutralelement-, Komplementgesetze) das $0$-$1$-Gesetz
+\[ a\vee 1 = 1. \]
+Welches Prinzip verbindet diese Aussage mit $a\wedge 0 = 0$?
+\karo{6cm}
+
+\end{document}

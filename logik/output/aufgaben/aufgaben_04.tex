@@ -1,0 +1,146 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage[margin=2.3cm]{geometry}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{array}
+\usepackage[table]{xcolor}
+\usepackage{tikz}
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\pagecolor{bgdark}
+\arrayrulecolor{fgtext}
+\AtBeginDocument{\color{fgtext}}
+\renewcommand{\headrule}{\color{fgtext}\hrule height \headrulewidth}
+\newcommand{\karo}[1]{\par\noindent
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcol, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par}
+
+\newcommand{\diff}[1]{\hfill\normalfont\textbf{[#1]}}
+\newcommand{\aufg}[2]{\subsection*{Aufgabe #1 \diff{#2}}}
+\renewcommand{\arraystretch}{1.2}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{RADM -- Graphen}
+\rhead{Übungsblatt 04}
+\cfoot{\thepage}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries Übungsaufgaben Graphen}\\[2pt]
+  {\large Relationen, Algebra, Diskrete Mathematik -- Teil 5}\\[10pt]
+\end{center}
+
+\noindent
+\begin{tabular}{@{}p{0.6\textwidth}@{}p{0.4\textwidth}@{}}
+  \textbf{Name:} \hrulefill & \textbf{Datum:} \hrulefill
+\end{tabular}
+
+\vspace{4pt}
+\noindent\rule{\textwidth}{0.4pt}
+\vspace{4pt}
+
+\noindent\textit{Themen: Grundbegriffe, Knotengrad, Adjazenzmatrix/-liste, Graphtypen,
+Pfade/Zyklen, Euler/Hamilton, bipartite Graphen, kürzester Pfad (Dijkstra, A*),
+TSP (Brute Force, Nearest Neighbour, 2-Opt).}
+
+\vspace{6pt}
+
+% ---------------------------------------------------------------
+\aufg{1}{leicht}
+Ungerichteter Graph $G=(V,E)$ mit $V=\{1,2,3,4,5\}$ und
+$E=\{\{1,2\},\{1,3\},\{2,3\},\{3,4\},\{4,5\}\}$.
+\begin{enumerate}[label=(\alph*)]
+  \item Bestimme den Knotengrad jedes Knotens.
+  \item Bilde die Summe aller Grade und vergleiche mit $2\cdot|E|$.
+  \item Enthält $G$ einen Zyklus? Wenn ja, gib einen an.
+\end{enumerate}
+\karo{5cm}
+
+% ---------------------------------------------------------------
+\aufg{2}{leicht}
+Für den Graphen aus Aufgabe~1:
+\begin{enumerate}[label=(\alph*)]
+  \item Gib die Adjazenzmatrix $A$ an.
+  \item Gib die Adjazenzliste an.
+  \item Ist $A$ symmetrisch? Begründe.
+\end{enumerate}
+\karo{6cm}
+
+% ---------------------------------------------------------------
+\aufg{3}{leicht}
+\begin{enumerate}[label=(\alph*)]
+  \item Wie viele Kanten hat der vollständige Graph $K_n$? Berechne für $n=6$.
+  \item Wie viele Kanten hat ein Baum mit $n$ Knoten?
+  \item Welchen Knotengrad hat jeder Knoten in einem Kreis $C_n$?
+\end{enumerate}
+\karo{4.5cm}
+
+% ---------------------------------------------------------------
+\aufg{4}{mittel}
+Ungerichteter Graph mit $V=\{0,1,2,3\}$ und Kanten
+$\{0,1\},\{1,2\},\{2,3\},\{3,0\},\{0,2\}$.
+\begin{enumerate}[label=(\alph*)]
+  \item Bestimme die Knotengrade.
+  \item Existiert ein \emph{Euler-Zyklus}? (Kriterium: zusammenhängend, alle Grade gerade.)
+  \item Existiert ein \emph{Euler-Pfad}? Wenn ja, gib einen an.
+  \item Gib einen \emph{Hamilton-Zyklus} an.
+\end{enumerate}
+\karo{6cm}
+
+% ---------------------------------------------------------------
+\aufg{5}{mittel}
+Zeige, dass der Graph mit $V=\{1,2,3,4,5,6\}$ und Kanten
+$\{1,4\},\{1,5\},\{2,4\},\{2,6\},\{3,5\},\{3,6\}$ \emph{bipartit} ist,
+indem du eine geeignete Partition der Knotenmenge angibst.
+\karo{5cm}
+
+% ---------------------------------------------------------------
+\aufg{6}{schwer}
+Gewichteter, ungerichteter Graph mit Knoten $A,B,C,D,E,F$ und Kanten:
+\[ A\text{-}B{:}2,\; A\text{-}C{:}4,\; B\text{-}C{:}1,\; B\text{-}D{:}7,\;
+   C\text{-}E{:}3,\; D\text{-}E{:}2,\; D\text{-}F{:}1,\; E\text{-}F{:}5. \]
+Führe den \textbf{Dijkstra}-Algorithmus vom Startknoten $A$ aus.
+Gib die kürzesten Distanzen zu allen Knoten sowie den kürzesten Pfad von $A$ nach $F$ an.
+\karo{7cm}
+
+% ---------------------------------------------------------------
+\aufg{7}{schwer}
+Im Graphen aus Aufgabe~6 sei $F$ der Zielknoten. Gegeben die (zulässige) Heuristik
+\[ h(A){=}8,\ h(B){=}7,\ h(C){=}6,\ h(D){=}1,\ h(E){=}3,\ h(F){=}0. \]
+\begin{enumerate}[label=(\alph*)]
+  \item Worin unterscheidet sich $A^{*}$ vom Dijkstra-Algorithmus?
+  \item Führe $A^{*}$ von $A$ nach $F$ aus (Priorität $p=d+h$) und gib den kürzesten Pfad an.
+\end{enumerate}
+\karo{6.5cm}
+
+% ---------------------------------------------------------------
+\aufg{8}{mittel}
+\textbf{TSP -- Brute Force.} Vier Städte $A,B,C,D$ mit symmetrischen Distanzen:
+\[ AB{=}2,\ AC{=}9,\ AD{=}1,\ BC{=}3,\ BD{=}8,\ CD{=}9. \]
+Bestimme durch Ausprobieren aller Touren ab $A$ (mit Rückkehr nach $A$) die
+kürzeste Rundreise und ihre Länge.
+\karo{6cm}
+
+% ---------------------------------------------------------------
+\aufg{9}{mittel}
+\textbf{Nearest-Neighbour-Heuristik.} Wende auf die Distanzen aus Aufgabe~8 die
+Nearest-Neighbour-Heuristik mit Start in $A$ an. Welche Tour und Länge ergeben sich?
+Vergleiche mit dem Optimum.
+\karo{5.5cm}
+
+% ---------------------------------------------------------------
+\aufg{10}{mittel}
+\textbf{2-Opt.} Erkläre einen 2-Opt-Schritt und wende ihn auf die
+Nearest-Neighbour-Tour aus Aufgabe~9 an, um sie zu verbessern.
+Welche Tour und Länge erhältst du?
+\karo{6cm}
+
+\end{document}

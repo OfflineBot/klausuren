@@ -1,0 +1,133 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage{geometry}
+\geometry{a4paper,margin=2cm}
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{accent}{HTML}{6CB6FF}
+\definecolor{accent2}{HTML}{F2A65A}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{linecol}{HTML}{8A8A8A}
+\pagecolor{bgdark}
+\color{fgtext}
+\arrayrulecolor{linecol}
+\newcommand{\karo}[1]{\par\noindent\begin{tikzpicture}\draw[step=5mm, gridcol, very thin] (0,0) grid (\linewidth,#1);\end{tikzpicture}\par}
+\newcommand{\aufgabe}[2]{\medskip\par\noindent{\color{accent}\large\textbf{Aufgabe #1}}\hfill{\color{accent2}\small #2}\par\vspace{0.3em}\hrule height0.4pt\vspace{0.6em}}
+\newcommand{\kopf}[1]{\noindent{\color{accent}\Large\textbf{Numerik — #1}}\par\vspace{0.4em}\noindent\textbf{Name:}~\rule[-2pt]{5cm}{0.4pt}\hfill\textbf{Datum:}~\rule[-2pt]{3cm}{0.4pt}\par\vspace{0.3em}\hrule height0.8pt\vspace{1em}}
+\setlength{\parindent}{0pt}
+\begin{document}
+\kopf{Differenzialgleichungen}
+
+Gegeben sei stets eine gewöhnliche Differenzialgleichung erster Ordnung in der
+Form $y'=f(y,t)$ mit Anfangswert $y(t_0)=y_0$. Zur Erinnerung:
+
+\textbf{Euler-Verfahren:} \quad $y_{n+1}=y_n+h\cdot f(y_n,t_n)$, \quad $t_{n+1}=t_n+h$.
+
+\textbf{Runge-Kutta 4 (RK4):} \quad $y_{n+1}=y_n+\dfrac h6\,(k_1+2k_2+2k_3+k_4)$, \quad $t_{n+1}=t_n+h$, \quad mit
+\[
+k_1=f(y_n,t_n),\quad
+k_2=f\!\Big(y_n+\tfrac{hk_1}{2},\,t_n+\tfrac h2\Big),\quad
+k_3=f\!\Big(y_n+\tfrac{hk_2}{2},\,t_n+\tfrac h2\Big),\quad
+k_4=f\!\big(y_n+hk_3,\,t_n+h\big).
+\]
+
+\aufgabe{1}{leicht}
+Gegeben sei $y'=-\dfrac{5}{y}$ mit Anfangswert $y(0)=5$ und Schrittweite $h=1$.
+Berechnen Sie mit dem Euler-Verfahren die Näherungen $y(t_1)=y_1$ und $y(t_2)=y_2$,
+also zwei Schritte. Geben Sie auch $t_1$ und $t_2$ an.
+\karo{6cm}
+
+\aufgabe{2}{mittel}
+Betrachten Sie $y'=-2y+1$ mit $y(0)=0$. Die analytische Lösung lautet
+$y(t)=\tfrac12-\tfrac12 e^{-2t}$.
+\begin{enumerate}[label=(\alph*)]
+\item Rechnen Sie mit dem Euler-Verfahren bis $t=1$, einmal mit $h=0{,}5$ (2 Schritte)
+      und einmal mit $h=0{,}25$ (4 Schritte). Notieren Sie jeweils den Näherungswert $y(1)$.
+\item Vergleichen Sie beide Näherungen mit dem exakten Wert $y(1)$ und geben Sie an,
+      welche Schrittweite näher liegt.
+\item Erklären Sie kurz die Fehlerquelle des Euler-Verfahrens (Annahme über die Steigung
+      innerhalb eines Schritts).
+\end{enumerate}
+\karo{8cm}
+
+\aufgabe{3}{leicht}
+Wieder sei $y'=-\dfrac{5}{y}$. Nennen Sie einen Startwert $y_0$, der für das
+Euler-Verfahren (und für die DGL selbst) problematisch ist, und begründen Sie,
+warum dieser Wert nicht verwendet werden darf.
+\karo{4cm}
+
+\aufgabe{4}{mittel}
+Die DGL $y'=-0{,}01\,y+10$ mit $y(0)=0$ besitzt die analytische Lösung
+$y(t)=1000-1000\,e^{-0{,}01\,t}$. Rechnen Sie mit dem Euler-Verfahren zwei Schritte
+mit Schrittweite $h=10$, also bis $t=20$. Bestimmen Sie für den Endwert
+\textbf{(a)} den absoluten Fehler und \textbf{(b)} den relativen Fehler gegenüber
+der analytischen Lösung $y(20)$.
+\karo{7cm}
+
+\aufgabe{5}{schwer}
+Gegeben sei $y'=f(y,t)=\dfrac{y}{t}+t^2$ mit Anfangswert $y(1)=0{,}5$ und Schrittweite $h=1$.
+\begin{enumerate}[label=(\alph*)]
+\item Berechnen Sie für \emph{einen} RK4-Schritt alle vier Koeffizienten
+      $k_1,k_2,k_3,k_4$ von Hand (mit Brüchen).
+\item Bestimmen Sie daraus $y_{n+1}=y_n+\dfrac h6(k_1+2k_2+2k_3+k_4)$.
+\item Vergleichen Sie mit der exakten Lösung $y(t)=0{,}5\,t^3$ (also $y(2)=4$).
+\end{enumerate}
+\karo{8cm}
+
+\aufgabe{6}{mittel}
+Betrachten Sie $y'=y$ mit $y(0)=1$ und Schrittweite $h=1$. Die exakte Lösung ist
+$y(t)=e^{t}$, also $y(1)=e\approx 2{,}71828$.
+\begin{enumerate}[label=(\alph*)]
+\item Rechnen Sie einen Schritt mit dem Euler-Verfahren.
+\item Rechnen Sie einen Schritt mit RK4 (alle $k_i$ angeben).
+\item Vergleichen Sie beide Näherungen mit $e$ und erklären Sie, warum RK4 deutlich
+      genauer ist (Stichwort: Auswertung der Steigung an mehreren Punkten).
+\end{enumerate}
+\karo{8cm}
+
+\aufgabe{7}{mittel}
+Gegeben sei das folgende Butcher-Tableau:
+\[
+\renewcommand{\arraystretch}{1.3}
+\begin{array}{c|cc}
+0 & & \\
+\tfrac23 & \tfrac23 & \\
+\hline
+ & \tfrac14 & \tfrac34
+\end{array}
+\]
+\begin{enumerate}[label=(\alph*)]
+\item Wie viele Stufen hat das Verfahren?
+\item Lesen Sie die Formeln für $k_1$ und $k_2$ sowie die Aktualisierungsformel
+      $y_{n+1}$ aus dem Tableau ab.
+\item Welche Bedingung an die Gewichte muss erfüllt sein? Prüfen Sie sie.
+\end{enumerate}
+\karo{7cm}
+
+\aufgabe{8}{mittel}
+Stellen Sie das Butcher-Tableau für das klassische RK4-Verfahren auf. Erklären Sie
+dabei die Bedeutung der drei Bestandteile (Knoten in der linken Spalte, Matrix rechts
+oben, Gewichtszeile unten). Begründen Sie, warum die Gewichte
+$\tfrac16,\tfrac26,\tfrac26,\tfrac16$ lauten und ihre Summe gleich $1$ sein muss.
+\karo{8cm}
+
+\aufgabe{9}{schwer}
+\begin{enumerate}[label=(\alph*)]
+\item Zeigen Sie ausgehend von der RK4-Formel, dass man genau das Euler-Verfahren
+      erhält, wenn man $k_2,k_3,k_4$ weglässt und nur $k_1$ mit Vorfaktor $h$ behält.
+\item Diskutieren Sie den Zusammenhang RK1 $=$ Euler: Welche „Stufe`` besitzt das
+      Euler-Verfahren und wie sieht sein Butcher-Tableau aus?
+\item (Optional) Geben Sie das Butcher-Tableau der Mittelpunktregel (RK2) an und
+      erläutern Sie, warum sie ein Spezialfall der Runge-Kutta-Familie ist.
+\end{enumerate}
+\karo{8cm}
+
+\end{document}

@@ -1,0 +1,99 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage[margin=2cm]{geometry}
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{accent}{HTML}{6CB6FF}
+\definecolor{loescol}{HTML}{7FD18C}
+\pagecolor{bgdark}
+\color{fgtext}
+\arrayrulecolor{fgtext}
+\setlength{\parindent}{0pt}
+\newcommand{\karo}[1]{\par\noindent\begin{tikzpicture}\draw[step=5mm,gridcol,very thin](0,0) grid (\linewidth,#1);\end{tikzpicture}\par\vspace{2mm}}
+\newcommand{\aufgabe}[2]{\vspace{4mm}\par\noindent{\large\color{accent}\textbf{Aufgabe #1}}\hfill{\color{gridcol}\normalsize #2}\par\vspace{1mm}}
+\newcommand{\titel}[1]{\begin{center}{\LARGE\color{accent}\textbf{Optimierungsverfahren}}\\[3pt]{\large #1}\end{center}\vspace{1mm}\noindent\textbf{Name:}\ \underline{\hspace{6cm}}\hfill\textbf{Datum:}\ \underline{\hspace{4cm}}\\[3pt]{\color{gridcol}\rule{\linewidth}{0.4pt}}\vspace{2mm}}
+
+\begin{document}
+\titel{Übungsaufgaben --- Blatt 04: Gradientenfreie Verfahren \& Metaheuristiken}
+
+\aufgabe{1 --- Nelder-Mead (Downhill-Simplex)}{mittel--schwer}
+Minimiert wird $f(x_1,x_2)=2x_1^2+x_2^2$. Der aktuelle Simplex (bereits sortiert von gut nach schlecht):
+\[
+\vec x_0=(0,1),\quad \vec x_1=(1,1),\quad \vec x_2=(2,0),
+\]
+Parameter $\alpha=1,\ \gamma=2,\ \beta=0{,}5$.
+\begin{enumerate}[label=(\alph*)]
+  \item Berechnen Sie das Zentrum $\vec x_c$ (ohne den schlechtesten Punkt) und den Reflexionspunkt $\vec x_r$.
+  \item Welcher Schritt folgt laut Fallunterscheidung? Führen Sie ihn aus und geben Sie den neuen Simplex-Punkt an.
+\end{enumerate}
+\karo{8cm}
+
+\aufgabe{2 --- (1+1)-ES / 1/5-Erfolgsregel}{mittel}
+Die (1+1)-ES wird für ein \textbf{Minimierungs}problem eingesetzt. Speicherlänge $g=15$.
+In den letzten $14$ Schritten gab es $1$ Erfolg. Im aktuellen Schritt ist $f(\vec x)=0{,}812$ und
+$f(\vec x^{\text{next}})=0{,}799$. Aktuelle Schrittweite $\sigma=0{,}5$, Multiplikator $a=1{,}25$.
+Bestimmen Sie die Schrittweite für den nächsten Schritt.
+\karo{5.5cm}
+
+\aufgabe{3 --- Evolutionärer Algorithmus (eine Generation)}{mittel}
+Minimiert wird $f(x_1,x_2)=x_1^2+x_2^2$. Population:
+\[
+P_1=(2,0),\quad P_2=(-1,1),\quad P_3=(0,3),\quad P_4=(1,-1).
+\]
+\begin{enumerate}[label=(\alph*)]
+  \item Berechnen Sie die Fitness aller Individuen und wählen Sie die zwei besten als Eltern.
+  \item Rekombinieren Sie die Eltern über den \emph{Mittelwert}.
+  \item Mutieren Sie den Nachkommen mit $\vec\epsilon=(0{,}2,\,-0{,}1)$ und geben Sie dessen Fitness an.
+        Ist der Nachkomme besser als beide Eltern?
+\end{enumerate}
+\karo{6.5cm}
+
+\aufgabe{4 --- Simulated Annealing}{mittel}
+Der aktuelle Zustand hat $f=10$. Akzeptanzwahrscheinlichkeit $P=\exp(-\Delta f/T)$ (für Verschlechterungen).
+\begin{enumerate}[label=(\alph*)]
+  \item Ein Nachbar hat $f=8$. Wird er akzeptiert? Begründen Sie.
+  \item Ein Nachbar hat $f=13$ bei $T=5$. Berechnen Sie $P$. Bei Zufallszahl $u=0{,}7$: akzeptiert?
+  \item Derselbe Nachbar ($f=13$) bei $T=2$. Berechnen Sie $P$. Was bewirkt die sinkende Temperatur?
+\end{enumerate}
+\karo{6cm}
+
+\aufgabe{5 --- DIRECT}{mittel--schwer}
+Bei einem DIRECT-Schritt liegen vier Rechtecke vor; gegeben sind ihre Größe $d_i$ und der Funktionswert
+$f(c_i)$ am Mittelpunkt:
+\[
+R_1:(d=9,\ f=5),\quad R_2:(d=3,\ f=4),\quad R_3:(d=1,\ f=3{,}5),\quad R_4:(d=3,\ f=6).
+\]
+\begin{enumerate}[label=(\alph*)]
+  \item Welche Rechtecke sind \emph{potentiell optimal} (untere-rechte konvexe Hülle im $(d,f)$-Diagramm)?
+  \item Was macht DIRECT anschließend mit diesen Rechtecken?
+\end{enumerate}
+\karo{6cm}
+
+\aufgabe{6 --- Konzeptfragen Metaheuristiken}{leicht--mittel}
+Beantworten Sie jeweils in 1--2 Sätzen:
+\begin{enumerate}[label=(\alph*)]
+  \item \textbf{PSO}: Wodurch wird die Bewegung eines Teilchens beeinflusst?
+  \item \textbf{ACO}: Wie steuern Pheromone die Wegewahl? Für welche Problemart ist ACO typisch?
+  \item \textbf{SMBO}: Wozu dient das Surrogatmodell und wann lohnt es sich?
+  \item \textbf{CMA-ES}: Was wird hier fortlaufend angepasst?
+\end{enumerate}
+\karo{6cm}
+
+\aufgabe{7 --- Binäre Operatoren}{leicht--mittel}
+Gegeben zwei Eltern-Bitstrings $A=10110$ und $B=01100$.
+\begin{enumerate}[label=(\alph*)]
+  \item Führen Sie ein \emph{Single-Point-Crossover} nach Position $2$ durch und geben Sie beide Nachkommen an.
+  \item Mutieren Sie den ersten Nachkommen, indem Sie das $4$.\ Bit kippen.
+\end{enumerate}
+\karo{4.5cm}
+
+\end{document}

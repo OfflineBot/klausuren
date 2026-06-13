@@ -1,0 +1,291 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}
+\geometry{margin=2.0cm}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{titlesec}
+
+%================= Dark-Mode Farben (Catppuccin Mocha) =================
+\definecolor{base}{HTML}{1E1E2E}     % Hintergrund
+\definecolor{fg}{HTML}{CDD6F4}       % Text (heller Vordergrund)
+\definecolor{accent}{HTML}{89B4FA}   % Überschriften / Akzent
+\definecolor{accent2}{HTML}{F5C2E7}  % Schwierigkeitsmarkierung
+\definecolor{gridcolor}{HTML}{45475A}% Karo-Gitter (dezent)
+
+\pagecolor{base}
+
+\newcommand{\transp}{^{\mathsf{T}}}
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+\newcommand{\inner}[2]{\left\langle #1,\, #2 \right\rangle}
+\newcommand{\rang}{\operatorname{rang}}
+\newcommand{\spur}{\operatorname{spur}}
+\newcommand{\diag}{\operatorname{diag}}
+
+% Schwierigkeitsmarkierung
+\newcommand{\schwierig}[1]{\hfill\textnormal{\color{accent2}\itshape (#1)}}
+
+% Karierte Antwortfläche (Karopapier) -- #1 = Höhe des Bereichs (z. B. 5cm).
+% Durchgehendes Karo-Raster, keine einzelnen Schreiblinien, kein \hrulefill.
+\newcommand{\karo}[1]{\par\vspace{0.3cm}\noindent
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcolor, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par\vspace{0.3cm}}
+
+%================= Überschriften in Akzentfarbe =================
+\titleformat{\section}{\color{accent}\normalfont\Large\bfseries}{}{0pt}{}
+
+%================= Kopf-/Fußzeile =================
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\color{fg}\small Fortgeschrittene Lineare Algebra und Analytische Geometrie}
+\rhead{\color{fg}\small Übungsblatt 01}
+\cfoot{\color{fg}\thepage}
+\renewcommand{\headrule}{{\color{gridcolor}\hrule height 0.4pt}}
+
+\setlength{\parindent}{0pt}
+
+\begin{document}
+\color{fg}
+
+\thispagestyle{fancy}
+
+\begin{center}
+  {\color{accent}\LARGE\bfseries Übungsaufgaben: Matrizen, Zerlegungen \& Geometrie}\\[0.4em]
+  {\large Fortgeschrittene Lineare Algebra und Analytische Geometrie}\\[0.8em]
+\end{center}
+
+\noindent
+\begin{tabular}{@{}p{0.6\textwidth}p{0.35\textwidth}@{}}
+  \textbf{Name:} \textcolor{fg}{\hrulefill} & \textbf{Datum:} \textcolor{fg}{\hrulefill}
+\end{tabular}
+
+\vspace{0.4em}
+{\color{gridcolor}\hrule}
+\vspace{0.6em}
+
+\textit{Hinweise: Schwierigkeitsgrad ist je Aufgabe in Klammern angegeben
+(\emph{leicht}, \emph{mittel}, \emph{schwer}). Rechenwege bitte nachvollziehbar
+notieren. Notation wie in der Vorlesung: $E$ bezeichnet die Einheitsmatrix,
+$\norm{\cdot}$ die euklidische ($L_2$-)Norm, sofern nicht anders angegeben.
+Lösungen frei auf dem Karo-Gitter notieren.}
+
+\vspace{0.8em}
+
+%==================================================================
+\section*{Aufgabe 1 -- Quickies (Wahr oder Falsch)\schwierig{leicht}}
+Entscheiden Sie für jede Aussage, ob sie \emph{wahr} oder \emph{falsch} ist,
+und begründen Sie kurz.
+\begin{enumerate}[label=\alph*)]
+  \item Jede orthogonale Matrix $Q$ erfüllt $Q^{-1} = Q\transp$.
+  \item Die Singulärwerte einer Matrix können negativ sein.
+  \item Eine symmetrische positiv definite Matrix besitzt ausschließlich positive Eigenwerte.
+  \item Für \emph{jede} quadratische Matrix existiert eine Eigenwertzerlegung $A = S\Lambda S^{-1}$.
+  \item Die Spur einer quadratischen Matrix ist gleich der Summe ihrer Eigenwerte.
+  \item Eine Hyperebene im $\mathbb{R}^n$ ist stets ein Untervektorraum.
+\end{enumerate}
+\karo{5.5cm}
+
+%==================================================================
+\section*{Aufgabe 2 -- Normen\schwierig{leicht}}
+Gegeben sei der Vektor
+\[
+  \vec{x} = \begin{pmatrix} 3 \\ -4 \\ 12 \end{pmatrix} \in \mathbb{R}^3 .
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Berechnen Sie die $L_1$-Norm $\norm{\vec{x}}_1$.
+  \item Berechnen Sie die $L_2$-Norm $\norm{\vec{x}}_2$.
+  \item Berechnen Sie die Maximum-Norm $\norm{\vec{x}}_\infty$.
+\end{enumerate}
+\karo{5cm}
+
+%==================================================================
+\section*{Aufgabe 3 -- Inneres Produkt und Orthogonalität\schwierig{mittel}}
+Gegeben seien
+\[
+  \vec{x} = \begin{pmatrix} 1 \\ 2 \\ 2 \end{pmatrix},\qquad
+  \vec{y} = \begin{pmatrix} 2 \\ -2 \\ 1 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Berechnen Sie das Skalarprodukt $\inner{\vec{x}}{\vec{y}} = \vec{x}\transp\vec{y}$.
+        Sind $\vec{x}$ und $\vec{y}$ orthogonal?
+  \item Bestimmen Sie $\norm{\vec{x}}$ und $\norm{\vec{y}}$ und überprüfen Sie die
+        Cauchy-Schwarz-Ungleichung $|\inner{\vec{x}}{\vec{y}}| \le \norm{\vec{x}}\cdot\norm{\vec{y}}$.
+  \item Verifizieren Sie den Satz des Pythagoras $\norm{\vec{x}+\vec{y}}^2 = \norm{\vec{x}}^2 + \norm{\vec{y}}^2$.
+  \item Bestimmen Sie den Winkel $\alpha$ zwischen
+        $\vec{u} = (1,1,0)\transp$ und $\vec{v} = (1,0,1)\transp$.
+\end{enumerate}
+\karo{6.5cm}
+
+%==================================================================
+\section*{Aufgabe 4 -- CR-Zerlegung\schwierig{mittel}}
+Gegeben sei
+\[
+  A = \begin{pmatrix} 1 & 2 & 3 \\ 2 & 5 & 7 \\ 3 & 7 & 10 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie den Rang von $A$.
+  \item Geben Sie eine Basis des Spaltenraums an.
+  \item Bestimmen Sie die CR-Zerlegung $A = CR$.
+\end{enumerate}
+\karo{6.5cm}
+
+%==================================================================
+\section*{Aufgabe 5 -- LU-Zerlegung\schwierig{mittel}}
+Gegeben sei
+\[
+  A = \begin{pmatrix} 2 & 1 & 1 \\ 4 & 3 & 3 \\ 8 & 7 & 9 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie eine LU-Zerlegung $A = LU$.
+  \item Bestimmen Sie $\det(A)$.
+  \item Berechnen Sie $A^{-1}$.
+\end{enumerate}
+\karo{8cm}
+
+%==================================================================
+\section*{Aufgabe 6 -- Cholesky-Zerlegung\schwierig{mittel}}
+Gegeben sei
+\[
+  A = \begin{pmatrix} 4 & 2 & 2 \\ 2 & 5 & 5 \\ 2 & 5 & 14 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Prüfen Sie mithilfe der führenden Hauptminoren, dass $A$ positiv definit ist.
+  \item Bestimmen Sie die Cholesky-Zerlegung $A = LL\transp$.
+\end{enumerate}
+\karo{7cm}
+
+%==================================================================
+\section*{Aufgabe 7 -- QR-Zerlegung\schwierig{mittel}}
+Gegeben seien
+\[
+  Q = \frac{1}{5}\begin{pmatrix} 3 & -4 \\ 4 & 3 \end{pmatrix},\qquad
+  R = \begin{pmatrix} 5 & 10 \\ 0 & 5 \end{pmatrix},\qquad
+  A = QR,\qquad
+  b = \begin{pmatrix} 5 \\ 15 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Weisen Sie nach, dass $Q$ orthogonal ist, und bestimmen Sie $A = QR$.
+  \item Lösen Sie das Gleichungssystem $A\vec{x} = b$ mithilfe der QR-Zerlegung.
+  \item Bestimmen Sie $Q^{-1}$.
+\end{enumerate}
+\karo{7.5cm}
+
+%==================================================================
+\section*{Aufgabe 8 -- Eigenwerte und Diagonalisierung\schwierig{mittel}}
+Gegeben sei
+\[
+  A = \begin{pmatrix} 4 & 1 \\ 2 & 3 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie die Eigenwerte über das charakteristische Polynom $\chi_A(\lambda)$.
+  \item Bestimmen Sie zu jedem Eigenwert einen Eigenvektor.
+  \item Geben Sie $V$ und $D$ an mit $A = VDV^{-1}$ und berechnen Sie $V^{-1}$.
+  \item Überprüfen Sie $\spur(A) = \sum_i \lambda_i$ und $\det(A) = \prod_i \lambda_i$.
+\end{enumerate}
+\karo{8cm}
+
+%==================================================================
+\section*{Aufgabe 9 -- Spektralzerlegung\schwierig{schwer}}
+Gegeben sei die symmetrische Matrix
+\[
+  A = \begin{pmatrix} 2 & 1 \\ 1 & 2 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie die Eigenwerte und eine \emph{orthonormale} Basis aus Eigenvektoren.
+  \item Geben Sie die Spektralzerlegung $A = Q\Lambda Q\transp$ an
+        (mit orthogonaler Matrix $Q$).
+  \item Bestimmen Sie mithilfe der Spektralzerlegung die Inverse $A^{-1} = Q\Lambda^{-1}Q\transp$.
+\end{enumerate}
+\karo{7.5cm}
+
+%==================================================================
+\section*{Aufgabe 10 -- SVD und Singulärwerte\schwierig{schwer}}
+Gegeben sei
+\[
+  A = \begin{pmatrix} 2 & 0 \\ 0 & 0 \\ 0 & 5 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Berechnen Sie $A\transp A$ und bestimmen Sie daraus die Singulärwerte von $A$.
+  \item Bestimmen Sie die Matrizen $V$, $\Sigma$ und $U$ der Singulärwertzerlegung
+        $A = U\Sigma V\transp$.
+  \item Bestätigen Sie durch Ausmultiplizieren, dass $U\Sigma V\transp = A$ gilt.
+\end{enumerate}
+\karo{8.5cm}
+
+%==================================================================
+\section*{Aufgabe 11 -- Pseudoinverse\schwierig{mittel}}
+Gegeben sei die Matrix mit vollem Spaltenrang
+\[
+  A = \begin{pmatrix} 1 & 1 \\ 1 & 2 \\ 1 & 3 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Berechnen Sie $A\transp A$ und $(A\transp A)^{-1}$.
+  \item Bestimmen Sie die Moore-Penrose-Pseudoinverse $A^{+} = (A\transp A)^{-1}A\transp$.
+  \item Verifizieren Sie, dass $A^{+}A = E$ gilt (Linksinverse).
+\end{enumerate}
+\karo{7.5cm}
+
+%==================================================================
+\section*{Aufgabe 12 -- Definitheit\schwierig{mittel}}
+Gegeben sei
+\[
+  A = \begin{pmatrix} 2 & -1 & 0 \\ -1 & 2 & -1 \\ 0 & -1 & 2 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie die führenden Hauptminoren $\Delta_1, \Delta_2, \Delta_3$ und
+        entscheiden Sie damit über die Definitheit.
+  \item Bestimmen Sie die Eigenwerte von $A$ und bestätigen Sie das Ergebnis aus a).
+\end{enumerate}
+\karo{7cm}
+
+%==================================================================
+\section*{Aufgabe 13 -- Hyperebenen\schwierig{mittel}}
+Gegeben sei die Ebene
+\[
+  E:\quad 2x_1 - x_2 + 2x_3 = 3 .
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Geben Sie einen Normalenvektor $\vec{n}$ an und nennen Sie die Dimension von $E$ als
+        Hyperebene im $\mathbb{R}^3$. Verläuft $E$ durch den Ursprung?
+  \item Liegt der Punkt $p = (1,2,3)\transp$ auf $E$?
+  \item Berechnen Sie den Abstand $d$ des Punktes $p$ zur Ebene $E$.
+\end{enumerate}
+\karo{6.5cm}
+
+%==================================================================
+\section*{Aufgabe 14 -- Finite Differenzen\schwierig{schwer}}
+Gegeben sei das Randwertproblem
+\[
+  -u''(x) = 2 ,\qquad u(0) = u(1) = 0 ,
+\]
+mit den inneren Gitterpunkten $x_1 = 0{,}25,\; x_2 = 0{,}5,\; x_3 = 0{,}75$
+(Schrittweite $h = 0{,}25$).
+\begin{enumerate}[label=\alph*)]
+  \item Leiten Sie mit dem zentralen Differenzenquotienten das lineare Gleichungssystem
+        $A\vec{u} = \vec{b}$ her (geben Sie $A$ und $\vec{b}$ an).
+  \item Nennen Sie vier strukturelle Eigenschaften der Matrix $A$.
+  \item Lösen Sie das Gleichungssystem und bestimmen Sie $u_1, u_2, u_3$.
+\end{enumerate}
+\karo{8.5cm}
+
+%==================================================================
+\section*{Aufgabe 15 -- Lineare Regression\schwierig{schwer}}
+Zu den Datenpunkten $(x,y) \in \{(1,1),\,(2,2),\,(3,2)\}$ soll eine Ausgleichsgerade
+$y = c_0 + c_1 x$ bestimmt werden.
+\begin{enumerate}[label=\alph*)]
+  \item Stellen Sie die Designmatrix $X$ und den Vektor $\vec{y}$ auf und notieren Sie die
+        Normalengleichung $X\transp X\,\vec{c} = X\transp \vec{y}$.
+  \item Lösen Sie die Normalengleichung und bestimmen Sie $c_0$ und $c_1$
+        (Hinweis: $\vec{c} = (X\transp X)^{-1} X\transp \vec{y}$).
+  \item Geben Sie die Gleichung der Ausgleichsgeraden an.
+\end{enumerate}
+\karo{7.5cm}
+
+\end{document}

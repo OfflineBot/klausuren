@@ -1,0 +1,110 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage[margin=2cm]{geometry}
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{accent}{HTML}{6CB6FF}
+\definecolor{loescol}{HTML}{7FD18C}
+\pagecolor{bgdark}
+\color{fgtext}
+\arrayrulecolor{fgtext}
+\setlength{\parindent}{0pt}
+\newcommand{\karo}[1]{\par\noindent\begin{tikzpicture}\draw[step=5mm,gridcol,very thin](0,0) grid (\linewidth,#1);\end{tikzpicture}\par\vspace{2mm}}
+\newcommand{\aufgabe}[2]{\vspace{4mm}\par\noindent{\large\color{accent}\textbf{Aufgabe #1}}\hfill{\color{gridcol}\normalsize #2}\par\vspace{1mm}}
+\newcommand{\titel}[1]{\begin{center}{\LARGE\color{accent}\textbf{Optimierungsverfahren}}\\[3pt]{\large #1}\end{center}\vspace{1mm}\noindent\textbf{Name:}\ \underline{\hspace{6cm}}\hfill\textbf{Datum:}\ \underline{\hspace{4cm}}\\[3pt]{\color{gridcol}\rule{\linewidth}{0.4pt}}\vspace{2mm}}
+
+\begin{document}
+\titel{Übungsaufgaben --- Blatt 01: Grundlagen \& Lineare Optimierung}
+
+\aufgabe{1 --- Klassifikation}{leicht}
+Klassifizieren Sie die folgenden Optimierungsprobleme jeweils nach: (i) \emph{linear} oder \emph{nichtlinear},
+(ii) Art der Nebenbedingungen (ohne / Grenzen / Gleichung / Ungleichung), (iii) Variablen ($\mathbb{R}^n$ oder $\mathbb{Z}^n$),
+(iv) ein- oder mehrkriteriell.
+\begin{enumerate}[label=(\alph*)]
+  \item $\min\limits_{\vec x}\ x_1^2+x_2^2 \quad\text{u.d.N.}\quad x_1+x_2=1$
+  \item $\max\limits_{\vec x}\ 3x_1+5x_2 \quad\text{u.d.N.}\quad x_1+x_2\le 10,\ \ x_1,x_2\ge 0$
+  \item $\min\limits_{\vec x}\ \big(f_1=x_1,\ f_2=x_2\big) \quad\text{u.d.N.}\quad x_1^2+x_2^2\ge 1,\ \ x_1,x_2\in\mathbb{Z}$
+  \item $\max\limits_{\vec x}\ x_1\cdot x_2 \quad\text{u.d.N.}\quad 0\le x_1\le 4,\ \ 0\le x_2\le 4$
+\end{enumerate}
+\karo{5cm}
+
+\aufgabe{2 --- Modellierung}{leicht--mittel}
+Eine Schreinerei stellt Tische und Stühle her. Ein Tisch bringt $40$ Euro Gewinn, ein Stuhl $25$ Euro.
+Ein Tisch benötigt $4$ Arbeitsstunden und $5$ Bretter, ein Stuhl $3$ Arbeitsstunden und $2$ Bretter.
+Pro Woche stehen $240$ Arbeitsstunden und $200$ Bretter zur Verfügung.\\[2pt]
+Definieren Sie die Entscheidungsvariablen (mit Einheit) und stellen Sie das vollständige Optimierungsproblem
+(Zielfunktion + Nebenbedingungen) auf. Ist es linear? (Eine Lösung ist \emph{nicht} nötig.)
+\karo{6cm}
+
+\aufgabe{3 --- Standardform}{mittel}
+Überführen Sie das folgende Problem in die \textbf{Standardform} der linearen Optimierung
+(nur Minimierung, nur Gleichungs-NB, alle Variablen $\ge 0$, rechte Seiten $\ge 0$):
+\[
+\max_{\vec x}\ 5x_1-2x_2+x_3 \quad\text{u.d.N.}\quad
+\begin{aligned}
+ x_1+x_2 &\le 6\\
+ 2x_1-x_3 &\ge 3\\
+ x_1+x_2+x_3 &= 5
+\end{aligned}
+\qquad x_1\ge 0,\ x_2\ge 0,\ x_3\ \text{frei}.
+\]
+\karo{6.5cm}
+
+\aufgabe{4 --- Grafische Lösung}{mittel}
+Lösen Sie das folgende lineare Problem \textbf{grafisch}. Zeichnen Sie den zulässigen Bereich, verschieben
+Sie die Isolinie der Zielfunktion und lesen Sie das Optimum $\vec x^\ast$ sowie den Zielfunktionswert $f(\vec x^\ast)$ ab.
+\[
+\max_{\vec x}\ f(\vec x)=2x_1+3x_2 \quad\text{u.d.N.}\quad x_1+x_2\le 4,\ \ x_1+3x_2\le 6,\ \ x_1,x_2\ge 0.
+\]
+\karo{8cm}
+
+\aufgabe{5 --- Eckpunkte rechnerisch}{mittel}
+Bestimmen Sie für das folgende Problem \textbf{alle zulässigen Eckpunkte rechnerisch}
+(Schnittpunkte je zweier Begrenzungsgeraden, inkl. der Achsen), prüfen Sie die Zulässigkeit
+und geben Sie das Optimum an.
+\[
+\min_{\vec x}\ f(\vec x)=3x_1+2x_2 \quad\text{u.d.N.}\quad x_1+x_2\ge 4,\ \ x_1+3x_2\ge 6,\ \ x_1,x_2\ge 0.
+\]
+\karo{7.5cm}
+
+\aufgabe{6 --- Slackvariablen}{mittel}
+Gegeben sei das lineare Problem
+\[
+\max_{\vec x}\ 2x_1+3x_2 \quad\text{u.d.N.}\quad
+g_1:\ x_1+x_2\le 4,\quad g_2:\ x_1+3x_2\le 6,\quad g_3:\ x_2\le 3,\quad x_1,x_2\ge 0,
+\]
+dessen Optimum bei $\vec x^\ast=(3,1)$ liegt. Führen Sie für $g_1,g_2,g_3$ je eine Slackvariable ein.
+Welche Nebenbedingungen sind im Optimum \emph{aktiv}, welche \emph{inaktiv}? Geben Sie die Werte $s_1,s_2,s_3$ an.
+\karo{5cm}
+
+\aufgabe{7 --- Ganzzahlige Optimierung}{mittel--schwer}
+Betrachten Sie das ganzzahlige Problem
+\[
+\max_{\vec x}\ f(\vec x)=x_1+2x_2 \quad\text{u.d.N.}\quad x_1+x_2\le 5,\ \ x_2\le 2{,}5,\ \ x_1,x_2\ge 0,\ \ x_1,x_2\in\mathbb{Z}.
+\]
+\begin{enumerate}[label=(\alph*)]
+  \item Lösen Sie zunächst die \emph{kontinuierliche} Relaxation (ohne Ganzzahligkeit).
+  \item Runden Sie die Variablen jeweils auf die nächste zulässige ganze Zahl \emph{ab}. Welcher Wert ergibt sich?
+  \item Bestimmen Sie das echte ganzzahlige Optimum. Was zeigt der Vergleich zu (b)?
+\end{enumerate}
+\karo{6.5cm}
+
+\aufgabe{8 --- Begriffe}{leicht}
+Beantworten Sie kurz:
+\begin{enumerate}[label=(\alph*)]
+  \item Was bedeutet \emph{unimodal} vs.\ \emph{multimodal}? Geben Sie je ein Beispiel einer Funktion.
+  \item Warum genügt bei einem \emph{konvexen} Minimierungsproblem ein \emph{lokaler} Optimierer?
+  \item Ist $f(x)=\sin(x)$ auf $[0,4\pi]$ unimodal oder multimodal? Begründen Sie.
+\end{enumerate}
+\karo{5.5cm}
+
+\end{document}

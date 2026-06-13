@@ -86,9 +86,34 @@ Erzeuge **zwei** PDFs in **getrennten** Ordnern:
    - `\documentclass[a4paper,11pt]{article}`, `amsmath`, `amssymb`.
    - Umlaute: bei **xelatex** `\usepackage{fontspec}`; bei **pdflatex** `\usepackage[utf8]{inputenc}`,
      `\usepackage[T1]{fontenc}`, `\usepackage[ngerman]{babel}`.
+   - **Dark Mode (Pflicht):** Das PDF hat einen **dunklen Hintergrund mit hellem Text** (guter Kontrast).
+     Setze dazu im Preamble z. B.:
+     ```latex
+     \usepackage{xcolor}
+     \definecolor{bgdark}{HTML}{1E1E1E}   % dunkler Hintergrund
+     \definecolor{fgtext}{HTML}{E6E6E6}   % heller Text
+     \pagecolor{bgdark}
+     \color{fgtext}
+     ```
+     Sorge dafür, dass **alle** Elemente (Überschriften, Mathematik, Punktetabelle, `\hline`/Rahmen,
+     Ankreuzkästchen) auf dem dunklen Hintergrund gut lesbar sind (helle Linien-/Rahmenfarbe verwenden,
+     nicht schwarz).
    - Kopf der Klausur mit Feldern Name/Datum und der Tabelle Aufgabe → Punkte (zum Eintragen).
-2. **Platz zum Ausfüllen**: nach jeder Aufgabe abhängig von Punkten/Aufwand Leerraum lassen
-   (`\vspace{...}`, mehr Platz bei mehr Punkten); bei Multiple-Choice die Ankreuzkästchen einbauen.
+2. **Platz zum Ausfüllen**: nach jeder Aufgabe abhängig von Punkten/Aufwand Platz lassen (mehr Platz bei
+   mehr Punkten). Der Platz ist **nicht leer**, sondern ein **kariertes Gitter (Karomuster, wie
+   Karopapier)** – **keine** einzelnen Schreib-/Hilfslinien und **kein** `\hrulefill`, sondern ein
+   durchgehendes Karo-Raster. Setze es z. B. mit TikZ um und definiere einen wiederverwendbaren Befehl:
+   ```latex
+   \usepackage{tikz}
+   \definecolor{gridcol}{HTML}{4A4A4A}   % gedämpfte, helle Gitterfarbe (auf dunklem Grund sichtbar)
+   % #1 = Höhe des Karobereichs (z. B. 5cm)
+   \newcommand{\karo}[1]{\par\noindent
+     \begin{tikzpicture}
+       \draw[step=5mm, gridcol, very thin] (0,0) grid (\linewidth,#1);
+     \end{tikzpicture}\par}
+   ```
+   Verwende nach jeder Aufgabe `\karo{5cm}` (Höhe je nach Punkten/Aufwand), Karo-Schrittweite ca. 5 mm.
+   Bei Multiple-Choice die Ankreuzkästchen einbauen.
 3. Kompiliere mit **xelatex** (bevorzugt), sonst **pdflatex**, jeweils in den passenden Ordner:
    `xelatex -interaction=nonstopmode -output-directory=output/klausuren probeklausur_<NN>.tex`
    und `xelatex -interaction=nonstopmode -output-directory=results/klausuren probeklausur_<NN>_loesung.tex`

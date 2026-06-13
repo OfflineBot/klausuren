@@ -1,0 +1,128 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{array}
+\usepackage[a4paper,margin=2.2cm]{geometry}
+
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{accent}{HTML}{6CB6FF}
+\definecolor{leicht}{HTML}{7BD88F}
+\definecolor{mittel}{HTML}{E6C07B}
+\definecolor{schwer}{HTML}{E06C75}
+\pagecolor{bgdark}
+\color{fgtext}
+
+\newcommand{\karo}[1]{\par\noindent
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcol, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par}
+\newcommand{\aufgabe}[4]{\vspace{0.6em}\par\noindent
+  \textbf{\large Aufgabe #1}\quad #2 \hfill {\color{#3}\textbf{[#4]}}\par\smallskip}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+\begin{center}
+  {\color{accent}\Huge\bfseries Analysis II}\\[0.3em]
+  {\Large Übungsaufgaben 02 — Gewöhnliche Differenzialgleichungen}\\[0.8em]
+\end{center}
+
+\noindent\textbf{Name:} \rule{6cm}{0.4pt} \hfill \textbf{Datum:} \rule{3.5cm}{0.4pt}
+\vspace{0.4em}
+{\color{gridcol}\hrule height 1pt}
+\vspace{0.3em}
+
+\small\textit{Lösungsformeln: lineare homogene DGL mit konstanten Koeffizienten
+$y(x)=y_0\,e^{\alpha(x-x_0)}$; allgemein $y(x)=c_1 e^{A(x)}$ mit $A(x)=\int a(x)\,dx$;
+lineare inhomogene DGL $y(x)=e^{A(x)}\!\left(y_0+\int_{x_0}^{x} b(u)\,e^{-A(u)}\,du\right)$.}
+\normalsize
+\vspace{0.5em}
+
+%==================================================================
+\aufgabe{1}{Linear homogen, konstante Koeffizienten}{leicht}{leicht}
+Löse die folgenden Anfangswertprobleme:
+\[
+  y'(x) = 3\,y(x),\quad y(0)=2
+  \qquad\qquad
+  y'(x) = -2\,y(x),\quad y(1)=5
+\]
+\karo{5.5cm}
+
+%==================================================================
+\aufgabe{2}{Zerfall und Halbwertszeit}{leicht}{leicht}
+Von einem radioaktiven Element sind zu Beginn $100\,$g vorhanden, nach $10\,$Stunden
+nur noch $25\,$g. Beschreibe die Zerfallsdynamik durch eine DGL der Form
+$y'(t)=\alpha\,y(t)$, bestimme $\alpha$ und die Halbwertszeit $t_{1/2}$.
+\karo{6cm}
+
+%==================================================================
+\aufgabe{3}{Linear homogen mit Funktion $a(x)$}{mittel}{mittel}
+Löse die folgenden Anfangswertprobleme:
+\[
+  y'(x) = 2x\,y(x),\quad y(0)=3
+  \qquad\qquad
+  y'(x) = (2x+1)\,y(x),\quad y(0)=1
+\]
+\karo{6.5cm}
+
+%==================================================================
+\aufgabe{4}{Linear inhomogen}{mittel}{mittel}
+Löse die folgenden Anfangswertprobleme mit der Lösungsformel:
+\[
+  y'(x) = y(x) + e^{x},\quad y(0)=0
+  \qquad\qquad
+  y'(x) = x^{-1}\,y(x) + 3x^{3},\quad y(2)=0
+\]
+\karo{7.5cm}
+
+%==================================================================
+\aufgabe{5}{Anwendung: CO$_2$ im Kursraum}{schwer}{schwer}
+In einem Kursraum entstehen pro Minute $8\,$g CO$_2$. Gleichzeitig wird pro Minute
+$1\,\%$ der Raumluft durch CO$_2$-freie Frischluft ersetzt. Zu Beginn ist keine
+Anreicherung vorhanden ($y(0)=0$). Stelle die DGL auf, löse sie und gib den
+Grenzwert für $x\to\infty$ an.
+\karo{7cm}
+
+%==================================================================
+\aufgabe{6}{Getrennte Veränderliche}{mittel}{mittel}
+Löse die folgenden Anfangswertprobleme:
+\[
+  y'(x) = x\,y(x)^2,\quad y(0)=1
+  \qquad\qquad
+  y'(x) = \frac{x}{y(x)},\quad y(0)=2
+\]
+\karo{7cm}
+
+%==================================================================
+\aufgabe{7}{Getrennte Veränderliche mit Exponentialfunktion}{schwer}{schwer}
+Löse das Anfangswertproblem
+\[
+  y'(x) = 2x\,e^{y(x)}, \qquad y(0)=0.
+\]
+\karo{6cm}
+
+%==================================================================
+\aufgabe{8}{Klassifikation von DGL}{mittel}{mittel}
+Gib für jede DGL Ordnung, Linearität (linear/nichtlinear) und Homogenität
+(homogen/inhomogen) an:
+\[
+  \text{(a) } y' = x^2 y \quad
+  \text{(b) } y' = \sin(y) \quad
+  \text{(c) } y'' = y' + x \quad
+  \text{(d) } y' = x\,y + x^2
+\]
+\karo{6cm}
+
+%==================================================================
+\aufgabe{9}{Anwendung: Verdopplungszeit}{mittel}{mittel}
+Ein Kapital wächst exponentiell gemäß $y'(t)=\alpha\,y(t)$ mit Startkapital $y(0)=K$
+und verdoppelt sich in $7$ Jahren. Bestimme $\alpha$ und gib die Lösungsfunktion an.
+\karo{5.5cm}
+
+\end{document}

@@ -1,0 +1,160 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage[margin=2.3cm]{geometry}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{array}
+\usepackage[table]{xcolor}
+\usepackage{tikz}
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\pagecolor{bgdark}
+\arrayrulecolor{fgtext}
+\AtBeginDocument{\color{fgtext}}
+\renewcommand{\headrule}{\color{fgtext}\hrule height \headrulewidth}
+\newcommand{\karo}[1]{\par\noindent
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcol, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par}
+
+\newcommand{\diff}[1]{\hfill\normalfont\textbf{[#1]}}
+\newcommand{\aufg}[2]{\subsection*{Aufgabe #1 \diff{#2}}}
+\renewcommand{\arraystretch}{1.2}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{RADM -- Mengen, Relationen, Abbildungen}
+\rhead{Übungsblatt 02}
+\cfoot{\thepage}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries Übungsaufgaben Mengen, Relationen, Abbildungen}\\[2pt]
+  {\large Relationen, Algebra, Diskrete Mathematik -- Teil 3}\\[10pt]
+\end{center}
+
+\noindent
+\begin{tabular}{@{}p{0.6\textwidth}@{}p{0.4\textwidth}@{}}
+  \textbf{Name:} \hrulefill & \textbf{Datum:} \hrulefill
+\end{tabular}
+
+\vspace{4pt}
+\noindent\rule{\textwidth}{0.4pt}
+\vspace{4pt}
+
+\noindent\textit{Themen: Mengenoperationen, Mächtigkeit/Potenzmenge, DeMorgan,
+kartesisches Produkt, algebraische Strukturen (Gruppe), Relationen \& ihre
+Eigenschaften, Äquivalenz-/Ordnungsrelationen, Abbildungen, Mengenbeweise,
+Relationenalgebra/Datenbanken.}
+
+\vspace{6pt}
+
+% ---------------------------------------------------------------
+\aufg{1}{leicht}
+Grundmenge $E=\{1,2,\dots,9\}$, sowie $A=\{1,2,3,4,5,6\}$, $B=\{2,4,6,8\}$, $C=\{1,3,5\}$.
+Bestimme:
+\[ A\cap B,\quad A\cup C,\quad A\setminus B,\quad B\setminus A,\quad \overline{C}\ (=E\setminus C),\quad (A\cap B)\cup C. \]
+\karo{5cm}
+
+% ---------------------------------------------------------------
+\aufg{2}{leicht}
+Sei $M=\{a,b,c\}$.
+\begin{enumerate}[label=(\alph*)]
+  \item Gib die Potenzmenge $\mathcal{P}(M)$ vollständig an und bestimme $|\mathcal{P}(M)|$.
+  \item Bestimme $|\mathcal{P}(\mathcal{P}(\emptyset))|$.
+\end{enumerate}
+\karo{5cm}
+
+% ---------------------------------------------------------------
+\aufg{3}{mittel}
+$E=\{1,\dots,10\}$, $A=\{1,2,3,4,5\}$, $B=\{4,5,6,7\}$. Verifiziere die DeMorgansche
+Regel $\overline{A\cup B}=\overline{A}\cap\overline{B}$ durch Berechnung \emph{beider} Seiten.
+\karo{5.5cm}
+
+% ---------------------------------------------------------------
+\aufg{4}{mittel}
+$M=\{a,b\}$, $N=\{1,2,3\}$.
+\begin{enumerate}[label=(\alph*)]
+  \item Gib $M\times N$ an und bestimme $|M\times N|$.
+  \item Gib $N\times M$ an. Gilt $M\times N = N\times M$?
+\end{enumerate}
+\karo{5.5cm}
+
+% ---------------------------------------------------------------
+\aufg{5}{mittel}
+Untersuche, ob $(\mathbb{Z},-)$ -- die ganzen Zahlen mit der Subtraktion -- eine Gruppe ist.
+Prüfe die Gruppenaxiome (Abgeschlossenheit, Assoziativität, neutrales Element, inverse Elemente).
+\karo{6cm}
+
+% ---------------------------------------------------------------
+\aufg{6}{mittel}
+$M=\{1,2,3,4\}$ und $R=\{(x,y)\in M^2 \mid x \text{ teilt } y \text{ ganzzahlig}\}$.
+\begin{enumerate}[label=(\alph*)]
+  \item Liste alle Paare von $R$ auf.
+  \item Prüfe: reflexiv, symmetrisch, antisymmetrisch, transitiv.
+  \item Um welche Art von Relation handelt es sich?
+\end{enumerate}
+\karo{6cm}
+
+% ---------------------------------------------------------------
+\aufg{7}{mittel}
+Auf $\mathbb{Z}$ sei $x\sim y :\Leftrightarrow x-y$ ist durch $3$ teilbar.
+\begin{enumerate}[label=(\alph*)]
+  \item Zeige, dass $\sim$ eine Äquivalenzrelation ist.
+  \item Gib alle Äquivalenzklassen an.
+\end{enumerate}
+\karo{6cm}
+
+% ---------------------------------------------------------------
+\aufg{8}{mittel}
+Untersuche jede Abbildung auf \emph{injektiv}, \emph{surjektiv}, \emph{bijektiv}
+(beachte Definitions- und Wertemenge!). Hier $\mathbb{N}=\{1,2,3,\dots\}$.
+\begin{enumerate}[label=(\alph*)]
+  \item $f:\mathbb{R}\to\mathbb{R}$, $f(x)=2x+1$.
+  \item $f:\mathbb{R}\to\mathbb{R}$, $f(x)=x^2$.
+  \item $f:\mathbb{R}\to\mathbb{R}_{\ge 0}$, $f(x)=x^2$.
+  \item $f:\mathbb{N}\to\mathbb{N}$, $f(x)=x+1$.
+\end{enumerate}
+\karo{6cm}
+
+% ---------------------------------------------------------------
+\aufg{9}{schwer}
+Beweise für beliebige Mengen $A,B,C$:
+\[ A\setminus(B\cup C) = (A\setminus B)\cap(A\setminus C). \]
+(Hinweis: Element-Beweis über die zugehörigen aussagenlogischen Bedingungen.)
+\karo{6.5cm}
+
+% ---------------------------------------------------------------
+\aufg{10}{mittel}
+Gegeben zwei Relationen (Tabellen):
+\[
+\textbf{Mitglieder}(\text{Nr},\text{Name}) = \{(1,\text{Anna}),(2,\text{Bernd}),(3,\text{Carla})\}
+\]
+\[
+\textbf{Sportart}(\text{Nr},\text{Sport}) = \{(1,\text{Fußball}),(1,\text{Turnen}),(2,\text{Turnen}),(3,\text{Tennis})\}
+\]
+Bestimme:
+\begin{enumerate}[label=(\alph*)]
+  \item $\sigma_{\text{Sport}=\text{Turnen}}(\textbf{Sportart})$
+  \item $\Pi_{\text{Name}}(\textbf{Mitglieder})$
+  \item $\Pi_{\text{Name},\text{Sport}}(\textbf{Mitglieder}\bowtie\textbf{Sportart})$ \quad(natural Join über Nr)
+\end{enumerate}
+\karo{6cm}
+
+% ---------------------------------------------------------------
+\aufg{11}{leicht}
+$M=\{1,2,3,4,5\}$. Bestimme den Wahrheitswert:
+\begin{enumerate}[label=(\alph*)]
+  \item $\forall x\in M:\; x\le 5$
+  \item $\exists x\in M:\; x>4$
+  \item $\forall x\in M:\; x \text{ ist gerade}$
+  \item $\exists x\in M:\; x^2=9$
+\end{enumerate}
+\karo{4.5cm}
+
+\end{document}

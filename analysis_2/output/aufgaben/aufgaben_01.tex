@@ -1,0 +1,131 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{array}
+\usepackage[a4paper,margin=2.2cm]{geometry}
+
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{accent}{HTML}{6CB6FF}
+\definecolor{leicht}{HTML}{7BD88F}
+\definecolor{mittel}{HTML}{E6C07B}
+\definecolor{schwer}{HTML}{E06C75}
+\pagecolor{bgdark}
+\color{fgtext}
+
+% Karo-Raster zum Ausfüllen (#1 = Höhe in cm)
+\newcommand{\karo}[1]{\par\noindent
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcol, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par}
+
+% Themenüberschrift
+\newcommand{\thema}[1]{\vspace{0.8em}\par\noindent{\color{accent}\Large\bfseries #1}\par
+  \vspace{0.2em}{\color{gridcol}\hrule height 1pt}\par\vspace{0.7em}}
+
+% Aufgabe mit Schwierigkeitsbadge: #1 Nummer, #2 Titel, #3 Farbe, #4 Label
+\newcommand{\aufgabe}[4]{\vspace{0.6em}\par\noindent
+  \textbf{\large Aufgabe #1}\quad #2 \hfill {\color{#3}\textbf{[#4]}}\par\smallskip}
+
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+\begin{center}
+  {\color{accent}\Huge\bfseries Analysis II}\\[0.3em]
+  {\Large Übungsaufgaben 01 — Vektoranalysis}\\[0.8em]
+\end{center}
+
+\noindent\textbf{Name:} \rule{6cm}{0.4pt} \hfill \textbf{Datum:} \rule{3.5cm}{0.4pt}
+\vspace{0.4em}
+{\color{gridcol}\hrule height 1pt}
+\vspace{0.3em}
+
+\small\textit{Bearbeite die Aufgaben in den vorgesehenen Karo-Feldern. Schwierigkeit:
+{\color{leicht}\textbf{leicht}}, {\color{mittel}\textbf{mittel}}, {\color{schwer}\textbf{schwer}}.}
+\normalsize
+\vspace{0.5em}
+
+%==================================================================
+\aufgabe{1}{Partielle Ableitungen}{leicht}{leicht}
+Berechne alle partiellen Ableitungen der folgenden Funktionen:
+\[
+  f(x,y,z) = x^2 y + y\,e^{z} + 3xz^2
+  \qquad\qquad
+  g(x,y) = x^3 + x y^2 + \ln(y)
+\]
+\karo{6cm}
+
+%==================================================================
+\aufgabe{2}{Totales Differenzial und Richtungsableitung}{mittel}{mittel}
+Gib das totale Differenzial von $f(x,y) = x^2 y$ an und berechne die Steigung an der
+Stelle $(2,1)$ in Richtung $x$, in Richtung $y$ sowie entlang der Winkelhalbierenden
+(Richtung $dx = dy$, normiert auf $1$).
+\karo{6.5cm}
+
+%==================================================================
+\aufgabe{3}{Gradient — Richtung und Betrag der höchsten Steigung}{mittel}{mittel}
+Berechne den Gradienten von $f(x,y) = x^2 y + y^2$ und gib Richtung und Betrag der
+höchsten Steigung an der Stelle $(1,2)$ an.
+\karo{6cm}
+
+%==================================================================
+\aufgabe{4}{Kritische Stellen}{mittel}{mittel}
+Bestimme für die folgenden Funktionen alle Stellen, an denen $\operatorname{grad}(f) = \vec{0}$ gilt:
+\[
+  f(x,y) = x^2 + y^2 - 4x + 2y
+  \qquad\qquad
+  g(x,y) = x^3 - 3x + y^2
+\]
+\karo{6.5cm}
+
+%==================================================================
+\aufgabe{5}{Divergenz und Quellenfreiheit}{leicht}{leicht}
+Berechne die Divergenz der folgenden Vektorfelder. An welchen Stellen sind sie quellenfrei?
+\[
+  f(x,y) = \begin{pmatrix} x^2 y \\ x - y^2 \end{pmatrix}
+  \qquad\qquad
+  g(x,y) = \begin{pmatrix} -x \\ y^2 \end{pmatrix}
+\]
+\karo{6cm}
+
+%==================================================================
+\aufgabe{6}{Rotation im $\mathbb{R}^2$ und Wirbelfreiheit}{mittel}{mittel}
+Berechne die Rotation von $f(x,y) = \begin{pmatrix} x^2 y \\ x - y^2 \end{pmatrix}$.
+An welchen Stellen ist das Feld wirbelfrei?
+\karo{5cm}
+
+%==================================================================
+\aufgabe{7}{Rotation im $\mathbb{R}^3$}{mittel}{mittel}
+Berechne die Rotation des Vektorfeldes
+\[
+  g(x,y,z) = \begin{pmatrix} x y z \\ x y \\ x \end{pmatrix}.
+\]
+\karo{6cm}
+
+%==================================================================
+\aufgabe{8}{Laplace-Operator}{mittel}{mittel}
+Berechne den Laplace-Operator $\Delta f = \operatorname{div}(\operatorname{grad}(f))$
+der Funktion $f(x,y) = x^2 y + y^3$.
+\karo{5.5cm}
+
+%==================================================================
+\aufgabe{9}{Beweis: $\operatorname{rot}(\operatorname{grad}(f)) = 0$}{schwer}{schwer}
+Zeige für eine zweimal stetig differenzierbare Funktion $f:\mathbb{R}^2 \to \mathbb{R}$,
+dass $\operatorname{rot}(\operatorname{grad}(f)) = 0$ gilt. Begründe mithilfe des Satzes von Schwarz.
+\karo{6cm}
+
+%==================================================================
+\aufgabe{10}{Beweis: $\operatorname{div}(\operatorname{rot}(f)) = 0$}{schwer}{schwer}
+Gegeben sei ein Vektorfeld der Form
+$f(x,y,z) = \big(f_1(x,y),\; f_2(x,y),\; 0\big)^{T}$,
+dessen erste beide Komponenten nur von $x$ und $y$ abhängen.
+Zeige, dass $\operatorname{div}(\operatorname{rot}(f)) = 0$ gilt.
+\karo{7cm}
+
+\end{document}

@@ -1,0 +1,149 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage[margin=2.3cm]{geometry}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{array}
+\usepackage[table]{xcolor}
+\usepackage{tikz}
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\pagecolor{bgdark}
+\arrayrulecolor{fgtext}
+\AtBeginDocument{\color{fgtext}}
+\renewcommand{\headrule}{\color{fgtext}\hrule height \headrulewidth}
+\newcommand{\karo}[1]{\par\noindent
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcol, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par}
+
+\newcommand{\diff}[1]{\hfill\normalfont\textbf{[#1]}}
+\newcommand{\aufg}[2]{\subsection*{Aufgabe #1 \diff{#2}}}
+\renewcommand{\arraystretch}{1.2}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{RADM -- Logik}
+\rhead{Übungsblatt 01}
+\cfoot{\thepage}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries Übungsaufgaben Logik}\\[2pt]
+  {\large Relationen, Algebra, Diskrete Mathematik -- Teil 2}\\[10pt]
+\end{center}
+
+\noindent
+\begin{tabular}{@{}p{0.6\textwidth}@{}p{0.4\textwidth}@{}}
+  \textbf{Name:} \hrulefill & \textbf{Datum:} \hrulefill
+\end{tabular}
+
+\vspace{4pt}
+\noindent\rule{\textwidth}{0.4pt}
+\vspace{4pt}
+
+\noindent\textit{Themen: Aussagen, Wahrheitstafeln, Implikation/Äquivalenz, Tautologie,
+logische Gesetze, Normalformen (DN/KN/kDN), Resolution, Prädikatenlogik.\\
+Schwierigkeit: \textbf{[leicht] / [mittel] / [schwer]}. Notation wie in der Vorlesung
+(Wahrheitswerte $w$/$f$).}
+
+\vspace{6pt}
+
+% ---------------------------------------------------------------
+\aufg{1}{leicht}
+Welche der folgenden Sätze sind \emph{Aussagen} im Sinne der Aussagenlogik?
+Begründe jeweils kurz.
+\begin{enumerate}[label=(\alph*)]
+  \item Wien ist die Hauptstadt von Österreich.
+  \item $x + 3 = 7$.
+  \item Wie spät ist es?
+  \item $5$ ist eine Primzahl.
+  \item Dieser Satz besteht aus fünf Wörtern.
+  \item Bitte schließe die Tür.
+\end{enumerate}
+\karo{4.5cm}
+
+% ---------------------------------------------------------------
+\aufg{2}{leicht}
+Erstelle die vollständige Wahrheitstafel für
+\[ F(a,b) = (a \wedge \neg b) \vee (\neg a \wedge b). \]
+Welche bekannte Verknüpfung beschreibt $F$?
+\karo{6cm}
+
+% ---------------------------------------------------------------
+\aufg{3}{mittel}
+Zeige mit Hilfe von Wahrheitstafeln:
+\begin{enumerate}[label=(\alph*)]
+  \item $a \to b$ ist äquivalent zur Kontraposition $\neg b \to \neg a$.
+  \item $a \to b$ ist \emph{nicht} äquivalent zur Umkehrung $b \to a$.
+\end{enumerate}
+\karo{7cm}
+
+% ---------------------------------------------------------------
+\aufg{4}{mittel}
+Klassifiziere jede Formel als \emph{Tautologie}, \emph{widerspruchsvoll}
+oder (nur) \emph{erfüllbar}. Begründe (z.\,B. mit Wahrheitstafel).
+\begin{enumerate}[label=(\alph*)]
+  \item $(a \to b) \leftrightarrow (\neg a \vee b)$
+  \item $a \wedge \neg a$
+  \item $(a \vee b) \wedge \neg a$
+  \item $\big((a \to b) \wedge a\big) \to b$
+\end{enumerate}
+\karo{6.5cm}
+
+% ---------------------------------------------------------------
+\aufg{5}{mittel}
+Vereinfache den folgenden Term mit den logischen Gesetzmäßigkeiten
+(gib bei jedem Schritt das verwendete Gesetz an):
+\[ F = \neg(\neg a \vee b) \vee (a \wedge b). \]
+\karo{6cm}
+
+% ---------------------------------------------------------------
+\aufg{6}{mittel}
+Gegeben sei $F(a,b,c) = (a \to b) \wedge c$.
+\begin{enumerate}[label=(\alph*)]
+  \item Gib eine disjunktive Normalform (DN) von $F$ an.
+  \item Gib eine konjunktive Normalform (KN) von $F$ an.
+\end{enumerate}
+\karo{6cm}
+
+% ---------------------------------------------------------------
+\aufg{7}{schwer}
+Bestimme die \emph{kanonische disjunktive Normalform} (kDN) von
+\[ F(a,b,c) = a \vee (b \wedge \neg c). \]
+\karo{8cm}
+
+% ---------------------------------------------------------------
+\aufg{8}{schwer}
+Zeige mittels \emph{Resolution}, dass die Schlussfolgerung
+\[ \{\, a \to b,\; b \to c,\; a \,\} \models c \]
+korrekt ist. Gib alle Resolutionsschritte an.
+\karo{7cm}
+
+% ---------------------------------------------------------------
+\aufg{9}{schwer}
+Ein vereinfachter ,,Mini-Kriminalfall``. Aus den Zeugenaussagen ergeben sich die
+Klauseln
+\[ \{\, \neg a \vee b,\;\; \neg b \vee c,\;\; a \vee d,\;\; \neg d \,\}. \]
+Zeige mittels Resolution, dass daraus $c$ folgt, d.\,h.
+$\{\neg a \vee b,\ \neg b \vee c,\ a \vee d,\ \neg d\} \models c$.
+\karo{7.5cm}
+
+% ---------------------------------------------------------------
+\aufg{10}{mittel}
+Formalisiere die folgenden Aussagen prädikatenlogisch mit Quantoren.
+Verwende die angegebenen Prädikate.
+\begin{enumerate}[label=(\alph*)]
+  \item ,,Alle Studierenden bestehen die Klausur.`` \quad ($S(x)$: $x$ ist Studierende(r); $B(x)$: $x$ besteht die Klausur)
+  \item ,,Es gibt eine natürliche Zahl, die gerade und prim ist.``
+  \item ,,Kein Mensch kann fliegen.`` \quad ($M(x)$: $x$ ist ein Mensch; $F(x)$: $x$ kann fliegen)
+  \item ,,Zu jeder reellen Zahl gibt es eine größere.``
+\end{enumerate}
+\karo{6cm}
+
+\end{document}
