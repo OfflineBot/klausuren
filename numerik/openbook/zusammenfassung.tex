@@ -1,0 +1,67 @@
+% ============================================================
+% Zusammenfassung: Numerical Methods (Prof. Dr.-Ing. Mark Schutera)
+% Erstellt auf Basis der Vorlesungsnotizen "Numerical Methods —
+% unfinished lecture notes" (Stand 2026-05-06, CC BY-NC-SA 4.0).
+% Sprache: Deutsch, Fachbegriffe englisch in Klammern.
+% Kennzeichnungen:
+%   [Ergänzung]  — Inhalt nicht im Original, dient dem Verständnis
+%   [Korrektur ggü. Original, S. n] — verifizierter Fehler des Skripts
+% ============================================================
+\documentclass[11pt,a4paper]{scrartcl}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage[most]{tcolorbox}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue!50!black,urlcolor=blue!50!black}
+
+% ---------- Boxen ----------
+\newtcolorbox[auto counter,number within=section]{defbox}[2][]{%
+  enhanced,breakable,colback=blue!4,colframe=blue!55!black,
+  title={Definition~\thetcbcounter: #2},fonttitle=\bfseries,#1}
+\newtcolorbox[auto counter,number within=section]{satzbox}[2][]{%
+  enhanced,breakable,colback=green!5,colframe=green!40!black,
+  title={Satz/Formel~\thetcbcounter: #2},fonttitle=\bfseries,#1}
+\newtcolorbox[auto counter,number within=section]{bspbox}[2][]{%
+  enhanced,breakable,colback=orange!6,colframe=orange!70!black,
+  title={Beispiel~\thetcbcounter: #2},fonttitle=\bfseries,#1}
+\newtcolorbox{merkbox}[1][]{%
+  enhanced,breakable,colback=red!4,colframe=red!60!black,
+  title={Typische Fehlerquellen \& Merksätze},fonttitle=\bfseries,#1}
+
+\title{Numerical Methods\\\large Zusammenfassung der Vorlesungsnotizen von Prof.\ Dr.-Ing.\ Mark Schutera}
+\author{Lernmaterial-Projekt\thanks{Basierend auf den \glqq unfinished lecture notes\grqq{} (CC BY-NC-SA 4.0), \texttt{github.com/Quillstacks/LectureMaterial}. Nachweislich fehlerhafte Stellen des Originals sind als [Korrektur ggü.\ Original] markiert, eigene didaktische Zusätze als [Ergänzung].}}
+\date{\today}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+\section*{Einleitung (S.~3--7)}
+\addcontentsline{toc}{section}{Einleitung (S.~3--7)}
+
+Dem Skript vorangestellt ist das Motto (S.~3):
+\begin{quote}
+\glqq An infinitely accurate approximation is no longer an approximation.\grqq\\
+\emph{--- probably someone smart}
+\end{quote}
+
+Die Introduction (S.~7) steckt den Rahmen ab: Gegenstand des Kurses sind die numerischen Methoden -- Verfahren, die mathematische Probleme näherungsweise lösen, wo exakte (analytische) Lösungen nicht verfügbar oder nicht praktikabel sind. Behandelt werden die fundamentalen Konzepte: Fehleranalyse (error analysis), Konditionierung von Problemen (problem conditioning), Stabilität (stability) sowie verschiedene numerische Techniken [Ergänzung: etwa zur Nullstellensuche, Optimierung und Integration -- so die Kapitel des Skripts]. Ziel ist, die Fähigkeiten zu vermitteln, zuverlässige und effiziente Algorithmen im Scientific Computing und in Ingenieursanwendungen zu implementieren (\glqq to equip you with the skills needed to implement reliable and efficient algorithms in scientific computing and engineering applications\grqq). Das Kursversprechen: Der Kurs vermittelt alles Nötige, um mit numerischen Methoden sicher umzugehen (\glqq everything you need to know to become proficient\grqq) und sie in Machine Learning, Data Science und Ingenieursanwendungen (machine learning, data science, and engineering contexts) gewinnbringend einzusetzen. [Ergänzung: In diesen Feldern beruht praktisch jede Berechnung -- vom Training neuronaler Netze bis zur Simulation -- auf numerischen Approximationen.]
+
+\input{sections/thema_1}
+\input{sections/thema_2}
+\input{sections/thema_3}
+\input{sections/thema_4}
+\input{sections/thema_5}
+\input{sections/thema_6}
+
+\end{document}

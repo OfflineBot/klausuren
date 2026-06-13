@@ -1,0 +1,755 @@
+% ============================================================
+% Thema 6: Numerical Integration (S. 57-70)
+% Include-Datei fuer zusammenfassung.tex
+% ============================================================
+\section{Thema 6: Numerische Integration (Numerical Integration) [S.~57--70]}
+
+\subsection{Motivation und Einordnung [S.~57]}
+
+Kapitelmotto: \glqq Smooth Operator.\grqq{} (Randnotiz [S.~57]: \glqq Melts all your
+memories and change into gold\grqq{} --- Songzitat-Anspielung auf Sade.) --- Im vorigen
+Kapitel ging es um globale Optimierungsstrategien zum Entkommen aus lokalen Minima.
+Man stelle sich nun vor, eine Funktion mit \emph{Tausenden winziger, scharfer lokaler
+Minima} zu optimieren --- wie eine Hochfrequenz-Version von Shekel's Foxholes. Ein
+Gradient-Descent-Algorithmus bliebe sofort im ersten mikroskopischen
+\glqq Schlagloch\grqq{} (pothole) stecken. Die Lösung fühlt sich vertraut an, blieb aber
+bisher wohl unbemerkt: \textbf{numerische Integration}, also die näherungsweise
+Berechnung des bestimmten Integrals (Original-Gl.~(42)):
+\[
+  I \;=\; \int_a^b f(x)\,dx \tag{42}
+\]
+Gute Gründe, numerische Integration zu verstehen: Sie erlaubt es, die Loss-Landschaft
+zu \emph{glätten} und Optimierungsmethoden robuster zu machen; und sie findet durch
+den \emph{Mittelungseffekt} (averaging effect, Fu{\ss}note~10 [S.~57]: Keskar et al.,
+\glqq On large-batch training for deep learning: Generalization gap and sharp
+minima\grqq, 2016) über eine Region tendenziell robustere Optima. Bezug Deep Learning:
+Stochastic Gradient Descent (SGD) ist der Arbeitspferd-Optimierungsalgorithmus ---
+eine \emph{Monte-Carlo-Methode} (Fu{\ss}noten~11, 12 [S.~57]: Bergstra/Bengio,
+\glqq Random search for hyper-parameter optimization\grqq, JMLR 2012; Gal/Ghahramani,
+\glqq Dropout as a Bayesian approximation\grqq, 2016), die den Gradienten der
+Loss-Funktion durch Mittelung über den Gradienten eines zufälligen Mini-Batches
+schätzt. Ohne numerische Integration wäre das Training auf gro{\ss}skaligen
+Datensätzen prohibitiv teuer.
+
+\subsection{Lernziele (Learning Objectives) [S.~60]}
+\begin{enumerate}[itemsep=1pt]
+  \item Mittelpunktsmethode (midpoint method), Trapezregel (trapezoid rule) und
+        Simpson-Regel (Simpson's rule) für numerische Integration herleiten und
+        anwenden.
+  \item Zusammengesetzte Regeln (composite rules) für verbesserte Genauigkeit
+        verstehen.
+  \item Lagrange-Interpolation kennen und wissen, wie sie mit Quadraturregeln
+        (quadrature rules) zusammenhängt.
+  \item Verstehen, wie der Fluch der Dimensionalität (curse of dimensionality)
+        Monte Carlo motiviert.
+  \item Monte-Carlo-Integration für hochdimensionale Probleme herleiten und anwenden.
+  \item Monte-Carlo-Integration anwenden und erkennen, dass Batch-Mittelung
+        (batch averaging) im maschinellen Lernen numerische Integration ist.
+\end{enumerate}
+
+\subsection{Hands On: Hochfrequente Landschaften und Glättung durch Integration [S.~58--60]}
+
+Ausgangslage [S.~58]: Wir wissen bereits, wie man eine kontinuierliche Funktion
+diskretisiert und wie man mit endlicher Präzision und Systemen mit spärlicher
+Information an diskreten Punkten umgeht. Die Shekel-Funktion als hochfrequente
+Funktion war eine Herausforderung für die globale Optimierung, machte die generellen
+Ansätze aber nicht obsolet --- wir diskretisieren und behandeln diese Funktionen wie
+gewohnt. Als Beispiel dient
+\[
+  f(x) \;=\; \sin(x) + \sin(2\pi x) \quad \text{auf } [-3, 1], \quad h = 0.2
+\]
+(Figures~29--31 [S.~58]: glatter $\sin(x)$, hochfrequent oszillierendes
+$\sin(x)+\sin(2\pi x)$ mit vielen lokalen Minima, sowie dieselbe Funktion als
+Balkendiagramm). Ein genauer Blick auf beliebige lokale Minima zeigt, wie die
+hochfrequente Loss-Landschaft den Optimierungsalgorithmus ins \emph{nächstgelegene}
+lokale Minimum stupst (nudges) --- z.\,B.\ bei $x = 0.6$ oder $x = -0.4$.
+
+\begin{bspbox}{Glättung durch Integration bei $x = -0.4$ (vollständige Rechnung), Gl.~(43) [S.~59]}
+Die direkte Auswertung liefert (Original-Gl.~(43)):
+\[
+  f(-0.4) \;=\; -0.97720 \tag{43}
+\]
+Statt diesen Wert direkt zu verwenden, approximieren wir ihn durch \emph{Integration}
+über ein Fenster der Breite $h = 0.2$ um $-0.4$, also über $[-0.5, -0.3]$
+(Trapez-Näherung mit den beiden Randpunkten). Die Randwerte sind
+\[
+  f(-0.5) = \sin(-0.5) + \sin(-\pi) \approx -0.47943, \qquad
+  f(-0.3) = \sin(-0.3) + \sin(-0.6\pi) \approx -1.24658,
+\]
+und damit
+\[
+  h \cdot f(-0.4) \;\approx\; \int_{-0.5}^{-0.3} f(x)\,dx
+  \;\approx\; \frac{h}{2}\bigl[f(-0.5) + f(-0.3)\bigr]
+  \;\approx\; 0.2 \cdot \frac{-0.47943 - 1.24658}{2} \;=\; -0.17260
+\]
+Division durch $h$ ergibt den geglätteten Funktionswert:
+\[
+  f(-0.4) \;\approx\; \frac{-0.47943 - 1.24658}{2} \;=\; -0.86300
+\]
+[Korrektur ggü.\ Original, S.~59: Das PDF setzt in diese Rechnung $f(-0.5) = -1.14973$
+und $f(-0.3) = -0.97720$ ein und erhält $h \cdot f(-0.4) \approx -0.11285$ bzw.\
+geglättet $-1.06347$. Diese Stützwerte sind jedoch falsch beschriftet: $-1.14973$ ist
+tatsächlich $f(-0.2)$ und $-0.97720$ ist $f(-0.4)$ selbst --- das Original hat offenbar
+das Fenster $[-0.4, -0.2]$ gemittelt. Für das beschriebene Fenster $[-0.5, -0.3]$
+gelten die obigen Werte. Erst mit ihnen ist die folgende Bewertung in sich stimmig:
+Der geglättete Wert $-0.86300$ liegt \emph{über} der Direktauswertung $-0.97720$; mit
+den PDF-Zahlen läge er fälschlich darunter ($-1.06347 < -0.97720$) und widerspräche
+der eigenen Aussage \glqq correction towards higher losses\grqq.]
+\textbf{Bewertung [S.~59]:} Mit Blick auf globale Optima ist das eine viel bessere
+Approximation als die direkte Auswertung bei $x = -0.4$ (die $-0.97720$ ergab). Die
+numerische Integration liefert eine \emph{Korrektur der lokalen Loss-Landschaft hin zu
+höheren Losses an diesem lokalen Minimum} ($-0.86300 > -0.97720$) --- das
+mikroskopische Schlagloch wird zugeschüttet. Figure~32 [S.~59] zeigt den
+Glättungseffekt auf der ganzen Kurve.
+
+\medskip
+\emph{Randnotiz [S.~62]:} Die Division des Integrals durch $h$ ergibt einen
+\emph{gewichteten Durchschnitt} der Funktionswerte --- eine bessere Approximation als
+nur Mittelpunkt oder Endpunkte, die implizit lokale Krümmung und Information über das
+Funktionsverhalten über das Intervall hinweg reflektiert.
+
+\medskip
+\textbf{Glättung gezielt einsetzen [S.~59--60]:} Die Glättung wird noch deutlicher,
+wenn man über grö{\ss}ere Intervalle integriert --- oder, im konstruierten Beispiel,
+$h$ so wählt, dass die Frequenz des Rauschsignals herausgemittelt wird: Figure~33
+[S.~60] nutzt Nachbar-Mittelung mit $h = 0.48$, sodass $h/2 = 0.24$ die
+$\sin(2\pi x)$-Komponente nahezu auslöscht --- übrig bleibt eine fast glatte,
+sinusähnliche Kurve. Randnotiz-Denkfrage [S.~59]: Was passiert, wenn wir über ein
+Intervall integrieren, das \emph{destruktive Interferenz} der zugrunde liegenden
+höherfrequenten Sinuskurve ergibt? (Original: \glqq destructive inference\grqq{} [sic,
+gemeint: interference].) An Wellenlängen denken!
+
+\medskip
+\textbf{Überleitung [S.~59]:} Die bisherige Intervall-Approximation ist ziemlich grob
+--- sie stützt sich auf nur zwei Punkte. Das motiviert die systematischen
+Quadraturregeln.
+\end{bspbox}
+
+\subsection{Quadraturregeln: Definitionen und Herleitungen [S.~61--64]}
+
+\begin{defbox}{Riemann-Summe und Mittelpunktsregel (midpoint rule) [S.~61]}
+\textbf{Riemann-Summen-Approximation:} Teile $[a,b]$ in $n$ Teilintervalle gleicher
+Breite $h$ und summiere die Beiträge jedes Intervalls:
+\[
+  \int_a^b f(x)\,dx \;\approx\; \sum_{i=0}^{n-1} \int_{x_i}^{x_{i+1}} f(x)\,dx
+  \;\approx\; \sum_{i=0}^{n-1} h \cdot f(m_i)
+\]
+mit $x_i = a + ih$ für $i = 0, 1, \ldots, n$ und Mittelpunkten $m_i$.
+
+\medskip
+\textbf{Mittelpunktsregel:} nutzt in diesen zusammengesetzten Intervallen den
+\emph{Mittelpunkt} --- den Durchschnitt der Endpunkte --- jedes Intervalls, was oft
+bessere Ergebnisse liefert als Links- oder Rechts-Endpunkt-Methoden. Intuitiv
+approximiert der Mittelpunkt die \emph{Krümmung} der Funktion auf dem Intervall
+besser. Randnotiz [S.~61]: Auf $[a,b]$ ist die Rechteckhöhe beim Mittelpunkt $f(m)$,
+beim linken Endpunkt $f(a)$, beim rechten $f(b)$.
+\end{defbox}
+
+\begin{satzbox}{Trivialste Integral-Approximation: ein Mittelpunkts-Rechteck [S.~61]}
+Für ein einzelnes Intervall ($n = 1$):
+\[
+  I = \int_a^b f(x)\,dx, \qquad
+  I \approx \frac{b-a}{n} \cdot f\!\left(\frac{a+b}{2}\right), \qquad
+  I \approx h \cdot f(m)
+\]
+\textbf{In eigenen Worten:} Das Integral wird durch ein einziges Rechteck ersetzt ---
+\glqq It is easy to see that the height of the rectangle is the value at the midpoint,
+and the width is $h$.\grqq{} (Höhe = Funktionswert am Mittelpunkt $m$, Breite = $h$;
+vgl.\ Figure~34 [S.~61] mit sich berührenden Rechtecken unter $\sin(x)$ auf
+$[-2,-1]$.) Randnotiz [S.~61]: Eine Verdopplung der Teilintervalle reduzierte den
+Fehler empirisch um $\sim 4\times$ --- ein Hinweis auf $O(h^2)$-Konvergenz.
+\end{satzbox}
+
+\begin{defbox}{Trapezregel (trapezoid rule), Gl.~(44) [S.~62]}
+Trapeze sind geometrisch ausdrucksstärker als Rechtecke und können \emph{lineare
+Änderungen} der Funktion zwischen den Endpunkten erfassen. Für ein Intervall mit
+$h = b - a$ (Original-Gl.~(44)):
+\[
+  \int_a^b f(x)\,dx \;\approx\; \frac{h}{2}\bigl[f(a) + f(b)\bigr] \tag{44}
+\]
+\textbf{[Ergänzung]} Das ist exakt die Fläche des Trapezes unter der
+Verbindungsgeraden (Sekante) zwischen $(a, f(a))$ und $(b, f(b))$: Mittelwert der
+beiden Höhen mal Breite (vgl.\ Figure~35 [S.~62]).
+\end{defbox}
+
+\begin{satzbox}{Zusammengesetzte Trapezregel (composite trapezoid rule) --- vollständige Herleitung [S.~62]}
+Trapezregel auf jedes Teilintervall anwenden und summieren ($x_i = a + ih$,
+$i = 0, 1, \ldots, n$):
+\[
+  \int_a^b f(x)\,dx \;\approx\; \sum_{i=0}^{n-1}\int_{x_i}^{x_{i+1}} f(x)\,dx
+  \;\approx\; \sum_{i=0}^{n-1} \frac{h}{2}\bigl[f(x_i) + f(x_{i+1})\bigr]
+\]
+Ausschreiben der Summe:
+\[
+  = \frac{h}{2}\bigl(f(x_0)+f(x_1)\bigr) + \frac{h}{2}\bigl(f(x_1)+f(x_2)\bigr)
+    + \cdots + \frac{h}{2}\bigl(f(x_{n-1})+f(x_n)\bigr)
+\]
+Zusammenfassen gleicher Terme:
+\[
+  = \frac{h}{2}\bigl[f(x_0) + 2f(x_1) + 2f(x_2) + \cdots + 2f(x_{n-1}) + f(x_n)\bigr]
+  = \frac{h}{2}\Bigl[f(a) + 2\sum_{i=1}^{n-1} f(x_i) + f(b)\Bigr]
+\]
+\textbf{Gewichtungs-Intuition (1--2--$\cdots$--2--1):} Die Funktionswerte an den
+Endpunkten $a$ und $b$ erhalten jeweils Gewicht~1, alle inneren Punkte Gewicht~2.
+Der Grund: Jeder \emph{innere} Punkt trägt zu \emph{zwei} benachbarten Trapezen bei
+(einmal als rechter, einmal als linker Endpunkt), die Endpunkte nur zu je
+\emph{einem} Trapez. Das Skript empfiehlt, die eingekreisten Endpunkte
+(\glqq circled enpoints\grqq{} [sic]) der Abbildung im Kopf durchzugehen und das
+doppelte Zählen der inneren Punkte nachzuvollziehen.
+\end{satzbox}
+
+\begin{defbox}{Simpson-Regel (Simpson's rule) [S.~63]}
+Die Simpson-Regel kann \emph{Krümmung} erfassen und liefert daher oft eine viel
+bessere Approximation als die Trapezregel. Der Idee des Geraden-Fits folgend, wird
+statt einer Geraden durch 2~Punkte ein \emph{quadratisches Polynom durch 3~Punkte}
+gelegt. Die Simpson-Regel ist \emph{exakt für quadratische Polynome} [Ergänzung: durch
+Symmetrie sogar exakt für alle Polynome bis Grad~3 --- vgl.\ die $S_2$-Korrekturbox
+weiter unten; das ist kein Widerspruch, sondern eine stärkere Aussage].
+\end{defbox}
+
+\begin{defbox}{Lagrange-Interpolation und Quadratur, Gl.~(45) [S.~63]}
+Die \textbf{Lagrange-Interpolation} konstruiert das eindeutige Polynom vom Grad
+$\le n$, das durch gegebene Stützstellen (nodes) $\{(x_j, y_j)\}_{j=0}^{n}$ verläuft.
+Die Basis-Polynome lauten (Original-Gl.~(45)):
+\[
+  L_j(x) \;=\; \prod_{\substack{m=0 \\ m\neq j}}^{n} \frac{x - x_m}{x_j - x_m} \tag{45}
+\]
+\textbf{[Ergänzung]} Jedes $L_j$ ist so gebaut, dass $L_j(x_j) = 1$ und
+$L_j(x_m) = 0$ für $m \ne j$ --- das Interpolationspolynom ist dann einfach
+$p(x) = \sum_j y_j\,L_j(x)$. Quadraturregeln entstehen, indem man statt $f$ dieses
+Polynom integriert; die Integrale der $L_j$ werden zu den \emph{Gewichten}.
+Randnotiz-Übung [S.~63]: Mit ein paar Punkten ausprobieren --- bei $x = 0$ starten
+und sehen, wie die Linearfaktoren wirken.
+\end{defbox}
+
+\begin{defbox}{Runge-Phänomen (Runge's phenomenon) [S.~64, Randnotiz]}
+Polynominterpolation \emph{hohen Grades} oszilliert durch Overfitting --- es entstehen
+gro{\ss}e Fehler an den \emph{Rändern} des Intervalls. \textbf{[Ergänzung]} Deshalb
+erhöht man in der Praxis nicht den Polynomgrad, sondern setzt zusammengesetzte Regeln
+niedrigen Grades ein (siehe \glqq Stop at Simpson\grqq{} unten); dieselbe Beobachtung
+steckt hinter der Teaser-Frage [S.~69], warum Hochordnungs-Quadratur instabil wird.
+\end{defbox}
+
+\begin{satzbox}{Herleitung der Simpson-Gewichte über Lagrange-Interpolation [S.~63]}
+Allgemeine Form eines quadratischen Polynoms durch die drei Punkte bei $a$, $m$, $b$
+(Lagrange-Form):
+\[
+  f(x) \;\approx\; f(a)\cdot\frac{(x-m)(x-b)}{(a-m)(a-b)}
+        + f(m)\cdot\frac{(x-a)(x-b)}{(m-a)(m-b)}
+        + f(b)\cdot\frac{(x-a)(x-m)}{(b-a)(b-m)}
+\]
+Wir definieren für diese Einzelintervall-Form durchgängig $h := b - a$ als
+\emph{Gesamtbreite} des Intervalls. Für ein symmetrisches Intervall wird die Fläche
+unter $f(x)$ am besten approximiert, indem die \emph{Endpunkte} das Gewicht
+$A = C = \frac{h}{6}$ und der \emph{Mittelpunkt} das Gewicht
+$B = \frac{4h}{6} = \frac{2h}{3}$ erhalten. Das Skript: Man kann dies verifizieren,
+indem man die Lagrange-Basispolynome über $[a,b]$ integriert und bestätigt, dass sie
+genau diese Gewichte liefern (die detaillierte Rechnung wird im Original ausgelassen).
+Im symmetrischen Intervall sind die Stützstellen äquidistant: $x_0 = a$,
+$x_1 = m = \frac{a+b}{2}$, $x_2 = b$, sodass $m - a = b - m = \frac{h}{2}$ gilt.
+Somit lautet die \textbf{Simpson-Regel für ein einfaches Intervall}:
+\[
+  \int_a^b f(x)\,dx \;\approx\; \frac{h}{6}f(a) + \frac{4h}{6}f(m) + \frac{h}{6}f(b)
+  \;=\; \frac{h}{6}\bigl[f(a) + 4f(m) + f(b)\bigr], \qquad h = b - a
+\]
+[Anm.\ zur Konvention: Das Skript schreibt an dieser Stelle \glqq$m - a = b - m =
+h$\grqq{} --- das ist die \emph{Composite-Konvention}, in der $h$ die Gitterweite
+(also die \emph{halbe} Breite eines Teilintervall-Paars) bezeichnet; in jener
+Konvention lautet die Paar-Formel $\frac{2h}{6}[\,\cdots] = \frac{h}{3}\bigl[f(a) +
+4f(m) + f(b)\bigr]$ (siehe Composite-Herleitung unten). Beides zugleich --- $m-a=h$
+\emph{und} Faktor $\frac{h}{6}$ --- kann nicht stimmen; wer die Gitterweite in die
+$\frac{h}{6}$-Form einsetzt, erhält den halben Wert. Hier gilt einheitlich
+$h = b - a$.]
+\textbf{In eigenen Worten / [Ergänzung]:} Die Gewichte $1:4:1$ (nach
+Ausklammern von $h/6$) spiegeln wider, dass der Mittelpunkt die Krümmungsinformation
+trägt und daher viermal so stark zählt wie jeder Randpunkt. Randnotiz-Denkfrage
+[S.~64]: Was passiert, wenn man eine \emph{lineare} Funktion mit einer Quadratik
+approximiert? (Vgl.\ Figure~36 [S.~63]: zwei Parabel-Segmente unter $\sin(x)$ auf
+$[-2,-1.5]$ und $[-1.5,-1]$.)
+\end{satzbox}
+
+\begin{satzbox}{Zusammengesetzte Simpson-Regel (composite Simpson's rule) --- vollständige Herleitung [S.~63--64]}
+Simpson-Regel auf jedes \emph{Paar} von Teilintervallen anwenden und summieren
+(Annahme: $n$ ist gerade, $x_i = a + ih$). Mit Gitterweite $h$ und Paarbreite $2h$
+beträgt der Faktor pro Paar $\frac{2h}{6} = \frac{h}{3}$:
+\[
+  \int_a^b f(x)\,dx \;\approx\; \sum_{i=0}^{n-1}\int_{x_i}^{x_{i+1}} f(x)\,dx
+  \;\approx\; \sum_{k=0}^{n/2-1} \frac{h}{3}\bigl[f(x_{2k}) + 4f(x_{2k+1}) + f(x_{2k+2})\bigr]
+\]
+Zusammenfassen (innere gerade Punkte sind Endpunkt zweier Paare und zählen doppelt,
+ungerade Punkte sind Paarmittelpunkte mit Gewicht~4):
+\[
+  = \frac{h}{3}\Bigl[f(x_0) + 4\sum_{k=0}^{n/2-1} f(x_{2k+1})
+    + 2\sum_{k=1}^{n/2-1} f(x_{2k}) + f(x_n)\Bigr]
+\]
+\[
+  = \frac{h}{3}\Bigl[f(x_0)
+    + 4\!\!\sum_{\substack{i=1 \\ i\ \text{ungerade}}}^{n-1}\!\! f(x_i)
+    + 2\!\!\sum_{\substack{i=2 \\ i\ \text{gerade}}}^{n-2}\!\! f(x_i)
+    + f(x_n)\Bigr]
+\]
+\emph{[Korrektur ggü.\ Original, S.~64: Das PDF druckt in den Zwischenzeilen der
+Herleitung pro Teilintervall-Paar den Faktor $\frac{h}{6}$; korrekt ist bei
+Gitterweite $h$ und Paarbreite $2h$ der Faktor $\frac{2h}{6} = \frac{h}{3}$ pro Paar.
+Die im PDF gedruckte Endformel
+$\frac{h}{3}\bigl[f(x_0) + 4\sum_{i\,\text{ungerade}} f(x_i)
++ 2\sum_{i\,\text{gerade}} f(x_i) + f(x_n)\bigr]$ ist korrekt; nur die Zwischenzeilen
+sind inkonsistent (Faktorwechsel $h/6 \to h/3$ ohne Begründung).]}
+
+\medskip
+\textbf{Gewichtsmuster:} 1--4--2--4--$\cdots$--4--1.
+
+\medskip
+\textbf{Practical advice: Stop at Simpson [S.~64].} Für höhere Genauigkeit
+zusammengesetzte Regeln mit \emph{mehr Teilintervallen} verwenden --- nicht den
+Polynomgrad erhöhen: Hohe Grade ($n \ge 8$) entwickeln \emph{negative Gewichte} und
+werden instabil (vgl.\ Runge-Phänomen).
+\end{satzbox}
+
+\begin{satzbox}{Fehlerordnungen der Quadraturmethoden (Tabelle~3) [S.~64]}
+Vergleich der Quadraturmethoden-Genauigkeiten: Höherwertige Methoden erreichen eine
+gegebene Genauigkeit mit weniger Funktionsauswertungen. $h$ ist die Schrittweite, $n$
+die Anzahl der Auswertungspunkte bei Gau{\ss}-Quadratur.
+
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+Methode (Method) & Fehler Einzelintervall & Akkumulierter Fehler \\
+ & (Single Interval Error) & (Accumulated Error) \\
+\midrule
+Left/Right & $O(h^2)$ & $O(h)$ \\
+Midpoint & $O(h^3)$ & $O(h^2)$ \\
+Trapezoid & $O(h^3)$ & $O(h^2)$ \\
+Simpson's 1/3 & $O(h^5)$ & $O(h^4)$ \\
+Allgemein (Gaussian Quadrature) & $O(h^{2n})$ & $O(h^{2n-1})$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{In eigenen Worten / [Ergänzung]:} Der Einzelintervall-Fehler ist der Fehler
+\emph{eines} Teilintervalls; beim Zusammensetzen von $n \sim 1/h$ Intervallen
+akkumulieren sich die Fehler, wodurch eine Ordnung verloren geht (z.\,B.\
+$O(h^3) \cdot \frac{1}{h} = O(h^2)$). Midpoint und Trapezoid sind beide
+\emph{second-order accurate} ($O(h^2)$ akkumuliert) --- das erklärt, warum sie in den
+Beispielen ähnliche Fehler liefern können. Simpson gewinnt durch die
+Krümmungserfassung gleich zwei Ordnungen.
+\end{satzbox}
+
+\subsection{Monte-Carlo-Integration und der Fluch der Dimensionalität [S.~64--65]}
+
+\begin{defbox}{Fluch der Dimensionalität (curse of dimensionality) [S.~64]}
+Für $d$-dimensionale Integrale benötigt deterministische Quadratur mit $N$ Punkten
+pro Dimension insgesamt $N^d$ Punkte. \glqq There is no way to do this, let alone
+iterate on it during iterative optimization.\grqq{} --- Das ist nicht machbar, erst
+recht nicht wiederholt innerhalb einer iterativen Optimierung. Randnotiz [S.~64]
+(drastisches Beispiel): Ein neuronales Netz mit $d = 10^6$ (1~Million) Parametern
+bräuchte $N^{10^6}$ Gitterpunkte --- schon $N = 2$ ergibt $2^{10^6}$, eine Zahl mit
+300\,000 Stellen.
+\end{defbox}
+
+\begin{defbox}{Monte Carlo, i.i.d.-Samples und die Domäne $\Omega$ [S.~57, 64--65, Randnotizen]}
+\textbf{Monte Carlo} ist eine Strategie, die Probleme im Wesentlichen durch
+\emph{zufälliges Sampling} löst (\glqq Embrace the beauty\grqq{} [S.~57]).
+\textbf{i.i.d.}\ (independent and identically distributed) bedeutet: Alle
+$\mathbf{X}_i$ sind unkorreliert und stammen aus derselben zugrunde liegenden
+Verteilung. $\Omega$ ist die \emph{Integrationsdomäne}, $|\Omega|$ ihre Länge bzw.\
+ihr Volumen: Für ein 1D-Integral über $[a,b]$ ist $|\Omega| = b - a$; in höheren
+Dimensionen das Produkt der Längen jeder Dimension.
+\end{defbox}
+
+\begin{satzbox}{Integral als Erwartungswert und Monte-Carlo-Schätzer, Gl.~(46)--(47) [S.~64--65]}
+\textbf{Random Sampling} erlaubt es, das Integral \emph{ohne volles Gitter} zu
+schätzen. Grundlage ist die Identität (Original-Gl.~(46)):
+\[
+  I \;=\; \int_\Omega f(\mathbf{x})\,d\mathbf{x}
+    \;=\; |\Omega| \cdot \mathbb{E}_{\mathbf{X}\sim\mathrm{Uniform}(\Omega)}\bigl[f(\mathbf{X})\bigr] \tag{46}
+\]
+\textbf{In eigenen Worten:} Das bestimmte Integral ist gleich dem Domänenvolumen mal
+dem \emph{Durchschnittswert} von $f$ unter gleichverteiltem Ziehen aus $\Omega$.
+Praktisch motiviert das einen Sampling-Schätzer: Punkte gleichverteilt in $\Omega$
+ziehen, $f$ dort auswerten, die Resultate mitteln und mit $|\Omega|$ multiplizieren.
+Der \textbf{Monte-Carlo-Schätzer} (im Beispiel: uniformes Sampling auf $[-2,-1]$,
+$X \sim \mathrm{Uniform}(-2,-1)$) lautet (Original-Gl.~(47)):
+\[
+  \hat{I}_N \;=\; \frac{|\Omega|}{N}\sum_{i=1}^{N} f(\mathbf{X}_i), \qquad
+  \mathbf{X}_i \overset{\text{i.i.d.}}{\sim} \mathrm{Uniform}(\Omega) \tag{47}
+\]
+[Anm.: Das PDF druckt links \glqq$I =$\grqq; gemeint ist der Schätzer $\hat{I}_N$ --- das exakte Integral $I$ ist Gl.~(46), und Gl.~(48) des Skripts verwendet selbst $\hat{I}_N$.]
+\emph{Randnotiz [S.~65]:} Die Mittelpunktsregel ist ein \emph{Spezialfall} von Monte
+Carlo mit $N = 1$ Sample am Mittelpunkt. --- Figure~37 [S.~65] illustriert das
+Monte-Carlo-Sampling auf dem Integrationsintervall. [Anm.: Die Bildunterschrift von
+Figure~37 ist im Original offenbar ein Copy-Paste-Fehler --- sie wiederholt wortgleich
+die Caption von Figure~34 zur Mittelpunktsregel (\glqq midpoint rule integrals \ldots\
+bars now touch\grqq), obwohl die Abbildung im Monte-Carlo-Kontext steht.]
+\end{satzbox}
+
+\begin{satzbox}{Eigenschaften des Monte-Carlo-Schätzers: Bias, Varianz, Standardfehler, Gl.~(48)--(51) [S.~65, 68]}
+\textbf{Erwartungstreue (unbiasedness), Gl.~(48):} Weil der Erwartungswert
+\emph{linear} ist, ist der Schätzer erwartungstreu (unbiased) --- sein Erwartungswert
+ist gleich dem wahren Integral:
+\[
+  \mathbb{E}\bigl[\hat{I}_N\bigr] \;=\; I \tag{48}
+\]
+[Anm.\ zur Formulierung des Skripts (S.~65): Das Original schreibt \glqq unbiased
+\ldots\ for the number of $N \to \infty$\grqq{} --- das ist begrifflich unsauber.
+Erwartungstreue $\mathbb{E}[\hat{I}_N] = I$ gilt für \emph{jedes endliche} $N$ (schon
+für $N = 1$); eine $N \to \infty$-Aussage ist erst die \emph{Konsistenz}
+$\hat{I}_N \to I$ (der Schätzer konvergiert gegen den wahren Wert, vgl.\ die
+$O(1/\sqrt{N})$-Konvergenz unten). Das Skript vermengt hier beide Begriffe.]
+\textbf{[Ergänzung]} \glqq Unbiased\grqq{} hei{\ss}t: Im Mittel über viele
+Wiederholungen trifft der Schätzer den wahren Wert --- er streut nur darum, und zwar
+bei jedem festen Stichprobenumfang $N$.
+
+\medskip
+\textbf{Varianz, Gl.~(49):} Die Varianz --- ein Ma{\ss} für die Streuung des Schätzers
+um seinen Mittelwert bzw.\ dafür, wie gro{\ss} der Fehler des Schätzers werden kann
+--- folgt aus der \emph{Unabhängigkeit} der Samples:
+\[
+  \mathrm{Var}\bigl(\hat{I}_N\bigr) \;=\; \frac{|\Omega|^2}{N}\,\mathrm{Var}\bigl(f(\mathbf{X})\bigr)
+  \;=\; \frac{|\Omega|^2 \sigma_f^2}{N} \tag{49}
+\]
+mit $\sigma_f^2 = \mathrm{Var}(f(\mathbf{X}))$.
+
+\medskip
+\textbf{Standardfehler (standard error), Gl.~(50):}
+\[
+  \mathrm{SE}\bigl(\hat{I}_N\bigr) \;=\; \frac{|\Omega|\,\sigma_f}{\sqrt{N}} \tag{50}
+\]
+\textbf{Dimensionsunabhängig:} Für gro{\ss}es $N$ konvergiert der Sampling-Fehler mit
+$O(1/\sqrt{N})$ --- das macht Monte Carlo in hohen Dimensionen attraktiv.
+Quadraturregeln sind in ihren \emph{Konvergenzraten} überlegen, aber der
+Konvergenzaufwand explodiert mit der Dimension, da $N^d$ Punkte nötig sind, um
+dieselbe Genauigkeit zu halten. Der zentrale Trade-off dieses Kapitels.
+
+\medskip
+\textbf{Convergence in SGD [S.~65]:} Mini-Batch-Gradienten in SGD \emph{sind}
+Monte-Carlo-Schätzungen des wahren Gradienten, basierend auf den in einen Batch
+gezogenen Samples. Eine Erhöhung der Batch-Grö{\ss}e $b$ reduziert die Varianz grob um
+$1/b$ --- direkt analog zur $1/N$-Varianz-Skalierung oben. Diese Verbindung erklärt,
+warum die Batch-Grö{\ss}e den Noise--Varianz-Trade-off im Training kontrolliert
+(Figure~38 [S.~65]: kleinere Batches $\Rightarrow$ grö{\ss}ere Varianz im
+Gradienten-Schätzer, sichtbar als breiteres Band der Trainings-Loss-Kurve; Quelle:
+Stanford CS231n). Zusatznotiz: Als positiver Nebeneffekt sind die Rechenkosten pro
+Update-Schritt $n/b$-mal billiger --- für $n = 10^6$ und $b = 100$ macht SGD
+10\,000 Iterationen mit dem Rechenaufwand, den GD für \emph{eine} braucht.
+
+\medskip
+\textbf{Erwartungstreuer Stichprobenvarianz-Schätzer, Gl.~(51) [S.~68]:} In der
+Praxis ist $\sigma_f^2$ unbekannt und wird aus den Samples geschätzt:
+\[
+  \mathrm{Var}\bigl(f(\mathbf{X})\bigr) \;\approx\; \frac{1}{N-1}\sum_{i=1}^{N}\bigl(f(X_i) - \bar{f}\bigr)^2 \tag{51}
+\]
+\textbf{[Ergänzung]} Der Nenner $N-1$ (statt $N$) korrigiert die Verzerrung, die
+entsteht, weil das Stichprobenmittel $\bar{f}$ selbst aus denselben Daten geschätzt
+wird (Bessel-Korrektur).
+\end{satzbox}
+
+\subsection{Durchgerechnete Beispiele: $\int_{-2}^{-1}\sin(x)\,dx$ mit allen Methoden [S.~66--68]}
+
+\begin{bspbox}{Referenzwert: das exakte Integral [S.~66]}
+Für die Fehlerquantifizierung zuerst der exakte Wert (Stammfunktion von $\sin$ ist
+$-\cos$):
+\[
+  \tilde{I} \;=\; \int_{-2}^{-1} \sin(x)\,dx \;=\; \bigl[-\cos(x)\bigr]_{-2}^{-1}
+  \;=\; -\cos(-1) + \cos(-2) \;\approx\; -0.9564491424
+\]
+\textbf{[Ergänzung]} Zahlenwerte: $\cos(-1) = \cos(1) \approx 0.5403023$,
+$\cos(-2) = \cos(2) \approx -0.4161468$; also
+$\tilde{I} \approx -0.5403023 - 0.4161468 = -0.9564491$.
+\end{bspbox}
+
+\begin{bspbox}{Mittelpunktsregel von Hand: $n = 1$ und $n = 2$ [S.~66]}
+\textbf{$n = 1$ Intervall:} Mittelpunkt $m = \frac{-2 + (-1)}{2} = -1.5$:
+\[
+  \hat{I} \;\approx\; (b - a)\cdot f(m) \;=\; 1 \cdot \sin(-1.5) \;\approx\; -0.99749
+\]
+Fehler: $|\tilde{I} - \hat{I}| \approx 0.04104$ --- die kleine Differenz zwischen
+Mittelpunkt-Schätzung und wahrem Wert.
+
+\medskip
+\textbf{$n = 2$ Intervalle:} Zwei Mittelpunkte bei $-1.75$ und $-1.25$, $h = 0.5$:
+\[
+  \hat{I} \;\approx\; h\cdot\bigl[f(-1.75) + f(-1.25)\bigr]
+  \;=\; 0.5\cdot\bigl[\sin(-1.75) + \sin(-1.25)\bigr]
+  \;=\; 0.5 \cdot (-1.932971) \;\approx\; -0.966485
+\]
+Fehler: $|\tilde{I} - \hat{I}| \approx 0.010036$ --- deutlich kleiner als bei $n = 1$
+($0.04104$); das illustriert, wie Composites bzw.\ eine grö{\ss}ere Intervallzahl die
+Approximation verbessern.
+
+\emph{[Korrektur ggü.\ Original, S.~66: Das PDF druckt \glqq$\hat{I} \approx
+-0.927228$\grqq{} und Fehler \glqq$\approx 0.02922$\grqq; korrekt ist
+$\hat{I} = 0.5\cdot[\sin(-1.75) + \sin(-1.25)] = 0.5\cdot(-1.932971) \approx
+-0.966485$ mit Fehler $|\tilde{I} - \hat{I}| \approx 0.010036$
+($\sin(-1.75) \approx -0.983986$, $\sin(-1.25) \approx -0.948985$). Die qualitative
+Aussage \glqq Fehler sinkt mit $n$\grqq{} bleibt richtig.]}
+
+\medskip
+\emph{Randnotiz [S.~66]:} Weiter ausprobieren lohnt sich --- die Approximation an den
+\emph{Endpunkten} des Intervalls berechnen und den Fehler vergleichen.
+\end{bspbox}
+
+\begin{bspbox}{Trapezregel von Hand: $T_2$ [S.~66--67]}
+Trapezregel mit $n = 2$ Intervallen; Stützstellen $-2$, $-1.5$, $-1$, $h = 0.5$
+(Gewichte 1--2--1):
+\[
+  T_2 \;=\; \frac{h}{2}\bigl[f(-2) + 2f(-1.5) + f(-1)\bigr]
+  \;=\; 0.25\cdot\bigl[-0.90930 + 2\,(-0.99749) + (-0.84147)\bigr]
+  \;=\; 0.25\cdot(-3.74575) \;\approx\; -0.93644
+\]
+Fehler: $|\tilde{I} - T_2| \approx 0.02001$.
+
+\emph{[Korrektur ggü.\ Original, S.~67: Das PDF druckt $T_2 \approx -0.927228$ ---
+das ist zufällig genau der gedruckte Midpoint-$n{=}2$-/Monte-Carlo-Wert (offenbar
+ein Kopierfehler). Die im PDF selbst gedruckte Formel ergibt
+$0.25\cdot(-3.74575) \approx -0.93644$ mit Fehler $\approx 0.02001$.]}
+
+\emph{[Anmerkung: Der Original-Kommentar \glqq The error is the same as the midpoint
+rule with $n = 2$ intervals\grqq{} ist damit hinfällig --- er beruht auf zwei
+fehlerhaften Werten (dem falschen Trapez-Wert $-0.927228$ und dem laut Erratum
+ebenfalls falschen Midpoint-Wert, korrekt $-0.966485$ mit Fehler $0.010036$, siehe
+oben). Tatsächlich gilt hier $0.02001 \neq 0.010036$. Die generelle Aussage, dass
+beide Methoden zweiter Ordnung genau sind (second-order accurate, vgl.\ Tabelle~3)
+und daher Fehler ähnlicher Grö{\ss}enordnung liefern, bleibt korrekt.]}
+\end{bspbox}
+
+\begin{bspbox}{Simpson-Regel von Hand: $S_2$ [S.~67]}
+Simpson-Regel mit $n = 2$ Intervallen; Stützstellen $-2$, $-1.5$, $-1$, $h = 0.5$
+(Gewichte 1--4--1, Composite-Faktor $h/3$):
+\[
+  S_2 \;=\; \frac{h}{3}\bigl[f(-2) + 4f(-1.5) + f(-1)\bigr]
+  \;=\; \frac{0.5}{3}\cdot\bigl[-0.90930 + 4\,(-0.99749) + (-0.84147)\bigr]
+  \;=\; \tfrac{1}{6}\cdot(-5.74073) \;\approx\; -0.956788
+\]
+Fehler: $|\tilde{I} - S_2| \approx 3.4\cdot 10^{-4}$ --- sehr klein, aber nicht
+null; um etwa zwei Grö{\ss}enordnungen besser als Midpoint/Trapez und konsistent
+mit der $O(h^5)$-Ordnung aus Tabelle~3.
+
+\emph{[Korrektur ggü.\ Original, S.~67: Das PDF druckt $S_2 \approx -0.9564491424$
+(also exakt den wahren Integralwert $\tilde{I}$) mit Fehler $\approx 0$ und
+kommentiert \glqq which is essentially zero, illustrating that Simpson's rule is
+exact for this particular integral\grqq. Die im PDF selbst gedruckte Formel ergibt
+jedoch $\frac{1}{6}\cdot(-5.74073) \approx -0.956788$ mit Fehler
+$\approx 3.4\cdot 10^{-4}$. Simpson ist exakt für Polynome bis Grad~3; $\sin(x)$
+ist kein solches Polynom, daher bleibt ein kleiner, aber nicht verschwindender
+Fehler. Die qualitative Kernaussage --- Simpson ist deutlich genauer als
+Midpoint/Trapez --- bleibt richtig.]}
+
+\medskip
+\emph{Randnotiz [S.~67]:} Mit mehr Intervallen probieren --- sehen, wie der Fehler
+sinkt, und prüfen, ob man die Composite-Varianten von Simpson- und Trapezregel
+beherrscht.
+\end{bspbox}
+
+\begin{bspbox}{Monte Carlo von Hand: $N = 4$ Samples inkl.\ Varianz und Standardfehler [S.~67--68]}
+Monte-Carlo-Schätzung für $\int_{-2}^{-1}\sin(x)\,dx$ mit $N = 4$ Zufallssamples ---
+ein ähnlicher Rechenaufwand wie bei der Trapezmethode. Angenommene Zufallssamples
+(vollständig):
+\begin{align*}
+  X_1 &= -1.95, & f(X_1) &= \sin(-1.95) \approx -0.92895,\\
+  X_2 &= -1.55, & f(X_2) &= \sin(-1.55) \approx -0.99978,\\
+  X_3 &= -1.15, & f(X_3) &= \sin(-1.15) \approx -0.91276,\\
+  X_4 &= -1.05, & f(X_4) &= \sin(-1.05) \approx -0.86742.
+\end{align*}
+[Anm.: $\sin(-1.95) = -0.9289597$, korrekt gerundet $-0.92896$; das PDF druckt $-0.92895$ (letzte Stelle). Alle Folgewerte sind konsistent mit dem gedruckten Wert gerechnet und auf der angegebenen Genauigkeit unverändert.]
+Monte-Carlo-Schätzung (Gl.~(47) mit $|\Omega| = b - a = 1$):
+\[
+  \hat{I} \;=\; (b-a)\cdot\frac{1}{N}\sum_{i=1}^N f(X_i)
+  \;=\; 1\cdot\frac{1}{4}\bigl(-0.92895 - 0.99978 - 0.91276 - 0.86742\bigr)
+  \;\approx\; -0.927228
+\]
+[S.~68] Fehler: $|\tilde{I} - \hat{I}| \approx 0.02922$, laut Skript \glqq the same
+as the midpoint method\grqq.
+
+\emph{[Anmerkung --- Folgeänderung zu Erratum S.~67/68: Der Vergleich \glqq the
+same as the midpoint method\grqq{} beruht auf dem im PDF gedruckten, laut Errata
+fehlerhaften Midpoint-$n{=}2$-Wert $-0.927228$/Fehler $0.02922$; mit dem
+korrigierten Midpoint-Wert ($-0.966485$, Fehler $0.010036$) gilt er nicht mehr.
+Der Monte-Carlo-Wert $-0.927228$ und sein Fehler $0.02922$ selbst sind für diese
+Samples arithmetisch korrekt.]}
+
+\medskip
+\textbf{Alternative Fehlerschätzung über den Standardfehler (vollständige Rechnung)
+[S.~68]:} Mit Stichprobenmittel $\bar{f} \approx -0.927228$ lauten die vier
+Abweichungsquadrate $\bigl(f(X_i) - \bar{f}\bigr)^2$:
+\begin{align*}
+  \bigl(-0.92895 + 0.927228\bigr)^2 &= (-0.001722)^2 \approx 0.0000030,\\
+  \bigl(-0.99978 + 0.927228\bigr)^2 &= (-0.072552)^2 \approx 0.0052638,\\
+  \bigl(-0.91276 + 0.927228\bigr)^2 &= (0.014468)^2 \approx 0.0002093,\\
+  \bigl(-0.86742 + 0.927228\bigr)^2 &= (0.059808)^2 \approx 0.0035770.
+\end{align*}
+Summe $\approx 0.009053$; der erwartungstreue Stichprobenvarianz-Schätzer
+(Gl.~(51), Nenner $N - 1 = 3$) ergibt damit:
+\[
+  \sigma_f^2 = \mathrm{Var}\bigl(f(\mathbf{X})\bigr)
+  \approx \frac{0.009053}{3}
+  \approx 0.003018,
+  \qquad \sigma_f \approx 0.05493
+\]
+\[
+  \mathrm{SE}\bigl(\hat{I}_N\bigr) \;\approx\; \frac{|\Omega|\,\sigma_f}{\sqrt{N}}
+  \;=\; \frac{1 \cdot 0.05493}{2} \;\approx\; 0.02747
+\]
+[Korrektur ggü.\ Original, S.~68: Das PDF druckt $\sigma_f^2 \approx 0.003036$,
+$\sigma_f \approx 0.05512$ und $\mathrm{SE} \approx 0.02756$ --- diese Werte sind aus
+den angegebenen vier Samples nicht reproduzierbar (vermutlich aus gerundeten
+Zwischenwerten entstanden, Abweichung $\sim 0.6\,\%$). Die obige Rechnung zeigt die
+korrekten Werte $0.003018 / 0.05493 / 0.02747$.]
+\textbf{[Ergänzung]} Der Standardfehler $0.02747$ passt gut zum tatsächlichen Fehler
+$0.02922$ --- die Fehlerschätzung aus den Samples selbst (ohne Kenntnis des wahren
+Werts!) ist hier also realistisch.
+
+\medskip
+\textbf{Folgefrage [S.~68]:} Was passiert, wenn wir $N$ auf 16 erhöhen? Der Fehler
+sollte um den Faktor~2 sinken, da der Standardfehler mit $1/\sqrt{N}$ skaliert
+($\sqrt{16}/\sqrt{4} = 2$).
+\end{bspbox}
+
+\subsection{Wissenswertes aus Randnotizen und Fu{\ss}noten}
+\begin{itemize}[itemsep=2pt]
+  \item \textbf{Verdopplung der Teilintervalle [S.~61]:} reduzierte den Fehler
+        empirisch um $\sim 4\times$ --- Hinweis auf $O(h^2)$-Konvergenz.
+  \item \textbf{Division durch $h$ [S.~62]:} macht aus dem Integral einen gewichteten
+        Durchschnitt der Funktionswerte --- implizit wird lokale Krümmung
+        reflektiert.
+  \item \textbf{Lagrange-Übung [S.~63]:} mit Punkten ausprobieren, bei $x = 0$
+        starten und die Wirkung der Linearfaktoren beobachten.
+  \item \textbf{Denkfrage [S.~64]:} Was passiert, wenn man eine lineare Funktion mit
+        einer Quadratik approximiert?
+  \item \textbf{Runge-Phänomen [S.~64]:} Interpolation hohen Grades oszilliert
+        (Overfitting), gro{\ss}e Fehler an den Intervallrändern --- darum
+        \glqq Stop at Simpson\grqq{} und Composite-Regeln.
+  \item \textbf{$2^{10^6}$-Beispiel [S.~64]:} Netz mit $10^6$ Parametern: Gitter mit
+        $N = 2$ Punkten pro Dimension ergibt bereits $2^{10^6}$ Punkte (300\,000
+        Stellen) --- Curse of Dimensionality in Reinform.
+  \item \textbf{Mittelpunktsregel als Monte Carlo [S.~65]:} Spezialfall mit $N = 1$
+        Sample am Mittelpunkt.
+  \item \textbf{SGD als Monte Carlo / Batch-Size-Varianz [S.~65]:} Mini-Batch-
+        Gradienten sind MC-Schätzer; Varianz $\sim 1/b$; Kosten pro Update
+        $n/b$-mal billiger ($n = 10^6$, $b = 100$: 10\,000 SGD-Iterationen für den
+        Preis einer GD-Iteration); kleinere Batches $\Rightarrow$ breiteres
+        Loss-Band (Figure~38, Stanford CS231n).
+  \item \textbf{Was-wäre-wenn-Frage [S.~59]:} Integration über ein Intervall mit
+        destruktiver Interferenz [sic: \glqq inference\grqq] der höherfrequenten
+        Sinuskomponente --- an Wellenlängen denken (vgl.\ $h = 0.48$-Beispiel).
+  \item \textbf{Code [S.~68]:}
+        \url{https://github.com/Quillstacks/lecturecode_numericalmethods.git}
+  \item \textbf{Teaser [S.~69--70]:} Bisher bezog sich Stabilität auf die
+        Sensitivität der numerischen Lösung gegenüber kleinen Eingabeänderungen; man
+        kann aber auch über die Stabilität der \emph{Methode selbst} sprechen ---
+        beim Approximieren verschiedener Funktionstypen. Randnotiz-Denkfrage [S.~69]:
+        Warum werden Hochordnungs-Quadraturmethoden instabil, wenn sie Polynome
+        \emph{niedrigen} Grades approximieren? (Bezug: Runge-Phänomen / negative
+        Gewichte.) [Anm.: Das angekündigte Folgekapitel ist im PDF nicht enthalten
+        --- \glqq unfinished lecture notes\grqq; die Materialien decken Kap.~1--6 ab.]
+\end{itemize}
+
+\subsection{Übungsaufgaben und Selbstreflexionsfragen des Skripts}
+
+\textbf{Übungsaufgaben [S.~59--68] (nur Fragen):}
+\begin{itemize}[itemsep=2pt]
+  \item Approximation an den \emph{Endpunkten} des Intervalls berechnen und den
+        Fehler mit der Mittelpunktsregel vergleichen [S.~66].
+  \item Mit mehr Intervallen rechnen: Wie sinkt der Fehler? Composite-Varianten von
+        Simpson- und Trapezregel sicher beherrschen [S.~67].
+  \item Lagrange-Basis: Mit einigen Punkten durchspielen, Start bei $x = 0$ ---
+        wie wirken die Linearfaktoren? [S.~63]
+  \item Was-wäre-wenn: Integration über ein Intervall, das destruktive Interferenz
+        der zugrunde liegenden höherfrequenten Sinuskurve ergibt --- was passiert?
+        (An Wellenlängen denken.) [S.~59]
+  \item Was passiert, wenn man eine lineare Funktion mit einer Quadratik
+        approximiert? [S.~64]
+  \item Folgefrage zur MC-Fehlerschätzung [S.~68]: $N$ auf 16 erhöhen --- der Fehler
+        sollte um Faktor~2 sinken ($1/\sqrt{N}$-Skalierung). Kurz erläutern, wie der
+        Fehler des Monte-Carlo-Schätzers dimensionsunabhängig (dimension independant
+        [sic]) ist.
+  \item \emph{Enter higher dimensions on your machine} [S.~68]: Monte-Carlo-
+        Integration für ein $d$-dimensionales Integral implementieren (z.\,B.\
+        multivariate Gau{\ss}-Funktion über einen Hyperwürfel); $d$ langsam erhöhen
+        und das Fehlerverhalten verschiedener Methoden beobachten; beobachten, wie
+        gitterbasierte Quadratur mit wachsendem $d$ rechnerisch infeasible wird;
+        optional ähnliche Effekte in der Optimierung untersuchen, indem
+        Gradientenabstieg und Mini-Batch-SGD auf einer hochdimensionalen Funktion
+        implementiert werden --- nur die Rechenzeiten beobachten.
+\end{itemize}
+
+\textbf{Selbstreflexionsfragen [S.~69] (alle neun):}
+\begin{itemize}[itemsep=2pt]
+  \item Wie vergleichen sich die Fehler von Mittelpunkts-, Trapez-, Simpson-Regel
+        und Monte Carlo?
+  \item Warum hat die Mittelpunktsregel eine bessere Genauigkeit als die Links- oder
+        Rechts-Endpunkt-Regeln?
+  \item Wie verbessern Composite-Methoden die Genauigkeit, und was ist der Trade-off?
+        [Originalfrage grammatisch fehlerhaft: \glqq How does composite methods
+        \ldots\grqq{} [sic]]
+  \item Warum scheitern deterministische Quadraturmethoden in hohen Dimensionen?
+  \item Inwiefern ist die Mittelpunktsregel ein Spezialfall der
+        Monte-Carlo-Schätzung?
+  \item Was ist die Intuition dahinter, dass Monte Carlo in hohen Dimensionen nicht
+        explodiert?
+  \item Wann würde man die Simpson-Regel verwenden, wann Monte Carlo?
+  \item Wie hängt das Mini-Batch-Mittel in SGD mit der Monte-Carlo-Schätzung
+        zusammen?
+  \item Wie hilft die Gradientenschätzung in SGD beim Entkommen aus lokalen Minima?
+\end{itemize}
+
+\subsection{Recap of Key Concepts [S.~69]}
+\begin{itemize}[itemsep=2pt]
+  \item Deterministische Quadraturmethoden (Mittelpunkt, Trapez, Simpson)
+        approximieren Integrale über \emph{gewichtete Summen} von Funktionswerten an
+        spezifischen Punkten --- genau und schnell konvergierend für glatte,
+        niedrigdimensionale Probleme.
+  \item Monte-Carlo-Integration schätzt Integrale durch Mittelung von
+        Funktionswerten an \emph{zufälligen} Samples --- erwartungstreu (unbiased),
+        Konvergenzrate $O(1/\sqrt{N})$, unabhängig von der Dimensionalität des
+        Problems.
+  \item In SGD sind Mini-Batch-Gradienten Monte-Carlo-Schätzungen des wahren
+        Gradienten.
+\end{itemize}
+
+\begin{merkbox}
+\textbf{Typische Fehlerquellen:}
+\begin{itemize}[itemsep=1pt]
+  \item \textbf{Composite-Faktoren verwechseln:} Trapez $\frac{h}{2}$ mit Gewichten
+        1--2--$\cdots$--2--1; Simpson $\frac{h}{3}$ mit Gewichten
+        1--4--2--4--$\cdots$--4--1. Beim Composite Simpson gilt pro
+        Teilintervall-\emph{Paar} (Breite $2h$) der Faktor $\frac{2h}{6} =
+        \frac{h}{3}$ --- nicht $\frac{h}{6}$ (so der Druckfehler des Originals,
+        S.~64); $\frac{h}{6}$ gehört zur Einzelintervall-Form
+        $\frac{h}{6}[f(a)+4f(m)+f(b)]$ mit $h = b-a$.
+  \item \textbf{Simpson braucht gerades $n$:} Die Composite-Simpson-Regel setzt eine
+        \emph{gerade} Anzahl von Teilintervallen voraus (Paarbildung!).
+  \item \textbf{Gewichte 4 und 2 vertauschen:} Gewicht 4 für die \emph{ungeraden}
+        Indizes (Paarmittelpunkte), Gewicht 2 für die inneren \emph{geraden} Indizes
+        (geteilte Paarendpunkte).
+  \item \textbf{Mittelpunkte vs.\ Endpunkte:} Die Mittelpunktsregel wertet bei den
+        Intervall\emph{mitten} aus ($-1.75$, $-1.25$), die Trapezregel an den
+        \emph{Endpunkten} ($-2$, $-1.5$, $-1$) --- nicht mischen. (Genau hier liegt
+        der Originalfehler S.~66: korrekt ist Midpoint $n{=}2 \approx -0.966485$,
+        Fehler $\approx 0.010036$.)
+  \item \textbf{Polynomgrad hochschrauben statt Composite:} Hohe Grade ($n \ge 8$)
+        entwickeln negative Gewichte und werden instabil (Runge-Phänomen) ---
+        \glqq Stop at Simpson\grqq, lieber mehr Teilintervalle.
+  \item \textbf{$|\Omega|$ vergessen:} Beim MC-Schätzer das Stichprobenmittel mit dem
+        Domänenvolumen $|\Omega|$ multiplizieren; bei der Stichprobenvarianz durch
+        $N-1$ (nicht $N$) teilen (Gl.~(51)).
+  \item \textbf{MC-Konvergenz überschätzen:} Der Fehler fällt nur mit $1/\sqrt{N}$
+        --- für eine zusätzliche Dezimalstelle braucht man $100\times$ mehr Samples;
+        der Gewinn liegt in der \emph{Dimensionsunabhängigkeit}, nicht im Tempo.
+\end{itemize}
+\textbf{Merksätze:}
+\begin{itemize}[itemsep=1pt]
+  \item Integration glättet: Mittelung über ein Fenster schüttet mikroskopische
+        Schlaglöcher der Loss-Landschaft zu (\glqq Smooth Operator\grqq).
+  \item Quadratur-Hierarchie: Rechteck (konstant) $\to$ Trapez (linear) $\to$
+        Simpson (quadratisch) --- jede Stufe erfasst mehr Funktionsverhalten.
+  \item Fehlerordnungen (akkumuliert): Left/Right $O(h)$, Midpoint/Trapez $O(h^2)$,
+        Simpson $O(h^4)$ (Tabelle~3).
+  \item Niedrige Dimension + glatt $\Rightarrow$ Quadratur; hohe Dimension
+        $\Rightarrow$ Monte Carlo ($N^d$ vs.\ $O(1/\sqrt{N})$).
+  \item Integral = Volumen $\times$ Mittelwert (Gl.~(46)) --- deshalb funktioniert
+        Sampling überhaupt.
+  \item SGD \emph{ist} Monte Carlo: Mini-Batch-Mittelung = numerische Integration;
+        Batch-Grö{\ss}e steuert die Varianz ($\sim 1/b$).
+\end{itemize}
+\end{merkbox}

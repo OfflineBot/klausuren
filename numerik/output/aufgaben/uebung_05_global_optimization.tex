@@ -1,0 +1,632 @@
+\documentclass[a4paper,11pt]{scrartcl}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage{lmodern}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage[hidelinks]{hyperref}
+\usepackage{catppuccin-dark}
+
+\newcounter{aufgabe}
+\newcommand{\Aufgabe}[2]{%
+  \refstepcounter{aufgabe}%
+  \subsection*{Aufgabe~\theaufgabe: #1 \hfill (#2~Punkte)}%
+  \label{auf:\theaufgabe}}
+
+\title{Übungsblatt 5: Global Optimization (Globale Optimierung)}
+\subtitle{Begleitmaterial zur Vorlesung \glqq Numerical Methods\grqq{} (Prof.\ Dr.-Ing.\ Mark Schutera)}
+\author{Shekel's Foxholes, Newton für Minima, Random Restarts,\\ Basin Hopping und Simulated Annealing (Skript S.~47--56)}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\noindent\textbf{Gesamt: 50 Punkte.}\quad
+Hilfsmittel: Taschenrechner. Runden Sie Zwischenergebnisse, sofern nicht anders angegeben, auf
+mindestens vier Nachkommastellen; bei Endergebnissen genügen zwei bis drei signifikante
+Nachkommastellen. Die Aufgaben steigen im Schwierigkeitsgrad an: Aufgaben~1--3 prüfen das
+Begriffsverständnis, Aufgaben~4--7 sind Rechenaufgaben analog zum Skript, Aufgabe~8 ist eine
+Transferaufgabe. Die Gleichungsnummern (35)--(41) beziehen sich auf das Skript.
+
+\medskip
+\noindent\textbf{Durchgängiges Beispiel:} Mehrere Aufgaben verwenden die konkrete
+1D-Shekel-Funktion (Shekel's Foxholes) des Skripts [S.~48] mit drei Fuchslöchern (foxholes),
+ein Spezialfall von Gl.~(35), $f(x) = -\sum_{i=1}^{m} \frac{c_i}{(x-a_i)^2 + r_i}$:
+\[
+  f(x) \;=\; -\frac{1}{(x-0)^2 + 0.7} \;-\; \frac{1.7}{(x-4)^2 + 0.2} \;-\; \frac{1.1}{(x-7)^2 + 0.4}.
+\]
+Die Funktion besitzt drei Minima bei $x = 0$, $x = 4$ und $x = 7$; das globale Minimum
+liegt bei $x^* = 4$.
+
+\bigskip
+\hrule
+
+\section*{Aufgaben}
+
+% ------------------------------------------------------------
+\Aufgabe{Lokale versus globale Optimierung}{4}
+
+Das Skript unterscheidet [S.~51] die lokale Optimierung (local optimization), Gl.~(37),
+\[
+  \mathbf{x}^* = \arg\min_{\mathbf{x} \in \mathcal{N}(\mathbf{x}_0)} f(\mathbf{x}), \tag{37}
+\]
+von der globalen Optimierung (global optimization), Gl.~(38),
+\[
+  \mathbf{x}^* = \arg\min_{\mathbf{x} \in \Omega} f(\mathbf{x}). \tag{38}
+\]
+
+\begin{enumerate}[label=(\alph*)]
+  \item Erklären Sie in eigenen Worten den Unterschied zwischen den beiden Problemstellungen.
+        Was bezeichnen $\mathcal{N}(\mathbf{x}_0)$ und $\Omega$? Geben Sie eine konkrete
+        mengentheoretische Beschreibung einer Nachbarschaft $\mathcal{N}(\mathbf{x}_0)$ an.
+        \hfill (2~P)
+  \item Warum kann eine lokale Methode wie Newtons Verfahren das Finden des globalen
+        Minimums nicht garantieren? Belegen Sie Ihre Antwort mit dem Verhalten auf der
+        Shekel-Funktion für die Startpunkte $x_0 = 3$, $x_0 = -2$ und $x_0 = 8$
+        (qualitativ, ohne Rechnung). \hfill (2~P)
+\end{enumerate}
+
+% ------------------------------------------------------------
+\schreibraum[7]
+\Aufgabe{Konvexität als Trennlinie (convexity is the dividing line)}{6}
+
+Eine Funktion $f$ heißt \emph{konvex} (convex), wenn für alle $x, y$ und alle
+$\lambda \in [0,1]$ gilt [S.~51]:
+\[
+  f(\lambda x + (1-\lambda)y) \;\leq\; \lambda f(x) + (1-\lambda) f(y).
+\]
+
+\begin{enumerate}[label=(\alph*)]
+  \item Warum ist Konvexität die \glqq Trennlinie\grqq{} der Optimierung? Was gilt für
+        konvexe Probleme, und welche drei Landschaftsmerkmale machen nicht-konvexe
+        Optimierung laut Skript schwierig? \hfill (1~P)
+  \item Zeigen Sie mit der Definition (nicht über die zweite Ableitung), dass
+        $f(x) = x^2$ konvex ist. \emph{Hinweis:} Bringen Sie die Differenz
+        $\lambda f(x) + (1-\lambda)f(y) - f(\lambda x + (1-\lambda)y)$ auf eine
+        offensichtlich nichtnegative Form. \hfill (2~P)
+  \item Zeigen Sie, dass die Shekel-Funktion (Instanz vom Deckblatt) \emph{nicht} konvex
+        ist, indem Sie die Definition mit $x = 4$, $y = 7$ und $\lambda = \tfrac12$
+        widerlegen. Werten Sie dazu $f(4)$, $f(7)$ und $f(5.5)$ aus. Formulieren Sie
+        zusätzlich ein allgemeines Argument: Warum kann eine Funktion mit zwei strikten
+        lokalen Minima niemals konvex sein? \hfill (3~P)
+\end{enumerate}
+
+% ------------------------------------------------------------
+\schreibraum[9]
+\Aufgabe{Basin of Attraction und globale Strategien im Vergleich}{5}
+
+\begin{enumerate}[label=(\alph*)]
+  \item Definieren Sie den Begriff \emph{Anziehungsgebiet} (basin of attraction) eines
+        lokalen Minimums im Kontext eines lokalen Optimierers. \hfill (1~P)
+  \item Vergleichen Sie die drei globalen Strategien \emph{Random Restarts}
+        (Algorithmus~3 [S.~51]), \emph{Basin Hopping} (Algorithmus~4 [S.~52]) und
+        \emph{Simulated Annealing} [S.~52] hinsichtlich: (i)~Wie wird der nächste
+        Startpunkt bzw.\ Kandidat erzeugt? (ii)~Wird Information aus dem bisherigen
+        Suchverlauf weiterverwendet oder die Suche zurückgesetzt? (iii)~Nach welchem
+        Kriterium werden Kandidaten akzeptiert? \hfill (3~P)
+  \item Was bedeutet der Hyperparameter \emph{Patience} bei der Wahl der Restart-Anzahl
+        $K$, wenn die Basin-Wahrscheinlichkeit $p$ vorab unbekannt ist? \hfill (1~P)
+\end{enumerate}
+
+% ------------------------------------------------------------
+\schreibraum[8]
+\Aufgabe{Newton für Minima und der Test der zweiten Ableitung}{7}
+
+Um mit Newtons Methode Optima zu finden, wird das Optimierungsproblem als
+Nullstellenproblem auf der Ableitung reformuliert: Wir lösen $f'(x) = 0$ und iterieren
+nach Gl.~(36)/(40):
+\[
+  x_{n+1} = x_n - \frac{f'(x_n)}{f''(x_n)}. \tag{40}
+\]
+Newtons Methode, angewandt auf $f'$, findet dabei Punkte mit
+$f'(x) = 0$\footnote{Korrektur zum Originalskript: Auf S.~53 steht versehentlich
+\glqq Newton's method finds points where $f''(x) = 0$\grqq. Sachlich richtig findet das
+auf $f'$ angewandte Newton-Verfahren Punkte mit $f'(x) = 0$ (Extremstellen); erst der
+anschließende Test der zweiten Ableitung klassifiziert diese über $f''$.} ---
+das können Minima, Maxima oder Sattelpunkte sein. Gegeben sei
+\[
+  g(x) = x^3 - 6x^2 + 9x + 1.
+\]
+
+\begin{enumerate}[label=(\alph*)]
+  \item Bestimmen Sie $g'(x)$ und $g''(x)$, berechnen Sie alle stationären Punkte
+        ($g'(x) = 0$) analytisch und klassifizieren Sie sie mit dem Test der zweiten
+        Ableitung (second derivative test). Geben Sie auch die Funktionswerte an den
+        stationären Punkten an. Nennen Sie alle drei Fälle des Tests. \hfill (3~P)
+  \item Führen Sie ab dem Startpunkt $x_0 = 3.5$ zwei Newton-Schritte nach Gl.~(40)
+        aus. Wohin konvergiert das Verfahren offenbar, und um welchen Typ von
+        stationärem Punkt handelt es sich? \hfill (2~P)
+  \item Führen Sie ab dem Startpunkt $x_0 = 0.5$ einen Newton-Schritt aus. Wohin läuft
+        das Verfahren hier? Was folgt daraus für die Aussage \glqq Newton auf $f'$
+        findet Minima\grqq? \hfill (2~P)
+\end{enumerate}
+
+% ------------------------------------------------------------
+\schreibraum[10]
+\Aufgabe{Erfolgswahrscheinlichkeit von Random Restarts}{7}
+
+Liegt der Startpunkt mit Wahrscheinlichkeit $p$ im Anziehungsgebiet des globalen
+Minimums, so gilt für $K$ unabhängige Restarts [S.~51], Gl.~(39):
+\[
+  P(\text{global gefunden}) = 1 - (1-p)^K. \tag{39}
+\]
+
+\begin{enumerate}[label=(\alph*)]
+  \item \textbf{Skript-Rechnung [S.~54]:} Eine Funktion hat fünf lokale Minima; das
+        Basin des globalen Minimums deckt $15\,\%$ der Suchdomäne ab ($p = 0.15$).
+        Berechnen Sie die Erfolgswahrscheinlichkeit für $K = 10$ Restarts. \hfill (2~P)
+  \item Wie viele Restarts $K$ sind für eine Erfolgswahrscheinlichkeit von $99\,\%$
+        nötig? Leiten Sie zunächst die allgemeine Formel für $K$ aus Gl.~(39) her und
+        setzen Sie dann ein. \hfill (2~P)
+  \item \textbf{Neue Zahlen:} Nun gelte $p = 0.2$. Berechnen Sie (i) die
+        Erfolgswahrscheinlichkeit für $K = 8$ Restarts und (ii) die minimale ganzzahlige
+        Restart-Anzahl $K$ für mindestens $95\,\%$ Erfolgswahrscheinlichkeit
+        (Probe nicht vergessen). \hfill (2~P)
+  \item \textbf{Folgeaufgabe des Skripts [S.~55]:} Berechnen Sie $K$ für $p = 0.05$ und
+        $p = 0.01$ bei gleichem $99\,\%$-Ziel. Wie skaliert der Aufwand näherungsweise
+        mit der Basin-Größe $p$? \hfill (1~P)
+\end{enumerate}
+
+% ------------------------------------------------------------
+\schreibraum[10]
+\Aufgabe{Simulated Annealing: Akzeptanzwahrscheinlichkeit}{5}
+
+Bei Simulated Annealing [S.~52] wird ein Sprung in eine \emph{schlechtere} Lösung
+(Verschlechterung $\Delta f > 0$ des Zielfunktionswerts) mit Wahrscheinlichkeit
+\[
+  P_{\text{akzeptiert}} = \exp\!\left(-\frac{\Delta f}{T}\right)
+\]
+akzeptiert, wobei die Temperatur $T$ über die Zeit abnimmt.
+
+\begin{enumerate}[label=(\alph*)]
+  \item Werten Sie die Akzeptanzwahrscheinlichkeit aus für
+        \begin{enumerate}[label=(\roman*)]
+          \item $\Delta f = 0.5$ bei den Temperaturen $T = 2$, $T = 0.5$ und $T = 0.1$,
+          \item $T = 1$ bei den Verschlechterungen $\Delta f = 0.1$ und $\Delta f = 1.2$.
+        \end{enumerate} \hfill (3~P)
+  \item Diskutieren Sie anhand Ihrer Zahlen den Temperatureffekt: Wie verhält sich der
+        Algorithmus bei hoher bzw.\ niedriger Temperatur, und warum ist dieses Verhalten
+        (Exploration zu Beginn, Konservativität am Ende) für globale Optimierung
+        sinnvoll? Wie werden Kandidaten mit $\Delta f \leq 0$ (Verbesserungen)
+        behandelt? \hfill (2~P)
+\end{enumerate}
+
+% ------------------------------------------------------------
+\schreibraum[8]
+\Aufgabe{Newton Richtung Minima lenken: der $|f''|$-Trick}{6}
+
+Das Skript schlägt [S.~53] das modifizierte Update vor, Gl.~(41):
+\[
+  x_{n+1} = x_n - \frac{f'(x_n)}{|f''(x_n)|}. \tag{41}
+\]
+
+\begin{enumerate}[label=(\alph*)]
+  \item Erklären Sie, welches Problem des Standard-Updates Gl.~(40) der $|f''|$-Trick
+        behebt. In welchen Regionen der Loss-Landschaft unterscheiden sich die beiden
+        Updates? \hfill (1~P)
+  \item Demonstrieren Sie den Unterschied an $f(x) = x^4 - 2x^2$ mit Startpunkt
+        $x_0 = 0.3$: Bestimmen Sie $f'(x)$, $f''(x)$ sowie alle stationären Punkte mit
+        ihrem Typ. Berechnen Sie dann je einen Schritt nach Gl.~(40) und nach Gl.~(41)
+        und vergleichen Sie die Funktionswerte $f(x_0)$ und $f(x_1)$ für beide
+        Varianten. Welcher Schritt läuft bergab (downhill), welcher bergauf --- und
+        wohin würde jede Variante konvergieren? \hfill (3~P)
+  \item Was bedeutet der Trick geometrisch für die Schrittrichtung relativ zum
+        Gradienten? Und: \emph{How would you modify the update to find maxima instead?}
+        --- Geben Sie ein Update an, das stets in Richtung \emph{wachsender}
+        Funktionswerte läuft, und nennen Sie eine äquivalente Alternative. \hfill (2~P)
+\end{enumerate}
+
+% ------------------------------------------------------------
+\schreibraum[9]
+\Aufgabe{Transfer: Newton auf Shekel's Foxholes, Basins und Deep Learning}{10}
+
+Betrachten Sie die Shekel-Instanz vom Deckblatt. Für Teilaufgabe~(b) dürfen Sie die
+zweite Ableitung als gegeben verwenden:
+\[
+  f''(x) = \frac{2\,(0.7 - 3x^2)}{(x^2 + 0.7)^3}
+         + \frac{3.4\,(0.2 - 3(x-4)^2)}{((x-4)^2 + 0.2)^3}
+         + \frac{2.2\,(0.4 - 3(x-7)^2)}{((x-7)^2 + 0.4)^3}.
+\]
+
+\begin{enumerate}[label=(\alph*)]
+  \item Leiten Sie die erste Ableitung $f'(x)$ her. \emph{Hinweis:} Differenzieren Sie
+        zunächst allgemein einen Summanden $-\dfrac{c}{(x-a)^2 + r}$ und setzen Sie dann
+        die drei Parametersätze ein. \hfill (2~P)
+  \item Werten Sie $f'(7.2)$ und $f''(7.2)$ aus (alle drei Summanden einzeln angeben,
+        dann summieren). \hfill (3~P)
+  \item Berechnen Sie den Newton-Schritt $x_1$ nach Gl.~(36)/(40) ab $x_0 = 7.2$. Die
+        weitere Iteration liefert $x_2 \approx 7.02$ und $x_3 \approx 7.00$.
+        Interpretieren Sie das Ergebnis: Wohin konvergiert das Verfahren, und was sagt
+        das über den Startpunkt $x_0 = 7.2$ im Verhältnis zum globalen Minimum
+        $x^* = 4$ aus? \hfill (2~P)
+  \item Nehmen Sie an, ein lokaler Optimierer konvergiert stets in das Minimum
+        desjenigen Basins, in dem er startet; die Basin-Grenzen liegen an den lokalen
+        \emph{Maxima} von $f$, näherungsweise bei
+        $x \approx 1.7$ und $x \approx 5.7$. Geben Sie die Anziehungsgebiete (basins of
+        attraction) der drei Minima $x = 0, 4, 7$ an. Basin Hopping springe nun vom
+        lokalen Minimum $x^\circ = 7$ mit $\delta \sim \mathrm{Uniform}(-3, 3)$:
+        Mit welcher Wahrscheinlichkeit landet ein einzelner Sprung im Basin des
+        globalen Minimums? \hfill (2~P)
+  \item Warum kann Basin Hopping hier das globale Minimum schneller finden als Random
+        Restarts? Und der Deep-Learning-Bezug [S.~51]: Warum sind mehrere
+        Trainingsläufe eines neuronalen Netzes mit verschiedenen Seeds
+        \emph{implizite Random Restarts}, und warum ist diese Strategie für große
+        Modelle nicht praktikabel? \hfill (1~P)
+\end{enumerate}
+
+\schreibraum[13]
+\newpage
+
+% ============================================================
+\section*{Lösungen --- erst nach Bearbeitung lesen!}
+
+% ------------------------------------------------------------
+\subsection*{Lösung zu Aufgabe~\ref{auf:1}}
+
+\textbf{(a)} Die lokale Optimierung, Gl.~(37), sucht das beste $\mathbf{x}$ nur in einer
+\emph{Nachbarschaft} $\mathcal{N}(\mathbf{x}_0)$ des Startpunkts $\mathbf{x}_0$ --- sie
+findet also dasjenige Minimum, in dessen Einzugsbereich der Startpunkt liegt. Die globale
+Optimierung, Gl.~(38), sucht dagegen über die \emph{gesamte Suchdomäne} $\Omega$ und
+verlangt das beste aller Minima. $\mathcal{N}(\mathbf{x}_0)$ ist eine Menge von Punkten um
+$\mathbf{x}_0$, z.\,B.
+$\mathcal{N}(\mathbf{x}_0) = \{\mathbf{x} : \|\mathbf{x} - \mathbf{x}_0\| < \epsilon\}$
+für einen Radius $\epsilon$ [Randnotiz S.~51]; $\Omega$ ist die gesamte zulässige
+Suchdomäne, die leicht unendlich groß werden kann.
+
+\textbf{(b)} Lokale Methoden konvergieren zu derjenigen Lösung, die in der Nähe liegt ---
+sie sehen nur Funktionswerte und Gradienten an den ausgewerteten Punkten und können nicht
+wissen, ob weiter entfernt ein besseres Minimum existiert. Auf der Shekel-Funktion:
+Von $x_0 = 3$ aus hat man \emph{Glück} und landet im Basin des globalen Minimums
+$x^* = 4$; von $x_0 = -2$ konvergiert Newton zum lokalen Minimum $x^\circ = 0$, von
+$x_0 = 8$ zum lokalen Minimum $x^\circ \approx 7$ --- das globale Minimum wird in beiden
+Fällen verfehlt [S.~50]. Selbst mit Konvergenzgarantien garantiert lokale Optimierung also
+nur das Finden eines \emph{nahen} Extremums.
+
+% ------------------------------------------------------------
+\subsection*{Lösung zu Aufgabe~\ref{auf:2}}
+
+\textbf{(a)} Für konvexe Probleme ist jedes lokale Minimum zugleich das globale Minimum
+--- jede lokale Methode findet daher das globale Optimum, lokale Verfahren genügen.
+Die Schwierigkeit entsteht erst bei nicht-konvexer Optimierung: Dort enthält die
+Landschaft (i) mehrere lokale Minima, (ii) Sattelpunkte (saddle points) und
+(iii) Plateaus [S.~51].
+
+\textbf{(b)} Für $f(x) = x^2$ betrachten wir die Differenz beider Seiten der Definition:
+\begin{align*}
+  \lambda x^2 + (1-\lambda)y^2 - (\lambda x + (1-\lambda)y)^2
+  &= \lambda x^2 + (1-\lambda)y^2 - \lambda^2 x^2 - 2\lambda(1-\lambda)xy - (1-\lambda)^2 y^2\\
+  &= \lambda(1-\lambda)x^2 - 2\lambda(1-\lambda)xy + (1-\lambda)\bigl(1 - (1-\lambda)\bigr)y^2\\
+  &= \lambda(1-\lambda)\,(x^2 - 2xy + y^2)
+   = \lambda(1-\lambda)\,(x-y)^2 \;\geq\; 0,
+\end{align*}
+denn $\lambda \in [0,1]$ impliziert $\lambda(1-\lambda) \geq 0$ und $(x-y)^2 \geq 0$.
+Also gilt $f(\lambda x + (1-\lambda)y) \leq \lambda f(x) + (1-\lambda)f(y)$: $x^2$ ist
+konvex.
+
+\textbf{(c)} Auswertung der drei Funktionswerte:
+\begin{align*}
+  f(4) &= -\frac{1}{16 + 0.7} - \frac{1.7}{0.2} - \frac{1.1}{9 + 0.4}
+        = -0.0599 - 8.5 - 0.1170 \approx -8.6769,\\
+  f(7) &= -\frac{1}{49 + 0.7} - \frac{1.7}{9 + 0.2} - \frac{1.1}{0.4}
+        = -0.0201 - 0.1848 - 2.75 \approx -2.9549,\\
+  f(5.5) &= -\frac{1}{30.25 + 0.7} - \frac{1.7}{2.25 + 0.2} - \frac{1.1}{2.25 + 0.4}
+        = -0.0323 - 0.6939 - 0.4151 \approx -1.1413.
+\end{align*}
+Mit $\lambda = \tfrac12$ verlangt Konvexität
+\[
+  f(5.5) \;\leq\; \tfrac12 f(4) + \tfrac12 f(7) = \tfrac12(-8.6769 - 2.9549) \approx -5.8159.
+\]
+Tatsächlich ist aber $f(5.5) \approx -1.1413 > -5.8159$ --- Widerspruch, die
+Shekel-Funktion ist nicht konvex.
+
+\emph{Allgemeines Argument:} Hätte eine konvexe Funktion zwei strikte lokale Minima
+$x_1 \neq x_2$, so müsste die Funktion auf der Verbindungsstrecke unterhalb der Sehne
+bleiben. Zwischen zwei strikten Minima muss die Funktion aber zwingend wieder ansteigen
+(es existiert ein Punkt dazwischen mit Funktionswert oberhalb beider Minima, ein lokales
+Maximum), wodurch die Sehnenbedingung dort verletzt wird. Bei konvexen Funktionen ist die
+Menge der Minimalstellen zusammenhängend (konvex), und jedes lokale Minimum ist global ---
+zwei getrennte strikte lokale Minima sind unmöglich.
+
+% ------------------------------------------------------------
+\subsection*{Lösung zu Aufgabe~\ref{auf:3}}
+
+\textbf{(a)} Das Anziehungsgebiet (basin of attraction) eines lokalen Minimums ist die
+Menge aller Startpunkte $x_0$, von denen aus der lokale Optimierer zu genau diesem
+Minimum konvergiert. Die Basin-Grenzen liegen dort, wo die Anziehung von einem Minimum
+zum nächsten wechselt (bei 1D-Funktionen typischerweise an den lokalen Maxima zwischen
+den Tälern).
+
+\textbf{(b)} Vergleich der drei Strategien:
+
+\begin{center}
+\begin{tabular}{@{}p{2.6cm}p{3.7cm}p{3.9cm}p{4.0cm}@{}}
+\toprule
+ & \textbf{Random Restarts} & \textbf{Basin Hopping} & \textbf{Simulated Annealing}\\
+\midrule
+(i) Kandidaten- erzeugung &
+zufälliger neuer Startpunkt $x_0 \sim \mathrm{RandomPoint}(\Omega)$ aus der gesamten Domäne &
+zufälliger Sprung $\delta \sim \mathcal{D}$ (z.\,B. Gauß um null oder uniform) vom zuletzt gefundenen lokalen Optimum: $x \leftarrow x^* + \delta$ &
+wie Basin Hopping: Sprung vom aktuellen Punkt aus\\[2pt]
+(ii) Suchverlauf &
+setzt die Suche komplett zurück (\glqq complete reset\grqq); nur $x_{\text{best}}$ wird gemerkt &
+nutzt den bisherigen Verlauf: Sprünge starten beim aktuellen lokalen Optimum, lokale Optimierung wird weiter ausgenutzt &
+nutzt den Verlauf wie Basin Hopping\\[2pt]
+(iii) Akzeptanz &
+implizit: bestes $f(x^*)$ gewinnt am Ende &
+bestes $f(x^*)$ wird gemerkt; jeder Sprung wird ausgeführt &
+probabilistisch: Verbesserungen immer; Verschlechterungen mit $P = \exp(-\Delta f / T)$, $T$ sinkt über die Zeit\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Kernunterschied laut Skript [S.~52]: Basin Hopping erlaubt das Entkommen aus lokalen
+Minima, während weiterhin lokale Optimierung zum Finden besserer Lösungen genutzt wird;
+Random Restarts setzt die Suche dagegen vollständig zurück (\glqq fühlt sich im Ansatz
+wieder wie Brute-Forcing an\grqq). Simulated Annealing ergänzt Basin Hopping um das
+temperaturgesteuerte Akzeptanzkriterium und wird mit sinkender Temperatur zunehmend
+konservativ, bis nur noch verbessernde Kandidaten akzeptiert werden.
+
+\textbf{(c)} \emph{Patience} kontrolliert, wie viele Restarts ohne Verbesserung der
+besten gefundenen Lösung abgewartet werden, bevor gestoppt wird: Man erhöht $K$ so lange,
+bis sich $x_{\text{best}}$ stabilisiert (keine Verbesserung nach mehreren aufeinander
+folgenden Restarts) --- eine Heuristik für die Wahl von $K$, wenn $p$ unbekannt ist
+[S.~51].
+
+% ------------------------------------------------------------
+\subsection*{Lösung zu Aufgabe~\ref{auf:4}}
+
+\textbf{(a)} Ableitungen:
+\[
+  g'(x) = 3x^2 - 12x + 9 = 3(x-1)(x-3), \qquad g''(x) = 6x - 12.
+\]
+Stationäre Punkte: $g'(x) = 0 \Leftrightarrow x = 1$ oder $x = 3$.
+Test der zweiten Ableitung:
+\begin{itemize}[itemsep=1pt]
+  \item $x = 1$: $g''(1) = -6 < 0$ $\Rightarrow$ lokales \textbf{Maximum} (Kurve biegt
+        nach unten), $g(1) = 1 - 6 + 9 + 1 = 5$.
+  \item $x = 3$: $g''(3) = 6 > 0$ $\Rightarrow$ lokales \textbf{Minimum} (Kurve biegt
+        nach oben), $g(3) = 27 - 54 + 27 + 1 = 1$.
+\end{itemize}
+Die drei Fälle des Tests [S.~53]: $f''(x^*) > 0$ lokales Minimum; $f''(x^*) < 0$ lokales
+Maximum; $f''(x^*) = 0$ nicht schlüssig (möglicher Sattelpunkt oder Wendepunkt).
+
+\textbf{(b)} Ab $x_0 = 3.5$:
+\[
+  g'(3.5) = 3(2.5)(0.5) = 3.75, \quad g''(3.5) = 9
+  \;\Rightarrow\; x_1 = 3.5 - \frac{3.75}{9} = 3.5 - 0.4167 = 3.0833.
+\]
+\[
+  g'(3.0833) = 3(2.0833)(0.0833) = 0.5208, \quad g''(3.0833) = 6.5
+  \;\Rightarrow\; x_2 = 3.0833 - \frac{0.5208}{6.5} = 3.0833 - 0.0801 = 3.0032.
+\]
+Das Verfahren konvergiert offensichtlich gegen $x = 3$, das lokale \textbf{Minimum}
+($g''(3) = 6 > 0$).
+
+\textbf{(c)} Ab $x_0 = 0.5$:
+\[
+  g'(0.5) = 3(-0.5)(-2.5) = 3.75, \quad g''(0.5) = -9
+  \;\Rightarrow\; x_1 = 0.5 - \frac{3.75}{-9} = 0.5 + 0.4167 = 0.9167.
+\]
+Das Verfahren läuft auf $x = 1$ zu --- das lokale \textbf{Maximum} (ein weiterer Schritt
+liefert $x_2 \approx 0.9968$). Folgerung: Newton auf $f'$ findet \emph{alle} Punkte mit
+$f'(x) = 0$, gleichgültig ob Minimum, Maximum oder Sattelpunkt --- das Verfahren
+unterscheidet den Typ nicht. Erst der Test der zweiten Ableitung klassifiziert das
+Ergebnis; wer gezielt Minima will, braucht z.\,B. den $|f''|$-Trick aus Aufgabe~\ref{auf:7}.
+
+% ------------------------------------------------------------
+\subsection*{Lösung zu Aufgabe~\ref{auf:5}}
+
+\textbf{(a)} Mit $p = 0.15$ und $K = 10$ [S.~54]:
+\[
+  P = 1 - (1 - 0.15)^{10} = 1 - 0.85^{10} = 1 - 0.1969 = 0.803.
+\]
+Etwa $80\,\%$ Chance --- \glqq not too bad, but far from certain\grqq.
+
+\textbf{(b)} Auflösen von $P = 1 - (1-p)^K$ nach $K$:
+$(1-p)^K = 1 - P \Rightarrow K \ln(1-p) = \ln(1-P)$, also
+\[
+  K = \frac{\ln(1-P)}{\ln(1-p)}
+    = \frac{\ln(0.01)}{\ln(0.85)}
+    = \frac{-4.6052}{-0.1625} \approx 28.3
+  \;\Rightarrow\; \textbf{K = 29 Restarts} \text{ (aufrunden).}
+\]
+
+\textbf{(c)} Mit $p = 0.2$:
+\begin{itemize}[itemsep=1pt]
+  \item[(i)] $K = 8$: $P = 1 - 0.8^{8} = 1 - 0.1678 = 0.832$, also etwa $83\,\%$.
+  \item[(ii)] $K = \dfrac{\ln(0.05)}{\ln(0.8)} = \dfrac{-2.9957}{-0.2231} \approx 13.43
+        \Rightarrow K = 14$.\\
+        Probe: $1 - 0.8^{14} = 1 - 0.0440 = 0.956 \geq 0.95$~\checkmark, während
+        $K = 13$ nur $1 - 0.8^{13} = 0.945 < 0.95$ liefert.
+\end{itemize}
+
+\textbf{(d)} Bei gleichem $99\,\%$-Ziel:
+\[
+  p = 0.05:\; K = \frac{\ln(0.01)}{\ln(0.95)} = \frac{-4.6052}{-0.0513} \approx 89.8
+  \Rightarrow K = 90,
+  \qquad
+  p = 0.01:\; K = \frac{\ln(0.01)}{\ln(0.99)} = \frac{-4.6052}{-0.0101} \approx 458.2
+  \Rightarrow K = 459.
+\]
+Wegen $\ln(1-p) \approx -p$ für kleine $p$ gilt $K \approx \ln(1-P)^{-1}\cdot$\,konstant$/p$,
+d.\,h. der Aufwand skaliert näherungsweise mit $1/p$: Halbiert sich das Basin des globalen
+Minimums, verdoppelt sich (ungefähr) die nötige Restart-Anzahl. In der Praxis ist $p$
+unbekannt --- dann hilft die Patience-Heuristik aus Aufgabe~\ref{auf:3}(c).
+
+% ------------------------------------------------------------
+\subsection*{Lösung zu Aufgabe~\ref{auf:6}}
+
+\textbf{(a)} Auswertung von $P = \exp(-\Delta f / T)$:
+
+\begin{center}
+\begin{tabular}{@{}llll@{}}
+\toprule
+$\Delta f$ & $T$ & $-\Delta f / T$ & $P_{\text{akzeptiert}}$\\
+\midrule
+$0.5$ & $2$   & $-0.25$ & $e^{-0.25} \approx 0.779$\\
+$0.5$ & $0.5$ & $-1$    & $e^{-1} \approx 0.368$\\
+$0.5$ & $0.1$ & $-5$    & $e^{-5} \approx 0.0067$\\
+\midrule
+$0.1$ & $1$   & $-0.1$  & $e^{-0.1} \approx 0.905$\\
+$1.2$ & $1$   & $-1.2$  & $e^{-1.2} \approx 0.301$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{(b)} \emph{Temperatureffekt:} Bei hoher Temperatur ($T = 2$) wird dieselbe
+Verschlechterung $\Delta f = 0.5$ mit $\approx 78\,\%$ akzeptiert, bei $T = 0.1$ nur noch
+mit $\approx 0.7\,\%$ --- der Algorithmus ist anfangs \emph{explorativ} (springt häufig
+auch in schlechtere Lösungen und kann so Basins lokaler Minima verlassen) und wird mit
+sinkender Temperatur zunehmend \emph{konservativ}, bis er praktisch nur noch verbessernde
+Kandidaten akzeptiert und zu einem Optimum konvergiert [S.~52]. Außerdem zeigt die
+zweite Tabellenhälfte: Bei fester Temperatur werden \emph{kleine} Verschlechterungen
+($\Delta f = 0.1$: $\approx 90\,\%$) viel eher akzeptiert als große
+($\Delta f = 1.2$: $\approx 30\,\%$). Verbesserungen ($\Delta f \leq 0$) werden stets
+akzeptiert (formal wäre $\exp(-\Delta f/T) \geq 1$). Dieses Schema balanciert Exploration
+(global suchen, solange $T$ hoch) und Exploitation (lokal verfeinern, wenn $T$ klein) ---
+genau das, was globale Optimierung braucht.
+
+% ------------------------------------------------------------
+\subsection*{Lösung zu Aufgabe~\ref{auf:7}}
+
+\textbf{(a)} Das Standard-Update Gl.~(40) sucht Nullstellen von $f'$ --- es konvergiert
+daher genauso bereitwillig zu Maxima und Sattelpunkten wie zu Minima
+(vgl.\ Aufgabe~\ref{auf:4}(c)). Die beiden Updates unterscheiden sich genau dort, wo
+$f''(x_n) < 0$ ist (konkave Regionen, z.\,B. in der Nähe lokaler Maxima): Dort kehrt
+Gl.~(41) das Vorzeichen des Schritts um. Wo $f''(x_n) > 0$ gilt, sind beide Updates
+identisch.
+
+\textbf{(b)} $f(x) = x^4 - 2x^2$, also $f'(x) = 4x^3 - 4x = 4x(x-1)(x+1)$ und
+$f''(x) = 12x^2 - 4$. Stationäre Punkte: $x = 0$ mit $f''(0) = -4 < 0$ (lokales
+\textbf{Maximum}, $f(0) = 0$) sowie $x = \pm 1$ mit $f''(\pm 1) = 8 > 0$ (globale
+\textbf{Minima}, $f(\pm 1) = -1$).
+
+Am Startpunkt $x_0 = 0.3$:
+\[
+  f'(0.3) = 4(0.027) - 1.2 = -1.092, \qquad f''(0.3) = 12(0.09) - 4 = -2.92 < 0.
+\]
+\emph{Standard-Newton, Gl.~(40):}
+\[
+  x_1 = 0.3 - \frac{-1.092}{-2.92} = 0.3 - 0.3740 = -0.0740.
+\]
+Funktionswerte: $f(0.3) = 0.0081 - 0.18 = -0.1719$, aber
+$f(-0.0740) \approx 0.00003 - 0.01095 = -0.0109$. Der Funktionswert ist
+\emph{gestiegen}: Der Schritt läuft bergauf, direkt auf das lokale Maximum $x = 0$ zu ---
+dorthin würde Standard-Newton konvergieren.
+
+\emph{Mit $|f''|$, Gl.~(41):}
+\[
+  x_1 = 0.3 - \frac{-1.092}{|-2.92|} = 0.3 + 0.3740 = 0.6740.
+\]
+Funktionswert: $f(0.6740) \approx 0.2063 - 0.9085 = -0.7022 < -0.1719$. Der Schritt
+läuft bergab in Richtung des Minimums $x = 1$ --- dorthin würde die modifizierte
+Iteration konvergieren.
+
+\textbf{(c)} \emph{Geometrie:} Da $|f''(x_n)| > 0$, hat der Schritt
+$-f'(x_n)/|f''(x_n)|$ stets das \emph{entgegengesetzte} Vorzeichen zu $f'(x_n)$ --- er
+zeigt also immer in Richtung des negativen Gradienten (\glqq downhill so to speak\grqq),
+während die Krümmung nur noch die Schrittweite skaliert. So bewegen wir uns garantiert in
+Richtung abnehmender Funktionswerte $f(x)$ [S.~53]. Für die Tangentenkonstruktion an
+$f'$ bedeutet das: In konkaven Regionen wird die Steigung der Tangente am Graphen von
+$f'$ effektiv am Vorzeichen gespiegelt, sodass der Schnittpunkt mit der $x$-Achse auf der
+bergab gelegenen Seite gesucht wird.
+
+\emph{Maxima statt Minima:} Vorzeichen des Schritts umdrehen,
+\[
+  x_{n+1} = x_n + \frac{f'(x_n)}{|f''(x_n)|},
+\]
+dann läuft die Iteration stets in Richtung des \emph{positiven} Gradienten (bergauf,
+hill climbing). Äquivalente Alternative: Gl.~(41) unverändert auf $-f$ anwenden, denn
+Maxima von $f$ sind Minima von $-f$.
+
+% ------------------------------------------------------------
+\subsection*{Lösung zu Aufgabe~\ref{auf:8}}
+
+\textbf{(a)} Für einen allgemeinen Summanden gilt mit Ketten- und Potenzregel:
+\[
+  \frac{d}{dx}\left[-\frac{c}{(x-a)^2 + r}\right]
+  = -c \cdot \frac{d}{dx}\bigl((x-a)^2 + r\bigr)^{-1}
+  = \frac{2c\,(x-a)}{\bigl((x-a)^2 + r\bigr)^2}.
+\]
+Einsetzen der drei Parametersätze $(a, c, r) = (0, 1, 0.7),\ (4, 1.7, 0.2),\ (7, 1.1, 0.4)$:
+\[
+  f'(x) = \frac{2x}{(x^2 + 0.7)^2}
+        + \frac{3.4\,(x-4)}{((x-4)^2 + 0.2)^2}
+        + \frac{2.2\,(x-7)}{((x-7)^2 + 0.4)^2}.
+\]
+
+\textbf{(b)} Erste Ableitung bei $x = 7.2$ (Summanden einzeln):
+\[
+  \frac{2 \cdot 7.2}{(51.84 + 0.7)^2} = \frac{14.4}{2760.45} \approx 0.0052, \qquad
+  \frac{3.4 \cdot 3.2}{(10.24 + 0.2)^2} = \frac{10.88}{108.99} \approx 0.0998, \qquad
+  \frac{2.2 \cdot 0.2}{(0.04 + 0.4)^2} = \frac{0.44}{0.1936} \approx 2.2727,
+\]
+\[
+  f'(7.2) \approx 0.0052 + 0.0998 + 2.2727 = 2.3777 \approx 2.38.
+\]
+(Das Skript [S.~49] schreibt $0.005 + 0.100 + 2.27 = 2.38$; die gerundeten Summanden
+ergeben arithmetisch $2.375$, die Rundung auf $2.38$ ist zulässig und konsistent mit dem
+exakten Wert $2.3778$.)
+
+Zweite Ableitung bei $x = 7.2$ (Summanden einzeln):
+\[
+  \frac{2\,(0.7 - 155.52)}{52.54^3} = \frac{-309.64}{145034} \approx -0.0021, \qquad
+  \frac{3.4\,(0.2 - 30.72)}{10.44^3} = \frac{-103.768}{1137.89} \approx -0.0912, \qquad
+  \frac{2.2\,(0.4 - 0.12)}{0.44^3} = \frac{0.616}{0.08518} \approx 7.2314,
+\]
+\[
+  f''(7.2) \approx -0.0021 - 0.0912 + 7.2314 = 7.1381 \approx 7.14.
+\]
+
+\textbf{(c)} Newton-Schritt nach Gl.~(36)/(40):
+\[
+  x_1 = 7.2 - \frac{f'(7.2)}{f''(7.2)} = 7.2 - \frac{2.3777}{7.1381}
+      = 7.2 - 0.3331 \approx 6.87.
+\]
+Mit $x_2 \approx 7.02$ und $x_3 \approx 7.00$ konvergiert das Verfahren zum
+\emph{lokalen} Minimum $x^\circ \approx 7$ (dort ist $f'' > 0$, der dritte Summand
+dominiert). Interpretation: Der Startpunkt $x_0 = 7.2$ liegt im Anziehungsgebiet des
+Fuchslochs bei $x = 7$ --- \glqq Here, we were unlucky, and the method is attracted to
+the nearby foxhole at $x^\circ \approx 7$\grqq{} [S.~50]. Das globale Minimum $x^* = 4$
+wird verfehlt, obwohl es deutlich tiefer liegt ($f(4) \approx -8.68$ gegenüber
+$f(7) \approx -2.95$, vgl.\ Aufgabe~\ref{auf:2}(c)): Lokale Optimierung garantiert nur
+das Finden eines nahen Extremums.
+
+\textbf{(d)} Da der Optimierer stets in das Minimum seines Start-Basins konvergiert und
+die lokalen Maxima die Basin-Grenzen bilden, gilt näherungsweise:
+\[
+  B(0) = (-\infty,\ 1.7), \qquad B(4) = (1.7,\ 5.7), \qquad B(7) = (5.7,\ \infty).
+\]
+Das Basin des globalen Minimums $x^* = 4$ ist das mittlere Intervall.
+Ein Sprung von $x^\circ = 7$ mit $\delta \sim \mathrm{Uniform}(-3, 3)$ landet
+gleichverteilt in $[4, 10]$ (Länge $6$). Der Überlapp mit $B(4) = (1.7, 5.7)$ ist
+$[4,\ 5.7)$ mit Länge $1.7$, also
+\[
+  P = \frac{5.7 - 4}{6} = \frac{1.7}{6} \approx 0.283 \approx 28\,\%.
+\]
+
+\textbf{(e)} \emph{Basin Hopping vs.\ Random Restarts:} Basin Hopping startet seine
+Sprünge vom bereits gefundenen lokalen Optimum und nutzt damit die Struktur der
+Landschaft: Von $x^\circ = 7$ aus erreicht schon ein einzelner Sprung mit
+$\approx 28\,\%$ Wahrscheinlichkeit das Basin des globalen Minimums --- die Foxholes
+liegen nahe beieinander, die Sprungverteilung muss nur die Distanz zum Nachbar-Basin
+überbrücken. Random Restarts sampelt dagegen gleichverteilt aus der gesamten (potenziell
+sehr großen) Domäne $\Omega$; ist $\Omega$ groß, wird die Trefferwahrscheinlichkeit $p$
+pro Restart klein, und jede Wiederholung verwirft zudem alle bisherige Information
+(vollständiger Reset). \emph{Deep-Learning-Bezug [S.~51]:} Jeder Trainingslauf eines
+neuronalen Netzes mit anderem Seed startet von einer anderen zufälligen Initialisierung
+der Gewichte --- das ist genau ein zufälliger Startpunkt $x_0 \in \Omega$ mit
+anschließender lokaler Optimierung (SGD/Adam), also implizite Random Restarts; am Ende
+behält man das Modell mit dem besten Loss. Für große Modelle ist das nicht praktikabel,
+weil schon ein einzelner Trainingslauf enorm teuer ist --- man verlässt sich stattdessen
+auf die Hoffnungen aus dem Skript [S.~53]: Die meisten lokalen Minima sind etwa gleich
+gut, Überparametrisierung macht schlechte Minima selten, Mini-Batch-Rauschen hilft beim
+Entkommen aus scharfen Minima, adaptive Lernraten helfen auf Plateaus.
+
+\end{document}

@@ -1,0 +1,171 @@
+\section{Error Analysis (Fehleranalyse) (S.~25--34)}
+
+\subsection{Motivation und Einordnung (The Why, S.~25)}
+\glqq Some call it Error. I call it Character.\grqq{} — Konditionierung, Stabilität, Konsistenz und Konvergenz (Conditioning, Stability, Consistency, Convergence) sind die vier fundamentalen Konzepte der numerischen Analysis, mit denen sich das Verhalten numerischer Algorithmen und ihre Zuverlässigkeit beim Lösen mathematischer Probleme verstehen und beschreiben lassen (S.~25). Konkret wollen wir: die Sensitivität des \emph{Problems} gegenüber kleinen Eingabeänderungen einschätzen, die Sensitivität der \emph{numerischen Lösung} gegenüber kleinen Eingabeänderungen bewerten, sicherstellen, dass numerische Methoden genaue und reproduzierbare Resultate liefern, und garantieren, dass unsere Approximationen zur wahren Lösung konvergieren. Im Machine-Learning-Kontext ist das zentral, denn das Training neuronaler Netze ist ein großskaliges, iterativ-numerisches Optimierungsproblem: \glqq In Deep Learning convergence has the center stage, then almost as an afterthought comes Complexity -- the number of operations and amount of time it takes to get there.\grqq{} (Im Deep Learning steht die Konvergenz im Zentrum; fast als Nachgedanke folgt die Komplexität — Anzahl der Operationen und benötigte Zeit, S.~25). AI-Modelle $\theta$ lassen sich später genau mit diesen Konzepten bewerten — \glqq So the maths aside, this will come in handy.\grqq
+
+\paragraph{Randnotiz: Modellfehler (S.~25).} Mit $f(\cdot)$ ist das \emph{exakte Modell} eines Systems gemeint. In der Praxis sind Modelle Vereinfachungen der Realität: Für die Distanz zwischen zwei Punkten A und B verwendet man z.\,B. ein vereinfachtes Manhattan- oder euklidisches Distanzmodell, das Terrain, Fortbewegungsart oder Hindernisse nicht berücksichtigt. Also im Hinterkopf behalten: \glqq our $f(\cdot)$ here, is another $f(\cdot)$.\grqq{} — Lesetipp des Skripts: I.~Goodfellow, Y.~Bengio, A.~Courville: \emph{Deep Learning}, MIT Press, 2016, Kap.~4 (Numerical Computation).
+
+\subsection{Lernziele (S.~28)}
+\begin{itemize}[nosep]
+  \item Intuition über die Konzepte Konditionierung, Stabilität, Konsistenz und Konvergenz in numerischen Methoden entwickeln.
+  \item Einfache numerische Probleme \emph{quantitativ} bezüglich dieser Konzepte analysieren.
+\end{itemize}
+
+\subsection{Intuitiver Zugang (Hands On Experience, S.~26--28)}
+Das Skript baut die Intuition am vertrauten Beispiel aus Kapitel~1 auf (Minimum von $\sin(x)$ auf $[-3,1]$, diskretisiert) und gibt zu jedem Konzept \emph{zwei} schnelle Gegenüberstellungen, \glqq as we want to highlight two sides of the same coin for each concept\grqq{} — also bewusst Extreme des Spektrums:
+\begin{itemize}
+  \item \textbf{Conditioning (Konditionierung):} \glqq is about how sensitive the solution is to small changes in the input data.\grqq{} Annahme: Die approximierte Funktion ist die wahre Funktion (Sinus), aber die Eingabe $\tilde{x}$ ist eine durch Messfehler oder Rundung gestörte Version von $x$ ($\pm 0.25$). In Figure~9 (S.~26: Sinuskurve mit zwei grauen vertikalen Bändern der Breite $0.5$ bei $x=-1.5$ und $x=0$) sieht man: Bei $x=-1.5$ (nahe dem Minimum, Funktion flach) ist die Region \emph{gut konditioniert} (well-conditioned) — kleine Änderungen in $x$ bewirken kleine Änderungen in $f(x)$. Das Band um $x=0$ (steiler Anstieg) ist \emph{schlecht konditioniert} (ill-conditioned) — kleine Änderungen in $x$ können große relative Änderungen in $f(x)$ bewirken. \emph{Wichtige Abgrenzung (Randnotiz S.~26):} \glqq This is about floating-point representation and not about step size or optimal approximation. Make sure to wrap your head around that, before moving on.\grqq{} — Es geht hier um die gestörte Eingabe, nicht um die Diskretisierung.
+  \item \textbf{Stability (Stabilität):} \glqq refers to the sensitivity of the numerical solution to the small changes in the input data.\grqq{} Beobachtung am grauen Band um $x=0$: Bei feiner Schrittweite $h=0.2$ (Figure~10, S.~26) folgen die diskretisierten Punkte der Sinuskurve eng — kleine Verschiebungen $\tilde{x}\pm 0.25$ führen zu Fluktuationen in den berechneten Werten $\hat{f}(\tilde{x})$: \emph{Instabilität}. Bei grober Schrittweite $h=1$ (Figure~11, S.~27) liegt nur ein einziger Gitterpunkt im Band — die Approximation ist in dieser Region \emph{stabil}, unabhängig von den Abweichungen in $\tilde{x}$. [Ergänzung: Pointe — Gröbere Diskretisierung ist stabiler, aber, wie gleich zu sehen, weniger konsistent!]
+  \item \textbf{Consistency (Konsistenz, S.~27):} \glqq quantifies how well our numerical method matches the exact solution of the original problem.\grqq{} Veranschaulicht über Balkendiagramme der stückweise konstanten Approximation mit $h=1$ und $h=0.2$ (Figures~12--13, S.~27): Für infinitesimal kleine Schrittweiten $h \to 0$ kommen die diskretisierten Punkte der wahren Sinuskurve immer näher — im Grenzfall perfekte Übereinstimmung zwischen numerischer Methode und exakter Lösung: \emph{optimale Konsistenz}.
+  \item \textbf{Convergence (Konvergenz, S.~27--28):} entsteht aus der Kombination von Stabilität und Konsistenz: \glqq A numerical method is convergent if, as we refine our approximation $\hat{f}(x)$ (for example, by decreasing the step size $h$), the computed solution approaches the exact solution of the problem regardless of the deviations in $\tilde{x}$, or by implicitly accounting for them.\grqq{} — Beim Verfeinern der Approximation nähert sich die berechnete Lösung der exakten Lösung, unabhängig von (oder unter impliziter Berücksichtigung von) Störungen in $\tilde{x}$. (Meta-Randnotiz S.~27: \glqq Intuitive convergence example with sine, wanted. If you have a better idea \ldots\ let me know.\grqq{} — ein Autoren-Aufruf ohne Fachinhalt, der Vollständigkeit halber erwähnt.)
+\end{itemize}
+
+\subsection{Quantitative Charakterisierung: Notation und Definitionen (S.~29)}
+
+\begin{defbox}{Notation — Hut vs.\ Tilde (Hat versus Tilde, S.~29)}
+$f(\cdot)$ bezeichnet die \emph{exakte (analytische) Lösung} eines Problems; $\hat{f}(\cdot)$ bezeichnet die \emph{numerische Methode} (den Algorithmus), die eine Approximation liefert. $x$ steht für die exakten Eingabedaten, $\tilde{x}$ für die tatsächlich verwendeten, z.\,B.\ durch Messfehler oder Rundung gestörten Eingabedaten.
+
+\emph{Merkhilfe (Randnotiz S.~29):} \glqq The hat $\hat{\ }$ marks the numerical method (algorithm), while the tilde $\tilde{\ }$ marks a perturbed input. So $\hat{f}(\tilde{x})$ reads as: numerical method evaluated on perturbed input data.\grqq{} — Der Hut markiert die numerische Methode, die Tilde die gestörte Eingabe; $\hat{f}(\tilde{x})$ liest sich als \emph{numerische Methode, ausgewertet auf gestörten Eingabedaten}.
+\end{defbox}
+
+\begin{defbox}{Conditioning (Konditionierung) und Konditionszahl $\kappa$ (S.~29)}
+Die Konditionierung beschreibt, wie sensitiv die Lösung eines \emph{Problems} auf kleine Änderungen der Eingabedaten reagiert. Formal wird die Konditionierung eines Problems bei $x$ durch die Konditionszahl (condition number) $\kappa$ quantifiziert (Gl.~13 im Skript, S.~29):
+\[ \kappa = \left| f(x) - f(\tilde{x}) \right| \tag{Gl.~13} \]
+In Worten: $\kappa$ misst, wie stark sich der \emph{exakte} Funktionswert ändert, wenn man statt der wahren Eingabe $x$ die gestörte Eingabe $\tilde{x}$ einsetzt. Beachte: Hier kommt nur $f$ (das Problem), nicht $\hat{f}$ (die Methode) vor — Konditionierung ist eine Eigenschaft des Problems, unabhängig von der gewählten numerischen Methode. \glqq$\kappa$ is often normalized to express it as a relative measure.\grqq{} ($\kappa$ wird oft normalisiert, um es als relatives Maß auszudrücken.)
+\end{defbox}
+
+\begin{defbox}{Stability (Stabilität) (S.~29)}
+Stabilität ist gegeben, wenn kleine Fehler in der Eingabe oder in Zwischenschritten nicht zu unverhältnismäßig großen Fehlern in der Ausgabe führen. Mathematisch stellt eine stabile Methode sicher, dass der Fehler in der berechneten Lösung $\hat{f}(\tilde{x})$ durch ein konstantes Vielfaches des Eingabefehlers beschränkt bleibt (Gl.~14 im Skript, S.~29):
+\[ \left| \hat{f}(\tilde{x}) - \hat{f}(x) \right| \leq s \cdot \left| \tilde{x} - x \right| \tag{Gl.~14} \]
+wobei $s$ eine Konstante ist. In Worten: Links steht, wie stark die \emph{Methode} auf die Eingabestörung reagiert; rechts steht die Größe der Störung selbst, skaliert mit $s$. \glqq For $s \approx 1$, the error in the computed solution develops linearly with the error in the input data.\grqq{} (Für $s \approx 1$ wächst der Ausgabefehler linear mit dem Eingabefehler.) Beachte: Hier kommt zweimal $\hat{f}$ vor — Stabilität ist eine Eigenschaft der \emph{Methode}.
+\end{defbox}
+
+\begin{defbox}{Consistency (Konsistenz) (S.~29)}
+Konsistenz misst, wie gut die numerische Lösung die exakte Lösung des Originalproblems approximiert (Gl.~15 im Skript, S.~29):
+\[ \left| \hat{f}(x) - f(x) \right| \leq c \tag{Gl.~15} \]
+wobei $c$ eine Konstante ist, die den Konsistenzfehler quantifiziert. In Worten: Methode $\hat{f}$ und exakte Lösung $f$ werden auf \emph{denselben, ungestörten} Eingabedaten $x$ verglichen — Konsistenz isoliert also den reinen Methodenfehler (z.\,B.\ Diskretisierungsfehler), ohne Eingabestörungen.
+\end{defbox}
+
+\begin{defbox}{Convergence (Konvergenz) (S.~29)}
+Konvergenz bezieht sich allgemein darauf, dass unsere Approximation einen spezifischen, stabilen Grenzwert erreicht. Eine Methode ist konvergent, wenn (Gl.~16 im Skript, S.~29):
+\[ \left| \hat{f}(\tilde{x}) - f(x) \right| \to \lim \tag{Gl.~16} \]
+\glqq That is, as both the real solution is approximated and deviations in data are controlled by an error margin.\grqq{} — Sowohl die Annäherung an die echte Lösung als auch die Abweichungen in den Daten werden durch eine Fehlerschranke kontrolliert. In Worten: Verglichen wird die Methode auf \emph{gestörten} Daten $\hat{f}(\tilde{x})$ mit der exakten Lösung auf \emph{exakten} Daten $f(x)$ — Konvergenz kombiniert also Stabilität (Umgang mit $\tilde{x}$) und Konsistenz (Nähe von $\hat{f}$ zu $f$).
+\end{defbox}
+
+\begin{satzbox}{Nicht-Null-Konvergenz und systematischer Fehler (Bias) (Randnotiz S.~29)}
+Konvergenz \glqq usually aims for zero error margin, which is often the exact solution $f(x)$. However, often we will experience non-zero convergence.\grqq{} — Konvergenz zielt üblicherweise auf eine Fehlerschranke von null (also die exakte Lösung $f(x)$); oft erlebt man aber Konvergenz gegen einen \emph{von null verschiedenen} Wert. \textbf{Konvergiert die Methode gegen einen von $f(x)$ verschiedenen Wert, zeigt das einen systematischen Fehler (Bias) der Methode an.} [Ergänzung: Das ist die Brücke zur ML-Terminologie — ein konstanter Restfehler trotz Verfeinerung entspricht einem Bias, Fluktuationen durch Eingabestörungen einer Varianz; vgl.\ die Selbstreflexionsfrage zu Bias und Varianz auf S.~33.]
+\end{satzbox}
+
+\begin{satzbox}{Zusammenhang Stabilität und Konditionierung für $h \to 0$ (Randnotiz S.~31)}
+Das Skript stellt als Übungsaufgabe fest: \glqq Stability equals the conditioning of the system, for $h \to 0$. Show it.\grqq{} — Die Stabilität(skonstante) entspricht im Grenzfall $h \to 0$ der Konditionierung des Systems. [Ergänzung zur Plausibilisierung: Für $h \to 0$ wird die diskretisierte Methode $\hat{f}$ zur exakten Funktion $f$; dann misst die Stabilitätsungleichung $|\hat{f}(\tilde{x})-\hat{f}(x)| \le s\,|\tilde{x}-x|$ genau dieselbe Größe $|f(\tilde{x})-f(x)| = \kappa$ wie die Konditionierung — die Methodenempfindlichkeit geht in die Problemempfindlichkeit über.]
+\end{satzbox}
+
+\subsection{Durchgerechnete Analyse am Sinus-Beispiel (S.~30--33)}
+\textbf{Aufgabenstellung (S.~30):} Erneut das Minimum der Sinusfunktion auf $[-3,1]$; Diskretisierung mit zwei Schrittweiten $h=1$ und $h=0.2$. Annahme: Die Eingabe $x$ ist durch $\tilde{x} = x \pm 0.25$ gestört (Messfehler); gerechnet wird mit einer Präzision von zwei Dezimalstellen. Analysiere Konditionierung, Stabilität, Konsistenz und Konvergenz der numerischen Methode in beiden Fällen und quantifiziere mit den obigen Formeln. \emph{Erinnerung (Randnotiz S.~31):} Die analytische Lösung von $\min \sin(x)$ auf $[-3,1]$ ist $-1$ bei $x = -\pi/2$ (Kapitel~1).
+
+\begin{bspbox}{Konditionierung des Sinus-Problems (S.~30--31)}
+Die Konditionierung ist \emph{unabhängig von der verwendeten numerischen Methode} — sie beschreibt die Sensitivität des Problems selbst. Analysiert wird also rein die Wirkung kleiner Änderungen in $x$ auf $\sin(x)$. Um $x=-1$ (nahe dem Minimum) ist der Sinus relativ flach $\Rightarrow$ gute Konditionierung; zum Vergleich $x=0$, wo der Sinus sich schnell ändert $\Rightarrow$ schlechte Konditionierung. Rechnungen mit Gl.~13 ($\tilde{x} = x \pm 0.25$):
+\begin{align*}
+\kappa(-1, +0.25) &= |\sin(-1) - \sin(-0.75)| \approx |-0.8415 - (-0.6816)| = 0.1599 \\
+\kappa(-1, -0.25) &= |\sin(-1) - \sin(-1.25)| \approx |-0.8415 - (-0.9489)| = 0.1074
+\end{align*}
+$\Rightarrow$ \textbf{Gute Konditionierung} (well-conditioning) bei $x=-1$ mit $0.1074 \leq \kappa \leq 0.1599$.
+\begin{align*}
+\kappa(0, +0.25) &= |\sin(0) - \sin(0.25)| \approx |0 - 0.2474| = 0.2474 \\
+\kappa(0, -0.25) &= |\sin(0) - \sin(-0.25)| \approx |0 - (-0.2474)| = 0.2474
+\end{align*}
+$\Rightarrow$ \textbf{Schlechte Konditionierung} (ill-conditioning) bei $x=0$ mit $\kappa \approx 0.2474$ — der Wert schöpft das Maximum der betrachteten Störungen ($|\tilde{x}-x| = 0.25$) nahezu voll aus und liegt deutlich über dem gut konditionierten Fall. [Korrektur ggü.\ Original, S.~31: Das PDF schreibt \glqq$\kappa \leq 0.247$\grqq{} — das ist weder numerisch korrekt ($0.2474 > 0.247$) noch als obere Schranke geeignet, eine Schlecht-Konditionierung zu belegen.] [Ergänzung: Eine Störung gleicher Größe ($\pm 0.25$) verursacht bei $x=0$ einen mehr als doppelt so großen Ausgabefehler wie der günstigste Fall bei $x=-1$ — und bei $x=0$ ist zusätzlich der \emph{relative} Fehler dramatisch, da $\sin(0)=0$.]
+\end{bspbox}
+
+\begin{bspbox}{Stabilität der diskretisierten Methode für $h=1$ und $h=0.2$ (S.~31)}
+Die Stabilität hängt von der numerischen \emph{Methode} ab (hier: Diskretisierung + Minimumsuche). Qualitativ: Für $h=1$ ist die Methode stabil — kleine Änderungen in $\tilde{x}$ führen zu kleinen Änderungen in $\hat{f}(\tilde{x})$. Für $h=0.2$ ist sie weniger stabil — kleine Änderungen in $\tilde{x}$ können größere Fluktuationen in $\hat{f}(\tilde{x})$ verursachen. Quantifizierung über die Konstante $s$ in der Stabilitätsungleichung (Gl.~17 im Skript, S.~31; identisch mit Gl.~14):
+\[ \left| \hat{f}(\tilde{x}) - \hat{f}(x) \right| \leq s \cdot |\tilde{x} - x| \tag{Gl.~17} \]
+\glqq Due to symmetry we only consider the case $\tilde{x} = x + 0.25$.\grqq{} (Aus Symmetriegründen nur der Fall $\tilde{x} = x + 0.25$.)
+
+\textbf{Für $h=1$ (bei $x=-1$):}
+\[ s_{h=1,\,x=-1} \cdot |\tilde{x} - x| = \left| \hat{f}(\tilde{x}) - \hat{f}(x) \right| = \left| \hat{f}_1(-0.75) - \hat{f}_1(-1) \right| = \left| \hat{f}_1(-1) - \hat{f}_1(-1) \right| = 0 \]
+\[ s_{h=1,\,x=-1} \approx 0 \div 0.25 \approx 0 \]
+Erklärung des entscheidenden Schritts (Randnotiz~A, S.~31): \glqq See how the step size $h=1$ leads to the same function value at both points. For reference, Fig.~12.\grqq{} — Bei der stückweise konstanten Approximation mit $h=1$ fallen $-0.75$ und $-1$ auf denselben Gitterwert, daher $\hat{f}_1(-0.75) = \hat{f}_1(-1)$ und der Zähler wird null: maximal stabil.
+
+[Korrektur ggü.\ Original, S.~31: Das PDF druckt innerhalb derselben Rechnung einen Indexwechsel $s_{h=1,\,x=-1} \to s_{h=1,\,x=0}$; gemeint ist durchgängig derselbe Fall ($\tilde{x} = x + 0.25$, $x = -1$). Das Ergebnis $s \approx 0$ ist korrekt.]
+
+\textbf{Für $h=0.2$ (bei $x=-1$):}
+\begin{align*}
+s_{h=0.2,\,x=-1} \cdot |\tilde{x} - x| &= \left| \hat{f}(\tilde{x}) - \hat{f}(x) \right| = \left| \hat{f}_{0.2}(-0.75) - \hat{f}_{0.2}(-1) \right| \\
+&= \left| \hat{f}_{0.2}(-0.8) - \hat{f}_{0.2}(-1) \right| = |-0.71736 - (-0.84147)| = 0.12411
+\end{align*}
+\[ s_{h=0.2,\,x=-1} = 0.12411 \div 0.25 \approx 0.4964 \]
+[Ergänzung: Der gestörte Punkt $-0.75$ fällt beim $0.2$er-Gitter auf den Gitterpunkt $-0.8$, der bereits einen anderen Funktionswert trägt als der Gitterpunkt $-1$ — das feine Gitter \emph{sieht} die Störung und reagiert darauf; daher $s \approx 0.5 > 0$, also weniger stabil als bei $h=1$.]
+
+\textbf{Warnung (Stolperfalle, S.~31):} \glqq Be aware that stability has anomalies in border regions of the discretization. This is especially a problem for piece-wise constant approximations.\grqq{} — Stabilität hat Anomalien in den Randregionen der Diskretisierung; besonders problematisch für stückweise konstante Approximationen.
+\end{bspbox}
+
+\begin{bspbox}{Konsistenz für $h=1$ und $h=0.2$ (S.~31--32)}
+Die Konsistenz wird durch Vergleich der numerischen Lösung $\hat{f}(x)$ mit der exakten Lösung $f(x)$ für das Minimum des Sinus in $[-3,1]$ bestimmt. Quantifizierung der Konstante $c$ (Gl.~18 im Skript, S.~31; identisch mit Gl.~15):
+\[ \left| \hat{f}(x) - f(x) \right| \leq c \tag{Gl.~18} \]
+\textbf{Für $h=1$ (S.~32):} Die exakte Minimalstelle ist $x = -\pi/2$ mit $f(-\pi/2) = -1$; das Skript ordnet ihr beim $h=1$-Gitter den Gitterpunkt $-1$ zu:
+\[ c_1 \geq \left| \hat{f}_1\!\left(-\tfrac{\pi}{2}\right) - f\!\left(-\tfrac{\pi}{2}\right) \right| \geq \left| \hat{f}_1(-1) - f\!\left(-\tfrac{\pi}{2}\right) \right| \geq |-0.84147 - (-1)| \geq 0.15853 \]
+\textbf{Für $h=0.2$ (S.~32):} Beim $0.2$er-Gitter ordnet das Skript $-\pi/2$ dem Gitterpunkt $-1.2$ zu; dort gilt $\hat{f}_{0.2}(-1.2) = \sin(-1.2) = -0.93204$:
+\[ c_{0.2} \geq \left| \hat{f}_{0.2}\!\left(-\tfrac{\pi}{2}\right) - f\!\left(-\tfrac{\pi}{2}\right) \right| \geq \left| \hat{f}_{0.2}(-1.2) - f\!\left(-\tfrac{\pi}{2}\right) \right| \geq |-0.93204 - (-1)| \geq 0.06796 \]
+[Korrektur ggü.\ Original, S.~32: Das PDF druckt $-0.94898$ und als Endwert $0.05102$; $-0.94898$ ist aber $\sin(-1.25)$, und $-1.25$ ist kein Punkt des $0.2$er-Gitters auf $[-3,1]$ ($\ldots,-1.4,-1.2,-1.0,\ldots$). Mit dem im Skript selbst genannten Gitterpunkt $-1.2$ ist $\sin(-1.2) = -0.93204$ und damit $c_{0.2} \approx 0.06796$.]
+
+\emph{Anmerkung zur Gitterpunkt-Zuordnung:} Warum das Skript $-\pi/2 \approx -1.5708$ gerade den Gitterpunkten $-1$ (bei $h=1$) bzw.\ $-1.2$ (bei $h=0.2$) zuordnet, wird im Original nicht erklärt; die Zuordnung weicht vom sonst im Skript verwendeten Nächste-Nachbarn-Snapping ab (der jeweils \emph{nächste} Gitterpunkt zu $-\pi/2$ wäre $-2$ bzw.\ $-1.6$).
+
+\textbf{Befund:} \glqq Consistency improves with smaller step sizes, as expected.\grqq{} — Die Konsistenz verbessert sich erwartungsgemäß mit kleineren Schrittweiten: $c_1 = 0.15853$ vs.\ $c_{0.2} \approx 0.06796$ [Korrektur ggü.\ Original, S.~32: dort $0.05102$].
+\end{bspbox}
+
+\begin{bspbox}{Konvergenz für $h=1$ und $h=0.2$ (S.~32--33)}
+Konvergenz kombiniert die Ideen von Stabilität und Konsistenz. Quantifiziert wird der Gesamtfehler zwischen numerischer Lösung auf gestörten Daten $\hat{f}(\tilde{x})$ und exakter Lösung $f(x)$ (Gl.~19 im Skript, S.~32):
+\[ \left| \hat{f}(\tilde{x}) - f(x) \right| \tag{Gl.~19} \]
+Aus Symmetriegründen wieder nur $\tilde{x} = x + 0.25$.
+
+\textbf{Für $h=1$:}
+\begin{align*}
+\left| \hat{f}_1(\tilde{x}) - f(x) \right| &= \left| \hat{f}_1(-1) - f\!\left(-\tfrac{\pi}{2}\right) \right| = \left| \hat{f}_1(-0.75) - f\!\left(-\tfrac{\pi}{2}\right) \right| \\
+&= \left| \hat{f}_1(-1) - f\!\left(-\tfrac{\pi}{2}\right) \right| = |-0.84147 - (-1)| = 0.15853
+\end{align*}
+\textbf{Für $h=0.2$:} Ausgangspunkt ist der Gitterpunkt $-1.2$, dem das Skript $-\pi/2$ zuordnet (vgl.\ Anmerkung zur Gitterpunkt-Zuordnung in der Konsistenzbox oben); die gestörte Eingabe ist $\tilde{x} = -1.2 + 0.25 = -0.95$, und diese fällt beim Auswerten auf den Gitterpunkt $-1$:
+\[
+\left| \hat{f}_{0.2}(\tilde{x}) - f(x) \right| = \left| \hat{f}_{0.2}(-0.95) - f\!\left(-\tfrac{\pi}{2}\right) \right| = \left| \hat{f}_{0.2}(-1) - f\!\left(-\tfrac{\pi}{2}\right) \right| = |-0.84147 - (-1)| = 0.15853
+\]
+[Korrektur ggü.\ Original, S.~32: Das PDF druckt in beiden Fällen den Endwert \glqq$= 0.1599$\grqq; korrekt ist $|-0.84147 - (-1)| = 0.15853$. Zudem fehlen im PDF in den Umformungsketten die verbindenden Relationszeichen (die Zeilen stehen ohne Gleichheitszeichen gestapelt untereinander), und im $h=0.2$-Block steht einmal fälschlich $\hat{f}_1(-1.2)$ statt $\hat{f}_{0.2}(-1.2)$. Redaktionelle Klarstellung: Die im PDF zusätzlich gestapelte Zeile $|\hat{f}_{0.2}(-1.2) - f(-\pi/2)|$ (Auswertung am ungestörten Bezugspunkt $-1.2$, Wert $0.06796$) ist \emph{nicht} gleich den übrigen Gliedern und wurde hier deshalb nicht als Gleichung in die Kette aufgenommen, sondern textlich als Ausgangspunkt der Herleitung beschrieben.]
+
+\textbf{Konvergenz-Diskussion (S.~33):} Wegen der Stabilitätsprobleme im Fall $h=0.2$ verbessert sich die Konvergenz in diesem Operationspunkt \emph{nicht} mit kleineren Schrittweiten — die Störung $\tilde{x} = x + 0.25$ schiebt die Auswertung beim feinen Gitter wieder auf den Wert $-0.84147$, sodass beide Schrittweiten denselben Gesamtfehler $0.15853$ liefern. Zwei Erkenntnisse: (1)~Beide numerischen Lösungen konvergieren zum gleichen Grenzwert; (2)~daraus lässt sich auch sagen, dass die Methode des iterativen Verkleinerns der Schrittweite $h$ ebenfalls zum gleichen Grenzwert konvergiert. \glqq Notice that we use the characteristics for both a numerical solution and the numerical method.\grqq{} — Begriffsdifferenzierung: Die Charakteristika werden sowohl für eine einzelne \emph{numerische Lösung} als auch für die \emph{numerische Methode} als Ganzes verwendet.
+\end{bspbox}
+
+\subsection{Übungsaufgaben und Selbstreflexionsfragen (S.~31, 33)}
+\textbf{Übungen:}
+\begin{itemize}[nosep]
+  \item (Randnotiz S.~31) Zeige: Die Stabilität entspricht der Konditionierung des Systems für $h \to 0$.
+  \item (Hands on compute-driven error analysis, S.~33) Brute-Force-Fehleranalyse des Zwei-Gleichungs-Systems aus Kapitel~1: Konditionierung, Stabilität, Konsistenz und Konvergenz der numerischen Lösung bestimmen und durch Optimierung der numerischen Methode verbessern. (Code: \texttt{github.com/Quillstacks/lecturecode\_numericalmethods.git})
+\end{itemize}
+\textbf{Self-Reflection (S.~33):}
+\begin{itemize}[nosep]
+  \item Wie gut konditioniert ist das Zwei-Gleichungs-System, verglichen mit der numerischen Lösung des Sinus-Minimums?
+  \item Konvergiert die Stabilität im Zwei-Gleichungs-System mit kleineren Schrittweiten? Gegen was?
+  \item Wie wirken sich Störungen der Eingabedaten auf die numerische Lösung des Zwei-Gleichungs-Systems aus? Gibt es ein Zusammenspiel mit der Schrittweite?
+  \item Vergleiche Konvergenz mit Stabilität und Konsistenz. Was beobachtest du? Kannst du deine Beobachtungen in Begriffen von Bias und Varianz ausdrücken?
+  \item Beobachtest du bei immer kleineren Schrittweiten eine Grenze der Genauigkeit der numerischen Lösung? Wenn ja, warum?
+  \item Welches weitere Problem beobachtest du beim Verfeinern der Schrittweite?
+\end{itemize}
+
+\subsection{Recap und Ausblick (S.~33--34)}
+Konditionierung, Stabilität, Konsistenz und Konvergenz (im Original mit Tippfehler \glqq Conditiioning\grqq{} [sic]) sind die fundamentalen Konzepte zum Verständnis numerischer Algorithmen; sie lassen sich qualitativ \emph{und} quantitativ ausdrücken, um numerische Lösungen und Methoden zu analysieren. \textbf{Teaser (Randnotiz S.~33):} \glqq So far we did brute-force numerical solutions. Can you think of a way to refine brute-force methods to get better results with less effort?\grqq{} — Brute-Force-Methoden verfeinern, um mit weniger Aufwand bessere Resultate zu erzielen; mit dem Vorlesungscode designen und testen. \textbf{Überleitung (S.~34, wörtlich):} \glqq Now that we understand and can characterize the behavior of individual numerical solutions, we can move on to understanding how to analyze entire numerical methods and algorithms. So far we have taken the assumption of where to look for a solution, inside a specific interval, for granted. This is usually not a given, and we will need to move away from local optimization methods in the next lecture.\grqq
+
+\begin{merkbox}
+\textbf{Typische Fehlerquellen:}
+\begin{itemize}[nosep]
+  \item \textbf{Hut und Tilde verwechseln:} $\hat{f}$ = numerische Methode, $\tilde{x}$ = gestörte Eingabe. $\hat{f}(\tilde{x})$ = Methode auf gestörten Daten. Wer das vertauscht, verwechselt Methoden- mit Datenfehlern.
+  \item \textbf{Konditionierung vs.\ Stabilität:} Konditionierung ist eine Eigenschaft des \emph{Problems} ($f$, Gl.~13) — Stabilität eine Eigenschaft der \emph{Methode} ($\hat{f}$, Gl.~14). Die Konditionierung ändert sich nicht, wenn man die Methode wechselt!
+  \item \textbf{\glqq Feiner ist immer besser\grqq{} ist falsch:} Kleineres $h$ verbessert die Konsistenz ($c_{0.2}\approx 0.06796 < c_1=0.15853$ [Korrektur ggü.\ Original, S.~32]), kann aber die Stabilität verschlechtern ($s_{0.2}\approx 0.4964 > s_1 \approx 0$) — und die Konvergenz im gestörten Fall gar nicht verbessern (beide $0.15853$).
+  \item \textbf{Randregionen der Diskretisierung:} Dort hat die Stabilität Anomalien — besonders bei stückweise konstanten Approximationen.
+  \item \textbf{Rechenfehler-Falle aus dem Original:} $|-0.84147-(-1)| = 0.15853$ (nicht $0.1599$ — das ist der Wert von $\kappa(-1,+0.25)$, der im PDF an der Konvergenzstelle fälschlich wieder auftaucht).
+\end{itemize}
+\textbf{Merksätze:}
+\begin{itemize}[nosep]
+  \item \emph{Das Problem ist konditioniert, die Methode ist stabil, konsistent und konvergent.}
+  \item \emph{Konvergenz $=$ Stabilität $+$ Konsistenz:} Nur wer Störungen kontrolliert \emph{und} die exakte Lösung approximiert, konvergiert.
+  \item \emph{Konvergenz gegen den falschen Wert $=$ Bias:} Ein stabiler Grenzwert $\neq f(x)$ verrät einen systematischen Methodenfehler.
+  \item \emph{Für $h \to 0$ wird Stabilität zur Konditionierung} — die Methode erbt die Empfindlichkeit des Problems.
+\end{itemize}
+\end{merkbox}

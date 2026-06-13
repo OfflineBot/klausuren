@@ -1,0 +1,94 @@
+% ============================================================
+% catppuccin-dark.sty
+% Catppuccin-Mocha-Dark-Mode fuer die Uebungsblaetter.
+% Setzt dunklen Seitenhintergrund, helle Schrift und faerbt
+% Ueberschriften, Tabellenlinien und Links mit der Mocha-Palette.
+% Einbinden NACH hyperref:  \usepackage{catppuccin-dark}
+% ============================================================
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{catppuccin-dark}[2026/06/13 Catppuccin Mocha dark mode]
+
+\RequirePackage[table]{xcolor}
+\RequirePackage{tikz}
+
+% ---------- Catppuccin Mocha Palette ----------
+\definecolor{ctpBase}{HTML}{1E1E2E}      % Hintergrund
+\definecolor{ctpMantle}{HTML}{181825}
+\definecolor{ctpCrust}{HTML}{11111B}
+\definecolor{ctpSurface0}{HTML}{313244}
+\definecolor{ctpSurface1}{HTML}{45475A}
+\definecolor{ctpSurface2}{HTML}{585B70}
+\definecolor{ctpOverlay0}{HTML}{6C7086}
+\definecolor{ctpText}{HTML}{CDD6F4}      % Standard-Schrift
+\definecolor{ctpSubtext1}{HTML}{BAC2DE}
+\definecolor{ctpSubtext0}{HTML}{A6ADC8}
+\definecolor{ctpBlue}{HTML}{89B4FA}
+\definecolor{ctpLavender}{HTML}{B4BEFE}
+\definecolor{ctpSapphire}{HTML}{74C7EC}
+\definecolor{ctpSky}{HTML}{89DCEB}
+\definecolor{ctpTeal}{HTML}{94E2D5}
+\definecolor{ctpGreen}{HTML}{A6E3A1}
+\definecolor{ctpYellow}{HTML}{F9E2AF}
+\definecolor{ctpPeach}{HTML}{FAB387}
+\definecolor{ctpMaroon}{HTML}{EBA0AC}
+\definecolor{ctpRed}{HTML}{F38BA8}
+\definecolor{ctpMauve}{HTML}{CBA6F7}
+\definecolor{ctpPink}{HTML}{F5C2E7}
+
+% ---------- Seite + Standardschrift ----------
+\pagecolor{ctpBase}
+\renewcommand{\normalcolor}{\color{ctpText}}
+\AtBeginDocument{\color{ctpText}}
+
+% ---------- Ueberschriften (KOMA-Script) ----------
+\addtokomafont{title}{\color{ctpMauve}}
+\addtokomafont{subtitle}{\color{ctpSubtext1}}
+\addtokomafont{author}{\color{ctpSubtext0}}
+\addtokomafont{date}{\color{ctpSubtext0}}
+\addtokomafont{section}{\color{ctpBlue}}
+\addtokomafont{subsection}{\color{ctpSky}}
+\addtokomafont{subsubsection}{\color{ctpSky}}
+\addtokomafont{paragraph}{\color{ctpMauve}}
+\addtokomafont{subparagraph}{\color{ctpMauve}}
+
+% ---------- Tabellenlinien (booktabs/colortbl) ----------
+\arrayrulecolor{ctpSurface2}
+
+% ---------- Schreibraum (Karo-/Kachelmuster zum Reinschreiben) ----------
+% \schreibraum[<Hoehe in Zeileneinheiten>]   (Standard: 6)
+% Zeichnet ein quadratisches 5mm-Gitter (Karopapier) ueber die Textbreite.
+\newlength{\schreibzeilenhoehe}
+\setlength{\schreibzeilenhoehe}{8.5mm}
+\newlength{\schreibgridhoehe}
+\newlength{\schreibgridbreite}
+\newcommand{\karokante}{5mm}
+\newcommand{\schreibraum}[1][6]{%
+  \par\nobreak\vspace{2mm}%
+  \setlength{\schreibgridhoehe}{#1\schreibzeilenhoehe}%
+  \setlength{\schreibgridbreite}{\dimexpr\linewidth-1pt\relax}%
+  \noindent
+  \begin{tikzpicture}[inner sep=0pt, outer sep=0pt, baseline=0pt]
+    \begin{scope}
+      \clip (0,0) rectangle (\schreibgridbreite,\schreibgridhoehe);
+      \draw[ctpSurface1, line width=0.3pt, step=\karokante]
+        (-\karokante,-\karokante)
+        grid (\dimexpr\schreibgridbreite+\karokante\relax,
+              \dimexpr\schreibgridhoehe+\karokante\relax);
+    \end{scope}
+    \draw[ctpSurface2, line width=0.5pt] (0,0) rectangle (\schreibgridbreite,\schreibgridhoehe);
+  \end{tikzpicture}%
+  \par\vspace{2mm}%
+}
+
+% ---------- Links farbig statt schwarz, ohne Rahmen ----------
+\AtBeginDocument{%
+  \hypersetup{%
+    colorlinks=true,
+    linkcolor=ctpLavender,
+    urlcolor=ctpSapphire,
+    citecolor=ctpGreen,
+    filecolor=ctpSapphire,
+  }%
+}
+
+\endinput
