@@ -1,102 +1,108 @@
-# Prompt: Weitere Übungsaufgaben erstellen
+# Prompt: Weitere Übungsaufgaben erstellen (PDF)
 
-> **Verwendung:** Dieses Fenster wurde in einem Fach-Ordner gestartet (z. B. `analysis_2/`, `numerik/`, `logik/` …).
+> **So benutzt du diesen Prompt:** Starte Claude Code im jeweiligen Fach-Ordner
+> (z. B. `analysis_2/`, `numerik/`, `logik/` …) und sage einfach:
+> *„Schau dir `../prompts/AUFGABEN.md` an und führe es aus.“*
 > Alle Pfade in diesem Prompt sind **relativ zum aktuellen Fach-Ordner**.
-> Starte, indem du diese Datei liest und den Anweisungen Schritt für Schritt folgst.
+> Folge den Schritten von oben nach unten – ohne Rückfragen, außer es geht gar nicht anders.
+
+---
+
+## ⛔ Sicherheitsregeln (oberste Priorität)
+
+- **Verändere, verschiebe oder lösche KEINE vorhandenen Dateien oder Ordner.** Alle bestehenden
+  Materialien werden **nur gelesen**.
+- Du darfst **ausschließlich** einen **neuen** Ordner `output/` im aktuellen Fach-Ordner anlegen und
+  **nur dort hinein** schreiben.
+- Schreibe nichts außerhalb von `output/`. Lege keine Dateien in `vorlesungs_materialien/`,
+  `andere_materialien/`, `openbook/`, `übungen/`, `probeklausuren/` o. Ä. an.
+- Wenn `output/` schon existiert: bestehende Dateien darin **nicht überschreiben**, sondern
+  fortlaufend weiternummerieren.
 
 ---
 
 ## Ziel
 
-Erstelle neue, klausurnahe **Übungsaufgaben** für das aktuelle Fach – basierend auf den vorhandenen
-Vorlesungsmaterialien und (falls vorhanden) bestehenden Übungsaufgaben.
-
-Die Aufgaben sollen mir beim Lernen für die Klausur helfen: Sie müssen inhaltlich **exakt** zum gelehrten
-Stoff passen, im gleichen Schwierigkeitsgrad wie Klausur/Übung liegen und **mit ausführlichen Lösungen** versehen sein.
+Erstelle neue, klausurnahe **Übungsaufgaben** als **PDF zum Ausfüllen** – plus eine separate
+**Lösungs-PDF**. Die Aufgaben müssen exakt zum gelehrten Stoff passen, im Niveau der Übung/Klausur
+liegen und vollständig korrekt gelöst sein.
 
 ---
 
 ## Ablauf
 
-### Schritt 1 – Vorlesungsmaterialien analysieren
+### Schritt 1 – Vorlesungsmaterialien analysieren (nur lesen)
 
-1. Gehe in den Ordner `vorlesungs_materialien/` und liste **alle** Dateien auf.
-2. Lies und analysiere die Materialien (PDF, Folien, Tafelaufschriebe, Bilder, HTML …) gründlich.
-3. Erstelle dir intern eine Übersicht über:
-   - die **Themen / Kapitel** und ihre Reihenfolge,
-   - die zentralen **Definitionen, Sätze, Formeln und Verfahren**,
-   - die verwendete **Notation** (übernimm sie später 1:1),
-   - typische **Aufgabentypen**, die im Stoff vorkommen.
+1. Liste **alle** Dateien in `vorlesungs_materialien/` auf und analysiere sie gründlich
+   (PDF, Folien, Tafelaufschriebe, Bilder, HTML …).
+2. Erstelle dir eine Übersicht über **Themen/Kapitel, Definitionen, Sätze, Formeln, Verfahren**,
+   die verwendete **Notation** (übernimm sie später 1:1) und typische **Aufgabentypen**.
 
-### Schritt 1b – Weitere Materialien analysieren
+### Schritt 2 – Weitere Materialien analysieren (nur lesen)
 
-1. Gehe in den Ordner `andere_materialien/` und liste **alle** Dateien auf. Analysiere sie gründlich
-   (Skripte, Zusammenfassungen, Quizze, Notizen, ZIP-Inhalte, Bilder …) – hier stecken oft zusätzliche
-   Beispiele, Schwerpunkte und Aufgabentypen.
-2. Ziehe ergänzend `openbook/` heran, **falls** dort etwas vorhanden ist.
-3. Falls ein Ordner leer ist oder fehlt: kurz vermerken und überspringen.
+1. Liste **alle** Dateien in `andere_materialien/` auf und analysiere sie gründlich
+   (Skripte, Zusammenfassungen, Quizze, Notizen, ZIP-Inhalte, Bilder …) – hier stecken oft
+   zusätzliche Beispiele und Prüfungsschwerpunkte.
+2. Ziehe ergänzend `openbook/` heran, **falls** vorhanden.
+3. Leeren oder fehlenden Ordner kurz vermerken und überspringen.
 
-### Schritt 2 – Bestehende Übungsaufgaben analysieren (falls vorhanden)
+### Schritt 3 – Bestehende Übungsaufgaben analysieren (nur lesen, falls vorhanden)
 
-1. Prüfe, ob es einen Übungsordner gibt: `übungen/` (alternativ `uebungen/`).
-2. Prüfe außerdem `probeklausuren/` auf vorhandene Aufgaben/Klausuren.
-3. Falls vorhanden: analysiere diese Aufgaben und achte auf:
-   - **Aufgabenformat** (Beweis, Rechenaufgabe, Multiple Choice, Modellierung …),
-   - **Schwierigkeitsgrad** und typischen Umfang einer Aufgabe,
-   - **Punkteverteilung** und Formulierungsstil,
-   - welche Themen **besonders oft** geprüft werden.
-4. Falls **keine** Übungsaufgaben existieren: orientiere dich allein an den Vorlesungsmaterialien und an den
-   typischen Aufgabentypen des Fachs.
+1. Prüfe `übungen/` (alternativ `uebungen/`) und `probeklausuren/` auf vorhandene Aufgaben.
+2. Achte auf **Aufgabenformat, Schwierigkeitsgrad, Umfang, Formulierungsstil** und welche Themen
+   besonders oft drankommen.
+3. Falls keine Übungsaufgaben existieren: allein an den Vorlesungs- und weiteren Materialien orientieren.
 
-### Schritt 3 – Neue Übungsaufgaben erstellen
+### Schritt 4 – Neue Übungsaufgaben entwerfen
 
-Erstelle neue Aufgaben, die sich am erkannten Stil und Niveau orientieren. Halte dich an folgende Regeln:
+- **Mindestens 8–12 Aufgaben** (oder mehr), die die wichtigsten Themen abdecken.
+- Schwierigkeit mischen und kennzeichnen: **leicht / mittel / schwer**.
+- **Gleiche Notation und Fachsprache** wie in der Vorlesung.
+- **Keine Kopien** – eigenständige, neue Varianten.
+- Zu **jeder** Aufgabe eine vollständige, nachvollziehbare **Musterlösung** mit allen Schritten.
 
-- **Decke die wichtigsten Themen** des Stoffs ab (nicht nur eines).
-- Mische die Schwierigkeitsgrade: **leicht → mittel → schwer** (kennzeichne jede Aufgabe).
-- Verwende die **gleiche Notation und Fachsprache** wie in der Vorlesung.
-- **Keine Kopien** bestehender Aufgaben – eigenständige, neue Varianten.
-- Zu **jeder** Aufgabe gehört eine **vollständige, nachvollziehbare Musterlösung** mit Rechen-/Beweisschritten
-  und kurzer Begründung.
-- Pro Durchlauf **mindestens 8–12 Aufgaben** (oder mehr, wenn der Stoff es hergibt).
+### Schritt 5 – Als PDF erzeugen
 
-### Schritt 4 – Output schreiben
+Erzeuge **zwei** PDFs im Ordner `output/uebungsaufgaben/` (Ordner bei Bedarf neu anlegen):
 
-1. Lege den Ordner `claude_übungsaufgaben/` im aktuellen Fach-Ordner an (falls noch nicht vorhanden).
-2. Schreibe die Aufgaben als **Markdown-Datei(en)** dorthin.
-   - Pro Themengebiet eine eigene Datei ist erlaubt und erwünscht, z. B.
-     `claude_übungsaufgaben/01_<thema>.md`.
-   - **Überschreibe keine** bereits vorhandenen Dateien – nummeriere fortlaufend weiter.
-3. Verwende pro Datei folgende Struktur:
+1. **`aufgaben_<NN>.pdf`** – nur die Aufgabenstellungen, **mit großzügigem Platz zum handschriftlichen
+   Ausfüllen** nach jeder Aufgabe (siehe unten).
+2. **`loesungen_<NN>.pdf`** – die vollständigen Musterlösungen.
 
-```markdown
-# Übungsaufgaben – <Thema> (<Fach>)
+`<NN>` ist eine fortlaufende Nummer (`01`, `02`, …); **nie eine vorhandene Datei überschreiben**.
 
-> Quelle der Themen: vorlesungs_materialien/<...>
-> Erstellt von Claude · Schwierigkeit gemischt
+**Vorgehen zur PDF-Erzeugung:**
 
-## Aufgabe 1  ·  [leicht | mittel | schwer]
-<Aufgabenstellung>
+1. Schreibe je ein LaTeX-Dokument (`aufgaben_<NN>.tex`, `loesungen_<NN>.tex`) nach `output/uebungsaufgaben/`.
+   - Nutze `\documentclass[a4paper,11pt]{article}`, `amsmath`, `amssymb`.
+   - Für Umlaute: bei **xelatex** `\usepackage{fontspec}`; bei **pdflatex** `\usepackage[utf8]{inputenc}`
+     und `\usepackage[T1]{fontenc}`, `\usepackage[ngerman]{babel}`.
+2. **Platz zum Ausfüllen** im Aufgaben-PDF: nach jeder Aufgabe abhängig vom Aufwand Leerraum lassen,
+   z. B. `\vspace{5cm}` bzw. für Rechenaufgaben mehr. Optional Linien zum Schreiben (z. B. via
+   `\hrulefill` in Wiederholung). Kopfzeile mit Feldern **Name** und **Datum**.
+3. Kompiliere mit **xelatex** (bevorzugt wegen Umlauten), sonst **pdflatex**:
+   `xelatex -interaction=nonstopmode -output-directory=output/uebungsaufgaben aufgaben_<NN>.tex`
+   (zweimal laufen lassen, falls Referenzen). Bei Fehlern Log lesen, `.tex` korrigieren, neu kompilieren.
+4. Mathematik konsequent in LaTeX-Mathematikumgebungen setzen.
 
-<details>
-<summary>Lösung</summary>
+### Schritt 6 – Überprüfen (Pflicht)
 
-<vollständige Musterlösung mit allen Schritten>
+1. **PDF-Check:** Bestätige, dass `aufgaben_<NN>.pdf` und `loesungen_<NN>.pdf` existieren und ohne
+   Fehler kompiliert wurden. Prüfe Seitenzahl > 0.
+2. **Inhaltliche Prüfung:** Rechne **jede** Musterlösung unabhängig nach bzw. überprüfe jeden Beweis.
+   Korrigiere Fehler in der `.tex`-Datei und kompiliere neu, bis alle Lösungen korrekt sind.
+3. **Konsistenz:** Jede Aufgabe im Aufgaben-PDF hat genau eine Lösung im Lösungs-PDF; Nummerierung passt;
+   Notation entspricht der Vorlesung.
 
-</details>
+### Schritt 7 – Zusammenfassung ausgeben
 
-## Aufgabe 2  ·  [...]
-...
-```
-
-> Mathematische Ausdrücke in LaTeX (`$...$` bzw. `$$...$$`) setzen.
+Gib am Ende kurz aus: abgedeckte Themen, Anzahl Aufgaben, erzeugte Dateien (mit Pfad) und das Ergebnis
+der Überprüfung.
 
 ---
 
 ## Wichtige Hinweise
 
-- Arbeite **nur** innerhalb des aktuellen Fach-Ordners; gehe nicht in andere Fächer.
-- Wenn ein Ordner leer ist oder fehlt, **überspringe** ihn und vermerke das kurz im Output.
+- Arbeite **nur** im aktuellen Fach-Ordner; gehe nicht in andere Fächer.
 - Erfinde keinen Stoff, der nicht zur Vorlesung passt – im Zweifel an den Materialien orientieren.
-- Gib am Ende eine **kurze Zusammenfassung** aus: welche Themen abgedeckt wurden, wie viele Aufgaben
-  erstellt wurden und in welche Dateien sie geschrieben wurden.
+- Du darfst Hilfsdateien (`.tex`, `.aux`, `.log`) erzeugen, aber **nur innerhalb von `output/`**.

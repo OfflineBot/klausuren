@@ -1,109 +1,115 @@
-# Prompt: Weitere Probeklausuren erstellen
+# Prompt: Weitere Probeklausuren erstellen (PDF)
 
-> **Verwendung:** Dieses Fenster wurde in einem Fach-Ordner gestartet (z. B. `analysis_2/`, `numerik/`, `logik/` …).
+> **So benutzt du diesen Prompt:** Starte Claude Code im jeweiligen Fach-Ordner
+> (z. B. `analysis_2/`, `numerik/`, `logik/` …) und sage einfach:
+> *„Schau dir `../prompts/KLAUSUREN.md` an und führe es aus.“*
 > Alle Pfade in diesem Prompt sind **relativ zum aktuellen Fach-Ordner**.
-> Starte, indem du diese Datei liest und den Anweisungen Schritt für Schritt folgst.
+> Folge den Schritten von oben nach unten – ohne Rückfragen, außer es geht gar nicht anders.
+
+---
+
+## ⛔ Sicherheitsregeln (oberste Priorität)
+
+- **Verändere, verschiebe oder lösche KEINE vorhandenen Dateien oder Ordner.** Alle bestehenden
+  Materialien werden **nur gelesen**.
+- Du darfst **ausschließlich** einen **neuen** Ordner `output/` im aktuellen Fach-Ordner anlegen und
+  **nur dort hinein** schreiben.
+- Schreibe nichts außerhalb von `output/`. Insbesondere **nicht** in den vorhandenen Ordner
+  `probeklausuren/` – dieser wird nur gelesen.
+- Wenn `output/` schon existiert: bestehende Dateien darin **nicht überschreiben**, sondern
+  fortlaufend weiternummerieren.
 
 ---
 
 ## Ziel
 
-Erstelle eine neue, vollständige **Probeklausur** für das aktuelle Fach – basierend auf den vorhandenen
-Probeklausuren, den Vorlesungsmaterialien und den weiteren Materialien.
-
-Die Probeklausur soll mich realistisch auf die echte Klausur vorbereiten: gleicher **Aufbau**, gleicher
-**Umfang**, gleiches **Niveau** und gleiche **Themenabdeckung** wie die echte Prüfung – inklusive
-**Punkteverteilung**, **Zeitvorgabe** und einer separaten **Musterlösung**.
+Erstelle eine neue, vollständige **Probeklausur** als **PDF zum Ausfüllen** – plus eine separate
+**Lösungs-PDF**. Gleicher Aufbau, Umfang, Niveau, gleiche Themenabdeckung, Punkteverteilung und
+Zeitvorgabe wie die echte Klausur.
 
 ---
 
 ## Ablauf
 
-### Schritt 1 – Probeklausuren analysieren
+### Schritt 1 – Probeklausuren analysieren (nur lesen)
 
-1. Gehe in den Ordner `probeklausuren/` und liste **alle** Dateien auf.
-2. Lies und analysiere jede Probeklausur (auch Lösungen, falls vorhanden) gründlich. Achte auf:
-   - **Aufbau und Reihenfolge** der Aufgaben,
-   - **Anzahl der Aufgaben** und Gesamtumfang,
-   - **Punkteverteilung** (Gesamtpunkte, Punkte pro Aufgabe/Teilaufgabe),
-   - **Zeitvorgabe** (Bearbeitungsdauer), falls angegeben,
-   - **Aufgabentypen** (Beweis, Rechnung, Multiple Choice, Modellierung, Ankreuzen …),
-   - **Formulierungsstil** und erlaubte Hilfsmittel.
-3. Falls in `vorlesungs_materialien/` oder `übungen/` zusätzliche **Übungsklausuren** liegen, beziehe sie mit ein.
-4. Falls **keine** Probeklausur existiert: rekonstruiere ein plausibles Klausurformat aus dem Stoff und den
-   Übungsaufgaben und vermerke das im Output.
+1. Liste **alle** Dateien in `probeklausuren/` auf und analysiere jede (auch Lösungen) gründlich.
+2. Achte auf: **Aufbau/Reihenfolge der Aufgaben, Anzahl der Aufgaben, Punkteverteilung
+   (Gesamt + pro Aufgabe), Zeitvorgabe, Aufgabentypen** (Beweis, Rechnung, Multiple Choice,
+   Modellierung, Ankreuzen …), **Formulierungsstil** und erlaubte **Hilfsmittel**.
+3. Beziehe zusätzliche Übungsklausuren aus `vorlesungs_materialien/` oder `übungen/` mit ein, falls vorhanden.
+4. Falls **keine** Probeklausur existiert: ein plausibles Klausurformat aus Stoff und Übungen rekonstruieren
+   und das im Output vermerken.
 
-### Schritt 2 – Vorlesungsmaterialien analysieren
+### Schritt 2 – Vorlesungsmaterialien analysieren (nur lesen)
 
-1. Gehe in den Ordner `vorlesungs_materialien/` und liste **alle** Dateien auf.
-2. Analysiere sie gründlich und erstelle dir eine Übersicht über **Themen, Definitionen, Sätze, Formeln,
-   Verfahren** und die verwendete **Notation** (übernimm sie später 1:1).
-3. Ermittle, welche Themen klausurrelevant sind und welche besonders häufig geprüft werden.
+1. Liste **alle** Dateien in `vorlesungs_materialien/` auf und analysiere sie gründlich.
+2. Erstelle eine Übersicht über **Themen, Definitionen, Sätze, Formeln, Verfahren** und die **Notation**
+   (übernimm sie später 1:1). Ermittle die klausurrelevanten und häufig geprüften Themen.
 
-### Schritt 3 – Weitere Materialien analysieren
+### Schritt 3 – Weitere Materialien analysieren (nur lesen)
 
-1. Gehe in den Ordner `andere_materialien/` und liste **alle** Dateien auf. Analysiere sie gründlich
-   (Skripte, Zusammenfassungen, Quizze, Notizen, ZIP-Inhalte, Bilder …) – hier stecken oft zusätzliche
-   Beispiele und Hinweise auf Prüfungsschwerpunkte.
-2. Ziehe ergänzend `openbook/` heran, **falls** dort etwas vorhanden ist.
-3. Falls ein Ordner leer ist oder fehlt: kurz vermerken und überspringen.
+1. Liste **alle** Dateien in `andere_materialien/` auf und analysiere sie gründlich
+   (Skripte, Zusammenfassungen, Quizze, Notizen, ZIP-Inhalte, Bilder …) – hier stecken oft Hinweise
+   auf Prüfungsschwerpunkte.
+2. Ziehe ergänzend `openbook/` heran, **falls** vorhanden.
+3. Leeren oder fehlenden Ordner kurz vermerken und überspringen.
 
-### Schritt 4 – Neue Probeklausur erstellen
-
-Erstelle eine komplette, neue Probeklausur, die dem erkannten Format **so genau wie möglich** entspricht:
+### Schritt 4 – Neue Probeklausur entwerfen
 
 - **Gleiche Struktur** wie die echten Probeklausuren (Anzahl Aufgaben, Reihenfolge, Aufgabentypen).
 - **Gleiche Gesamtpunktzahl und Punkteverteilung**; jede Aufgabe mit Punktangabe.
-- **Zeitvorgabe** übernehmen (falls bekannt) und im Kopf der Klausur angeben.
+- **Zeitvorgabe** übernehmen (falls bekannt).
 - **Repräsentative Themenabdeckung** über den klausurrelevanten Stoff – nicht nur ein Thema.
 - **Gleiche Notation und Fachsprache** wie in der Vorlesung.
-- **Keine Kopien** bestehender Aufgaben – eigenständige, neue Aufgaben im gleichen Stil und Niveau.
-- Eine **vollständige, nachvollziehbare Musterlösung** zu jeder Aufgabe (mit Punktevergabe pro Schritt,
-  falls in den Originalen so gehandhabt).
+- **Keine Kopien** – eigenständige neue Aufgaben im gleichen Stil und Niveau.
+- Eine vollständige, nachvollziehbare **Musterlösung** zu jeder Aufgabe (mit Punktevergabe pro Schritt,
+  falls die Originale das so machen).
 
-### Schritt 5 – Output schreiben
+### Schritt 5 – Als PDF erzeugen
 
-1. Lege den Ordner `claude_probeklausuren/` im aktuellen Fach-Ordner an (falls noch nicht vorhanden).
-2. Schreibe pro Durchlauf eine neue Probeklausur als **Markdown-Datei** dorthin.
-   - **Überschreibe keine** vorhandenen Dateien – nummeriere fortlaufend, z. B.
-     `claude_probeklausuren/Probeklausur_01.md`.
-   - Lege die Musterlösung entweder als eigene Datei (`Probeklausur_01_Loesung.md`) an **oder** als
-     ausklappbaren Lösungsteil pro Aufgabe – orientiere dich daran, wie die Originale aufgebaut sind.
-3. Verwende folgende Grundstruktur:
+Erzeuge **zwei** PDFs im Ordner `output/probeklausuren/` (Ordner bei Bedarf neu anlegen):
 
-```markdown
-# Probeklausur <Fach> – Nr. <n>
+1. **`probeklausur_<NN>.pdf`** – die Klausur mit Kopf (**Name**, **Datum**, **Bearbeitungszeit**,
+   **Gesamtpunkte**, **Hilfsmittel**) und **großzügigem Platz zum handschriftlichen Ausfüllen** nach
+   jeder Aufgabe.
+2. **`probeklausur_<NN>_loesung.pdf`** – die vollständigen Musterlösungen.
 
-**Bearbeitungszeit:** <z. B. 90 Minuten>   ·   **Gesamtpunkte:** <z. B. 60>
-**Hilfsmittel:** <wie im Original>
+`<NN>` ist eine fortlaufende Nummer (`01`, `02`, …); **nie eine vorhandene Datei überschreiben**.
 
-> Erstellt von Claude · orientiert an probeklausuren/<...>
+**Vorgehen zur PDF-Erzeugung:**
 
----
+1. Schreibe je ein LaTeX-Dokument (`probeklausur_<NN>.tex`, `probeklausur_<NN>_loesung.tex`) nach
+   `output/probeklausuren/`.
+   - `\documentclass[a4paper,11pt]{article}`, `amsmath`, `amssymb`.
+   - Umlaute: bei **xelatex** `\usepackage{fontspec}`; bei **pdflatex** `\usepackage[utf8]{inputenc}`,
+     `\usepackage[T1]{fontenc}`, `\usepackage[ngerman]{babel}`.
+   - Kopf der Klausur mit Feldern Name/Datum und der Tabelle Aufgabe → Punkte (zum Eintragen).
+2. **Platz zum Ausfüllen**: nach jeder Aufgabe abhängig von Punkten/Aufwand Leerraum lassen
+   (`\vspace{...}`, mehr Platz bei mehr Punkten); bei Multiple-Choice die Ankreuzkästchen einbauen.
+3. Kompiliere mit **xelatex** (bevorzugt), sonst **pdflatex**:
+   `xelatex -interaction=nonstopmode -output-directory=output/probeklausuren probeklausur_<NN>.tex`
+   (zweimal laufen lassen, falls Referenzen). Bei Fehlern Log lesen, `.tex` korrigieren, neu kompilieren.
+4. Mathematik konsequent in LaTeX-Mathematikumgebungen setzen.
 
-## Aufgabe 1  ·  (<x> Punkte)  ·  <Aufgabentyp>
-<Aufgabenstellung>
+### Schritt 6 – Überprüfen (Pflicht)
 
-## Aufgabe 2  ·  (<x> Punkte)
-...
+1. **PDF-Check:** Bestätige, dass `probeklausur_<NN>.pdf` und `probeklausur_<NN>_loesung.pdf` existieren,
+   fehlerfrei kompiliert wurden und Seitenzahl > 0 haben.
+2. **Inhaltliche Prüfung:** Rechne **jede** Musterlösung unabhängig nach bzw. überprüfe jeden Beweis.
+   Korrigiere Fehler in der `.tex`-Datei und kompiliere neu, bis alle Lösungen korrekt sind.
+3. **Format-Check:** Punktesumme stimmt mit der angegebenen Gesamtpunktzahl überein; die Klausur ist in der
+   angegebenen Zeit **realistisch lösbar**; jede Aufgabe hat genau eine Lösung; Notation wie in der Vorlesung.
 
----
+### Schritt 7 – Zusammenfassung ausgeben
 
-# Musterlösung
-## Lösung Aufgabe 1
-<vollständige Lösung mit Punktevergabe>
-...
-```
-
-> Mathematische Ausdrücke in LaTeX (`$...$` bzw. `$$...$$`) setzen.
+Gib am Ende kurz aus: erkanntes Klausurformat (Punkte, Zeit, Aufgabenanzahl), abgedeckte Themen,
+erzeugte Dateien (mit Pfad) und das Ergebnis der Überprüfung.
 
 ---
 
 ## Wichtige Hinweise
 
-- Arbeite **nur** innerhalb des aktuellen Fach-Ordners; gehe nicht in andere Fächer.
-- Wenn ein Ordner leer ist oder fehlt, **überspringe** ihn und vermerke das kurz im Output.
+- Arbeite **nur** im aktuellen Fach-Ordner; gehe nicht in andere Fächer.
 - Erfinde keinen Stoff, der nicht zur Vorlesung passt – im Zweifel an den Materialien orientieren.
-- Achte darauf, dass die Probeklausur in der angegebenen Zeit **realistisch lösbar** ist.
-- Gib am Ende eine **kurze Zusammenfassung** aus: welches Klausurformat erkannt wurde (Punkte, Zeit, Aufgabenanzahl),
-  welche Themen abgedeckt wurden und in welche Datei(en) geschrieben wurde.
+- Du darfst Hilfsdateien (`.tex`, `.aux`, `.log`) erzeugen, aber **nur innerhalb von `output/`**.
