@@ -1,0 +1,263 @@
+% ============================================================
+% Thema 1: Enter Numerical Methods (Original: S. 9-16)
+% ============================================================
+\section{Enter Numerical Methods (S.~9--16)}
+
+\subsection{Motivation und Einordnung}
+
+Numerische Methoden (numerical methods) sind ein Teilgebiet der Mathematik, in dem Lösungen nicht analytisch exakt, sondern approximativ berechnet werden -- das Skript fasst dies unter dem Motto \emph{Tapping into Computational Power} zusammen (S.~9). Es gibt gute Gründe für dieses Vorgehen: Viele Probleme sind analytisch gar nicht lösbar oder zu komplex, um praktikabel zu sein, und wir können Rechenleistung (computational power) anzapfen, um approximative Lösungen effizient zu erhalten (S.~9). In Machine Learning und künstlicher Intelligenz sind numerische Methoden entscheidend für das Training von Modellen, die Optimierung von Parametern und die Simulation komplexer Systeme, wo analytische Lösungen unmöglich (infeasible) sind; sie ermöglichen den effizienten Umgang mit großen Datensätzen und komplexen Algorithmen und stellen sicher, dass Modelle effektiv aus Daten lernen können, während die Rechenressourcen (computational resources) im Rahmen gehalten werden (S.~9). Besonders im Deep Learning, wo Modelle Millionen Parameter umfassen und umfangreiche Berechnungen erfordern, erleichtern numerische Methoden die Optimierungsprozesse, die dem Modelltraining zugrunde liegen -- sie sind damit unverzichtbar für den Fortschritt dieser Modelle (S.~9).\footnote{Further Reading (S.~9): T.~Arens et al.: \emph{Mathematik}, Springer; W.~Dahmen, A.~Reusken: \emph{Numerik für Ingenieure und Naturwissenschaftler}, Springer; M.~P.~Deisenroth, A.~A.~Faisal, C.~S.~Ong: \emph{Mathematics for Machine Learning}, Cambridge University Press; P.~Deuflhard, A.~Hohmann: \emph{Numerische Mathematik 1 -- Eine algorithmisch orientierte Einführung}, De Gruyter.}
+
+Zwei Randnotizen des Skripts ordnen den Begriff historisch und technisch ein: Das Wort \emph{Approximation} stammt vom lateinischen \emph{approximare}, \glqq to come near to\grqq{} (sich annähern) (S.~9). Und das \emph{Mooresche Gesetz} (Moore's Law) besagt, dass sich die Rechenleistung etwa alle zwei Jahre verdoppelt; heutige Consumer-GPUs haben Tausende Kerne und schaffen Billionen Gleitkommaoperationen pro Sekunde (S.~9).\footnote{G.~E.~Moore: \emph{Cramming more components onto integrated circuits}, Electronics, 38(8):114--117, 1965. Als modernes Beispiel verweist das Skript auf den GPT-2-Release: \url{https://openai.com/index/gpt-2-1-5b-release/} (S.~9).}
+
+\subsection{Lernziele (S.~11)}
+
+\begin{enumerate}[itemsep=1pt]
+  \item Erklären können, wann numerische Methoden eingesetzt werden und welche Probleme beim analytischen Lösen auftreten.
+  \item Diskretisierung (discretization) verstehen: kontinuierliche mathematische Probleme in diskrete, computerlösbare Approximationen transformieren.
+  \item Grundlegende numerische Techniken auf einfache Probleme von Hand anwenden und größere Probleme am Computer \emph{crunchen}.
+\end{enumerate}
+
+\subsection{Hands-On: Die Grenzen analytischer Lösungen (S.~10--11)}
+
+Bevor die Theorie kommt, vermittelt das Skript ein Gefühl dafür, warum AI/ML so stark auf numerischen Methoden beruht: Die \emph{Grenzen der Skalierung analytischer Lösungen} (limits of scaling analytical solutions) werden bei großskaligen Problemen offensichtlich (S.~10). Als Einstieg dient ein lineares $2\times 2$-Gleichungssystem, das analytisch per Substitution gelöst wird. Unter \emph{Analytik} versteht das Skript dabei Methoden wie Substitution, Elimination, Matrixinversion etc.\ aus der linearen Algebra (Randnotiz, S.~10).
+
+\begin{defbox}{Numerische Methoden (informell)}
+\glqq Numerical methods are a subfield of mathematics in which we calculate our solutions not analytically exactly, but approximately.\grqq{} -- Numerische Methoden sind ein Teilgebiet der Mathematik, in dem Lösungen nicht analytisch exakt, sondern \emph{approximativ} berechnet werden. Sie sind essenziell zur Lösung mathematischer Probleme, die analytisch nicht adressiert werden können (S.~9; vgl.\ Introduction, S.~7).
+\end{defbox}
+
+\begin{bspbox}{Analytische Lösung eines $2\times 2$-Systems per Substitution (S.~10)}
+Gegeben ist das lineare Gleichungssystem (Gl.~1 im Skript, S.~10):
+\[
+\begin{bmatrix} 2 & 1 \\ 5 & 1 \end{bmatrix}
+\begin{bmatrix} w_1 \\ w_2 \end{bmatrix}
+=
+\begin{bmatrix} 11 \\ 13 \end{bmatrix}
+\]
+\textbf{Vollständige Substitutionsrechnung:}
+\begin{itemize}[itemsep=0pt]
+  \item Aus der ersten Gleichung: $2w_1 + w_2 = 11 \;\Rightarrow\; w_2 = 11 - 2w_1$
+  \item Einsetzen in die zweite Gleichung: $5w_1 + 1\,(11 - 2w_1) = 13$
+  \item $5w_1 + 11 - 2w_1 = 13$
+  \item $3w_1 + 11 = 13$
+  \item $3w_1 = 2$
+  \item $w_1 = \dfrac{2}{3}$
+  \item Rückeinsetzen: $w_2 = 11 - 2\left(\dfrac{2}{3}\right) = 11 - \dfrac{4}{3} = \dfrac{33-4}{3} = \dfrac{29}{3}$
+\end{itemize}
+\textbf{Verifikation:}
+\[
+\text{1.\ Gleichung: } 2\left(\tfrac{2}{3}\right) + \tfrac{29}{3} = \tfrac{4}{3} + \tfrac{29}{3} = \tfrac{33}{3} = 11 \checkmark
+\qquad
+\text{2.\ Gleichung: } 5\left(\tfrac{2}{3}\right) + 1\left(\tfrac{29}{3}\right) = \tfrac{10}{3} + \tfrac{29}{3} = \tfrac{39}{3} = 13 \checkmark
+\]
+\end{bspbox}
+
+\emph{However} (S.~11): Für zwei Gleichungen ist das gut lösbar, aber mit wachsender Systemgröße (z.\,B.\ Tausende Gleichungen mit Tausenden Unbekannten) werden analytische Lösungen wegen der Rechenkomplexität (computational complexity) und Zeitbeschränkungen unpraktikabel -- die Komplexität wächst mit der Systemgröße (Randnotiz, S.~10). Als Marginalien-Übung stellt das Skript dazu ein größeres $3\times 3$-System (Gl.~2 im Skript, S.~10; siehe Übungsaufgaben unten).
+
+Analytische Lösungen stoßen auch bei \emph{nichtlinearen} Gleichungen an Grenzen. Das Skript zeigt das an der Sigmoid-Funktion:
+
+\begin{satzbox}{Sigmoid-Funktion (Gl.~3 im Skript, S.~11)}
+\[
+\sigma(x) = \frac{1}{1 + e^{-x}}
+\]
+\emph{In eigenen Worten:} Die Sigmoid-Funktion bildet jede reelle Zahl $x$ auf das offene Intervall $(0,1)$ ab. Der Exponentialterm $e^{-x}$ im Nenner macht es unmöglich, $x$ mit elementaren Funktionen (Polynome, rationale, trigonometrische Funktionen) zu isolieren -- man kann die Gleichung also nicht \emph{nach $x$ auflösen}. Laut Randnotiz (S.~11) ist $\sigma(x)$ die in neuronalen Netzen gebräuchliche Sigmoid-Aktivierungsfunktion und eine transzendente Funktion; eine geschlossene Lösung für $\sigma(x) = 0$ existiert nicht: $\sigma(x)$ nähert sich $0$ asymptotisch für $x \to -\infty$, erreicht $0$ aber für keinen endlichen Wert von $x$ (Grenzfall/Warnung: die Nullstelle existiert gar nicht!).
+\end{satzbox}
+
+\begin{defbox}{Transzendente Funktionen (transcendental functions)}
+Transzendente Funktionen können nicht als endliche Kombinationen algebraischer Operationen (Addition, Subtraktion, Multiplikation, Division, Wurzeln) ausgedrückt werden und besitzen daher keine geschlossenen Lösungen (closed-form solutions) (S.~11).
+\end{defbox}
+
+\subsection{Diskretisierung (S.~12)}
+
+\begin{defbox}{Diskretisierung (Discretization)}
+Diskretisierung bedeutet, kontinuierliche Domänen (Zeit, Raum oder andere Funktionen) in endliche Schritte oder Gitter (grids) zu zerlegen und die Funktionen an diskreten Punkten mit endlicher Präzision auszuwerten (S.~12):
+\begin{itemize}[itemsep=0pt]
+  \item Kontinuierliche Funktion: $f(x), \quad x \in [a, b]$
+  \item Diskretisierte Funktion: $f(x_i), \quad x_i = a + ih, \quad i = 0, 1, \ldots, N$
+\end{itemize}
+\end{defbox}
+
+\begin{satzbox}{Schrittweite (step size) (Gl.~4 im Skript, S.~12)}
+\[
+h = \frac{b-a}{N}
+\]
+\emph{In eigenen Worten:} Die Schrittweite $h$ ergibt sich, indem man die Länge des Intervalls $[a,b]$ gleichmäßig in $N$ Schritte unterteilt; $N$ ist die Anzahl der Schritte auf dem Intervall. Kleines $h$ (also großes $N$) bedeutet ein feineres Gitter -- höhere Genauigkeit, aber mehr Auswertungen und damit mehr Rechenzeit.
+\end{satzbox}
+
+Eine Randnotiz erinnert daran, dass die Klammern $[$ und $]$ ein \emph{geschlossenes Intervall} (closed interval) bezeichnen: Die Randwerte $a$ und $b$ sind in der Definitionsmenge enthalten (Remember, S.~12). Das Skript illustriert die Diskretisierung mit Figure~1 (S.~12): die kontinuierliche Kurve $f(x) = \sin(x)$ und ihre diskretisierte Version (schwarze Punkte) auf $[-3, 1]$ mit Schrittweite $h = 1$.
+
+\subsection{Beispiel: Minimumsuche analytisch vs.\ numerisch (S.~12--13)}
+
+\begin{bspbox}{Analytische Minimumsuche von $\sin(x)$ auf $[-3,1]$ (S.~12--13)}
+Gesucht ist $\min_{x \in [-3,1]} \sin(x)$. Das Minimum tritt auf, wo die Ableitung verschwindet und die zweite Ableitung positiv ist:
+\[
+f(x) = \sin(x), \qquad f'(x) = \cos(x) = 0 \;\implies\; x^* = \frac{\pi}{2} + k\pi, \quad k \in \mathbb{Z}
+\]
+(Die allgemeine Lösung von $\cos(x)=0$ liefern die trigonometrischen Regeln; falls vergessen, lässt sie sich am Einheitskreis herleiten -- Randnotiz, S.~12.)
+Kritische Punkte in $[-3,1]$:
+\[
+x_1 = -\frac{\pi}{2} \approx -1.5708, \qquad
+x_2 = \frac{\pi}{2} \approx 1.5708 \quad (> 1,\ \text{nicht im Intervall -- Grenzfall!})
+\]
+Prüfung der Endpunkte und von $x_1$:
+\[
+\sin(-3) \approx -0.1411, \qquad \sin\!\left(-\frac{\pi}{2}\right) = -1, \qquad \sin(1) \approx 0.8415
+\]
+\textbf{Ergebnis:} Das Minimum ist $-1$ bei $x = -\frac{\pi}{2} \approx -1.5708$. (Vgl.\ Figure~2, S.~12: Sinuskurve, Ableitung $\cos(x)$ gestrichelt, analytisches Minimum als schwarzer Punkt; die gestrichelte graue Linie markiert den kritischen Punkt bei $x=-\pi/2$.)
+\end{bspbox}
+
+\begin{defbox}{Extrema auf geschlossenem Intervall (Stolperfalle)}
+Das Minimum (oder Maximum) einer Funktion auf einem geschlossenen Intervall $[a,b]$ kann an einem kritischen Punkt (Ableitung null oder nicht definiert) im Inneren \emph{oder} an den Endpunkten $a$, $b$ auftreten -- auch wenn dort die Ableitung nicht null ist. Deshalb müssen bei der Extremasuche auf geschlossenen Intervallen stets kritische Punkte \emph{und} Endpunkte geprüft werden (S.~13).
+\end{defbox}
+
+\emph{On to the numerical solution} (S.~13): Statt analytisch abzuleiten, wertet man die Funktion an diskreten Punkten über dem Intervall aus und wählt den Punkt mit minimalem Wert -- eine Brute-Force-Gittersuche.
+
+\begin{defbox}{Brute Force / Gittersuche (grid search)}
+Brute Force bedeutet, alle möglichen Optionen auszuprobieren und die beste zu wählen -- hier umgesetzt per Gittersuche (grid search): Die Funktion wird an allen Gitterpunkten ausgewertet, und der beste (z.\,B.\ minimale) Wert wird ausgewählt (Randnotiz, S.~13).
+\end{defbox}
+
+\begin{bspbox}{Numerische Minimumsuche von $\sin(x)$ per Grid Search (S.~13)}
+Diskretisierung von $[-3,1]$ mit Schrittweite $h = 1$ und Auswertung an allen Gitterpunkten (vgl.\ Figure~3, S.~13, die wie Figure~1 die Sinuskurve mit den diskreten Stützstellen zeigt):
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+$x_i$ & Funktionswert \\
+\midrule
+$x_0 = -3$ & $\sin(-3) \approx -0.1411$ \\
+$x_1 = -2$ & $\sin(-2) \approx -0.9093$ \\
+$x_2 = -1$ & $\sin(-1) \approx -0.8415$ \\
+$x_3 = 0$  & $\sin(0) = 0$ \\
+$x_4 = 1$  & $\sin(1) \approx 0.8415$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+\textbf{Ergebnis:} \glqq the minimum among these is $\sin(-2) \approx -0.9093$ at $x = -2$.\grqq{} Der Approximationsfehler gegenüber der analytischen Lösung beträgt
+\[
+|-1 - (-0.9093)| = 0.0907.
+\]
+Die Wahl der Schrittweite $h$ beeinflusst die Genauigkeit der Approximation: Eine kleinere Schrittweite führt näher ans wahre Minimum heran (Randnotiz, S.~13). Auch die Intervallwahl spielt eine Rolle.\footnote{Die zugehörige Randnotiz auf S.~13 bricht im Original mitten im Satz ab (\glqq Further the interval selection matters, in a sense that it .\grqq); der Rest des Gedankens ist nicht rekonstruierbar und wird hier weggelassen.}
+\end{bspbox}
+
+\begin{defbox}{Approximationsfehler (Approximation Error)}
+Der Approximationsfehler ist die Differenz zwischen analytischer und numerischer Lösung (Randnotiz, S.~13). Im Sinus-Beispiel konkret: $|-1 - (-0.9093)| = 0.0907$.
+\end{defbox}
+
+\subsection{Grid Search für das lineare System (S.~14--15)}
+
+Auch das lineare Gleichungssystem von oben lässt sich per Brute-Force-Diskretisierung und Approximation lösen. Das Skript schreibt das System dazu mit den Variablen $w$ und $b$ (Gl.~5 im Skript, S.~14):
+\[
+\begin{bmatrix} 2 & 1 \\ 5 & 1 \end{bmatrix}
+\begin{bmatrix} w \\ b \end{bmatrix}
+=
+\begin{bmatrix} 11 \\ 13 \end{bmatrix}
+\]
+Die Bezeichner sind kein Zufall: Eine Randnotiz (S.~14) weist darauf hin, dass $xw + b$ ein lineares Modell (linear regression) bildet, das man auch als die einfachste Form eines neuronalen Netzes mit einer einzigen Einheit $\theta$ auffassen kann -- der direkte ML-Anwendungsbezug.
+
+\begin{satzbox}{Fehlerdefinition der Grid Search (Gl.~6 im Skript, S.~14)}
+\[
+\text{error}_1 = |2w + b - 11|, \qquad \text{error}_2 = |5w + b - 13|
+\]
+\emph{In eigenen Worten:} Für jede Kandidatenkombination $(w,b)$ misst man, wie stark die linke Seite jeder Gleichung von der rechten Seite abweicht -- als Betrag der Differenz, damit sich positive und negative Abweichungen nicht aufheben. Der Gesamtfehler (akkumulierter Fehler) ist die Summe der absoluten Differenzen beider Gleichungen. Man wertet alle Kombinationen aus und wählt das $(w,b)$-Paar mit dem kleinsten akkumulierten Fehler.
+\end{satzbox}
+
+\begin{bspbox}{Grid Search für das lineare System, Schrittweite 2.5 (S.~14--15, Tab.~1)}
+Die Variablen $w$ und $b$ werden über das Gitter $w, b \in \{0,\ 2.5,\ 5,\ 7.5,\ 10\}$ diskretisiert (Schrittweite $2.5$); für jede der $5 \times 5 = 25$ Kombinationen werden $2w+b$ und $5w+b$ samt Fehlern nach Gl.~6 berechnet. Tabelle~1 des Skripts (S.~15) vollständig -- Werte von $2w+b$ und $5w+b$ mit Fehlern zu $11$ bzw.\ $13$ in Klammern; die letzte Spalte zeigt den akkumulierten Fehler (Summe der absoluten Fehler):
+
+\begin{center}
+\begin{tabular}{rrllr}
+\toprule
+$w$ & $b$ & $2w+b$ (error$_1$) & $5w+b$ (error$_2$) & Error \\
+\midrule
+0   & 0   & 0 (11)        & 0 (13)         & 24 \\
+0   & 2.5 & 2.5 (8.5)     & 2.5 (10.5)     & 19 \\
+0   & 5   & 5 (6)         & 5 (8)          & 14 \\
+0   & 7.5 & 7.5 (3.5)     & 7.5 (5.5)      & 9 \\
+0   & 10  & 10 (1)        & 10 (3)         & \textbf{4*} \\
+2.5 & 0   & 5 (6)         & 12.5 (0.5)     & 6.5 \\
+2.5 & 2.5 & 7.5 (3.5)     & 15 (2)         & 5.5 \\
+2.5 & 5   & 10 (1)        & 17.5 (4.5)     & 5.5 \\
+2.5 & 7.5 & 12.5 (1.5)    & 20 (7)         & 8.5 \\
+2.5 & 10  & 15 (4)        & 22.5 (9.5)     & 13.5 \\
+5   & 0   & 10 (1)        & 25 (12)        & 13 \\
+5   & 2.5 & 12.5 (1.5)    & 27.5 (14.5)    & 16 \\
+5   & 5   & 15 (4)        & 30 (17)        & 21 \\
+5   & 7.5 & 17.5 (6.5)    & 32.5 (19.5)    & 26 \\
+5   & 10  & 20 (9)        & 35 (22)        & 31 \\
+7.5 & 0   & 15 (4)        & 37.5 (24.5)    & 28.5 \\
+7.5 & 2.5 & 17.5 (6.5)    & 40 (27)        & 33.5 \\
+7.5 & 5   & 20 (9)        & 42.5 (29.5)    & 38.5 \\
+7.5 & 7.5 & 22.5 (11.5)   & 45 (32)        & 43.5 \\
+7.5 & 10  & 25 (14)       & 47.5 (34.5)    & 48.5 \\
+10  & 0   & 20 (9)        & 50 (37)        & 46 \\
+10  & 2.5 & 22.5 (11.5)   & 52.5 (39.5)    & 51 \\
+10  & 5   & 25 (14)       & 55 (42)        & 56 \\
+10  & 7.5 & 27.5 (16.5)   & 57.5 (44.5)    & 61 \\
+10  & 10  & 30 (19)       & 60 (47)        & 66 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{Ergebnis:} Der minimale Fehler tritt bei $w = 0$, $b = 10$ mit einem Fehler von $4$ auf (mit * markiert).
+
+[Ergänzung] Vergleich mit der wahren Lösung: Das Grid-Search-Minimum $w = 0$, $b = 10$ weicht stark von der exakten Lösung $w = 2/3$, $b = 29/3 \approx 9.67$ ab -- das illustriert die Grenzen grober Gitter. $b = 10$ liegt zwar nahe am wahren $b$, $w$ ist jedoch deutlich falsch. Ein feineres Gitter (kleinere Schrittweite) würde die Approximation verbessern, aber den Rechenaufwand quadratisch in der Zahl der Gitterpunkte pro Variable erhöhen.
+\end{bspbox}
+
+\paragraph{Der Wert des Handrechnens (S.~14).} \glqq There is value in doing this by hand\grqq{} -- die Handrechnung hilft, die Mechanik numerischer Methoden zu verstehen, und gibt eine Intuition über die Rechenkosten von Brute-Force-Methoden (\glqq This was only 100 operations\grqq; später im Kurs folgen effizientere Ansätze). Die Botschaft: Genau so etwas will man an den Computer übergeben und automatisieren -- der mit dieser Problemgröße nicht einmal ansatzweise Probleme hat.
+
+\paragraph{Enter the machine (S.~14).} Viele numerische Methoden sind von vornherein für die Computer-Implementierung konzipiert. Im Kurs wird zwischen Handrechnungen (kleine Beispiele) und Computer-Implementierungen (größere Probleme) gewechselt. Zu diesem Kapitel gibt es ein vorgehostetes Jupyter Notebook mit einem Python-Template für die Übung; die Selbstreflexionsfragen dienen als Leitfaden beim Explorieren und Experimentieren.\footnote{Code-Hosting laut Randnotiz (S.~14): \url{https://enlitenment.schutera.com/landing} (URL-Schreibweise im Original unsicher, evtl.\ \emph{enlightenment}).} Eine Randnotiz zu den Übungen (S.~14, im Original \glqq Excercises\grqq{} [sic]) gibt einen Lernhinweis: Übungen dienen der Übung und Festigung der Konzepte -- erst selbst versuchen, Dinge ausprobieren, damit spielen, diskutieren; das ist kein Zeitrennen. Es ist keine Schande, nicht bei der richtigen Antwort zu landen: Gute Fragen aufzudecken und hin- und herzuwerfen ist langfristig meist sehr fruchtbar.
+
+\subsection{Recap of Key Concepts (S.~16)}
+
+\begin{itemize}[itemsep=1pt]
+  \item Numerische Methoden sind essenziell für komplexe mathematische Probleme ohne analytische Lösung.
+  \item Diskretisierung transformiert kontinuierliche Probleme in diskrete Approximationen, die für rechnerische Methoden geeignet sind.
+  \item Numerische Berechnungen von Hand lohnen sich für kleine Probleme (Verständnis der Mechanik); für größere Probleme sind Computer unverzichtbar.
+  \item \emph{Errors everywhere:} Mathematische Modelle sind Vereinfachungen der Realität, und numerische Methoden führen zusätzliche Fehler durch Approximation ein.
+\end{itemize}
+
+\begin{satzbox}{Approximation durch Diskretisierung (Gl.~7 im Skript, S.~16)}
+\[
+f(x) \approx f(x_i), \qquad x_i = a + ih
+\]
+\emph{In eigenen Worten:} Die kontinuierliche Funktion $f(x)$ wird nur noch an den Gitterpunkten $x_i$ ausgewertet -- dazwischen kennen wir sie nicht. Genau dieses \glqq$\approx$\grqq{} ist die Quelle des Approximationsfehlers. Die numerische Berechnung führt damit einige Fehlertypen ein, die man verstehen muss, \glqq in order to be able to fully harness this new methodology\grqq{} -- die Überleitung zu den Kapiteln 2 und 3.
+\end{satzbox}
+
+\paragraph{Teaser (Randnotiz, S.~16).} \glqq Can you think of a simple way to improve the accuracy to compute ratio of our grid search example from above?\grqq{} -- Gibt es einen einfachen Weg, das Verhältnis von Genauigkeit zu Rechenaufwand der Grid Search zu verbessern? [Ergänzung] Ein Denkanstoß in Richtung adaptiver bzw.\ verfeinerter Suche: erst grob suchen, dann nur um den besten Kandidaten herum mit feinerem Gitter weitersuchen.
+
+\subsection{Übungsaufgaben und Selbstreflexionsfragen}
+
+\textbf{Übungen (nur Aufgabenstellung; Lösungen in den Übungsblättern):}
+\begin{enumerate}[itemsep=1pt]
+  \item (Randnotiz, S.~10) \glqq Now take a shot and solve this larger system of three equations with three unknowns\grqq{} -- löse das $3\times 3$-System (Gl.~2 im Skript, S.~10):
+  \[
+  \begin{bmatrix} 2 & 1 & 3 \\ 1 & 4 & 2 \\ 3 & 2 & 5 \end{bmatrix}
+  \begin{bmatrix} w_1 \\ w_2 \\ w_3 \end{bmatrix}
+  =
+  \begin{bmatrix} 14 \\ 20 \\ 32 \end{bmatrix}
+  \]
+  \item (S.~14) Exploriere und experimentiere mit der Grid Search für Gl.~5/6 im vorgehosteten Jupyter Notebook (Python-Template).
+\end{enumerate}
+
+\textbf{Self-Reflection (S.~15):}
+\begin{enumerate}[itemsep=1pt]
+  \item Warum ist die Wahl der Schrittweite $h$ beim Diskretisieren einer kontinuierlichen Funktion wichtig, und wie beeinflusst sie die Genauigkeit und die Rechenzeit der numerischen Lösung?
+  \item Wie beeinflusst die Wahl des Intervalls $[a,b]$ die Ergebnisse der Diskretisierung und die Lage der numerisch gefundenen Extrema?
+  \item Was sind die Hauptunterschiede zwischen einer kontinuierlichen Funktion und ihrer diskretisierten Version, und welche Implikationen hat das für das numerische Lösen mathematischer Probleme?
+\end{enumerate}
+
+\begin{merkbox}
+\textbf{Typische Fehlerquellen:}
+\begin{itemize}[itemsep=1pt]
+  \item Bei der Extremasuche auf geschlossenen Intervallen die \emph{Endpunkte} vergessen -- Extrema können auch am Rand liegen, wo die Ableitung nicht null ist (S.~13).
+  \item Kritische Punkte außerhalb des Intervalls mitzählen: $x = \pi/2 \approx 1.5708 > 1$ liegt \emph{nicht} in $[-3,1]$ (Grenzfall!).
+  \item Nach Nullstellen von Funktionen suchen, die gar keine haben: $\sigma(x) = 0$ hat keine Lösung -- die Sigmoid-Funktion nähert sich $0$ nur asymptotisch (S.~11).
+  \item Grid-Search-Ergebnisse mit der exakten Lösung verwechseln: Bei grobem Gitter kann das gefundene Optimum ($w=0$, $b=10$) weit von der wahren Lösung ($w=2/3$, $b=29/3$) entfernt sein.
+  \item Die Wirkung der Schrittweite unterschätzen: $h$ steuert den Kompromiss zwischen Genauigkeit und Rechenaufwand.
+\end{itemize}
+\textbf{Merksätze:}
+\begin{itemize}[itemsep=1pt]
+  \item Numerisch heißt: nicht exakt, sondern \emph{approximativ} -- dafür skalierbar mit Rechenleistung.
+  \item Diskretisierung = kontinuierliches Problem $\to$ endliches Gitter: $x_i = a + ih$ mit $h = (b-a)/N$.
+  \item Sobald man approximiert, gilt \emph{errors everywhere}: $f(x) \approx f(x_i)$ -- Fehler verstehen ist Pflicht, nicht Kür.
+  \item Brute Force ist die einfachste numerische Methode: alles ausprobieren, das Beste behalten -- teuer, aber ehrlich.
+\end{itemize}
+\end{merkbox}

@@ -1,0 +1,338 @@
+\section{Thema 4: Newton Methods (Newton-Verfahren) — S.~35--46}
+
+\subsection{Motivation und Einordnung (The Why, S.~35)}
+\glqq A Step in the Right direction.\grqq{} — Im vorigen Kapitel haben wir numerische Methoden mit Konditionierung, Stabilität, Konsistenz und Konvergenz charakterisiert. Die Brute-Force-Gittersuche (grid search) ist jedoch fundamental begrenzt: \glqq it explores the solution space blindly, requiring $O(N^d)$ evaluations for $N$ grid points in $d$ dimensions.\grqq{} — Sie erkundet den Lösungsraum blind und benötigt $O(N^d)$ Auswertungen für $N$ Gitterpunkte in $d$ Dimensionen (Komplexitätsangabe; [Ergänzung] das ist der \emph{Fluch der Dimensionalität}: der Aufwand explodiert exponentiell mit der Dimension). Die Schlüsselidee (the key insight) \glqq is deceptively simple: instead of asking 'what is the value here?' at every grid point, we also ask 'which way should I go next?'.\grqq{} — Statt an jedem Gitterpunkt nur \emph{Was ist hier der Wert?} zu fragen, fragen wir auch \emph{In welche Richtung soll ich als Nächstes gehen?} Die Steigung der Funktion, ihre Ableitung, zeigt die Richtung zur Lösung — das transformiert die Suche fundamental. Nutzen: lokale Information für anspruchsvolle Schritte statt Brute-Force-Suche; schnellere und optimalere Konvergenz.
+
+\paragraph{ML/Deep-Learning-Bezug (S.~35).} \glqq In Machine Learning and Deep Learning, Newton's method simplified to first order is also known as gradient descent. One could argue that the entire field of deep learning is built on the idea of using local gradient information to navigate toward minima in a high-dimensional loss landscape, to train models that are optimized towards specific objectives.\grqq{} — Newtons Methode, auf erste Ordnung vereinfacht, ist der \emph{Gradientenabstieg} (gradient descent); das gesamte Feld Deep Learning baut darauf auf, mit lokaler Gradienteninformation in hochdimensionalen Loss-Landschaften zu Minima zu navigieren. \emph{Randnotiz Backpropagation:} \glqq is of course as vital to distribute gradient information through the layers of a neural network, but the core optimization step is still a form of gradient-based navigation.\grqq{} — Backpropagation verteilt die Gradienteninformation durch die Schichten; der Kern-Optimierungsschritt bleibt gradientenbasierte Navigation.
+
+\paragraph{Randnotiz Trade-off (S.~36).} \glqq We pay for this sophistication with more hyperparameters that we need to determine and more complex computations (derivative evaluation and division), but we gain in convergence speed.\grqq{} — Wir bezahlen die Raffinesse mit mehr Hyperparametern und komplexeren Berechnungen (Ableitungsauswertung, Division), gewinnen aber Konvergenzgeschwindigkeit.
+
+\subsection{Lernziele (S.~37)}
+\begin{itemize}[nosep]
+  \item Newton-Raphson-Iteration für die Nullstellensuche (root finding) in 1D herleiten und anwenden.
+  \item Taylor-Entwicklung (Taylor expansion) und ihre Rolle in Newtons Methode herleiten und verstehen (im Original \glqq understnad\grqq{} [sic]).
+  \item Konvergenzraten und Fehlermodi (failure modes) von Newtons Methode analysieren.
+  \item Sekantenverfahren (Secant method) verstehen und anwenden, wenn Ableitungen nicht verfügbar sind.
+\end{itemize}
+
+\subsection{Hands On: Grid Search vs.\ Newton an der Sinusfunktion (S.~36--37)}
+Intuitives Gefühl für die Kraft lokaler Information: Vergleich von Grid Search und Newtons Methode an derselben Sinusfunktion wie in Kapitel~3 — nun aber als \emph{Nullstellensuche}: $\sin(x) = 0$ auf $[2.5, 4]$ (\glqq the solution is near $\pi \approx 3.14159$\grqq). Figure~14 (S.~36) zeigt die fallende Sinuskurve auf $[2.5,4]$ mit den Gitterpunkten ($h=0.3$), Figure~15 (S.~36) die Newton-Iterationen ab $x_0 = 3.5$ mit schneller Konvergenz gegen $\pi$.
+
+\begin{bspbox}{Grid Search zur Nullstellensuche von $\sin(x)$ auf $[2.5,4]$, $h=0.3$ (S.~36)}
+Grid Search \glqq evaluates blindly\grqq{} — alle Gitterpunkte werden stumpf ausgewertet (vollständige Werte):
+\begin{align*}
+f(2.5) &\approx 0.599 \quad \text{[Anm.: korrekt gerundet $0.598$, da $\sin(2.5) = 0.598472$; PDF: $0.599$]} \\
+f(2.8) &\approx 0.335 \\
+f(3.1) &\approx 0.042 \quad \leftarrow \text{am nächsten an null (closest to zero)} \\
+f(3.4) &\approx -0.256 \\
+f(3.7) &\approx -0.530 \\
+f(4.0) &\approx -0.757
+\end{align*}
+Ergebnis: \glqq We found $x \approx 3.1$ with 6 evaluations, with an error $|3.1 - \pi| \approx 0.042$.\grqq{} — 6 Auswertungen, Fehler $\approx 0.042$.
+\end{bspbox}
+
+\begin{bspbox}{Newton von Hand an $\sin(x)$, Start $x_0 = 3.5$ (S.~37)}
+Newtons Methode hat einen \emph{adaptiven} Suchansatz: An jedem Punkt werden Funktion \emph{und} Ableitung ausgewertet; die lokale Information liefert den Schritt Richtung Lösung. Die Ableitung $f'(x) = \cos(x)$ gibt die Steigung der Tangente. Es gibt mehrere Wege, diese Information zu nutzen (S.~37): \glqq We for sure want to move in the direction where the function decreases, then we could take a step with fixed size, or we could make the step size proportional to the derivative. Let's just take the next guess where the tangent crosses zero for now -- which is the solution to the linear approximation of $f$ at $x_n$.\grqq{} — Sicher in Richtung fallender Funktionswerte; dann entweder fester Schritt oder Schritt proportional zur Ableitung; hier: nächste Schätzung dort, wo die \emph{Tangente die Null kreuzt} (Lösung der linearen Approximation von $f$ bei $x_n$).
+\[ x_1 = x_0 - \frac{\sin(x_0)}{\cos(x_0)} = 3.5 - \frac{-0.351}{-0.936} = 3.5 - 0.375 = 3.125 \]
+\[ x_2 = 3.125 - \frac{\sin(3.125)}{\cos(3.125)} = 3.125 - \frac{0.01659}{-0.99986} \approx 3.125 + 0.0166 \approx 3.1416 \]
+[Korrektur ggü.\ Original, S.~37: Das PDF druckt im $x_2$-Schritt \glqq$\frac{0.0008}{-0.9999}$\grqq; tatsächlich ist $\sin(3.125) \approx 0.01659$ und $\cos(3.125) \approx -0.99986$. Das Endergebnis $x_2 \approx 3.1416$ stimmt, der gedruckte Zwischenwert nicht.]
+\[ x_3 \approx 3.14159, \qquad \sin(3.14159) \approx 0 \]
+Fazit (S.~37): \glqq After just 2 iterations, to be fair this means 4 function/derivative evaluations, we have $x \approx 3.14159$ with error $< 10^{-5}$. The derivative told us where to look way more efficiently than we have been used to.\grqq{} — Vergleich: Grid Search 6 Auswertungen, Fehler $0.042$; Newton 4 Funktions-/Ableitungsauswertungen, Fehler $< 10^{-5}$.
+\end{bspbox}
+
+\paragraph{Randnotiz zur Historie (S.~37).} Die Methode heißt im Skript \glqq Newton-Rhapson\grqq{} [sic] — korrekt \emph{Newton-Raphson}: \glqq because Isaac Newton came up with the general idea, while Joseph Raphson simplified the approach into a practical iterative method.\grqq{} — Isaac Newton hatte die allgemeine Idee, Joseph Raphson vereinfachte den Ansatz zur praktischen iterativen Methode.
+
+\subsection{Herleitung der Newton-Raphson-Methode (S.~38)}
+
+\begin{satzbox}{Newton-Raphson-Iteration: Herleitung über die lineare Approximation (Gl.~20--21, S.~38)}
+\textbf{Ziel formalisieren:} Finde $x^*$ mit $f(x^*) = 0$ (Nullstellensuche).
+
+\textbf{Schritt 1 — Lineare Approximation (Gl.~20 im Skript, S.~38):}
+\[ f(x) \approx f(x_n) + f'(x_n)\cdot(x - x_n) \quad \text{für } x \text{ nahe } x_n \tag{Gl.~20} \]
+In Worten: Nahe am aktuellen Punkt $x_n$ verhält sich $f$ ungefähr wie seine Tangente — Funktionswert plus Steigung mal Abstand. \emph{Randnotiz (S.~38):} Diese lineare Approximation ist genau die Taylor-Entwicklung erster Ordnung von $f$ um $x_n$; auf Taylor-Entwicklungen kommen wir zurück, wenn Genauigkeit und Approximation formal untersucht werden.
+
+[Korrektur ggü.\ Original, S.~38: Das PDF druckt durch einen Layoutfehler \glqq$f(x) \approx f'(x_n)\cdot(x - x_n)$ for $x$ close to $x_n$ $+\,f(x_n)$\grqq{} — der Term $+\,f(x_n)$ ist hinter die Nebenbedingung gerutscht. Die korrekte Form oben wird durch die Folgezeile $0 = f(x_n) + f'(x_n)(x_{n+1} - x_n)$ im Skript selbst bestätigt.]
+
+\textbf{Schritt 2 — Nächste Schätzung finden:} Wir wollen wissen, wo diese lineare Approximation null kreuzt, \glqq because this is our best guess for where the actual function crosses zero\grqq{} (denn das ist unsere beste Schätzung dafür, wo die tatsächliche Funktion die Null kreuzt). Approximation gleich null setzen und nach $x_{n+1}$ auflösen:
+\begin{align*}
+0 &= f(x_n) + f'(x_n)\cdot(x_{n+1} - x_n) \\
+f'(x_n)\cdot(x_{n+1} - x_n) &= -f(x_n) \\
+x_{n+1} - x_n &= -\frac{f(x_n)}{f'(x_n)}
+\end{align*}
+\textbf{Schritt 3 — Newton-Raphson-Iterationsformel (Gl.~21 im Skript, S.~38):}
+\[ x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)} \tag{Gl.~21} \]
+In Worten: Der neue Punkt ist der alte Punkt, korrigiert um den Funktionswert geteilt durch die Steigung — also genau der Schnittpunkt der Tangente mit der $x$-Achse. Geometrische Intuition (Figure~16, S.~38): Für $f(x) = x^2 - 2$ schneidet die Tangente bei $(x_0, f(x_0))$ mit $x_0 = 2$ die $x$-Achse bei $x_1 \approx 1.5$ — der nächsten Approximation.
+\end{satzbox}
+
+\begin{algorithm}[H]
+\caption{Newton-Raphson Method (Algorithmus 1 im Skript, S.~38)}
+\begin{algorithmic}[1]
+\Require Startwert $x_0$, Funktion $f$, Ableitung $f'$, Toleranz $\epsilon$
+\State $x \gets x_0$
+\While{$|f(x)| > \epsilon$}
+  \State Compute derivative: $d \gets f'(x)$
+  \If{$|d| < \epsilon_{\text{machine}}$}
+    \State \textbf{error} \glqq Derivative too small\grqq
+  \EndIf
+  \State Update: $x \gets x - f(x)/d$
+\EndWhile
+\State \Return $x$
+\end{algorithmic}
+\end{algorithm}
+
+\noindent (Im PDF steht die letzte Zeile als \glqq end whilereturn x\grqq{} — ein Layoutartefakt für \glqq end while; return x\grqq.) \emph{Randnotiz zum Fehlerfall (S.~39):} \glqq This error occurs when the derivative $f'(x_k)$ approaches zero, which would cause division by zero or numerical instability in Newton's method.\grqq{} — Der Abbruch \glqq Derivative too small\grqq{} schützt vor Division durch (nahezu) null und numerischer Instabilität.
+
+\subsection{Taylor-Entwicklung: Aufbau Ordnung für Ordnung (S.~39--41)}
+Bisher haben wir der linearen Approximation bei $x_n$ einfach vertraut (Gl.~22 im Skript, S.~39):
+\[ f(x) \approx f'(x_n)(x - x_n) + f(x_n) \tag{Gl.~22} \]
+um schnell die nächste Schätzung $x_{n+1}$ zu finden — \glqq but is that trust well placed?\grqq{} (Ist dieses Vertrauen gerechtfertigt?) Die Antwort liegt in der Taylor-Entwicklung, \glqq a fundamental tool that tells us how well polynomials approximate smooth functions at a given point\grqq{} — einem fundamentalen Werkzeug, das angibt, wie gut Polynome glatte Funktionen an einem Punkt approximieren. Das Skript leitet sie von Grundprinzipien (first principles) her und illustriert sie an der schrittweisen Approximation der Sinusfunktion (Figures~17--20, S.~39--40: Sinuskurve; konstante Approximation $P(x) = f(-1)$ als horizontale gestrichelte Linie bei $\approx -0.84$; lineare Approximation als Tangente; quadratische Approximation als angeschmiegte Parabel, jeweils verankert bei $x=-1$).
+
+\begin{defbox}{Glattheit (Smoothness) (Randnotiz S.~39)}
+\glqq A function is smooth if it has derivatives of all orders, and is thus differentiable.\grqq{} — Eine Funktion ist \emph{glatt} (smooth), wenn sie Ableitungen aller Ordnungen besitzt und somit differenzierbar ist. [Ergänzung: Glattheit ist die Voraussetzung dafür, dass die Taylor-Entwicklung mit beliebig vielen Termen gebildet werden kann.]
+\end{defbox}
+
+\begin{satzbox}{Konstruktion der Taylor-Entwicklung (Gl.~23--26, S.~39--40)}
+Gesucht ist ein Polynom $P(x)$, das $f(x)$ nahe $x_n$ approximiert. Idee: $P$ soll bei $x_n$ in immer mehr Ableitungen mit $f$ übereinstimmen.
+
+\textbf{0.~Ordnung — Funktionswert matchen (Gl.~23 im Skript, S.~39):}
+\[ P(x_n) = f(x_n) \tag{Gl.~23} \]
+Das Polynom stimmt nur am Punkt selbst mit $f$ überein. Didaktischer Querbezug des Skripts: \glqq This comes very close to what grid search does: it only looks at the function value at discrete points, without any information about how the function behaves between those points.\grqq{} — Die 0.~Ordnung entspricht der Grid Search: nur Funktionswerte an diskreten Punkten, keine Information über das Verhalten dazwischen.
+
+\textbf{1.~Ordnung — erste Ableitung matchen (Gl.~24 im Skript, S.~39):} Nahe $x_n$ zählt die Steigung; wir fordern zusätzlich $P'(x_n) = f'(x_n)$:
+\[ P(x) = f(x_n) + f'(x_n)(x - x_n) \tag{Gl.~24} \]
+Das ist exakt die Tangente — und die Approximation, die Newton verwendet.
+
+\textbf{2.~Ordnung — zweite Ableitung matchen (Gl.~25 im Skript, S.~40):} \glqq The curvature captures how the slope changes.\grqq{} (Die Krümmung erfasst, wie sich die Steigung ändert.) Wir fordern zusätzlich $P''(x_n) = f''(x_n)$:
+\[ P(x) = f(x_n) + f'(x_n)(x - x_n) + \frac{f''(x_n)}{2}(x - x_n)^2 \tag{Gl.~25} \]
+\emph{Warum durch 2 teilen? (Randnotiz S.~40):} \glqq When we differentiate $(x - x_n)^2$ twice, we get 2. So if we want $P''(x_n) = f''(x_n)$, we need to divide by 2 to cancel this factor.\grqq{} — Zweimaliges Ableiten von $(x-x_n)^2$ erzeugt den Faktor 2; die Division durch 2 hebt ihn auf. [Ergänzung: Allgemein erzeugt $k$-faches Ableiten von $(x-x_n)^k$ den Faktor $k!$ — daher die Fakultäten in der allgemeinen Formel.]
+
+\textbf{$n$-te Ordnung — das allgemeine Muster} führt auf die Taylor-Entwicklung (s.\ Definition unten).
+
+\emph{Randnotiz \glqq Around a point\grqq{} (S.~40):} \glqq Visually we can see that the approximations are anchored on a specific point $x_n$. The Taylor expansion is a local approximation.\grqq{} — Alle Approximationen sind an einem spezifischen Punkt $x_n$ verankert; die Taylor-Entwicklung ist eine \emph{lokale} Approximation.
+\end{satzbox}
+
+\begin{defbox}{Taylor-Entwicklung (Taylor expansion) (Gl.~26, S.~40)}
+Die Taylor-Entwicklung einer (glatten) Funktion $f$ um einen Punkt $x_n$:
+\[ f(x) = f(x_n) + f'(x_n)(x - x_n) + \frac{f''(x_n)}{2!}(x - x_n)^2 + \frac{f'''(x_n)}{3!}(x - x_n)^3 + \cdots \]
+kompakter (Gl.~26 im Skript, S.~40):
+\[ f(x) = \sum_{k=0}^{\infty} \frac{f^{(k)}(x_n)}{k!}(x - x_n)^k \tag{Gl.~26} \]
+In Worten: Die Funktion wird als unendliche Summe von Polynomtermen geschrieben, wobei der $k$-te Term die $k$-te Ableitung am Entwicklungspunkt verwendet, normiert durch $k!$ und gewichtet mit der $k$-ten Potenz des Abstands $(x - x_n)$.
+\end{defbox}
+
+\begin{satzbox}{Warum genügt die lineare Approximation für Newton? (S.~41)}
+\glqq We want to solve $f(x^*) = 0$, not compute $f(x)$ as best as we can. Improving an approximation of course comes with a cost: We need to compute higher derivatives and evaluate more complex polynomials. In numerical computations we always need to decide where to cut off the Taylor series. We do so at some finite order, and the linear term is the first non-constant term that gives us directional information.\grqq{}
+
+In Worten: Ziel ist die \emph{Nullstelle}, nicht die bestmögliche Funktionsapproximation. Höhere Ordnungen kosten (höhere Ableitungen berechnen, komplexere Polynome auswerten). In numerischen Berechnungen muss die Taylor-Reihe immer bei endlicher Ordnung abgeschnitten werden — und der lineare Term ist der erste nicht-konstante Term, der \emph{Richtungsinformation} liefert. Genau diese genügt für den nächsten Schritt.
+\end{satzbox}
+
+\subsection{Konvergenzrate: Herleitung der quadratischen Konvergenz (S.~41--42)}
+
+\begin{satzbox}{Quadratische Konvergenz von Newton-Raphson (Gl.~27--33, S.~41--42)}
+\textbf{Ausgangspunkt:} Erinnerung an Kapitel~3 — eine Methode ist konvergent, wenn die Approximation einen spezifischen stabilen Grenzwert erreicht. Für Newtons Methode mit Wurzel $x^*$, $f(x^*) = 0$, fordern wir (Gl.~27 im Skript, S.~41):
+\[ |x_n - x^*| \to 0 \quad \text{für } n \to \infty \tag{Gl.~27} \]
+Dank der Taylor-Entwicklung können wir quantifizieren, \emph{wie schnell} der Fehler abnimmt.
+
+\textbf{Schritt 1 — Fehler definieren und $f(x_n)$ um die Wurzel entwickeln:} Sei $e_n = x_n - x^*$ der Fehler bei Iteration $n$. Taylor-Entwicklung 2.~Ordnung von $f$ um die \emph{wahre Wurzel} $x^*$, ausgewertet bei $x_n$ (Gl.~28 im Skript, S.~41):
+\[ f(x_n) = f(x^*) + f'(x^*)(x_n - x^*) + \frac{f''(\xi)}{2}(x_n - x^*)^2 \tag{Gl.~28} \]
+wobei $\xi$ ein Punkt zwischen $x_n$ und $x^*$ ist (Lagrange-Restglied-Form; [Ergänzung] das Restglied macht aus der abgeschnittenen Reihe eine \emph{exakte} Gleichung — der gesamte Rest steckt im Term mit $f''(\xi)$).
+
+\textbf{Schritt 2 — Nullstelleneigenschaft ausnutzen:} Da $f(x^*) = 0$, vereinfacht sich das mit $e_n = x_n - x^*$ zu (Gl.~29 im Skript, S.~41):
+\[ f(x_n) = f'(x^*)\cdot e_n + \frac{f''(\xi)}{2}e_n^2 \tag{Gl.~29} \]
+
+\textbf{Schritt 3 — Newton-Formel auf den Fehler anwenden:} Der Fehler der nächsten Iteration ist
+\[ e_{n+1} = x_{n+1} - x^* = x_n - \frac{f(x_n)}{f'(x_n)} - x^* = (x_n - x^*) - \frac{f(x_n)}{f'(x_n)} = e_n - \frac{f(x_n)}{f'(x_n)} \]
+In Worten: Der neue Fehler ist der alte Fehler minus der Newton-Schritt.
+
+\textbf{Schritt 4 — Taylor-Ausdruck einsetzen (Gl.~30 im Skript, S.~41):}
+\[ e_{n+1} = e_n - \frac{f'(x^*)\cdot e_n + \frac{f''(\xi)}{2}e_n^2}{f'(x_n)} \tag{Gl.~30} \]
+
+\textbf{Schritt 5 — Nähe zur Wurzel ausnutzen:} Für Punkte nahe $x^*$ gilt die Annahme $f'(x_n) \approx f'(x^*)$ (Gl.~31 im Skript, S.~41):
+\[ e_{n+1} \approx e_n - \frac{f'(x^*)\cdot e_n + \frac{f''(\xi)}{2}e_n^2}{f'(x^*)} = e_n - e_n - \frac{f''(\xi)}{2 f'(x^*)}e_n^2 \tag{Gl.~31} \]
+In Worten: Der Bruch zerfällt in zwei Teile; der erste Teil $f'(x^*)e_n / f'(x^*) = e_n$ \emph{hebt den Fehlerterm erster Ordnung exakt auf} (S.~42) — das ist der didaktische Kern: Newton eliminiert den linearen Fehleranteil vollständig.
+
+\textbf{Schritt 6 — Ergebnis (Gl.~32 im Skript, S.~42):} Übrig bleibt nur der quadratische Term:
+\[ e_{n+1} \approx -\frac{f''(\xi)}{2 f'(x^*)}\,e_n^2 \tag{Gl.~32} \]
+
+\textbf{Abstrakter (Gl.~33 im Skript, S.~42):}
+\[ |e_{n+1}| \leq C \cdot |e_n|^2 \tag{Gl.~33} \]
+\glqq This is quadratic convergence.\grqq{} — Das ist quadratische Konvergenz: Der nächste Fehler ist proportional zum \emph{Quadrat} des aktuellen Fehlers.
+\end{satzbox}
+
+\begin{defbox}{Quadratische Konvergenz (quadratic convergence) (S.~42)}
+Der Fehler der nächsten Iteration ist ungefähr proportional zum Quadrat des aktuellen Fehlers, $|e_{n+1}| \leq C\cdot|e_n|^2$ (Gl.~33 im Skript, S.~42); $C$ ist eine Konstante, die von Krümmung und Steigung der Funktion an der Wurzel abhängt (konkret $C = \left|f''(\xi)/(2f'(x^*))\right|$, vgl.\ Gl.~32). Die Konvergenzordnung ist 2. [Ergänzung: Praktisch bedeutet das eine \emph{Verdopplung der korrekten Stellen pro Iteration}, sobald man nah genug an der Wurzel ist.]
+\end{defbox}
+
+\begin{bspbox}{Berechnung von $\sqrt{2}$ mit Newton (Tabelle 2, S.~42)}
+Berechnung von $\sqrt{2}$ mit Newtons Methode, Start $x_0 = 2$ (\glqq our introductory example\grqq; Querbezug auf Figure~16 mit $f(x) = x^2 - 2$ — ein expliziter früherer $\sqrt{2}$-Bezug taucht im Text vorher nicht auf). Tabellenunterschrift im Original: \glqq Newton's method for computing $\sqrt{2}$. See how the error approximately squares each iteration.\grqq{} — Man sieht, wie sich der Fehler pro Iteration näherungsweise quadriert. Vollständige Tabelle~2:
+
+\begin{center}
+\begin{tabular}{c l l}
+\toprule
+$n$ & $x_n$ & $|e_n|$ (Fehler) \\
+\midrule
+0 & 2.000000000 & $5.86 \times 10^{-1}$ \\
+1 & 1.500000000 & $8.58 \times 10^{-2}$ \\
+2 & 1.416666667 & $2.45 \times 10^{-3}$ \\
+3 & 1.414215686 & $2.12 \times 10^{-6}$ \\
+4 & 1.414213562 & $1.6 \times 10^{-12}$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+[Korrektur ggü.\ Original, S.~42: Das PDF druckt in Zeile $n=4$ den Wert $4.5 \times 10^{-12}$ — das ist jedoch das \emph{Residuum} $|f(x_4)| = |x_4^2 - 2| \approx 4.51 \times 10^{-12}$, nicht der Fehler $|e_4| = |x_4 - \sqrt{2}| \approx 1.6 \times 10^{-12}$, den die Spaltendefinition (und alle übrigen Zeilen) verwendet. Zudem ist $|e_3| = 2.124 \times 10^{-6}$, also korrekt gerundet $2.12 \times 10^{-6}$ (PDF: $2.13 \times 10^{-6}$). Konsistenzcheck der quadratischen Konvergenz mit $C = \frac{1}{2\sqrt{2}} \approx 0.354$ (vgl.\ Gl.~32): $0.354 \cdot (2.12 \times 10^{-6})^2 \approx 1.6 \times 10^{-12}$ (passt exakt) — die korrigierten Werte demonstrieren Gl.~33 sogar sauberer.]
+
+\emph{Randnotiz (S.~41), \glqq Notice the assumption play out\grqq:} $10^{-1} \to 10^{-2} \to 10^{-3} \to 10^{-6} \to 10^{-12}$. \glqq Once we're close enough and our assumptions hold (after iteration 2), the error squares perfectly, demonstrating quadratic convergence.\grqq{} — Anfangs ist die Konvergenz \emph{noch nicht} quadratisch; erst wenn man nah genug an der Wurzel ist und die Annahme $f'(x_n) \approx f'(x^*)$ greift (ab Iteration 2), quadriert sich der Fehler perfekt: $(10^{-3})^2 \sim 10^{-6}$, $(10^{-6})^2 \sim 10^{-12}$.
+\end{bspbox}
+
+\subsection{Failure Modes: Wie Newton scheitern kann (S.~42)}
+\glqq Newton's method can fail in several ways, which we will endure for now, and for which we will find solutions later on. As a brain teaser, it is a nice exercise to visualize the failure modes in this plot.\grqq{} (Denksportaufgabe: die Fehlermodi in Figure~21 visualisieren — der Plot zeigt $f(x) = x^3 - x$ mit mehreren Nullstellen auf ca.\ $[-0.4, 1.4]$.) Die drei Fehlermodi:
+\begin{enumerate}[nosep]
+  \item \textbf{Nullableitung (zero derivative):} Wenn $f'(x_n) = 0$, ist die Tangente horizontal und kreuzt die $x$-Achse nie — die Iteration ist undefiniert (Division durch null).
+  \item \textbf{Oszillation:} Besonders bei symmetrischen Funktionen kann Newton zwischen Punkten zykeln, statt zu konvergieren.
+  \item \textbf{Mehrdeutige Startpunktwahl:} Der Startwert $x_0$ beeinflusst stark, \emph{welche} Wurzel gefunden wird.
+\end{enumerate}
+Überleitung zum Sekantenverfahren: \glqq Now something we can not endure, is if we can't compute $f'(x)$.\grqq{} — Was wir nicht hinnehmen können: wenn $f'(x)$ gar nicht berechnet werden kann. \emph{Randnotiz \glqq This can happen because\grqq{} (S.~42)} — Gründe, warum die Ableitung nicht verfügbar sein kann:
+\begin{itemize}[nosep]
+  \item \glqq The derivative is expensive to compute.\grqq{} (Die Ableitung ist teuer zu berechnen.)
+  \item \glqq The function is given as a black box (e.g., a simulation).\grqq{} (Die Funktion ist eine Black Box, z.\,B.\ eine Simulation.)
+  \item \glqq The function isn't differentiable everywhere.\grqq{} (Die Funktion ist nicht überall differenzierbar.)
+\end{itemize}
+
+\subsection{Das Sekantenverfahren (Secant Method, S.~43)}
+
+\begin{defbox}{Sekantenverfahren — \glqq A poor man's derivative\grqq{} (S.~43)}
+Idee: Die Ableitung wird \emph{nur mit Funktionsauswertungen} approximiert — das eliminiert den Bedarf einer expliziten Ableitung. Differenzenquotient aus den zwei jüngsten Punkten:
+\[ f'(x_n) \approx \frac{f(x_n) - f(x_{n-1})}{x_n - x_{n-1}} \]
+Visuell ist das die Steigung der \emph{Sekante} durch die Punkte $(x_{n-1}, f(x_{n-1}))$ und $(x_n, f(x_n))$ auf dem Graphen von $f$ (Figure~22, S.~43: Sekante durch $(x_0, f(x_0))$ und $(x_1, f(x_1))$ liefert als Achsenschnitt die nächste Approximation $x_2$). \textbf{Hinweis:} Es werden \emph{zwei Startwerte} $x_0$ und $x_1$ benötigt (statt nur einem bei Newton).
+\end{defbox}
+
+\begin{satzbox}{Sekanten-Iterationsformel (Gl.~34, S.~43)}
+Einsetzen des Differenzenquotienten in Newtons Formel (Gl.~21) liefert die iterative Sekantenmethode (Gl.~34 im Skript, S.~43):
+\[ x_{n+1} = x_n - f(x_n) \cdot \frac{x_n - x_{n-1}}{f(x_n) - f(x_{n-1})} \tag{Gl.~34} \]
+In Worten: Wie bei Newton wird der Funktionswert durch eine Steigung geteilt — nur ist die Steigung jetzt der Differenzenquotient (sein Kehrwert steht als Faktor in der Formel). Der neue Punkt ist der Schnittpunkt der Sekante mit der $x$-Achse.
+\end{satzbox}
+
+\begin{algorithm}[H]
+\caption{Secant Method (Algorithmus 2 im Skript, S.~43)}
+\begin{algorithmic}[1]
+\Require Startwerte $x_0$, $x_1$, Funktion $f$, Toleranz $\epsilon$
+\While{$|f(x_1)| > \epsilon$}
+  \State Compute secant slope: $s \gets \left(f(x_1) - f(x_0)\right) / \left(x_1 - x_0\right)$
+  \State Store previous: $x_{\text{old}} \gets x_1$
+  \State Update: $x_1 \gets x_1 - f(x_1)/s$
+  \State $x_0 \gets x_{\text{old}}$
+\EndWhile
+\State \Return $x_1$
+\end{algorithmic}
+\end{algorithm}
+
+\noindent (Im PDF steht die letzte Zeile als \glqq end whilereturn x1\grqq{} — Layoutartefakt.)
+
+\subsection{Newton und Sekante von Hand an $f(x) = x^3 - x$ (S.~44--45)}
+
+\begin{bspbox}{Newton von Hand: Wurzel von $f(x) = x^3 - x = 0$ ab $x_0 = 1.4$ (S.~44) — korrigiert}
+Erst geometrisch, dann von Hand. \glqq The roots are at $x = -1, 0, 1$. Let's find the root at $x = 1$ starting from $x_0 = 1.4$.\grqq{} (Figure~23, S.~44: Kubik $f(x) = x^3 - x$ schwarz, Ableitung $f'(x) = 3x^2 - 1$ grau gestrichelt auf $[-0.4, 1.4]$; Zielwurzel bei $x=1$ markiert, Startwert als offener Kreis bei $x_0 = 1.4$.) Taylor 1.~Ordnung um $x_n$:
+\[ f(x) \approx f(x_n) + f'(x_n)(x - x_n), \qquad f(x_n) \approx f(x) - f'(x_n)(x - x_n) \]
+Mit $f(x) = x^3 - x = 0$ und $f'(x) = 3x^2 - 1$; umstellen für die nächste Schätzung ab $x_0 = 1.4$ (vollständige korrekte Rechnung):
+
+\textbf{Schritt 1} ($f(1.4) = 2.744 - 1.4 = 1.344$, $f'(1.4) = 5.88 - 1 = 4.88$):
+\[ x_1 = x_0 - \frac{f(x_0)}{f'(x_0)} = x_0 - \frac{x_0^3 - x_0}{3x_0^2 - 1} = 1.4 - \frac{2.744 - 1.4}{5.88 - 1} = 1.4 - \frac{1.344}{4.88} \approx 1.4 - 0.2754 \approx 1.1246 \]
+
+\textbf{Schritt 2} ($f(1.1246) \approx 1.4223 - 1.1246 = 0.2977$, $f'(1.1246) \approx 3.7942 - 1 = 2.7942$):
+\[ x_2 = 1.1246 - \frac{1.1246^3 - 1.1246}{3(1.1246)^2 - 1} \approx 1.1246 - \frac{0.2977}{2.7942} \approx 1.1246 - 0.1065 \approx 1.0181 \]
+
+\textbf{Schritt 3} ($f(1.0181) \approx 1.0553 - 1.0181 = 0.0372$, $f'(1.0181) \approx 3.1096 - 1 = 2.1096$):
+\[ x_3 = 1.0181 - \frac{1.0181^3 - 1.0181}{3(1.0181)^2 - 1} \approx 1.0181 - \frac{0.0372}{2.1096} \approx 1.0181 - 0.0176 \approx 1.0005 \]
+
+\glqq The root at $x = 1$ is found quickly.\grqq{} — Die Wurzel bei $x=1$ wird schnell gefunden: Die korrekte Newton-Folge $1.4 \to 1.1246 \to 1.0181 \to 1.0005$ konvergiert \emph{monoton von oben} gegen die Wurzel $x = 1$ (typisch für eine konvexe Funktion rechts der Wurzel).
+
+[Korrektur ggü.\ Original, S.~44: PDF druckt die Kette $1.127 \to 0.976 \to 1.014$ mit u.\,a.\ falschem Zähler $0.432$ statt $\approx 0.297$ (so in der selbstkonsistenten Kette oben: $f(1.1246) \approx 0.2977$; selbst mit dem PDF-gerundeten $x_1 = 1.127$ wäre $f(1.127) \approx 0.304$, nicht $0.432$). Durch den zu großen Zähler springt die gedruckte Folge fälschlich unter die Wurzel und scheint um 1 zu oszillieren; tatsächlich konvergiert Newton hier monoton von oben. Die Methodik des Skripts (Gl.~21) ist korrekt.]
+\end{bspbox}
+
+\begin{bspbox}{Sekante von Hand: $f(x) = x^3 - x$ mit $x_0 = 1.2$, $x_1 = 1.4$ (S.~44--45) — korrigiert}
+Das Sekantenverfahren auf dasselbe Problem anwenden — \glqq Again first geometrically, then by hand.\grqq{}
+
+\textbf{Schritt 0 — korrekte Funktionswerte:}
+\[ f(1.2) = 1.2^3 - 1.2 = 1.728 - 1.2 = 0.528, \qquad f(1.4) = 1.4^3 - 1.4 = 2.744 - 1.4 = 1.344 \]
+[Korrektur ggü.\ Original, S.~45: Das PDF druckt $f(1.2) = 0.128$ (korrekt: $0.528$) und $f(1.4) = 0.744$ (korrekt: $1.344$) und baut darauf die fehlerhafte Iterationskette
+$x_2 = 1.4 - 0.744\cdot\frac{0.2}{0.616} \approx 1.4 - 0.241 \approx 1.159$ sowie
+$x_3 = 1.159 - 0.283\cdot\frac{-0.241}{0.283 - 0.744} \approx 1.159 - 0.283\cdot 0.522 \approx 1.159 - 0.148 \approx 1.011$ auf.
+Die gedruckte Kette $(1.159,\ 1.011)$ beruht vollständig auf den falschen Funktionswerten; die Methodik (Gl.~34) ist korrekt. Im Folgenden die komplette Iteration mit den korrekten Werten.]
+
+\textbf{Schritt 1 (Gl.~34):}
+\[ x_2 = x_1 - f(x_1)\cdot\frac{x_1 - x_0}{f(x_1) - f(x_0)} = 1.4 - 1.344\cdot\frac{1.4 - 1.2}{1.344 - 0.528} = 1.4 - 1.344\cdot\frac{0.2}{0.816} \approx 1.4 - 0.3294 \approx 1.0706 \]
+Funktionswert am neuen Punkt: $f(1.0706) = 1.0706^3 - 1.0706 \approx 1.2271 - 1.0706 = 0.1565$.
+
+\textbf{Schritt 2} (jüngste Punkte $x_1 = 1.4$, $x_2 = 1.0706$):
+\[ x_3 = x_2 - f(x_2)\cdot\frac{x_2 - x_1}{f(x_2) - f(x_1)} = 1.0706 - 0.1565\cdot\frac{1.0706 - 1.4}{0.1565 - 1.344} = 1.0706 - 0.1565\cdot\frac{-0.3294}{-1.1875} \approx 1.0706 - 0.0434 \approx 1.0272 \]
+Funktionswert: $f(1.0272) \approx 1.0838 - 1.0272 = 0.0566$.
+
+\textbf{Schritt 3} (jüngste Punkte $x_2 = 1.0706$, $x_3 = 1.0272$):
+\[ x_4 = 1.0272 - 0.0566\cdot\frac{1.0272 - 1.0706}{0.0566 - 0.1565} = 1.0272 - 0.0566\cdot\frac{-0.0434}{-0.0999} \approx 1.0272 - 0.0246 \approx 1.0026 \]
+Funktionswert: $f(1.0026) \approx 1.0078 - 1.0026 = 0.0052$.
+
+\textbf{Schritt 4} (jüngste Punkte $x_3 = 1.0272$, $x_4 = 1.0026$):
+\[ x_5 = 1.0026 - 0.0052\cdot\frac{1.0026 - 1.0272}{0.0052 - 0.0566} = 1.0026 - 0.0052\cdot\frac{-0.0246}{-0.0514} \approx 1.0026 - 0.0025 \approx 1.0001 \]
+Funktionswert: $f(1.0001) \approx 0.0002$.
+
+\textbf{Zusammenfassung der korrigierten Iteration:}
+\begin{center}
+\begin{tabular}{c l l}
+\toprule
+$n$ & $x_n$ & $f(x_n)$ \\
+\midrule
+0 & 1.2 & 0.528 \\
+1 & 1.4 & 1.344 \\
+2 & 1.0706 & 0.1565 \\
+3 & 1.0272 & 0.0566 \\
+4 & 1.0026 & 0.0052 \\
+5 & 1.0001 & 0.0002 \\
+\bottomrule
+\end{tabular}
+\end{center}
+Die Folge konvergiert klar gegen die Zielwurzel $x = 1$. [Ergänzung: Man erkennt eine Konvergenz, die schneller als linear, aber langsamer als Newtons quadratische Konvergenz ist — der Preis dafür, dass keine echte Ableitung verwendet wird; dafür kostet jede Iteration nur \emph{eine} neue Funktionsauswertung.]
+\end{bspbox}
+
+\subsection{Übungsaufgaben und Selbstreflexionsfragen (S.~45--46)}
+\textbf{Übungen:}
+\begin{itemize}[nosep]
+  \item \textbf{Geometrical Failure Search (S.~45):} Finde Startpunkte $x_0$ für die verschiedenen Fehlermodi: einen, bei dem Newton wegen Nullableitung scheitert; einen, bei dem es zu einer Nicht-Ziel-Wurzel konvergiert; und einen, bei dem es zwischen Punkten oszilliert.
+  \item \textbf{Enter the machine (S.~45):} Konvergenz und Konvergenzraten von Grid Search, Newton und Sekantenverfahren in Python betrachten; mit verschiedenen Startpunkten experimentieren (im Original \glqq differentstarting points\grqq{} [sic]) und Failure Modes in der Praxis beobachten. \glqq Try to first find the starting points geometrically, then try finding them analytically, before finally moving over to verifying in code.\grqq{} (Code: \texttt{github.com/Quillstacks/lecturecode\_numericalmethods.git}, S.~44)
+\end{itemize}
+\textbf{Self-Reflection (S.~45--46):}
+\begin{itemize}[nosep]
+  \item Was ist der Hauptvorteil von Newtons Methode gegenüber Grid Search?
+  \item Warum ist eine lineare Approximation für die Nullstellensuche ausreichend? Was sagt die Taylor-Entwicklung über diese Wahl?
+  \item Warum ist quadratische Konvergenz so mächtig? Wie viele Iterationen bräuchte Newton, um von Fehler $10^{-1}$ auf Fehler $10^{-16}$ zu kommen?
+  \item In welchen Situationen würdest du das Sekantenverfahren Newton vorziehen? Warum nicht in anderen?
+\end{itemize}
+
+\subsection{Recap und Ausblick (S.~46)}
+\begin{itemize}[nosep]
+  \item \glqq Newton-Raphson gives (limited) convergence guarantees near simple roots.\grqq{} — Newton-Raphson gibt (begrenzte) Konvergenzgarantien nahe einfacher Wurzeln (simple roots).
+  \item \glqq Taylor expansion provides a systematic way to approximate functions locally.\grqq{} — Die Taylor-Entwicklung ist der systematische Weg, Funktionen lokal zu approximieren.
+  \item Die Taylor-Entwicklung rechtfertigt die lineare Approximation in Newtons Methode, erklärt die quadratische Konvergenz und erlaubt eine Fehlerschätzung in jeder Iteration.
+  \item Wenn die Ableitung schwer zu berechnen ist, approximiert das Sekantenverfahren die Ableitung aus zwei Punkten und konvergiert.
+\end{itemize}
+\textbf{Überleitung — Local methods find local solutions (S.~46):} \glqq Newton converges to whatever optimum is nearby, it is also prone to oscillate between points, or diverge if the derivative is zero or near zero. In the next chapter, we will reformulate the root finding into an optimization problem. And from there we'll explore how to go on and handle global optimization when the landscape has many valleys or is otherwise pathologically difficult.\grqq{} — Lokale Methoden finden lokale Lösungen; im nächsten Kapitel wird die Nullstellensuche als Optimierungsproblem reformuliert und anschließend die globale Optimierung behandelt. \emph{Randnotiz-Teaser:} \glqq How can we make sure that we find the global solution, and not just a local one?\grqq
+
+[Ergänzung mit Vorgriff auf Kapitel~5: Dort wird Newton auf die \emph{Ableitung} $f'$ angewendet, um Extremstellen zu finden — also Punkte mit $f'(x) = 0$; der anschließende Second-Derivative-Test klassifiziert sie über $f''$. Dazu gehört auch eine Korrektur: {[Korrektur ggü.\ Original, S.~53: Das PDF druckt dort \glqq Newton's method finds points where $f''(x) = 0$\grqq{} — ein Druckfehler; Newton auf $f'$ findet Punkte mit $f'(x) = 0$.]}]
+
+\begin{merkbox}
+\textbf{Typische Fehlerquellen:}
+\begin{itemize}[nosep]
+  \item \textbf{Vorzeichen-/Formelfehler:} Newton ist $x_{n+1} = x_n - f(x_n)/f'(x_n)$ (Gl.~21) — \emph{minus}, und der Funktionswert steht im Zähler, die Ableitung im Nenner. Bei der Sekante (Gl.~34) wird durch die \emph{Differenz der Funktionswerte} geteilt, nicht durch die Schrittweite.
+  \item \textbf{Nullableitung übersehen:} $f'(x_n) \approx 0$ bedeutet horizontale Tangente $\Rightarrow$ Division durch (fast) null. Algorithmus 1 fängt das explizit mit \glqq Derivative too small\grqq{} ab.
+  \item \textbf{Quadratische Konvergenz gilt erst nahe der Wurzel:} Die Herleitung benutzt $f'(x_n) \approx f'(x^*)$. Weit weg von $x^*$ kann Newton oszillieren, zur falschen Wurzel laufen oder divergieren (vgl.\ $\sqrt{2}$-Tabelle: erst ab Iteration~2 quadriert sich der Fehler).
+  \item \textbf{Sekante braucht zwei Startwerte} ($x_0$ und $x_1$) — Newton nur einen, dafür aber die Ableitung.
+  \item \textbf{Rechenfehler-Fallen aus dem Original:} Newton an $x^3 - x$: korrekte Folge $1.1246 \to 1.0181 \to 1.0005$, monoton von oben (nicht $1.127 \to 0.976 \to 1.014$, S.~44); $f(1.2) = 0.528$ und $f(1.4) = 1.344$ (nicht $0.128$/$0.744$, S.~45); $\sin(3.125) \approx 0.0166$ (nicht $0.0008$, S.~37); Gl.~20 lautet $f(x) \approx f(x_n) + f'(x_n)(x - x_n)$ (S.~38); Tabelle~2: $|e_3| = 2.12 \times 10^{-6}$ und $|e_4| \approx 1.6 \times 10^{-12}$ (das gedruckte $4.5 \times 10^{-12}$ ist das Residuum $|f(x_4)|$, S.~42).
+\end{itemize}
+\textbf{Merksätze:}
+\begin{itemize}[nosep]
+  \item \emph{Newton $=$ Tangente schneidet Achse; Sekante $=$ Sehne schneidet Achse.}
+  \item \emph{Die Ableitung sagt, wohin — der Funktionswert, wie weit:} Genau das unterscheidet Newton von der blinden $O(N^d)$-Gittersuche.
+  \item \emph{Quadratische Konvergenz $=$ Stellenverdopplung pro Iteration:} $10^{-1} \to 10^{-2} \to 10^{-4} \to 10^{-8} \to 10^{-16}$ — vier Iterationen von Fehler $10^{-1}$ zu $10^{-16}$.
+  \item \emph{Newton 1.~Ordnung $=$ Gradient Descent:} Deep Learning ist im Kern gradientenbasierte Navigation in der Loss-Landschaft.
+  \item \emph{Taylor ist lokal:} Alle Approximationen sind an einem Punkt $x_n$ verankert — Vertrauen in die Tangente ist nur \emph{nahe} $x_n$ gerechtfertigt.
+\end{itemize}
+\end{merkbox}

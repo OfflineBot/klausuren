@@ -1,0 +1,262 @@
+% ============================================================
+% Thema 2: Floating-Point Arithmetic (Original: S. 17-24)
+% ============================================================
+\section{Floating-Point Arithmetic (S.~17--24)}
+
+\subsection{Motivation und Einordnung}
+
+Unter dem Motto \emph{Getting used to Errors Everywhere} (S.~17) knüpft das Kapitel an Thema~1 an: Numerische Methoden führen Fehler durch Approximation ein. Ist $f(x)$ eine kontinuierliche Funktion auf $[a,b]$, so approximiert die diskretisierte Version $f(x_i)$ die Funktion an diskreten Punkten $x_i$ mit einem Fehler, der von der Schrittweite $h$ und der Glattheit (smoothness) von $f$ abhängt. Hinzu kommt: Numerische Werte können im Computerspeicher selbst nur approximativ gespeichert werden -- in Gleitkommadarstellung (floating-point representation). Das führt zu Rundungsfehlern (rounding errors) bei arithmetischen Operationen, die sich zu den Abschneide- bzw.\ Trunkierungsfehlern (truncation errors) addieren, welche beim Approximieren unendlicher Prozesse durch endliche entstehen (auch Approximationsfehler genannt) (S.~17). Es gibt gute Gründe, diese Fehler und ihr Zusammenspiel mit den Maschinen zu verstehen: Numerische Methoden führen Rundungs- und Abschneidefehler ein, und je nach Maschine wirken sich diese Fehler unterschiedlich aus -- sie können sich verstärken (amplify) und akkumulieren (accumulate) (S.~17).
+
+\emph{Bezug zu ML/AI} (S.~17): Numerische Methoden sind fürs Training zentral, Gleitkomma-Arithmetik ist aber genauso relevant in der Modell-Inferenz (model inference) -- besonders in rechenarmen Umgebungen \emph{on the edge} oder beim Einsatz quantisierter Modelle (quantized models). Eine Randnotiz ergänzt: On-the-Edge-Modelle nutzen niedrigpräzise Arithmetik, z.\,B.\ 8-Bit-Integer oder sogar binäre Gewichte und Aktivierungen; bei binären neuronalen Netzen (binary neural networks, BNNs) sind Gewichte und Aktivierungen auf $\{-1, +1\}$ beschränkt -- eine drastische Reduktion von Speicher- und Rechenbedarf, die aber Gleitkommadarstellung und Rundungseffekte umso kritischer macht (S.~17).\footnote{M.~Courbariaux, Y.~Bengio: \emph{Binarynet: Training deep neural networks with weights and activations constrained to +1 or -1}, CoRR, abs/1602.02830, 2016, \url{http://arxiv.org/abs/1602.02830} (Fußnote~5 im Skript, S.~17).}
+
+\begin{defbox}{Modellierungsfehler (Modeling Error)}
+Der Modellierungsfehler tritt auf, da alle Modelle Vereinfachungen der Realität sind; die Differenz zwischen Modell und realem System führt einen Fehler ein. Er wird in diesem Kurs nicht vertieft -- \glqq Yet, mind the fine difference between what we term $f(x)$ and what actually is a $f(x)$.\grqq{} (den feinen Unterschied beachten zwischen dem, was wir $f(x)$ \emph{nennen}, und dem, was tatsächlich ein $f(x)$ \emph{ist}) (Randnotiz, S.~17).
+\end{defbox}
+
+\subsection{Lernziele (S.~18)}
+
+\begin{enumerate}[itemsep=1pt]
+  \item Die verschiedenen Typen numerischer Fehler verstehen: Modellierungs-, Abschneide- und Rundungsfehler (modeling, truncation, rounding errors).
+  \item Gleitkommadarstellung (floating-point representation), Maschinengenauigkeit (machine epsilon) und Auslöschung (loss of significance) verstehen.
+  \item Numerische Fehler in praktischen Berechnungen handhaben können.
+\end{enumerate}
+
+\subsection{Hands-On: Rundungsfehler (S.~18)}
+
+\begin{bspbox}{Division $10 \div 3$ -- warum Rundungsfehler unvermeidlich sind (S.~18)}
+Schriftliche Division mit vollständiger Dezimalentwicklung:
+\begin{itemize}[itemsep=0pt]
+  \item $10 \div 3 = 3$, Rest $1$
+  \item \glqq Bring down a 0\grqq: $10 \div 3 = 3$, Rest $1$
+  \item \glqq Bring down a 0\grqq: $10 \div 3 = 3$, Rest $1$
+  \item \glqq Bring down a 0\grqq: $10 \div 3 = 3$, Rest $1$
+  \item \dots\ und so weiter $\Rightarrow \frac{10}{3} = 3.333\ldots$ -- die Dreien wiederholen sich unendlich.
+\end{itemize}
+Beim Aufschreiben oder Eingeben in Rechner/Computer muss man irgendwo stoppen (Gl.~8 im Skript, S.~18):
+\[
+\frac{10}{3} \approx 3.333 \quad \text{(gerundet bzw.\ abgeschnitten/trunkiert nach 3 Ziffern)}
+\]
+\glqq No matter how many digits you write, as soon as you stop, you introduce an error\grqq{} (Gl.~9 im Skript, S.~18):
+\[
+\text{Rounding error} = |3.333333\ldots - 3.333| = 0.000333\ldots
+\]
+Je mehr Ziffern man schreibt, desto kleiner der Fehler; er verschwindet aber nie vollständig -- außer man schriebe unendlich viele Ziffern, \glqq which well, you know is impossible.\grqq{}\footnote{Randnotiz \emph{Impossible?} (S.~18): Die mathematische Notation hilft hier mit der Periodenschreibweise: $3.\overline{3}$.}
+\end{bspbox}
+
+\begin{defbox}{Rundungsfehler (rounding error)}
+Der Rundungsfehler ist die Differenz zwischen dem wahren Wert und dem Wert, den man nach dem Abschneiden (truncate) der Entwicklung erhält (S.~18). Computer speichern Zahlen stets mit endlich vielen Ziffern, daher treten Rundungsfehler unvermeidlich auf und müssen gemanagt werden. Diese kleinen Fehler können akkumulieren, sich verstärken und zu signifikanten Ungenauigkeiten führen -- besonders in iterativen Algorithmen, wie sie in numerischen Methoden und Machine Learning üblich sind.
+\end{defbox}
+
+Eine Randnotiz (S.~18) listet die \textbf{Typen numerischer Darstellungen in Computern} am Beispiel von $10/3$:
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Darstellung & Beispielwert & Präzision [Ergänzung] \\
+\midrule
+Integer (int) & $3$ & ganzzahlig \\
+Floating-point (float) & $3.3333333$ & $\approx 7$ signifikante Dezimalstellen \\
+Double precision (double) & $3.3333333333333333$ & $\approx 16$ signifikante Dezimalstellen \\
+Fixed-point (z.\,B.\ 4 Stellen) & $3.3333$ & 4 Nachkommastellen \\
+\bottomrule
+\end{tabular}
+\end{center}
+[Ergänzung: Die Spalte \glqq Präzision\grqq{} ist nicht Teil der Original-Randnotiz (dort stehen nur die Beispielwerte); bei float/double fallen signifikante Stellen und Nachkommastellen im Beispiel $10/3$ nur zufällig zusammen, maßgeblich sind die signifikanten Dezimalstellen.]
+
+\subsection{Gleitkommadarstellung (S.~19--20)}
+
+\begin{defbox}{Gleitkommazahlen (floating-point numbers) und IEEE 754}
+Gleitkommazahlen sind eine Methode für Computer, reelle Zahlen mit einer endlichen Anzahl von Bits darzustellen.\footnote{Ein \emph{Bit} (kurz für \emph{binary digit}) ist die grundlegendste Informationseinheit in Computertechnik und digitaler Kommunikation; es kann den Wert 0 oder 1 haben (Randnotiz, S.~19).} Der IEEE-754-Standard ist das am weitesten verbreitete Format.\footnote{IEEE Computer Society: \emph{IEEE standard for floating-point arithmetic}, IEEE Std 754-2008 (Revision von IEEE Std 754-1985), August 2008, \url{https://ieeexplore.ieee.org/document/4610935} (Fußnote~6 im Skript, S.~19).} Die Darstellung erlaubt einen weiten Wertebereich, aber nur eine \emph{endliche Menge} reeller Zahlen ist exakt darstellbar. IEEE 754 single precision (float) umfasst 32 Bit: 1 Vorzeichenbit + 8 Exponentenbits + 23 Mantissenbits (S.~19).
+\end{defbox}
+
+\begin{satzbox}{Gleitkommadarstellung (Gl.~10 im Skript, S.~19)}
+\[
+x = (-1)^s \cdot m \cdot 2^e
+\]
+\emph{In eigenen Worten:} Eine Gleitkommazahl besteht aus drei Teilen: $s$ ist das Vorzeichenbit (sign bit) und bestimmt über $(-1)^s$, ob die Zahl positiv oder negativ ist; $m$ ist die Mantisse (mantissa, auch significand) und bestimmt die \emph{Präzision}, also die gültigen Ziffern; $e$ ist der Exponent und bestimmt die \emph{Skala} (Größenordnung/magnitude) der Zahl, indem er die Mantisse mit einer Zweierpotenz multipliziert -- das Komma \glqq gleitet\grqq{} je nach Exponent.
+\end{satzbox}
+
+Die Bit-Aufteilungen der gängigen IEEE-754-Formate zeigt das Skript in den Figures~4--6 (S.~19):
+\begin{center}
+\begin{tabular}{lrrrr}
+\toprule
+Format & Bits gesamt & Sign & Exponent & Mantisse \\
+\midrule
+IEEE 754 HALF (16)   & 16 & 1 & 5  & 10 \\
+IEEE 754 SINGLE (32) & 32 & 1 & 8  & 23 \\
+IEEE 754 DOUBLE (64) & 64 & 1 & 11 & 52 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{satzbox}{Exponent mit Bias (S.~19)}
+\[
+e = E - 127_{10} \qquad \text{(IEEE 754 single precision: 8 Exponentenbits, Bias 127)}
+\]
+\emph{In eigenen Worten:} Der Exponent wird nicht direkt, sondern mit einem Bias gespeichert, um positive \emph{und} negative Exponenten zu ermöglichen -- so lassen sich sehr kleine und sehr große Größenordnungen darstellen. Mit 8 Bits speichert das Exponentenfeld Werte von $0$ ($2^0 - 1$) bis $255$ ($2^8 - 1$); durch Subtraktion des Bias ($127$) kann der tatsächliche Exponent $e$ positive und negative Werte annehmen, zentriert um null. \glqq This makes encoding and comparison of floating-point numbers easier in hardware.\grqq{} (vereinfacht Kodierung und Vergleich in Hardware).
+\end{satzbox}
+
+\begin{bspbox}{Constructing scale -- Skala über den Exponenten (S.~20)}
+Wie Zehnerpotenzen in der Gleitkommadarstellung kodiert werden (gespeicherter Exponent $E$ = wahrer Exponent $+\ 127$):
+\begin{align*}
+10^1 &= 10_{10} = 1010_2 = 1.010 \times 2^3, & E &= 10000010_2 \\
+10^2 &= 100_{10} = 1100100_2 = 1.100100 \times 2^6, & E &= 10000101_2 \\
+10^3 &= 1000_{10} = 1111101000_2 = 1.111101000 \times 2^9, & E &= 10001000_2
+\end{align*}
+[Ergänzung] Zur Kontrolle: $10000010_2 = 130 = 3 + 127$, $10000101_2 = 133 = 6 + 127$, $10001000_2 = 136 = 9 + 127$ -- der Bias von 127 wird jeweils auf den wahren Exponenten addiert.
+\end{bspbox}
+
+Eine Randnotiz (S.~20) ordnet die Größenordnungen ein: Die größte Zahl in single precision ist ca.\ $10^{38}$, gesetzt durch den größten Exponenten $e = +127$; der Dezimalexponent 38 kommt von $\log_{10}(2^{128}) \approx 38.5$. Als Erinnerung folgen die SI-Präfixe: mega ($10^6$), giga ($10^9$), tera ($10^{12}$), peta ($10^{15}$), exa ($10^{18}$), zetta ($10^{21}$), yotta ($10^{24}$), ronna ($10^{27}$), quetta ($10^{30}$) -- für $10^{33}$ gibt es kein offizielles SI-Präfix (S.~20).
+
+\paragraph{Die Mantisse (S.~20).} Die Mantisse bestimmt, wie fein Zahlen \emph{zwischen} Zweierpotenzen dargestellt werden können.
+
+\begin{bspbox}{2-Bit-Mantisse (unnormalisiert) (S.~20)}
+Mit den Mantissen-Bitkombinationen $00$, $01$, $10$, $11$ und unnormalisiertem Significand $0.xx_2$ ergeben sich:
+\begin{align*}
+00:\ & 0.00_2 = 0 + 0 \times 2^{-1} + 0 \times 2^{-2} = 0.0 \\
+01:\ & 0.01_2 = 0 + 0 \times 2^{-1} + 1 \times 2^{-2} = 0.25 \\
+10:\ & 0.10_2 = 0 + 1 \times 2^{-1} + 0 \times 2^{-2} = 0.5 \\
+11:\ & 0.11_2 = 0 + 1 \times 2^{-1} + 1 \times 2^{-2} = 0.75
+\end{align*}
+Eine 2-Bit-Mantisse erlaubt also vier verschiedene Werte zwischen zwei beliebigen Zweierpotenzen; eine 3-Bit-Mantisse acht Werte usw.
+\end{bspbox}
+
+\begin{satzbox}{Mantissenbits und darstellbare Werte (S.~20)}
+\[
+t \text{ Mantissenbits} \;\Rightarrow\; 2^t \text{ verschiedene Werte zwischen zwei Zweierpotenzen}
+\]
+\emph{In eigenen Worten:} Jedes zusätzliche Mantissenbit verdoppelt die Anzahl der Stützstellen zwischen zwei benachbarten Zweierpotenzen -- die Auflösung wird also exponentiell feiner mit der Bitzahl. Skaliert wird dieses Raster durch den Exponenten: Zwischen $2^e$ und $2^{e+1}$ liegen immer gleich viele darstellbare Zahlen, aber ihr absoluter Abstand wächst mit der Größenordnung.
+\end{satzbox}
+
+\subsection{Machine Epsilon und Präzision (S.~20--21)}
+
+\begin{defbox}{Machine Epsilon ($\varepsilon_{\text{mach}}$, Maschinengenauigkeit)}
+Machine Epsilon ist die kleinste positive Zahl, sodass $1 + \varepsilon_{\text{mach}} \neq 1$ in der Computerarithmetik gilt. Es quantifiziert die obere Schranke des relativen Fehlers durch Rundung in der Gleitkomma-Arithmetik (S.~20). Konkrete Werte (Randnotiz, S.~20): IEEE 754 single precision $\varepsilon_{\text{mach}} \approx 1.19 \times 10^{-7}$; double precision $\varepsilon_{\text{mach}} \approx 2.22 \times 10^{-16}$.
+\end{defbox}
+
+\begin{satzbox}{Machine Epsilon (Gl.~11 im Skript, S.~20)}
+\[
+\varepsilon_{\text{mach}} = 2^{-t}
+\]
+\emph{In eigenen Worten:} $t$ ist die Anzahl der Mantissenbits. Da $t$ Bits genau $2^t$ Abstufungen zwischen zwei Zweierpotenzen erlauben, ist der feinste relative Schritt -- und damit der maximale relative Rundungsfehler -- gerade $2^{-t}$. Im 2-Bit-Beispiel von oben: $\varepsilon_{\text{mach}} = 2^{-2} = 0.25$.
+\end{satzbox}
+
+\begin{satzbox}{Relative vs.\ absolute Präzision (Gl.~12 im Skript, S.~20)}
+\[
+\text{relative Präzision} \approx 2^{-t}, \qquad \text{absolute Präzision} = \varepsilon_{\text{mach}} \cdot |x|
+\]
+\emph{In eigenen Worten:} Die \emph{relative} Präzision von Gleitkommazahlen ist konstant (ca.\ $2^{-t}$, unabhängig von der Größe der Zahl), während die \emph{absolute} Präzision von der Größenordnung der dargestellten Zahl $x$ abhängt: Der absolute Abstand zwischen benachbarten darstellbaren Zahlen wächst proportional zu $|x|$. Die Randnotiz (S.~20) veranschaulicht: $1 : 2 = 0.5$, aber $10 : 2 = 5$ -- gleiche Anzahl von Schritten (relative Präzision), aber Lücken von $0.5$ vs.\ $5$. In anderen Worten (S.~21): Große Zahlen haben größere absolute Lücken (gaps) zwischen darstellbaren Werten als kleine Zahlen. (Vgl.\ Figure~7, S.~21: doppelt-logarithmischer Plot des absoluten Fehlers für single und double precision als Funktion des dargestellten Werts $x$ -- der Fehler wächst linear mit $x$ und ist proportional zum jeweiligen Machine Epsilon.)
+\end{satzbox}
+
+\subsection{Festkommadarstellung (Fixed-Point) (S.~21)}
+
+\begin{defbox}{Festkommadarstellung (fixed-point representation)}
+Fixed-Point ist eine andere Art, reelle Zahlen in Computern zu speichern, besonders wenn vorhersagbare Präzision und Performance gewünscht sind. Man entscheidet vorab, wie viele Bits für den Ganzzahl- und wie viele für den Bruchteil verwendet werden. Dadurch ist die Lücke zwischen darstellbaren Zahlen (die Präzision) immer gleich, egal wie groß oder klein der Wert ist -- \glqq Which gives more control.\grqq{} (S.~21).
+\end{defbox}
+
+\begin{bspbox}{Fixed-Point mit Skalierungsfaktor (S.~21)}
+Aufgabe: Zahlen zwischen $-1000$ und $1000$ mit einem 32-Bit signed Integer speichern. Normal stellt ein 32-Bit-Integer Werte von $-2147483648$ bis $2147483647$ dar -- viel mehr als nötig. Für mehr Präzision verwendet man einen Skalierungsfaktor: z.\,B.\ jede reelle Zahl mit $10^6$ multiplizieren und als Integer speichern. So wird $1.234567$ zu $1234567$ im Speicher. Mit dem Skalierungsfaktor $10^{-6}$ (beim Auslesen) ist die kleinste darstellbare Differenz $0.000001$; der maximale Rundungsfehler ist ein halber Schritt: $0.5 \times 10^{-6} = 0.0000005$ (Randnotiz \emph{Precision}, S.~21).
+\end{bspbox}
+
+\subsection{Auslöschung (Loss of Significance) (S.~22--23)}
+
+\begin{defbox}{Auslöschung (loss of significance / catastrophic cancellation)}
+Auslöschung tritt auf, wenn zwei nahezu gleiche Zahlen subtrahiert werden: Die führenden Ziffern heben sich auf, und nur die weniger signifikanten, rundungsfehleranfälligen Ziffern bleiben übrig. \glqq This can greatly amplify rounding errors.\grqq{} (kann Rundungsfehler stark verstärken) (S.~22).
+\end{defbox}
+
+\begin{defbox}{Pseudo-Accuracy (Scheingenauigkeit)}
+Pseudo-Accuracy bezeichnet allgemein einen ungerechtfertigt hohen Detailgrad, der ein irreführendes, künstliches Genauigkeitsgefühl erzeugt (Randnotiz, S.~22) -- eine Warnung davor, vielen angezeigten Nachkommastellen blind zu vertrauen.
+\end{defbox}
+
+\begin{bspbox}{Loss of Significance, Beispiel 1 (S.~22)}
+Zwei Zahlen $a$, $b$ werden im Computer mit begrenzter Präzision gespeichert, je auf 8 signifikante Stellen gerundet (Fixed-Point-Darstellung):
+\[
+a = 12345678.5, \qquad b = 12345678.0
+\]
+Mit 8 signifikanten Stellen gespeichert als:
+\[
+\tilde{a} = 12345679, \qquad \tilde{b} = 12345678
+\]
+Subtraktion der gespeicherten Werte:
+\[
+\tilde{a} - \tilde{b} = 12345679 - 12345678 = 1
+\]
+Wahre Differenz:
+\[
+a - b = 12345678.5 - 12345678.0 = 0.5
+\]
+Der Fehler im Resultat beträgt $0.5$ -- genauso groß wie der Rundungsfehler in $\tilde{a}$ bzw.\ $\tilde{b}$ einzeln auf Machine-Epsilon-Niveau $0.5$.
+\end{bspbox}
+
+\begin{bspbox}{Loss of Significance, Beispiel 2 -- minimale Abweichung als Gegenstück (S.~22)}
+Nun mit minimal veränderter Eingabe:
+\[
+a = 12345678.4, \qquad b = 12345678.0
+\]
+Mit 8 signifikanten Stellen gespeichert ($12345678.4$ rundet \emph{ab}!):
+\[
+\tilde{a} = 12345678, \qquad \tilde{b} = 12345678
+\]
+Subtraktion der gespeicherten Werte:
+\[
+\tilde{a} - \tilde{b} = 12345678 - 12345678 = 0
+\]
+Wahre Differenz:
+\[
+a - b = 12345678.4 - 12345678.0 = 0.4
+\]
+\end{bspbox}
+
+\paragraph{Diskussion der Beispiele (S.~23).} Die wahren Resultate beider Beispiele unterscheiden sich nur um $0.1$ ($0.5$ vs.\ $0.4$); die Maschinenresultate sind aber $1$ im einen und $0$ im anderen Fall -- \glqq which is a huge relative error. This shows how loss of significance can lead to large errors in computations, especially when the numbers being subtracted are very close to each other.\grqq{} Das ist die zentrale Warnung des Kapitels. Eine Randnotiz (S.~22) ergänzt philosophisch: \glqq in mathematics there is an infinity between 0 and 1. The difference between something and nothing.\grqq{} -- zwischen Ergebnis $0$ und $1$ liegt eben nicht nur \emph{ein bisschen}, sondern der Unterschied zwischen \emph{etwas} und \emph{nichts}. Eine weitere Randnotiz (S.~23) gibt einen Denkanstoß zum Grenzfall: \glqq What happens for $a > b$? Think along the lines of significant digits.\grqq{}
+
+Die katastrophale Auslöschung zeigt das Skript zusätzlich grafisch (Figure~8, S.~23): Der Ausdruck $1/(1 + \epsilon - 1)$ wird gegen $\epsilon$ geplottet (log-x, linear-y). Für große $\epsilon$ folgt das Ergebnis dem erwarteten Verlauf $1/\epsilon$; für sehr kleine $\epsilon$ (in der Figur ab ca.\ $10^{-16.5} \approx 3 \cdot 10^{-17}$, also knapp unterhalb des double-precision-Epsilons $\epsilon_{\text{mach}} \approx 2.22 \cdot 10^{-16}$) dominiert der Rundungsfehler und das Ergebnis wird unendlich [Ergänzung: weil $1 + \epsilon$ im Speicher zu exakt $1$ wird und der Nenner zu $0$ auslöscht].\footnote{Der zugehörige Code ist verfügbar unter \url{https://github.com/Quillstacks/lecturecode_numericalmethods.git} (Randnotiz, S.~23).}
+
+\begin{defbox}{Overflow und Underflow}
+\textbf{Overflow} tritt auf, wenn Zahlen großer Magnitude als $+\infty$ oder $-\infty$ approximiert werden. \textbf{Underflow} tritt auf, wenn Zahlen nahe null auf null gerundet werden (Randnotizen, S.~23).
+\end{defbox}
+
+\subsection{Recap of Key Concepts (S.~24)}
+
+\begin{itemize}[itemsep=1pt]
+  \item Die Gleitkommadarstellung erlaubt Computern, einen weiten Bereich reeller Zahlen mit endlich vielen Bits zu speichern, führt aber Rundungsfehler ein.
+  \item Machine Epsilon quantifiziert die kleinste darstellbare Differenz in der Gleitkomma-Arithmetik und beeinflusst die Präzision numerischer Berechnungen.
+  \item Auslöschung (loss of significance) tritt beim Subtrahieren nahezu gleicher Zahlen auf, verstärkt Rundungsfehler und führt zu ungenauen Resultaten.
+  \item \emph{Knowing what can go wrong} (Überleitung zu Kapitel~3): Wir sind nah dran zu verstehen, wie wir definieren, was \emph{gut} ist, und wie wir die Qualität unserer Methoden messen. \glqq We now know that there is a true function $f$ and an approximated function $\hat{f}$, further we have a true input $x$ and a rounded input $\tilde{x}$. These effect and characterize our numerical methods.\grqq{} -- Notation: wahre Funktion $f$, approximierte Funktion $\hat{f}$; wahre Eingabe $x$, gerundete Eingabe $\tilde{x}$.
+\end{itemize}
+
+\paragraph{Teaser (Randnotiz, S.~24).} \glqq Can you think of metrics for numerical methods, based on the approximations and errors we discussed?\grqq{} -- Welche Metriken für numerische Methoden lassen sich aus den diskutierten Approximationen und Fehlern ableiten? Die Brücke zu Kapitel~3 (Error Analysis).
+
+\subsection{Übungsaufgaben und Selbstreflexionsfragen}
+
+\textbf{Übungen (nur Aufgabenstellung; Lösungen in den Übungsblättern):}
+\begin{enumerate}[itemsep=1pt]
+  \item \emph{Hands on machine epsilon} (S.~23; zugehöriger Marginalientitel: \glqq Is double enough?\grqq): Überlege -- bevor du an die Maschine gehst --, wie man das Machine Epsilon eines beliebigen Systems für ein spezifisches Gleitkommaformat per Programm bestimmen würde. Wiederhole dazu die Definition von Machine Epsilon und notiere deine Gedanken als Pseudocode. \glqq What would such a program show when run on a fixed-point system vs a floating-point system?\grqq{} Probiere anschließend verschiedene Typen am eigenen Rechner in Code aus, notiere die Beobachtungen und reflektiere. Frage: \glqq When you would build a calculator, which type would you choose and why?\grqq{} (Wenn du einen Taschenrechner bauen würdest -- welchen Typ würdest du wählen und warum?)\footnote{Hierzu Fußnote~7 im Skript (S.~23): D.~Blochinger: \emph{Numerische Methoden -- Foliensatz}, Zentrum für Angewandte Ökonomik (ZAÖ), DHBW Ravensburg, 2025, CC BY-NC-SA 4.0, Stand 28.~Mai 2025, \url{https://www.economicon.de/repository/index.html}.}
+  \item \emph{Loss of significance example} (S.~23): Überlege, wie man Auslöschung auf der eigenen Maschine demonstrieren würde; notiere den Pseudocode, bevor du weiterliest.
+  \item \emph{Reason about} (S.~23): Begründe, wie das Berechnen von $f(\epsilon) = 1/(a + \epsilon - b)$ für kleines $\epsilon$ und $a = b$ diesen Zweck erfüllen würde. \glqq What do you expect to see when $\epsilon$ is very small?\grqq{}
+\end{enumerate}
+
+\textbf{Self-Reflection (S.~24):}
+\begin{enumerate}[itemsep=1pt]
+  \item Wie ist die Gleitkommadarstellung strukturiert, und was sind ihre Komponenten?
+  \item Was ist Machine Epsilon, und wie hängt es mit der numerischen Präzision zusammen?
+  \item Wie wirken sich diese Konzepte in der Praxis auf numerische Berechnungen aus?
+\end{enumerate}
+
+\begin{merkbox}
+\textbf{Typische Fehlerquellen:}
+\begin{itemize}[itemsep=1pt]
+  \item Rundungsfehler (Speicherung) und Abschneide-/Trunkierungsfehler (Approximation unendlicher Prozesse) verwechseln -- beide addieren sich, haben aber verschiedene Ursachen (S.~17).
+  \item Relative und absolute Präzision verwechseln: relativ ist sie konstant ($\approx 2^{-t}$), absolut wächst sie mit $|x|$ -- große Zahlen haben große Lücken (S.~20--21).
+  \item Beim Exponenten den Bias vergessen: gespeichert wird $E$, der wahre Exponent ist $e = E - 127$ (single precision) (S.~19).
+  \item Nahezu gleiche Zahlen bedenkenlos subtrahieren: Auslöschung kann aus einem Rundungsfehler von $0.5$ einen relativen Fehler von 100\,\% machen ($1$ statt $0.5$, $0$ statt $0.4$) (S.~22--23).
+  \item Vielen Nachkommastellen blind vertrauen: Pseudo-Accuracy erzeugt ein künstliches Genauigkeitsgefühl (S.~22).
+  \item Overflow/Underflow ignorieren: sehr große Werte werden zu $\pm\infty$, sehr kleine zu $0$ (S.~23).
+\end{itemize}
+\textbf{Merksätze:}
+\begin{itemize}[itemsep=1pt]
+  \item Drei Fehlertypen: Modellierungsfehler (Modell $\neq$ Realität), Trunkierungsfehler (endlich statt unendlich), Rundungsfehler (endliche Ziffern im Speicher).
+  \item Gleitkommazahl = Vorzeichen $\times$ Mantisse $\times$ Zweierpotenz: $x = (-1)^s \cdot m \cdot 2^e$ -- Mantisse macht die Präzision, Exponent die Skala.
+  \item $\varepsilon_{\text{mach}} = 2^{-t}$: die kleinste Zahl, die zu $1$ addiert noch einen Unterschied macht.
+  \item Subtraktion fast gleicher Zahlen ist der Klassiker der Auslöschung -- wenn möglich, Formeln umformen statt subtrahieren.
+  \item Fixed-Point: konstante absolute Lücken (mehr Kontrolle); Floating-Point: konstante relative Lücken (mehr Dynamikumfang).
+\end{itemize}
+\end{merkbox}

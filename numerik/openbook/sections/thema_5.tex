@@ -1,0 +1,563 @@
+% ============================================================
+% Thema 5: Global Optimization (S. 47-56)
+% Include-Datei fuer zusammenfassung.tex
+% ============================================================
+\section{Thema 5: Globale Optimierung (Global Optimization) [S.~47--56]}
+
+\subsection{Motivation und Einordnung [S.~47]}
+
+Kapitelmotto: \glqq And then there were many.\grqq{} --- Im vorigen Kapitel wurden
+Newtons Methode und der Gradientenabstieg (gradient descent) für die Nullstellensuche
+entwickelt. Diese Verfahren sind jedoch \emph{lokale} Methoden: Sie konvergieren zu
+derjenigen Lösung, die in der Nähe des Startpunkts liegt. Was aber, wenn diese nahe
+Lösung schlecht ist --- oder eine viel bessere Lösung weiter entfernt liegt? Das Skript
+formuliert es so: \glqq Time to do away with oversimplifications.\grqq{} In diesem Kapitel
+lernen wir Shekel's Foxholes als klassische Testfunktion für globale Optimierung kennen,
+sehen, wie sich ein Optimierungsproblem als Nullstellenproblem (root-finding problem)
+formulieren lässt, und führen Strategien zum Finden \emph{globaler} Minima ein.
+
+Der Bezug zum maschinellen Lernen ist zentral: Im Deep Learning ist das Verständnis
+multidimensionaler und globaler Optimierung entscheidend, damit gro{\ss}e Modelle effektiv
+trainieren, konvergieren und tatsächlich etwas Nützliches lernen. Die Loss-Landschaften
+neuronaler Netze (neural network loss landscapes, Li et al.\ 2018, Fu{\ss}note~8 [S.~47])
+sind hochgradig nicht-konvex, besitzen flache Regionen und enthalten viele lokale
+Minima --- verschiedene Initialisierungen führen zu verschiedenen Endlösungen.
+
+\subsection{Lernziele (Learning Objectives) [S.~50]}
+\begin{enumerate}[itemsep=1pt]
+  \item Erklären können, warum lokale Methoden das Finden globaler Minima nicht
+        garantieren können.
+  \item Strategien zum Finden globaler Extrema anwenden können.
+  \item Verstehen, wie der Gradientenabstieg (gradient descent) hilft, die Optimierung
+        in Richtung von Minima zu lenken.
+\end{enumerate}
+
+\subsection{Hands On: Shekel's Foxholes [S.~48--50]}
+
+\begin{defbox}{Shekel's Foxholes (1D-Testfunktion), Gl.~(35) [S.~48]}
+Shekel's Foxholes ist eine klassische Testfunktion für globale Optimierung mit
+\emph{kontrollierter Multimodalität} (controlled multimodality), d.\,h.\ man kann gezielt
+einstellen, wie viele Minima die Funktion hat und wie sie aussehen. In 1D lautet die
+einfache Form (Original-Gl.~(35); Fu{\ss}note~9: J.~Shekel, \glqq Test functions for
+multimodal search techniques\grqq, 1971):
+\[
+  f(x) \;=\; -\sum_{i=1}^{m} \frac{c_i}{(x - a_i)^2 + r_i} \tag{35}
+\]
+Dabei sind $a_i$ die Positionen der \glqq Fuchslöcher\grqq{} (foxholes), $c_i$ steuert die
+\emph{Tiefe} jedes Lochs und $r_i$ die \emph{Breite}. Durch Anpassen dieser Parameter
+lässt sich eine Landschaft mit mehreren lokalen Minima und einem globalen Minimum
+erzeugen --- \glqq an ideal playground for testing optimization algorithms\grqq.
+
+\medskip
+\textbf{[Ergänzung]} Intuition: Jeder Summand ist ein nach unten gezogener
+\glqq Trichter\grqq{} um die Stelle $a_i$; je kleiner $r_i$, desto schmaler und (bei festem
+$c_i$) tiefer ist der Trichter, denn am Lochzentrum $x=a_i$ gilt $f \approx -c_i/r_i$
+für diesen Term.
+\end{defbox}
+
+\begin{bspbox}{Konkrete Shekel-Instanz mit drei Foxholes [S.~48]}
+Im Skript wird folgende konkrete Instanz mit $m=3$ Löchern verwendet:
+\[
+  f(x) \;=\; -\frac{1}{(x-0)^2 + 0.7} \;-\; \frac{1.7}{(x-4)^2 + 0.2} \;-\; \frac{1.1}{(x-7)^2 + 0.4}
+\]
+Das \textbf{globale Minimum} liegt bei $x = 4$ (tiefstes Loch: gro{\ss}es $c_2 = 1.7$,
+kleines $r_2 = 0.2$); die beiden anderen Minima bei $x = 0$ und $x = 7$ sind nur
+\emph{lokale} Minima. Wichtig: Diese Information steht uns beim Lauf eines
+Optimierungsalgorithmus natürlich \emph{nicht} zur Verfügung --- wir sehen nur die
+Funktionswerte und Gradienten an den ausgewerteten Punkten. Für das Studium des
+Verhaltens von Optimierungsmethoden ist das Wissen aber nützlich.
+
+\medskip
+\textbf{Sensitivität gegenüber dem Startpunkt $x_0$:} Startet Newtons Methode nahe
+$x = 0$ oder $x = 7$, konvergiert sie zu einem \emph{lokalen} Minimum --- nicht zum
+globalen bei $x = 4$ (vgl.\ Figure~24 [S.~48]: Funktion mit Tälern bei $x = 0, 4, 7$;
+die Ableitung kreuzt an jedem Minimum die Null).
+\end{bspbox}
+
+\begin{satzbox}{Optimierung als Nullstellensuche: Newton-Update, Gl.~(36) [S.~49]}
+Um Newtons Methode zur \emph{Optimierung} (statt Nullstellensuche) einzusetzen, lösen
+wir das Nullstellenproblem auf der \emph{Ableitung}: $f'(x) = 0$. Das ist die zentrale
+Reformulierung des Optimierungsproblems. Das Newton-Update wird dann
+(Original-Gl.~(36)):
+\[
+  x_{n+1} \;=\; x_n - \frac{f'(x_n)}{f''(x_n)} \tag{36}
+\]
+\textbf{In eigenen Worten:} Beim gewöhnlichen Newton-Verfahren für Nullstellen von $g$
+lautet das Update $x_{n+1} = x_n - g(x_n)/g'(x_n)$. Setzt man $g = f'$, wird daraus
+genau Gl.~(36): Zähler $f'$, Nenner $f''$. Randnotiz [S.~48]: Die als gestrichelte Linie
+dargestellte Ableitung \emph{ist} die Antwort darauf, wie man Optimierung als
+Nullstellensuche formuliert --- \glqq The minima of $f(x)$ correspond to the roots of
+$f'(x)$.\grqq{} An Extrema ist $f'(x)$ null; gefunden werden dabei allerdings Minima
+\emph{oder} Maxima (Klassifikation: siehe Second-Derivative-Test weiter unten).
+\end{satzbox}
+
+\begin{bspbox}{Newton auf der Shekel-Funktion ab $x_0 = 7.2$ (vollständige Rechnung) [S.~49]}
+Wir wenden Gl.~(36) auf die obige Drei-Löcher-Instanz an. Die Ableitungen vereinfachen
+sich zu (Quotientenregel auf jeden Summanden; das Minuszeichen der Funktion dreht das
+Vorzeichen):
+\[
+  f'(x) = \frac{2x}{(x^2 + 0.7)^2} + \frac{3.4\,(x-4)}{\bigl((x-4)^2 + 0.2\bigr)^2}
+        + \frac{2.2\,(x-7)}{\bigl((x-7)^2 + 0.4\bigr)^2}
+\]
+Auswertung bei $x_0 = 7.2$:
+\[
+  f'(7.2) \;\approx\; 0.005 + 0.100 + 2.27 \;=\; 2.38
+\]
+\emph{Anmerkung zur Rundung [S.~49]:} Die drei Summanden ergeben arithmetisch $2.375$;
+das PDF rundet zulässig auf $2.38$ --- keine Korrektur erforderlich.
+\[
+  f''(x) = \frac{2\,(0.7 - 3x^2)}{(x^2 + 0.7)^3}
+         + \frac{3.4\,\bigl(0.2 - 3(x-4)^2\bigr)}{\bigl((x-4)^2 + 0.2\bigr)^3}
+         + \frac{2.2\,\bigl(0.4 - 3(x-7)^2\bigr)}{\bigl((x-7)^2 + 0.4\bigr)^3}
+\]
+\[
+  f''(7.2) \;\approx\; -0.002 - 0.091 + 7.23 \;=\; 7.14
+\]
+(Vgl.\ Figure~25 [S.~49]: $f'$ schwarz, $f''$ grau gestrichelt auf der
+Shekel-Instanz; \glqq the second derivative is positive at minima, confirming local
+curvature\grqq{} --- $f'' > 0$ an den Minima bestätigt die lokale Krümmung.)
+Damit lauten die \textbf{Newton-Schritte}:
+\[
+  x_1 = 7.2 - \frac{2.38}{7.14} \approx 6.87, \qquad
+  x_2 \approx 7.02, \qquad
+  x_3 \approx 7.00
+\]
+[Anm.: Exakt nachgerechnet ist $x_3 \approx 6.9907$ ($\approx 6.99$, PDF: $7.00$); das lokale Minimum liegt durch die Überlappung der drei Foxhole-Terme knapp unterhalb von $7$ bei $x \approx 6.9907$. Die Kernaussage (Konvergenz zum lokalen Minimum $x^\circ \approx 7$) bleibt unverändert richtig.]
+\textbf{Kernbeobachtung [S.~49]:} Nullstellenverfahren lassen sich zur Optimierung
+nutzen, indem man sie auf die \emph{Ableitung} anwendet: $f'(x)$ ist an Extrema null,
+dort finden wir also Minima oder Maxima.
+
+\medskip
+\textbf{Das fundamentale Problem [S.~50]:} Hier hatten wir Pech --- die Methode wird vom
+nahegelegenen Foxhole bei $x^{\circ} \approx 7$ angezogen (zur Notation $x^{\circ}$
+siehe unten). Lokale Optimierung garantiert nur das Finden \emph{naher} Extrema.
+Selbst mit Konvergenzgarantien: Von $x_0 = 3$ aus hätten wir Glück gehabt, von
+$x_0 = -2$ oder $x_0 = 8$ aus verfehlen wir das globale Minimum. --- Genug Motivation
+für die globalen Optimierungsstrategien.
+
+\medskip
+\emph{Randnotiz Notation [S.~49]:} Der Stern ($*$) ist konventionell für \emph{globale}
+Optima reserviert. Zur Unterscheidung lokaler von globalen Minima bieten sich
+alternative Notationen wie $x^{\circ}$ (x-circle) oder $x_i$ für das $i$-te lokale
+Minimum an.
+\end{bspbox}
+
+\subsection{Definitionen: Globale Optimierungsstrategien [S.~51--53]}
+
+\begin{defbox}{Lokale vs.\ globale Optimierung, Gl.~(37) und (38) [S.~51]}
+\textbf{Lokale Optimierung (local optimization)} findet ein \emph{nahes} Minimum:
+\[
+  \mathbf{x}^{*} \;=\; \arg\min_{\mathbf{x} \in \mathcal{N}(\mathbf{x}_0)} f(\mathbf{x}) \tag{37}
+\]
+wobei $\mathcal{N}(\mathbf{x}_0)$ eine \emph{Nachbarschaft} (neighborhood) des
+Startpunkts ist. Randnotiz [S.~51]: $\mathcal{N}$ ist eine \emph{Menge} von Punkten um
+$\mathbf{x}_0$, z.\,B.\ $\mathcal{N}(\mathbf{x}_0) = \{\mathbf{x} :
+\|\mathbf{x} - \mathbf{x}_0\| < \epsilon\}$ für einen Radius $\epsilon$.
+
+\medskip
+\textbf{Globale Optimierung (global optimization)} findet das \emph{beste} Minimum:
+\[
+  \mathbf{x}^{*} \;=\; \arg\min_{\mathbf{x} \in \Omega} f(\mathbf{x}) \tag{38}
+\]
+wobei $\Omega$ die gesamte Suchdomäne ist. Das Skript merkt an: \glqq It is easy to see
+how the search domain can be inifinitely [sic] large.\grqq{} --- die Suchdomäne kann
+unendlich gro{\ss} sein, was die Aufgabe fundamental schwerer macht.
+\end{defbox}
+
+\begin{defbox}{Konvexität als Trennlinie (convexity is the dividing line) [S.~51]}
+Eine Funktion $f$ hei{\ss}t \textbf{konvex} (convex), wenn
+\[
+  f\bigl(\lambda x + (1-\lambda)\,y\bigr) \;\le\; \lambda f(x) + (1-\lambda)\,f(y)
+  \qquad \text{für alle } \lambda \in [0,1].
+\]
+\textbf{[Ergänzung]} Anschaulich: Die Verbindungsstrecke (Sehne) zwischen zwei beliebigen
+Kurvenpunkten liegt nie unterhalb des Graphen --- die Funktion hat eine einzige
+\glqq Schüssel\grqq-Form ohne Nebentäler.
+
+Für konvexe Funktionen ist \emph{jedes lokale Minimum das globale Minimum} ---
+lokale Methoden genügen; jede lokale Methode findet das globale Optimum. Die
+Schwierigkeit entsteht erst bei \textbf{nicht-konvexer} Optimierung, deren Landschaft
+mehrere lokale Minima, Sattelpunkte (saddle points) und Plateaus enthält ---
+wie Shekel's Foxholes oder die Loss-Flächen neuronaler Netze.
+\end{defbox}
+
+\begin{defbox}{Anziehungsgebiet (basin of attraction) [S.~51, 55]}
+Das \textbf{Anziehungsgebiet} eines (lokalen) Minimums ist die Menge aller Startpunkte,
+von denen aus ein lokaler Optimierer zu genau diesem Minimum konvergiert.
+\textbf{[Ergänzung]} Die Suchdomäne zerfällt dadurch in \glqq Einzugsgebiete\grqq:
+Wo immer man startet, rutscht der lokale Optimierer in das Minimum des jeweiligen
+Basins. Der Anteil $p$, den das Basin des \emph{globalen} Minimums an der Suchdomäne
+hat, bestimmt direkt die Erfolgswahrscheinlichkeit von Random Restarts (Gl.~(39)).
+Randnotiz-Übung [S.~55]: Shekel ist insgesamt nicht-konvex, die einzelnen Basins sind
+es jedoch; man soll auch eine Funktion notieren, bei der die Basins \emph{nicht} so
+leicht zu kartieren sind.
+\end{defbox}
+
+\begin{defbox}{Random Restarts [S.~51]}
+\textbf{Random Restarts} (zufällige Neustarts) ist die einfachste globale Strategie:
+Man startet den lokalen Optimierer wiederholt von zufällig gezogenen Startpunkten der
+Suchdomäne und behält die beste gefundene Lösung. Das Skript kommentiert:
+\glqq in its notion it feels like brute-forcing again\grqq{} --- vom Ansatz her fühlt es
+sich wieder wie Brute-Forcing an. Ablauf siehe Algorithmus~\ref{alg:randomrestarts}
+(Original: Algorithmus~3). Randnotiz [S.~51]: Das Training mehrerer neuronaler Netze
+mit verschiedenen Seeds ist \emph{implizites} Random Restarts --- für gro{\ss}e Modelle
+jedoch nicht praktikabel.
+\end{defbox}
+
+\begin{algorithm}[H]
+\caption{Random Restarts (Original: Algorithmus~3 [S.~51])}
+\label{alg:randomrestarts}
+\begin{algorithmic}[1]
+\Require Suchdomäne $\Omega$, lokaler Optimierer \textsc{LocalOptimize}, Anzahl Restarts $K$
+\State $x_{\text{best}} \gets \textsc{None}$;\quad $f_{\text{best}} \gets +\infty$
+\For{$k = 1$ \textbf{to} $K$}
+  \State $x_0 \gets \textsc{RandomPoint}(\Omega)$
+  \State $x^{*} \gets \textsc{LocalOptimize}(x_0)$
+  \If{$f(x^{*}) < f_{\text{best}}$}
+    \State $x_{\text{best}} \gets x^{*}$;\quad $f_{\text{best}} \gets f(x^{*})$
+  \EndIf
+\EndFor
+\State \Return $x_{\text{best}}$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{satzbox}{Erfolgswahrscheinlichkeit von Random Restarts, Gl.~(39) [S.~51]}
+Hat das Anziehungsgebiet des globalen Minimums die Wahrscheinlichkeit $p$ (Anteil an
+der Suchdomäne, aus der ein zufälliger Startpunkt ins globale Basin fällt), dann gilt
+mit $K$ Restarts:
+\[
+  P(\text{find global}) \;=\; 1 - (1 - p)^{K} \tag{39}
+\]
+\textbf{In eigenen Worten:} Ein einzelner Restart \emph{verfehlt} das globale Basin mit
+Wahrscheinlichkeit $1-p$. Da die Restarts unabhängig sind, verfehlen alle $K$ Versuche
+gemeinsam mit Wahrscheinlichkeit $(1-p)^K$; das Komplement davon ist die
+Erfolgswahrscheinlichkeit. Zahlenbeispiel des Skripts: Für $p = 0.1$ und $K = 20$ ist
+$P = 1 - 0.9^{20} \approx 0.88$.
+
+\medskip
+\textbf{Auflösen nach $K$} (Randnotiz-Hint [S.~54]): Aus $P = 1-(1-p)^K$ folgt
+\[
+  K \;=\; \frac{\ln(1-P)}{\ln(1-p)}.
+\]
+\textbf{Praxisproblem:} Üblicherweise ist $p$ vorab \emph{nicht} bekannt. Heuristik für
+$K$ ohne Kenntnis von $p$: $K$ erhöhen, bis sich die beste Lösung stabilisiert (keine
+Verbesserung nach mehreren Restarts) --- siehe Patience.
+\end{satzbox}
+
+\begin{defbox}{Patience (Geduld-Hyperparameter) [S.~51]}
+\textbf{Patience} ist der übliche Hyperparameter der $K$-Heuristik: Er kontrolliert,
+wie viele Restarts \emph{ohne Verbesserung} abgewartet werden, bevor gestoppt wird.
+\textbf{[Ergänzung]} Dieselbe Idee kennt man aus dem Deep Learning als
+Early-Stopping-Patience: Statt eine feste Versuchszahl vorab festzulegen, beendet man
+adaptiv, wenn weitere Versuche längere Zeit nichts mehr verbessern.
+\end{defbox}
+
+\begin{defbox}{Basin Hopping [S.~52]}
+\textbf{Basin Hopping} erkundet die Landschaft durch \emph{Abwechseln} von lokaler
+Optimierung und zufälligen Sprüngen (random jumps). Das ist verschieden von Random
+Restarts, das die Suche jeweils \emph{komplett zurücksetzt}: Basin Hopping erlaubt das
+Entkommen aus lokalen Minima, während weiterhin lokale Optimierung genutzt wird, um
+bessere Lösungen zu finden --- man springt vom gerade gefundenen lokalen Minimum aus
+weiter, statt blind neu zu starten. Die \textbf{Sprungverteilung} (jump distribution)
+wird als $\delta \sim \mathcal{D}$ spezifiziert --- z.\,B.\ eine bei null zentrierte
+Gau{\ss}-Verteilung oder eine Gleichverteilung über einen bestimmten Bereich. Ablauf:
+Algorithmus~\ref{alg:basinhopping} (Original: Algorithmus~4).
+\end{defbox}
+
+\begin{algorithm}[H]
+\caption{Basin Hopping (Original: Algorithmus~4 [S.~52])}
+\label{alg:basinhopping}
+\begin{algorithmic}[1]
+\Require Startpunkt $x_0$, lokaler Optimierer \textsc{LocalOptimize}, Sprungverteilung für $\delta$, Iterationen $K$
+\State $x_{\text{best}} \gets x_0$;\quad $f_{\text{best}} \gets f(x_0)$
+\State $x_{\text{current}} \gets x_0$
+\For{$k = 1$ \textbf{to} $K$}
+  \State $x^{*} \gets \textsc{LocalOptimize}(x_{\text{current}})$
+  \If{$f(x^{*}) < f_{\text{best}}$}
+    \State $x_{\text{best}} \gets x^{*}$;\quad $f_{\text{best}} \gets f(x^{*})$
+  \EndIf
+  \State Sprung ziehen: $\delta \sim \mathcal{D}$
+  \State $x_{\text{current}} \gets x^{*} + \delta$ \Comment{Random jump}
+\EndFor
+\State \Return $x_{\text{best}}$
+\end{algorithmic}
+\end{algorithm}
+
+\begin{defbox}{Simulated Annealing (simuliertes Abkühlen) [S.~52]}
+\textbf{Simulated Annealing} kombiniert Basin Hopping mit einem
+\emph{probabilistischen Akzeptanzkriterium} für Kandidatenpunkte: Zu Beginn wird ein
+Sprung in eine \emph{schlechtere} Lösung mit Wahrscheinlichkeit
+\[
+  \exp\!\left(-\frac{\Delta f}{T}\right)
+\]
+akzeptiert, wobei $T$ (\emph{Temperatur}) über die Zeit abnimmt. Randnotiz [S.~52]:
+$\Delta f$ ist der \emph{Anstieg} des Zielfunktionswerts beim Übergang von der
+aktuellen Lösung zu einer schlechteren Kandidatenlösung. Später wird der Algorithmus
+konservativer und akzeptiert nur noch Kandidaten, die das Ziel verbessern --- so kann
+er zu einem Optimum konvergieren. \textbf{[Ergänzung]} Intuition: Bei hohem $T$ ist
+$\Delta f / T$ klein, die Akzeptanzwahrscheinlichkeit also nahe~1 --- viel Exploration;
+bei $T \to 0$ geht sie für jede Verschlechterung gegen~0 --- reine Ausbeutung
+(Exploitation). Der Name stammt vom kontrollierten Abkühlen (Annealing) in der
+Metallurgie.
+\end{defbox}
+
+\begin{defbox}{Stochastische Methoden (stochastic methods) und Noisy Newton [S.~52--53]}
+\textbf{Stochastische Methoden} fügen Rauschen hinzu, indem die Loss-Landschaft
+\emph{approximiert} wird, um lokalen Optima zu entkommen. Beispielaufgabe des Skripts:
+die 1D-Shekel-Funktion als Funktion zweiter Ordnung approximieren, indem man drei
+Punkte auf der Foxhole-Kurve wählt (vgl.\ Figure~26 [S.~53]: die Parabel durch drei
+Stützpunkte erfasst den allgemeinen Trend, glättet aber die einzelnen Foxholes weg).
+
+\medskip
+\textbf{Noisy Newton} (Randnotiz [S.~52]): folgt derselben Hopping-Idee, indem
+Gau{\ss}-Rauschen direkt zum Newton-Schritt addiert wird:
+$\mathbf{x}_{n+1} = \ldots + \boldsymbol{\xi}_n$.
+
+\medskip
+\textbf{The take away [S.~52--53]:} Die Loss-Landschaft ist \emph{nicht statisch},
+sondern kann konstruiert und geformt werden (loss landscape engineering). Durch
+Approximation der Loss-Landschaft auf Mini-Batches (jeweils andere Punktauswahl)
+erhält man eine \emph{verrauschte Schätzung} der wahren Loss-Landschaft, die hilft,
+lokalen Minima zu entkommen. Die Loss-Landschaft wird natürlich auch stark durch die
+Wahl der Loss-Funktion selbst beeinflusst. Aber: Der Newton-Schritt ist sehr
+\emph{rauschempfindlich} --- später werden Ansätze folgen, die damit besser umgehen.
+\end{defbox}
+
+\subsection{Newtons Methode zum Finden von Minima [S.~53]}
+
+\begin{satzbox}{Newton-Update für Minima und Second-Derivative-Test, Gl.~(40) [S.~53]}
+Die im Hands-on gesehene Reformulierung von Optimierung als Nullstellensuche erlaubt
+Newtons Methode zum Finden von Optima (Original-Gl.~(40), identisch zu Gl.~(36)):
+\[
+  x_{n+1} \;=\; x_n - \frac{f'(x_n)}{f''(x_n)} \tag{40}
+\]
+\textbf{Minima, Maxima und Sattelpunkte:} Newtons Methode (auf $f'$ angewandt) findet
+Punkte mit $f'(x) = 0$ \emph{[Korrektur ggü.\ Original, S.~53: das PDF druckt
+\glqq Newton's method finds points where $f''(x) = 0$\grqq; sachlich findet Newton auf
+$f'$ angewandt Punkte mit $f'(x) = 0$ (Extremstellen); erst der anschlie{\ss}ende
+Second-Derivative-Test klassifiziert sie über $f''$]} --- diese Punkte können aber
+Minima, Maxima oder Sattelpunkte sein. Der \textbf{Test der zweiten Ableitung}
+(second derivative test) unterscheidet:
+\begin{enumerate}[label=(\alph*),itemsep=1pt]
+  \item $f''(x^{*}) > 0$: lokales \textbf{Minimum} (\glqq curve bends upward\grqq{} ---
+        die Kurve biegt nach oben);
+  \item $f''(x^{*}) < 0$: lokales \textbf{Maximum} (\glqq curve bends downward\grqq{} ---
+        die Kurve biegt nach unten);
+  \item $f''(x^{*}) = 0$: \textbf{nicht schlüssig} (inconclusive) --- möglicher
+        Sattelpunkt oder Wendepunkt (saddle point / inflection point).
+\end{enumerate}
+\end{satzbox}
+
+\begin{satzbox}{Newton Richtung Minima lenken: der $|f''|$-Trick, Gl.~(41) [S.~53--54]}
+Modifiziertes Update mit dem \emph{Betrag} der zweiten Ableitung im Nenner
+(Original-Gl.~(41)):
+\[
+  x_{n+1} \;=\; x_n - \frac{f'(x_n)}{\bigl|f''(x_n)\bigr|} \tag{41}
+\]
+So wird sichergestellt, dass wir uns \emph{immer} in Richtung abnehmenden $f(x)$
+bewegen: Der Schritt geht stets in Richtung des negativen Gradienten
+(\glqq downhill so to speak\grqq).
+\textbf{In eigenen Worten / [Ergänzung]:} Beim reinen Newton-Update (Gl.~(40))
+bestimmt das \emph{Vorzeichen} von $f''$ die Schrittrichtung mit. In einer Region mit
+$f'' < 0$ (Kurve biegt nach unten, also nahe einem Maximum) zeigt der Newton-Schritt
+\emph{bergauf} --- Newton wird vom Maximum angezogen. Nimmt man $|f''|$, bleibt die
+adaptive Schrittweite $1/|f''|$ erhalten, aber die Richtung ist immer
+$-\operatorname{sign}(f'(x_n))$, also bergab. Geometrisch (Figures~27/28 [S.~54],
+Beispiel am Punkt $x = 6.1$): Die Tangente an $f'$ hat dort Steigung $f''(6.1) \approx -2.98$
+[Korrektur ggü.\ Original, S.~54: Die Captions von Fig.~27/28 drucken $\approx \mp 2.66$ ---
+das ist $f''$ bei $x \approx 6.0$ ($f''(6.0) \approx -2.63$); bei $x = 6.1$ ist
+$f'' \approx -2.98$]; der Ersatz $f'' \to |f''|$ klappt die Steigung auf $\approx +2.98$ um --- das
+Vorzeichen der Krümmung wird entfernt, Abwärtsschritte werden erzwungen und die Gefahr
+sinkt, auf ein lokales Maximum zuzulaufen. Randnotiz-Denkfrage [S.~53]: Wie müsste das
+Update modifiziert werden, um stattdessen \emph{Maxima} zu finden?
+
+\medskip
+\textbf{Randnotiz \glqq In deep learning\grqq{} [S.~53] --- die vier DL-Hoffnungen:}
+Im Deep Learning verwendet man typischerweise lokale Methoden (SGD, Adam), aber
+\emph{hofft}, dass: (1) die meisten lokalen Minima ungefähr gleich gut sind,
+(2) Überparametrisierung (overparameterization) schlechte Minima selten macht,
+(3) Mini-Batch-Rauschen hilft, scharfen Minima zu entkommen,
+(4) adaptive Lernraten helfen, Plateaus zu durchqueren.
+\end{satzbox}
+
+\subsection{Durchgerechnete Beispiele: Strategien auf konkreten Zahlen [S.~54--55]}
+
+\begin{bspbox}{Random Restarts: Erfolgswahrscheinlichkeit und nötige Restart-Zahl [S.~54--55]}
+\textbf{Aufgabe:} Eine Funktion hat 5 lokale Minima; das Anziehungsgebiet des globalen
+Minimums deckt 15\,\% der Suchdomäne ab ($p = 0.15$). Wie gro{\ss} ist die
+Wahrscheinlichkeit, das globale Minimum mit $K = 10$ Random Restarts zu finden?
+
+\medskip
+\textbf{Rechnung mit Gl.~(39):}
+\[
+  P \;=\; 1 - (1 - 0.15)^{10} \;=\; 1 - 0.85^{10} \;=\; 1 - 0.1969 \;=\; 0.803
+\]
+Etwa 80\,\% Chance --- \glqq not too bad, but far from certain\grqq{} (nicht schlecht,
+aber weit von Gewissheit entfernt).
+
+\medskip
+\textbf{Folgefrage: Wie viele Restarts brauchen wir für 99\,\%?} Mit der nach $K$
+aufgelösten Formel (Randnotiz-Hint [S.~54]: $K = \ln(1-P)/\ln(1-p)$):
+\[
+  K \;=\; \frac{\ln(1 - 0.99)}{\ln(1 - 0.15)} \;=\; \frac{\ln(0.01)}{\ln(0.85)}
+    \;=\; \frac{-4.605}{-0.1625} \;\approx\; 28.3
+\]
+[S.~55] Da $K$ ganzzahlig sein muss und das Ziel erreicht werden soll, wird
+aufgerundet: \textbf{$K = 29$ Restarts.}
+
+\medskip
+\textbf{[Ergänzung]} Beachte die ungünstige Skalierung: Je kleiner das globale Basin
+($p \downarrow$), desto stärker wächst $K$, denn $\ln(1-p) \approx -p$ für kleine $p$,
+also $K \approx -\ln(1-P)/p$ --- der Aufwand wächst etwa wie $1/p$.
+(Anschlussübung des Skripts [S.~55]: $K$ für $p = 0.05$ und $p = 0.01$ beim selben
+99-\%-Ziel berechnen --- siehe Übungsteil.)
+\end{bspbox}
+
+\subsection{Wissenswertes aus Randnotizen und Fu{\ss}noten}
+\begin{itemize}[itemsep=2pt]
+  \item \textbf{Loss-Landschaften neuronaler Netze [S.~47]:} Li et al.\ (2018,
+        Fu{\ss}note~8: \glqq Visualizing the loss landscape of neural nets\grqq,
+        NeurIPS) zeigen das komplexe Terrain der Optimierung neuronaler Netze ---
+        verschiedene Initialisierungen führen zu verschiedenen Endlösungen.
+  \item \textbf{Fu{\ss}note~9 [S.~48]:} J.~Shekel, \glqq Test functions for multimodal
+        search techniques\grqq, 1971 --- Ursprung der Shekel-Funktion.
+  \item \textbf{Implizite Random Restarts [S.~51]:} Das Training mehrerer Netze mit
+        verschiedenen Seeds entspricht implizitem Random Restarts; für gro{\ss}e
+        Modelle nicht praktikabel.
+  \item \textbf{Code [S.~54]:}
+        \url{https://github.com/Quillstacks/lecturecode_numericalmethods.git}
+  \item \textbf{Teaser [S.~56]:} Gradientenabstieg neigt zum Steckenbleiben ---
+        \glqq so far our answer was merely better than brute-forcing\grqq. Nächstes
+        Kapitel: die Loss-Landschaft \emph{glätten}, um die Robustheit des
+        Gradientenabstiegs zu erhöhen. Randnotiz-Denkfrage: Was, wenn wir einer
+        \emph{Hochfrequenz-Version} von Shekel's Foxholes gegenüberstehen --- welches
+        Problem entsteht? (Antwort in Thema~6.)
+\end{itemize}
+
+\subsection{Übungsaufgaben und Selbstreflexionsfragen des Skripts}
+
+\textbf{Übungsaufgaben [S.~48--55] (nur Fragen):}
+\begin{itemize}[itemsep=2pt]
+  \item Newton auf der 1D-Shekel-Funktion von einem \emph{anderen} Startpunkt als
+        $x_0 = 7.2$ anwenden und beobachten, wohin die Methode konvergiert [S.~48].
+  \item Die 1D-Shekel-Funktion als Funktion zweiter Ordnung approximieren, indem drei
+        Punkte auf der Foxhole-Kurve gewählt werden [S.~52].
+  \item Berechne $K$ für $p = 0.05$ und $p = 0.01$ beim selben 99-\%-Ziel [S.~55].
+  \item \emph{On your machine} [S.~55]: Eigene 1D-Shekel-Funktion designen (anfangs
+        einfach halten, später komplexer machen); die bisher gelernten lokalen
+        Optimierungsmethoden darauf anwenden; zeigen, wo Newtons Methode (wieder)
+        scheitert; verschiedene $x_0$ erkunden und das Konvergenzverhalten beobachten;
+        über Loss-Landschaft und Basin-Grenzen nachdenken.
+  \item \emph{Directing the search towards minima} [S.~55]: Der $|f''|$-Trick dreht
+        das Vorzeichen der Krümmung im Nenner um und erzwingt Bergab-Schritte ---
+        was bedeutet das geometrisch für die Tangentenkonstruktion? Danach im Code
+        ausprobieren.
+  \item \emph{Escaping Local Minima} [S.~55]: Random Restarts und Basin Hopping auf
+        der eigenen 1D-Shekel-Funktion einsetzen; vergleichen, wie viele
+        Funktionsauswertungen jede Methode zum Finden des globalen Minimums braucht.
+        Wie anfällig sind sie für das Steckenbleiben in lokalen Minima? Wie
+        beeinflusst die Wahl der Schrittweitenverteilung die Performance von Basin
+        Hopping?
+  \item \emph{Noise and landscape engineering} [S.~55]: Die Loss-Landschaft ist nicht
+        statisch, sondern zu konstruieren und zu formen; durch Approximation auf
+        Mini-Batches (verschiedene Punktauswahlen) \ldots\ [Anm.: Der Satz endet im
+        Original abrupt mit Komma --- unvollständig im PDF, Inhalt nur teilweise
+        rekonstruierbar.]
+  \item \emph{Code exercise} [S.~55]: Random Restarts und Basin Hopping auf der
+        1D-Shekel-Funktion implementieren; vergleichen, wie viele
+        Funktionsauswertungen jede Methode braucht, um das globale Minimum bei
+        $x \approx 4$ zu finden.
+  \item \emph{Basin of Attraction} (Randnotiz [S.~55]): Die Plots der Shekel-Funktion
+        erneut ansehen, die Anziehungsgebiete jedes lokalen Minimums markieren und
+        ihre relativen Grö{\ss}en schätzen. Welches gehört zum globalen Minimum? Wie
+        hängt das mit der Erfolgswahrscheinlichkeit von Random Restarts zusammen?
+  \item \emph{Non-Convex Basins} (Randnotiz [S.~55]): Shekel ist insgesamt
+        nicht-konvex, die Basins jedoch schon --- eine Funktion notieren, bei der die
+        Anziehungsgebiete nicht so leicht zu kartieren sind.
+  \item \emph{Schrittweiten-Heuristik} (Randnotiz [S.~55]): Gibt es einen klugen Weg,
+        die Schrittweitenverteilung während der Optimierung automatisch anzupassen?
+        Was wäre eine gute Heuristik? Wie verhindert man katastrophale Sprünge?
+        Implementieren.
+  \item \emph{Basins of Attraction kartieren} [S.~55]: Für die 1D-Shekel-Funktion
+        (Annahme: ein lokaler Optimierer konvergiert immer zum nächstgelegenen
+        Foxhole [Anm.: im PDF folgt ein Fu{\ss}notenrest \glqq foxhole.2\grqq]):
+        \begin{enumerate}[label=(\alph*),itemsep=1pt]
+          \item Die Anziehungsgebiete der drei Foxholes bei $x = 0, 4, 7$ grob
+                skizzieren --- wo liegen die Basin-Grenzen?
+          \item Wenn Basin Hopping einen Sprung $\delta \sim \mathrm{Uniform}(-3, 3)$
+                vom lokalen Minimum $x^{\circ} = 7$ aus nutzt: Mit welcher
+                Wahrscheinlichkeit landet ein einzelner Sprung im Basin des globalen
+                Minimums?
+          \item Warum könnte Basin Hopping das globale Minimum hier schneller finden
+                als Random Restarts?
+        \end{enumerate}
+\end{itemize}
+
+\textbf{Selbstreflexionsfragen [S.~56]:}
+\begin{itemize}[itemsep=2pt]
+  \item Warum scheitert lokale Optimierung auf nicht-konvexen Landschaften wie
+        Shekel's Foxholes?
+  \item Wie skaliert der nötige Aufwand bei Random Restarts mit der Grö{\ss}e des
+        globalen Basins?
+  \item Wie unterscheidet sich Basin Hopping von Random Restarts? [Originalfrage
+        grammatisch fehlerhaft: \glqq How do basin hopping differently from random
+        restarts?\grqq{} [sic]]
+  \item Was sagt uns $f''(x_n)$ über die Loss-Landschaft, was charakterisiert es, und
+        wie können wir es nutzen?
+  \item Wie hilft die Approximation der Loss-Landschaft mit verrauschten Schätzungen
+        (Mini-Batches) beim Entkommen aus lokalen Optima?
+  \item Wähle $x_0$ so, dass es im Basin eines lokalen Minimums liegt; finde
+        verschiedene Wege, mit denen die Optimierungsmethode entkommen kann --- wie
+        effektiv ist was?
+\end{itemize}
+
+\subsection{Recap of Key Concepts [S.~56]}
+\begin{itemize}[itemsep=2pt]
+  \item Lokale Optimierungsmethoden (wie Newtons Methode) können auf nicht-konvexen
+        Funktionen in lokalen Minima stecken bleiben.
+  \item Globale Optimierungsstrategien (Random Restarts, Basin Hopping, Simulated
+        Annealing, Stochastizität) erkunden den Suchraum gezielt breiter, um das
+        globale Optimum zu finden.
+  \item Die Modifikation von Optimierungsmethoden mit Krümmungsinformation $f''(x)$
+        erlaubt es, die Abstiegsrichtung genauer zu spezifizieren.
+  \item Die Loss-Landschaft \glqq gehört uns\grqq{} --- sie ist durch die Wahl der
+        Loss-Funktion und durch Rauschen (etwa stochastische Gradienten) zu
+        konstruieren (loss landscape engineering).
+\end{itemize}
+
+\begin{merkbox}
+\textbf{Typische Fehlerquellen:}
+\begin{itemize}[itemsep=1pt]
+  \item \textbf{Newton auf $f$ statt $f'$:} Für Optimierung wird das
+        Nullstellenproblem auf der \emph{Ableitung} gelöst --- Update
+        $x_{n+1} = x_n - f'(x_n)/f''(x_n)$ (Gl.~(36)/(40)), nicht $f/f'$.
+  \item \textbf{$f'(x^{*})=0$ hei{\ss}t nicht automatisch Minimum:} Newton auf $f'$
+        findet Extremstellen ($f'=0$), die auch Maxima oder Sattelpunkte sein können
+        --- immer mit dem Second-Derivative-Test klassifizieren. (Achtung: Das
+        Original druckt auf S.~53 fälschlich \glqq $f''(x)=0$\grqq{} --- korrekt ist
+        $f'(x)=0$.)
+  \item \textbf{Vorzeichen von $f''$ ignoriert:} In Regionen mit $f''<0$ läuft das
+        reine Newton-Update bergauf zum Maximum; der $|f''|$-Trick (Gl.~(41))
+        erzwingt Bergab-Schritte.
+  \item \textbf{Wahrscheinlichkeiten falsch kombiniert:} Erfolgswahrscheinlichkeit ist
+        $1-(1-p)^K$ --- \emph{nicht} $K \cdot p$ (das kann $>1$ werden und ignoriert
+        die Unabhängigkeit der Versuche).
+  \item \textbf{$K$ abrunden:} Beim Auflösen nach $K$ stets \emph{aufrunden}
+        ($28.3 \to 29$), sonst wird das Wahrscheinlichkeitsziel verfehlt.
+  \item \textbf{Random Restarts und Basin Hopping verwechseln:} Restarts setzen die
+        Suche komplett zurück; Basin Hopping springt vom zuletzt gefundenen lokalen
+        Minimum aus weiter ($x_{\text{current}} \gets x^{*} + \delta$).
+\end{itemize}
+\textbf{Merksätze:}
+\begin{itemize}[itemsep=1pt]
+  \item \glqq Die Minima von $f$ sind die Nullstellen von $f'$.\grqq
+  \item Konvexität ist die Trennlinie: konvex $\Rightarrow$ lokal = global; die ganze
+        Mühe dieses Kapitels gilt dem nicht-konvexen Fall.
+  \item Erst finden ($f'=0$), dann klassifizieren ($f''$): positiv = Tal, negativ =
+        Gipfel, null = unklar.
+  \item Simulated Annealing: hei{\ss} = experimentierfreudig
+        ($\exp(-\Delta f/T) \approx 1$), kalt = konservativ.
+  \item Rauschen ist ein Werkzeug, kein Feind: Mini-Batch-Rauschen hilft beim
+        Entkommen --- aber der Newton-Schritt verträgt Rauschen schlecht.
+\end{itemize}
+\end{merkbox}

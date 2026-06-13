@@ -1,0 +1,535 @@
+% ============================================================
+% Übungsblatt 1: Enter Numerical Methods
+% Zum Vorlesungsskript "Numerical Methods" (Prof. Mark Schutera),
+% Kapitel 1 (S. 9-16)
+% ============================================================
+\documentclass[11pt,a4paper]{scrartcl}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage{lmodern}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage[hidelinks]{hyperref}
+\usepackage{catppuccin-dark}
+
+% Aufgaben-Zähler, damit \label/\ref trotz \section* funktionieren
+\newcounter{aufgabe}
+\newcommand{\aufgabe}[2]{%
+  \refstepcounter{aufgabe}%
+  \paragraph{Aufgabe \theaufgabe: #1 \normalfont\mdseries[#2]}}
+
+\title{Übungsblatt 1: Enter Numerical Methods}
+\subtitle{Zum Vorlesungsskript \glqq Numerical Methods\grqq{} (Prof.\ Dr.-Ing.\ Mark Schutera), Kapitel~1, S.~9--16}
+\author{}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\noindent\textbf{Hinweise:} Gesamtpunktzahl: \textbf{40 Punkte}. Die Aufgaben sind nach
+Schwierigkeit aufsteigend sortiert: Verständnisfragen (Aufgaben 1--3), Standardaufgaben
+(Aufgaben 4--6), Transfer-/Prüfungsniveau (Aufgaben 7--8). Erst selbst versuchen, Dinge
+ausprobieren, damit spielen -- das ist kein Zeitrennen (vgl.\ Skript, S.~14). Taschenrechner
+ist erlaubt; runden Sie, wo nicht anders angegeben, auf vier Nachkommastellen.
+
+\section*{Aufgaben}
+
+% ------------------------------------------------------------
+\aufgabe{Analytisch vs.\ numerisch}{4 Punkte}\label{auf:1}
+\begin{enumerate}[label=\alph*),itemsep=2pt]
+  \item Definieren Sie in eigenen Worten, was numerische Methoden (numerical methods)
+        sind, und nennen Sie zwei Gründe, warum man Lösungen approximativ statt analytisch
+        exakt berechnet.
+  \item Erläutern Sie kurz, warum numerische Methoden im Machine Learning -- insbesondere
+        im Deep Learning -- unverzichtbar sind. Nennen Sie mindestens zwei Aspekte.
+  \item Die Sigmoid-Funktion (sigmoid function) ist gegeben durch
+        $\sigma(x) = \dfrac{1}{1 + e^{-x}}$.
+        Erklären Sie, was eine transzendente Funktion (transcendental function) ist, und
+        begründen Sie, warum die Gleichung $\sigma(x) = 0$ keine geschlossene Lösung
+        (closed-form solution) besitzt. Was ist hier zusätzlich die Besonderheit der
+        \glqq Nullstelle\grqq{} von $\sigma$?
+\end{enumerate}
+
+% ------------------------------------------------------------
+\schreibraum[7]
+\aufgabe{Diskretisierung und Schrittweite}{4 Punkte}\label{auf:2}
+Eine kontinuierliche Funktion $f(x)$, $x \in [a,b]$, wird diskretisiert zu
+$f(x_i)$ mit $x_i = a + ih$, $i = 0, 1, \ldots, N$, und Schrittweite
+$h = \frac{b-a}{N}$.
+\begin{enumerate}[label=\alph*),itemsep=2pt]
+  \item Das Intervall $[0, 2]$ wird mit $N = 8$ Schritten diskretisiert. Berechnen Sie die
+        Schrittweite $h$, geben Sie alle Gitterpunkte (grid points) $x_i$ an und bestimmen
+        Sie deren Anzahl.
+  \item Das Intervall $[-1, 1]$ soll mit Schrittweite $h = 0.01$ diskretisiert werden.
+        Wie viele Schritte $N$ und wie viele Funktionsauswertungen sind nötig? Was passiert
+        mit dem Rechenaufwand, wenn man $h$ halbiert?
+  \item Warum ist die Wahl der Schrittweite $h$ wichtig? Beschreiben Sie den Zielkonflikt
+        (trade-off) zwischen Genauigkeit und Rechenzeit, und nennen Sie einen
+        Hauptunterschied zwischen einer kontinuierlichen Funktion und ihrer diskretisierten
+        Version samt einer Implikation für das numerische Lösen.
+\end{enumerate}
+
+% ------------------------------------------------------------
+\schreibraum[7]
+\aufgabe{Extrema auf geschlossenen Intervallen}{3 Punkte}\label{auf:3}
+\begin{enumerate}[label=\alph*),itemsep=2pt]
+  \item Erklären Sie, warum bei der Suche nach Extrema einer Funktion auf einem
+        geschlossenen Intervall (closed interval) $[a,b]$ neben den kritischen Punkten
+        stets auch die Endpunkte $a$ und $b$ geprüft werden müssen.
+  \item Bestimmen Sie das Minimum und das Maximum von $f(x) = x^2$ auf dem Intervall
+        $[1, 3]$. Gehen Sie systematisch vor: kritische Punkte bestimmen, Lage prüfen,
+        Kandidaten auswerten.
+\end{enumerate}
+
+% ------------------------------------------------------------
+\schreibraum[6]
+\aufgabe{Minimumsuche: analytisch und per Grid Search}{6 Punkte}\label{auf:4}
+Gesucht ist das Minimum von $f(x) = \cos(x)$ auf dem geschlossenen Intervall $[0, 4]$.
+\begin{enumerate}[label=\alph*),itemsep=2pt]
+  \item Bestimmen Sie das Minimum \emph{analytisch}: Berechnen Sie die Ableitung, finden
+        Sie alle kritischen Punkte im Intervall, klassifizieren Sie sie mit der zweiten
+        Ableitung und vergleichen Sie mit den Werten an den Endpunkten.
+  \item Bestimmen Sie das Minimum \emph{numerisch} per Brute-Force-Gittersuche
+        (grid search): Diskretisieren Sie $[0,4]$ mit Schrittweite $h = 1$, werten Sie
+        $f$ an allen Gitterpunkten aus (Tabelle!) und wählen Sie den Punkt mit dem
+        kleinsten Funktionswert.
+  \item Berechnen Sie den Approximationsfehler (approximation error) zwischen analytischem
+        und numerischem Minimal\emph{wert}. Was würde mit dem Fehler geschehen, wenn man
+        die Schrittweite verkleinert -- und was wäre der Preis dafür?
+\end{enumerate}
+
+% ------------------------------------------------------------
+\schreibraum[9]
+\aufgabe{Lineares $2\times 2$-System: Substitution vs.\ Grid Search}{6 Punkte}\label{auf:5}
+Gegeben ist das lineare Gleichungssystem
+\[
+\begin{bmatrix} 3 & 1 \\ 4 & 2 \end{bmatrix}
+\begin{bmatrix} w \\ b \end{bmatrix}
+=
+\begin{bmatrix} 9 \\ 10 \end{bmatrix}.
+\]
+\begin{enumerate}[label=\alph*),itemsep=2pt]
+  \item Lösen Sie das System \emph{analytisch} per Substitution. Verifizieren Sie Ihre
+        Lösung durch Einsetzen in beide Gleichungen.
+  \item Lösen Sie das System \emph{numerisch} per Grid Search über das Gitter
+        $w, b \in \{0,\ 2,\ 4\}$ (Schrittweite $2$). Verwenden Sie als Fehlermaß die Summe
+        der absoluten Abweichungen
+        \[
+        \text{error}_1 = |3w + b - 9|, \qquad \text{error}_2 = |4w + 2b - 10|,
+        \]
+        werten Sie alle $3 \times 3 = 9$ Kombinationen tabellarisch aus und geben Sie das
+        Paar $(w, b)$ mit dem kleinsten akkumulierten Fehler an.
+  \item Vergleichen Sie das Grid-Search-Ergebnis mit der exakten Lösung aus a). Erklären
+        Sie die Abweichung und gehen Sie dabei insbesondere darauf ein, welche Rolle die
+        Wahl des Suchintervalls (vgl.\ Intervallwahl $[a,b]$) hier spielt.
+\end{enumerate}
+
+% ------------------------------------------------------------
+\schreibraum[9]
+\aufgabe{Lineares $3\times 3$-System analytisch lösen}{6 Punkte}\label{auf:6}
+Lösen Sie das folgende System aus drei Gleichungen mit drei Unbekannten (Übungsaufgabe
+aus dem Skript, Gl.~2, S.~10) per Substitution bzw.\ Elimination:
+\[
+\begin{bmatrix} 2 & 1 & 3 \\ 1 & 4 & 2 \\ 3 & 2 & 5 \end{bmatrix}
+\begin{bmatrix} w_1 \\ w_2 \\ w_3 \end{bmatrix}
+=
+\begin{bmatrix} 14 \\ 20 \\ 32 \end{bmatrix}
+\]
+Geben Sie die Lösung exakt (als Brüche) an und verifizieren Sie sie in allen drei
+Gleichungen. Notieren Sie anschließend in ein bis zwei Sätzen, was diese Rechnung im
+Vergleich zum $2\times 2$-System über die Skalierung analytischer Lösungen
+(computational complexity) lehrt.
+
+% ------------------------------------------------------------
+\schreibraum[9]
+\aufgabe{Komplexität der Grid Search: $\mathcal{O}(N^d)$}{5 Punkte}\label{auf:7}
+Eine Grid Search über $d$ Parameter mit je $N$ Gitterpunkten pro Parameter muss
+$N^d$ Kombinationen auswerten (Ausblick: Komplexität $\mathcal{O}(N^d)$).
+\begin{enumerate}[label=\alph*),itemsep=2pt]
+  \item Im Skript wird ein $2\times 2$-System per Grid Search mit $5$ Gitterpunkten pro
+        Variable gelöst. Wie viele Kombinationen sind das? Wie viele wären es bei
+        $N = 100$ Gitterpunkten pro Variable und weiterhin $d = 2$?
+  \item Ein kleines neuronales Netz habe $d = 10$ Parameter, jeder werde mit $N = 100$
+        Gitterpunkten abgesucht. Wie viele Kombinationen entstehen? Wie lange dauert die
+        Suche, wenn ein Computer $10^9$ Kombinationen pro Sekunde auswertet? Geben Sie das
+        Ergebnis in Sekunden und in Jahren an (1 Jahr $\approx 3.156 \cdot 10^7$\,s).
+  \item Folgern Sie: Warum ist Brute-Force-Grid-Search für das Training moderner
+        Deep-Learning-Modelle (Millionen Parameter) ungeeignet, obwohl sie für das
+        $2\times 2$-System gut funktioniert hat? Schlagen Sie -- als Denkanstoß im Sinne
+        des Skript-Teasers (S.~16) -- eine einfache Idee vor, das Verhältnis von
+        Genauigkeit zu Rechenaufwand der Grid Search zu verbessern.
+\end{enumerate}
+
+% ------------------------------------------------------------
+\schreibraum[8]
+\aufgabe{Transfer: Loss-Minimierung eines linearen Modells}{6 Punkte}\label{auf:8}
+Ein lineares Modell $\hat{y} = xw$ (lineares Modell ohne Bias; die einfachste Form eines
+neuronalen Netzes mit einer einzigen Einheit, vgl.\ Skript S.~14) soll an die Datenpunkte
+\[
+(x_1, y_1) = (1, 2), \qquad (x_2, y_2) = (2, 4), \qquad (x_3, y_3) = (3, 5)
+\]
+angepasst werden. Als Verlustfunktion (loss function) dient der quadratische Fehler
+\[
+L(w) = \sum_{i=1}^{3} (x_i w - y_i)^2 .
+\]
+\begin{enumerate}[label=\alph*),itemsep=2pt]
+  \item Erklären Sie kurz, warum die Suche nach dem besten Parameter $w$ ein
+        Minimierungsproblem ist und was das mit dem Training von ML-Modellen
+        (Loss-Minimierung) zu tun hat.
+  \item Führen Sie eine Grid Search über $w \in [0, 3]$ mit Schrittweite $h = 0.5$ durch:
+        Werten Sie $L(w)$ an allen sieben Gitterpunkten aus (Tabelle) und geben Sie das
+        numerisch gefundene Minimum an.
+  \item Bestimmen Sie das Minimum von $L(w)$ auf $[0,3]$ nun \emph{analytisch}
+        (Ableitung null setzen, zweite Ableitung prüfen, Endpunkte des Intervalls nicht
+        vergessen). Geben Sie $w^\ast$ exakt und gerundet an, berechnen Sie $L(w^\ast)$
+        und den Approximationsfehler $|w_{\text{grid}} - w^\ast|$ der Grid Search.
+\end{enumerate}
+
+\bigskip
+\noindent\textbf{Summe: 40 Punkte}
+
+% ============================================================
+\schreibraum[9]
+\newpage
+\section*{Lösungen --- erst nach Bearbeitung lesen!}
+
+% ------------------------------------------------------------
+\paragraph{Lösung zu Aufgabe~\ref{auf:1}}\mbox{}\\[2pt]
+\textbf{a)} Numerische Methoden sind ein Teilgebiet der Mathematik, in dem Lösungen nicht
+analytisch exakt, sondern \emph{approximativ} berechnet werden. Zwei Gründe (Skript, S.~9):
+(1)~Viele Probleme sind analytisch gar nicht lösbar oder zu komplex, um praktikabel zu sein;
+(2)~man kann Rechenleistung (computational power) anzapfen, um approximative Lösungen
+effizient zu erhalten.
+
+\textbf{b)} In ML/AI sind numerische Methoden entscheidend für das Training von Modellen,
+die Optimierung von Parametern und die Simulation komplexer Systeme, wo analytische
+Lösungen unmöglich (infeasible) sind. Sie ermöglichen den effizienten Umgang mit großen
+Datensätzen und komplexen Algorithmen, sodass Modelle effektiv aus Daten lernen können,
+während die Rechenressourcen im Rahmen bleiben. Besonders im Deep Learning (Millionen
+Parameter, umfangreiche Berechnungen) erleichtern sie die Optimierungsprozesse des
+Modelltrainings (Skript, S.~9). Zwei beliebige dieser Aspekte genügen.
+
+\textbf{c)} Eine transzendente Funktion kann nicht als endliche Kombination algebraischer
+Operationen (Addition, Subtraktion, Multiplikation, Division, Wurzeln) ausgedrückt werden
+und besitzt daher keine geschlossenen Lösungen (Skript, S.~11). Bei
+$\sigma(x) = \frac{1}{1+e^{-x}}$ macht der Exponentialterm $e^{-x}$ es unmöglich, $x$ mit
+elementaren Funktionen (Polynome, rationale, trigonometrische Funktionen) zu isolieren.
+Besonderheit: Die Nullstelle existiert gar nicht -- $\sigma(x)$ nähert sich $0$ nur
+asymptotisch für $x \to -\infty$, erreicht $0$ aber für keinen endlichen Wert von $x$
+(Skript, Randnotiz S.~11). Es gibt also nicht nur keine geschlossene Lösung, sondern
+überhaupt keine Lösung von $\sigma(x) = 0$.
+
+% ------------------------------------------------------------
+\paragraph{Lösung zu Aufgabe~\ref{auf:2}}\mbox{}\\[2pt]
+\textbf{a)} Schrittweite nach Gl.~(4) des Skripts:
+\[
+h = \frac{b-a}{N} = \frac{2-0}{8} = 0.25 .
+\]
+Gitterpunkte $x_i = 0 + i \cdot 0.25$ für $i = 0, 1, \ldots, 8$:
+\[
+x_i \in \{0,\ 0.25,\ 0.5,\ 0.75,\ 1,\ 1.25,\ 1.5,\ 1.75,\ 2\}.
+\]
+Das sind $N + 1 = 9$ Gitterpunkte (Achtung: $N$ zählt die \emph{Schritte}, nicht die
+Punkte).
+
+\textbf{b)} Aus $h = \frac{b-a}{N}$ folgt
+\[
+N = \frac{b-a}{h} = \frac{1-(-1)}{0.01} = \frac{2}{0.01} = 200
+\]
+Schritte, also $N + 1 = 201$ Funktionsauswertungen. Halbiert man $h$ (auf $0.005$),
+verdoppelt sich $N$ auf $400$ ($401$ Auswertungen) -- der Rechenaufwand wächst in einer
+Dimension also (näherungsweise) linear mit $1/h$.
+
+\textbf{c)} Kleines $h$ bedeutet ein feineres Gitter: höhere Genauigkeit der Approximation,
+aber mehr Funktionsauswertungen und damit mehr Rechenzeit; großes $h$ ist billig, aber
+ungenau. Die Wahl von $h$ steuert also direkt den Kompromiss zwischen Genauigkeit und
+Rechenaufwand. Hauptunterschied kontinuierlich vs.\ diskretisiert: Die kontinuierliche
+Funktion ist auf dem gesamten Intervall definiert, die diskretisierte Version nur an den
+endlich vielen Gitterpunkten $x_i$ -- zwischen den Punkten hat man keine Information,
+es gilt nur $f(x) \approx f(x_i)$ (Gl.~7 im Skript, S.~16). Implikation: Merkmale zwischen
+den Gitterpunkten (z.\,B.\ das wahre Minimum) können verfehlt werden; jede numerische
+Lösung trägt einen Approximationsfehler.
+
+% ------------------------------------------------------------
+\paragraph{Lösung zu Aufgabe~\ref{auf:3}}\mbox{}\\[2pt]
+\textbf{a)} Auf einem geschlossenen Intervall $[a,b]$ kann ein Extremum an einem kritischen
+Punkt (Ableitung null oder nicht definiert) im Inneren \emph{oder} an den Endpunkten $a$,
+$b$ auftreten -- an den Endpunkten auch dann, wenn die Ableitung dort nicht null ist, weil
+die Funktion dort schlicht \glqq abgeschnitten\grqq{} wird und kein innerer Vergleichspunkt
+mehr existiert. Wer nur kritische Punkte prüft, kann das tatsächliche Extremum übersehen
+(Skript, S.~13).
+
+\textbf{b)} $f(x) = x^2$, $f'(x) = 2x$. Kritischer Punkt: $2x = 0 \Rightarrow x = 0$.
+Aber $0 \notin [1,3]$ -- es gibt also \emph{keinen} kritischen Punkt im Intervall. Die
+Extrema liegen daher zwingend an den Endpunkten:
+\[
+f(1) = 1, \qquad f(3) = 9 .
+\]
+Minimum: $f(1) = 1$ bei $x = 1$; Maximum: $f(3) = 9$ bei $x = 3$ -- obwohl die Ableitung
+an beiden Stellen ($f'(1) = 2 \neq 0$, $f'(3) = 6 \neq 0$) nicht verschwindet. Genau das
+ist die Stolperfalle aus Teil a).
+
+% ------------------------------------------------------------
+\paragraph{Lösung zu Aufgabe~\ref{auf:4}}\mbox{}\\[2pt]
+\textbf{a) Analytisch.} $f(x) = \cos(x)$, $f'(x) = -\sin(x)$. Kritische Punkte:
+\[
+-\sin(x) = 0 \iff x = k\pi, \quad k \in \mathbb{Z}.
+\]
+Im Intervall $[0,4]$ liegen $x = 0$ und $x = \pi \approx 3.1416$ (der nächste Kandidat
+$2\pi \approx 6.2832 > 4$ liegt außerhalb). Zweite Ableitung: $f''(x) = -\cos(x)$.
+\[
+f''(0) = -\cos(0) = -1 < 0 \ \text{(lokales Maximum)}, \qquad
+f''(\pi) = -\cos(\pi) = 1 > 0 \ \text{(lokales Minimum)}.
+\]
+Kandidaten auswerten (kritische Punkte \emph{und} Endpunkte):
+\[
+f(0) = \cos(0) = 1, \qquad f(\pi) = \cos(\pi) = -1, \qquad f(4) = \cos(4) \approx -0.6536 .
+\]
+\textbf{Ergebnis:} Das Minimum ist $-1$ bei $x = \pi \approx 3.1416$.
+
+\textbf{b) Numerisch (Grid Search, $h = 1$).} Mit $h = \frac{4-0}{N} = 1$ ist $N = 4$,
+also fünf Gitterpunkte $x_i = 0 + i \cdot 1$:
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+$x_i$ & $f(x_i) = \cos(x_i)$ \\
+\midrule
+$x_0 = 0$ & $\cos(0) = 1$ \\
+$x_1 = 1$ & $\cos(1) \approx 0.5403$ \\
+$x_2 = 2$ & $\cos(2) \approx -0.4161$ \\
+$x_3 = 3$ & $\cos(3) \approx -0.9900$ \\
+$x_4 = 4$ & $\cos(4) \approx -0.6536$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+Das Minimum unter diesen Werten ist $\cos(3) \approx -0.9900$ bei $x = 3$.
+
+\textbf{c) Approximationsfehler.} Differenz zwischen analytischem und numerischem
+Minimalwert:
+\[
+\left| -1 - (-0.9900) \right| = 0.0100 .
+\]
+Eine kleinere Schrittweite legt Gitterpunkte näher an das wahre Minimum bei $x = \pi$ und
+verkleinert den Fehler (z.\,B.\ träfe $h = 0.5$ den Punkt $x = 3$ weiterhin, $h = 0.1$
+schon $x = 3.1$ mit $\cos(3.1) \approx -0.9991$). Der Preis: mehr Gitterpunkte, also mehr
+Funktionsauswertungen und mehr Rechenzeit -- der bekannte Genauigkeit-Rechenaufwand-Kompromiss.
+
+% ------------------------------------------------------------
+\paragraph{Lösung zu Aufgabe~\ref{auf:5}}\mbox{}\\[2pt]
+\textbf{a) Substitution.} Die Gleichungen lauten
+\[
+\text{(I)}\ 3w + b = 9, \qquad \text{(II)}\ 4w + 2b = 10 .
+\]
+Aus (I): $b = 9 - 3w$. Einsetzen in (II):
+\[
+4w + 2(9 - 3w) = 10
+\;\Rightarrow\;
+4w + 18 - 6w = 10
+\;\Rightarrow\;
+-2w = -8
+\;\Rightarrow\;
+w = 4 .
+\]
+Rückeinsetzen: $b = 9 - 3 \cdot 4 = 9 - 12 = -3$.
+\textbf{Lösung:} $(w, b) = (4, -3)$.
+Verifikation: (I): $3 \cdot 4 + (-3) = 12 - 3 = 9$ \checkmark;\quad
+(II): $4 \cdot 4 + 2 \cdot (-3) = 16 - 6 = 10$ \checkmark.
+
+\textbf{b) Grid Search.} Für jede Kombination $(w,b)$ aus $\{0, 2, 4\}^2$ werden
+$\text{error}_1 = |3w + b - 9|$ und $\text{error}_2 = |4w + 2b - 10|$ sowie der
+akkumulierte Fehler (Summe) berechnet:
+\begin{center}
+\begin{tabular}{rrllr}
+\toprule
+$w$ & $b$ & $3w+b$ (error$_1$) & $4w+2b$ (error$_2$) & Error \\
+\midrule
+0 & 0 & 0 (9)   & 0 (10)  & 19 \\
+0 & 2 & 2 (7)   & 4 (6)   & 13 \\
+0 & 4 & 4 (5)   & 8 (2)   & 7 \\
+2 & 0 & 6 (3)   & 8 (2)   & 5 \\
+2 & 2 & 8 (1)   & 12 (2)  & \textbf{3*} \\
+2 & 4 & 10 (1)  & 16 (6)  & 7 \\
+4 & 0 & 12 (3)  & 16 (6)  & 9 \\
+4 & 2 & 14 (5)  & 20 (10) & 15 \\
+4 & 4 & 16 (7)  & 24 (14) & 21 \\
+\bottomrule
+\end{tabular}
+\end{center}
+Der minimale akkumulierte Fehler ist $3$ bei $(w, b) = (2, 2)$ (mit * markiert).
+
+\textbf{c) Vergleich und Diskussion.} Die exakte Lösung $(4, -3)$ wird von der Grid Search
+deutlich verfehlt: Das Gitter liefert $(2, 2)$. Zwei Gründe: Erstens ist das Gitter mit
+Schrittweite $2$ sehr grob. Zweitens -- und entscheidend -- liegt die wahre Lösung in der
+$b$-Richtung ($b = -3$) \emph{außerhalb} des Suchbereichs $[0, 4]$: Egal wie fein man
+dieses Gitter macht, die Grid Search kann die exakte Lösung nie finden, weil sie nur
+innerhalb des gewählten Intervalls sucht. Das illustriert die Selbstreflexionsfrage des
+Skripts (S.~15): Die Wahl des Intervalls $[a,b]$ beeinflusst, welche (Pseudo-)Optima
+numerisch überhaupt gefunden werden können -- die beste Gitterlösung ist nur die beste
+\emph{innerhalb des Gitters}.
+
+% ------------------------------------------------------------
+\paragraph{Lösung zu Aufgabe~\ref{auf:6}}\mbox{}\\[2pt]
+Die Gleichungen lauten
+\[
+\text{(I)}\ 2w_1 + w_2 + 3w_3 = 14, \qquad
+\text{(II)}\ w_1 + 4w_2 + 2w_3 = 20, \qquad
+\text{(III)}\ 3w_1 + 2w_2 + 5w_3 = 32 .
+\]
+\textbf{Schritt 1:} (I) nach $w_2$ auflösen:
+\[
+w_2 = 14 - 2w_1 - 3w_3 .
+\]
+\textbf{Schritt 2:} In (II) einsetzen:
+\[
+w_1 + 4(14 - 2w_1 - 3w_3) + 2w_3 = 20
+\;\Rightarrow\;
+w_1 + 56 - 8w_1 - 12w_3 + 2w_3 = 20
+\;\Rightarrow\;
+-7w_1 - 10w_3 = -36,
+\]
+also $7w_1 + 10w_3 = 36$ \ (II$'$).
+
+\textbf{Schritt 3:} In (III) einsetzen:
+\[
+3w_1 + 2(14 - 2w_1 - 3w_3) + 5w_3 = 32
+\;\Rightarrow\;
+3w_1 + 28 - 4w_1 - 6w_3 + 5w_3 = 32
+\;\Rightarrow\;
+-w_1 - w_3 = 4,
+\]
+also $w_1 = -4 - w_3$ \ (III$'$).
+
+\textbf{Schritt 4:} (III$'$) in (II$'$) einsetzen:
+\[
+7(-4 - w_3) + 10w_3 = 36
+\;\Rightarrow\;
+-28 - 7w_3 + 10w_3 = 36
+\;\Rightarrow\;
+3w_3 = 64
+\;\Rightarrow\;
+w_3 = \frac{64}{3} .
+\]
+\textbf{Schritt 5:} Rückwärts einsetzen:
+\[
+w_1 = -4 - \frac{64}{3} = \frac{-12 - 64}{3} = -\frac{76}{3}, \qquad
+w_2 = 14 - 2\left(-\frac{76}{3}\right) - 3 \cdot \frac{64}{3}
+    = 14 + \frac{152}{3} - 64 = \frac{42 + 152 - 192}{3} = \frac{2}{3} .
+\]
+\textbf{Lösung:}
+\[
+w_1 = -\frac{76}{3} \approx -25.3333, \qquad
+w_2 = \frac{2}{3} \approx 0.6667, \qquad
+w_3 = \frac{64}{3} \approx 21.3333 .
+\]
+\textbf{Verifikation:}
+\[
+\text{(I)}:\ 2\left(-\tfrac{76}{3}\right) + \tfrac{2}{3} + 3 \cdot \tfrac{64}{3}
+= \tfrac{-152 + 2 + 192}{3} = \tfrac{42}{3} = 14\ \checkmark
+\]
+\[
+\text{(II)}:\ -\tfrac{76}{3} + 4 \cdot \tfrac{2}{3} + 2 \cdot \tfrac{64}{3}
+= \tfrac{-76 + 8 + 128}{3} = \tfrac{60}{3} = 20\ \checkmark
+\]
+\[
+\text{(III)}:\ 3\left(-\tfrac{76}{3}\right) + 2 \cdot \tfrac{2}{3} + 5 \cdot \tfrac{64}{3}
+= \tfrac{-228 + 4 + 320}{3} = \tfrac{96}{3} = 32\ \checkmark
+\]
+\textbf{Lehre zur Skalierung:} Schon der Schritt von $2$ auf $3$ Unbekannte verlangt
+deutlich mehr Substitutionsschritte, Zwischenterme und Sorgfalt (Bruchrechnung!). Mit
+wachsender Systemgröße (Tausende Gleichungen mit Tausenden Unbekannten) werden analytische
+Handlösungen wegen der Rechenkomplexität und Zeitbeschränkungen unpraktikabel -- genau das
+Argument des Skripts (S.~10--11) für numerische, computergestützte Methoden.
+
+% ------------------------------------------------------------
+\paragraph{Lösung zu Aufgabe~\ref{auf:7}}\mbox{}\\[2pt]
+\textbf{a)} Mit $N = 5$ Gitterpunkten und $d = 2$ Variablen:
+$N^d = 5^2 = 25$ Kombinationen (genau die 25 Zeilen der Tabelle~1 im Skript, S.~15; das
+Skript spricht von \glqq only 100 operations\grqq, also etwa vier Rechenoperationen pro
+Kombination). Mit $N = 100$ und $d = 2$: $100^2 = 10\,000$ Kombinationen -- für einen
+Computer immer noch trivial.
+
+\textbf{b)} Mit $N = 100$ und $d = 10$:
+\[
+N^d = 100^{10} = (10^2)^{10} = 10^{20} \ \text{Kombinationen}.
+\]
+Bei $10^9$ Auswertungen pro Sekunde:
+\[
+t = \frac{10^{20}}{10^9} = 10^{11}\ \text{s}
+\qquad\Rightarrow\qquad
+\frac{10^{11}}{3.156 \cdot 10^7\ \text{s/Jahr}} \approx 3.17 \cdot 10^3\ \text{Jahre},
+\]
+also rund $3\,170$ Jahre -- für ein \glqq kleines\grqq{} Netz mit nur zehn Parametern.
+
+\textbf{c)} Die Anzahl der Kombinationen wächst \emph{exponentiell} in der Zahl der
+Parameter $d$ (Fluch der Dimensionalität, curse of dimensionality). Deep-Learning-Modelle
+haben Millionen Parameter; $N^{d}$ ist dann astronomisch groß und Brute Force vollkommen
+aussichtslos -- deshalb braucht das Modelltraining effizientere numerische
+Optimierungsverfahren (Ausblick des Kurses, z.\,B.\ ableitungsbasierte Methoden).
+Idee zum Teaser (S.~16): \emph{adaptive bzw.\ verfeinerte Suche} -- erst mit grobem Gitter
+suchen, dann nur in der Umgebung des besten Kandidaten mit feinerem Gitter weitersuchen.
+So erreicht man die Genauigkeit eines feinen Gitters zu einem Bruchteil der Auswertungen
+(in 1D z.\,B.\ $10 + 10 = 20$ statt $100$ Auswertungen für die gleiche Endauflösung).
+
+% ------------------------------------------------------------
+\paragraph{Lösung zu Aufgabe~\ref{auf:8}}\mbox{}\\[2pt]
+\textbf{a)} Der Loss $L(w)$ misst, wie stark die Modellvorhersagen $\hat{y}_i = x_i w$ von
+den beobachteten Werten $y_i$ abweichen. Der beste Parameter ist der mit der kleinsten
+Gesamtabweichung -- die Suche nach $w$ ist also die Minimierung von $L(w)$. Genau das ist
+Training im Machine Learning: Modellparameter werden so eingestellt, dass eine
+Verlustfunktion minimal wird; $xw$ (bzw.\ $xw + b$) ist dabei die einfachste Form eines
+neuronalen Netzes mit einer einzigen Einheit (Skript, S.~14). Die Grid Search aus b) ist
+die primitivste numerische Methode dafür.
+
+\textbf{b) Grid Search} über $w \in \{0, 0.5, 1, 1.5, 2, 2.5, 3\}$ mit
+$L(w) = (w - 2)^2 + (2w - 4)^2 + (3w - 5)^2$:
+\begin{center}
+\begin{tabular}{lllll}
+\toprule
+$w$ & $(w-2)^2$ & $(2w-4)^2$ & $(3w-5)^2$ & $L(w)$ \\
+\midrule
+$0$   & $4$    & $16$  & $25$    & $45$ \\
+$0.5$ & $2.25$ & $9$   & $12.25$ & $23.5$ \\
+$1$   & $1$    & $4$   & $4$     & $9$ \\
+$1.5$ & $0.25$ & $1$   & $0.25$  & $1.5$ \\
+$2$   & $0$    & $0$   & $1$     & $\mathbf{1\ast}$ \\
+$2.5$ & $0.25$ & $1$   & $6.25$  & $7.5$ \\
+$3$   & $1$    & $4$   & $16$    & $21$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+Numerisch gefundenes Minimum: $w_{\text{grid}} = 2$ mit $L(2) = 1$ (mit * markiert).
+
+\textbf{c) Analytisch.} Ausdifferenzieren (Kettenregel):
+\[
+L'(w) = 2(w - 2) \cdot 1 + 2(2w - 4) \cdot 2 + 2(3w - 5) \cdot 3
+      = 2w - 4 + 8w - 16 + 18w - 30 = 28w - 50 .
+\]
+Nullsetzen:
+\[
+28w - 50 = 0 \;\Rightarrow\; w^\ast = \frac{50}{28} = \frac{25}{14} \approx 1.7857 .
+\]
+Zweite Ableitung: $L''(w) = 28 > 0$, also Minimum; $w^\ast \in [0,3]$ liegt im Intervall.
+Endpunkte prüfen: $L(0) = 45$ und $L(3) = 21$ sind beide größer -- das Minimum auf $[0,3]$
+liegt also tatsächlich bei $w^\ast$. Minimaler Loss:
+\[
+L\!\left(\tfrac{25}{14}\right)
+= \left(\tfrac{25}{14} - \tfrac{28}{14}\right)^2
++ \left(\tfrac{50}{14} - \tfrac{56}{14}\right)^2
++ \left(\tfrac{75}{14} - \tfrac{70}{14}\right)^2
+= \tfrac{9}{196} + \tfrac{36}{196} + \tfrac{25}{196}
+= \tfrac{70}{196} = \tfrac{5}{14} \approx 0.3571 .
+\]
+Approximationsfehler der Grid Search im Parameter:
+\[
+|w_{\text{grid}} - w^\ast| = \left|2 - \tfrac{25}{14}\right| = \tfrac{3}{14} \approx 0.2143 ,
+\]
+und im Loss: $|1 - \tfrac{5}{14}| = \tfrac{9}{14} \approx 0.6429$. Ein feineres Gitter
+(kleineres $h$) würde beide Fehler verkleinern -- zum Preis von mehr Auswertungen.
+
+\end{document}
