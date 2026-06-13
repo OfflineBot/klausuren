@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pareto Front Explorer</title>
+  <style>
+:root {
+  --bg: #f4efe6;
+  --panel: rgba(255, 251, 245, 0.84);
+  --panel-border: rgba(58, 38, 21, 0.14);
+  --text: #2d241b;
+  --muted: #6d6255;
+  --accent: #0e7490;
+  --accent-strong: #0b4f63;
+  --pareto: #d97706;
+  --dominated: #1f2937;
+  --front: #be123c;
+  --shadow: 0 18px 40px rgba(71, 49, 29, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(14, 116, 144, 0.18), transparent 30%),
+    radial-gradient(circle at top right, rgba(217, 119, 6, 0.18), transparent 24%),
+    linear-gradient(180deg, #fcfaf6 0%, var(--bg) 100%);
+}
+
+.app-shell {
+  width: min(1460px, calc(100vw - 32px));
+  margin: 0 auto;
+  padding: 28px 0 40px;
+}
+
+.hero {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 20px;
+  align-items: start;
+  margin-bottom: 18px;
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.8rem;
+  color: var(--accent-strong);
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 12px;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  line-height: 1;
+}
+
+.intro,
+.stats,
+.hint,
+.notes p,
+.panel-head p {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.controls,
+.panel,
+.notes {
+  background: var(--panel);
+  border: 1px solid var(--panel-border);
+  border-radius: 20px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(10px);
+}
+
+.controls {
+  padding: 18px;
+}
+
+.control {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.control span {
+  font-weight: 600;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.check + .check {
+  margin-top: 8px;
+}
+
+.check input {
+  accent-color: var(--accent);
+}
+
+input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+select {
+  width: 100%;
+  border: 1px solid rgba(58, 38, 21, 0.18);
+  border-radius: 12px;
+  padding: 10px 12px;
+  font: inherit;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.button-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.stats {
+  margin: 14px 0 8px;
+  font-size: 0.95rem;
+}
+
+button {
+  border: 0;
+  border-radius: 999px;
+  padding: 11px 16px;
+  font: inherit;
+  font-weight: 700;
+  color: white;
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-strong) 100%);
+  cursor: pointer;
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgba(11, 79, 99, 0.24);
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 18px;
+  padding: 0 2px;
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.swatch.sample {
+  background: var(--dominated);
+}
+
+.swatch.pareto {
+  background: var(--pareto);
+}
+
+.swatch.front {
+  width: 18px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--front);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(340px, 0.85fr) minmax(760px, 1.65fr);
+  grid-template-areas:
+    "decision1 objective"
+    "decision2 objective";
+  gap: 20px;
+  align-items: stretch;
+}
+
+.panel {
+  padding: 16px;
+}
+
+.panel-decision-1 {
+  grid-area: decision1;
+}
+
+.panel-decision-2 {
+  grid-area: decision2;
+}
+
+.panel-objective {
+  grid-area: objective;
+}
+
+.panel-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: baseline;
+  margin-bottom: 12px;
+}
+
+.panel-head h2 {
+  margin-bottom: 4px;
+  font-size: 1.15rem;
+}
+
+canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 14px;
+  background: #fffdfa;
+}
+
+.notes {
+  margin-top: 20px;
+  padding: 18px 20px;
+}
+
+.notes h2 {
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+
+code {
+  font-family: Consolas, "Courier New", monospace;
+  background: rgba(14, 116, 144, 0.08);
+  padding: 0 5px;
+  border-radius: 5px;
+}
+
+@media (max-width: 980px) {
+  .hero,
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .grid {
+    grid-template-areas:
+      "decision1"
+      "decision2"
+      "objective";
+  }
+
+  .panel-head {
+    flex-direction: column;
+    align-items: start;
+  }
+}
+
+  </style>
+</head>
+<body>
+  <main class="app-shell">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Multi-objective optimization</p>
+        <h1>Pareto Front Explorer</h1>
+        <p class="intro">
+          Two decision-space plots show the objective landscapes over the same decision variables.
+          Samples are linked across all views, and Pareto-optimal samples are highlighted.
+        </p>
+        <section class="notes">
+          <h2>What you are seeing</h2>
+          <p>
+            Both objectives are minimized. A sample is Pareto-optimal if no other sampled point is at least as good in both
+            objectives and strictly better in one. The lower curve in objective space approximates the sampled Pareto front.
+          </p>
+        </section>
+      </div>
+
+      <section class="controls">
+        <label class="control">
+          <span>Sample count</span>
+          <input id="sampleCount" type="range" min="10" max="120" step="1" value="40">
+          <strong id="sampleCountValue">40</strong>
+        </label>
+
+        <label class="control">
+          <span>Objective family</span>
+          <select id="objectiveFamily"></select>
+        </label>
+
+        <div class="control">
+          <span>Objective-space overlays</span>
+          <label class="check">
+            <input id="showDominatedRegion" type="checkbox" checked>
+            <span>Show dominated region</span>
+          </label>
+          <label class="check">
+            <input id="showHypervolume" type="checkbox">
+            <span>Show hypervolume contributions</span>
+          </label>
+        </div>
+
+        <div class="button-row">
+          <button id="regenerateBtn" type="button">Regenerate Samples</button>
+          <button id="shuffleBtn" type="button">Next Variant</button>
+        </div>
+
+        <p id="stats" class="stats"></p>
+
+        <p class="hint">
+          Click in either decision-space plot to add a sample. Drag a sample in either plot to move it.
+        </p>
+      </section>
+    </header>
+
+    <section class="legend">
+      <span class="legend-item">
+        <span class="swatch sample"></span>
+        Dominated sample
+      </span>
+      <span class="legend-item">
+        <span class="swatch pareto"></span>
+        Pareto-optimal sample
+      </span>
+      <span class="legend-item">
+        <span class="swatch front"></span>
+        Pareto front path
+      </span>
+    </section>
+
+    <section class="grid">
+      <article class="panel panel-decision-1">
+        <div class="panel-head">
+          <h2>Decision Space: Objective 1</h2>
+          <p>Surface of <code>f1(x1, x2)</code></p>
+        </div>
+        <canvas id="decisionCanvas1" width="520" height="420"></canvas>
+      </article>
+
+      <article class="panel panel-decision-2">
+        <div class="panel-head">
+          <h2>Decision Space: Objective 2</h2>
+          <p>Surface of <code>f2(x1, x2)</code></p>
+        </div>
+        <canvas id="decisionCanvas2" width="520" height="420"></canvas>
+      </article>
+
+      <article class="panel panel-objective">
+        <div class="panel-head">
+          <h2>Objective Space</h2>
+          <p>Mapped samples in <code>(f1, f2)</code> space</p>
+        </div>
+        <canvas id="objectiveCanvas" width="1080" height="860"></canvas>
+      </article>
+    </section>
+
+  </main>
+
+  <script>
+const decisionBounds = {
+  xMin: -2.5,
+  xMax: 2.5,
+  yMin: -2.5,
+  yMax: 2.5,
+};
+
+const objectivePalette = {
+  low: [18, 136, 184],
+  mid: [255, 247, 214],
+  high: [180, 35, 24],
+};
+
+const state = {
+  samples: [],
+  dragSampleId: null,
+  dragSource: null,
+  objectivePreset: 0,
+  showDominatedRegion: true,
+  showHypervolume: false,
+};
+
+const sampleCountInput = document.getElementById("sampleCount");
+const sampleCountValue = document.getElementById("sampleCountValue");
+const regenerateBtn = document.getElementById("regenerateBtn");
+const shuffleBtn = document.getElementById("shuffleBtn");
+const stats = document.getElementById("stats");
+const objectiveFamilySelect = document.getElementById("objectiveFamily");
+const showDominatedRegionInput = document.getElementById("showDominatedRegion");
+const showHypervolumeInput = document.getElementById("showHypervolume");
+
+const decisionCanvas1 = document.getElementById("decisionCanvas1");
+const decisionCanvas2 = document.getElementById("decisionCanvas2");
+const objectiveCanvas = document.getElementById("objectiveCanvas");
+
+const decisionConfigs = [
+  { canvas: decisionCanvas1, objectiveIndex: 0 },
+  { canvas: decisionCanvas2, objectiveIndex: 1 },
+];
+
+const margins = { left: 72, right: 18, top: 26, bottom: 56 };
+const pointRadius = 6;
+let nextSampleId = 0;
+
+const objectiveFamilies = [
+  {
+    id: "wavy-bowls",
+    label: "Wavy bowls",
+    description: "Shifted ellipsoidal bowls with gentle sinusoidal ripples.",
+    presets: [
+      [
+        (dx, dy) => (dx - 1.1) ** 2 + 0.65 * (dy + 0.45) ** 2 + 0.35 * Math.sin(2.2 * dx) * Math.cos(1.6 * dy),
+        (dx, dy) => 0.55 * (dx + 1.2) ** 2 + (dy - 1.0) ** 2 + 0.4 * Math.cos(1.7 * dx - 0.4) * Math.sin(2.1 * dy),
+      ],
+      [
+        (dx, dy) => 0.75 * (dx - 0.9) ** 2 + (dy + 1.1) ** 2 + 0.3 * Math.sin(2.5 * dy + 0.5),
+        (dx, dy) => (dx + 0.9) ** 2 + 0.8 * (dy - 0.7) ** 2 + 0.25 * Math.cos(2.8 * dx - 0.8),
+      ],
+      [
+        (dx, dy) => 0.4 * (dx - 1.4) ** 2 + 1.15 * (dy + 0.2) ** 2 + 0.3 * Math.sin(1.7 * dx + 1.3 * dy),
+        (dx, dy) => 1.15 * (dx + 1.3) ** 2 + 0.35 * (dy - 1.2) ** 2 + 0.28 * Math.cos(1.5 * dx - 1.8 * dy),
+      ],
+    ],
+  },
+  {
+    id: "quadratic-bowls",
+    label: "Pure quadratic bowls",
+    description: "Smooth ellipsoidal objectives without ripples.",
+    presets: [
+      [
+        (dx, dy) => 0.8 * (dx - 1.1) ** 2 + 0.45 * (dy + 0.5) ** 2,
+        (dx, dy) => 0.55 * (dx + 1.0) ** 2 + 1.0 * (dy - 1.0) ** 2,
+      ],
+      [
+        (dx, dy) => 1.15 * (dx - 0.7) ** 2 + 0.35 * (dy + 1.2) ** 2,
+        (dx, dy) => 0.35 * (dx + 1.3) ** 2 + 1.15 * (dy - 0.8) ** 2,
+      ],
+      [
+        (dx, dy) => 0.55 * (dx - 1.5) ** 2 + 1.15 * (dy + 0.2) ** 2,
+        (dx, dy) => 1.0 * (dx + 0.9) ** 2 + 0.45 * (dy - 1.4) ** 2,
+      ],
+    ],
+  },
+  {
+    id: "multimodal",
+    label: "Multimodal landscapes",
+    description: "Objectives with several local basins and stronger periodic structure.",
+    presets: [
+      [
+        (dx, dy) => 0.22 * (dx - 0.9) ** 2 + 0.2 * (dy + 0.7) ** 2 + 1.1 * (1 - Math.cos(2.7 * dx)) + 0.65 * (1 - Math.cos(2.2 * dy)),
+        (dx, dy) => 0.2 * (dx + 1.0) ** 2 + 0.24 * (dy - 0.8) ** 2 + 0.9 * (1 - Math.cos(2.4 * dx - 0.2)) + 0.8 * (1 - Math.cos(2.8 * dy + 0.4)),
+      ],
+      [
+        (dx, dy) => 0.18 * (dx - 1.2) ** 2 + 0.22 * (dy + 0.4) ** 2 + 0.9 * (1 - Math.cos(2.8 * dx + 1.2 * dy)),
+        (dx, dy) => 0.22 * (dx + 0.8) ** 2 + 0.18 * (dy - 1.1) ** 2 + 0.95 * (1 - Math.cos(2.4 * dx - 1.4 * dy)),
+      ],
+      [
+        (dx, dy) => 0.2 * (dx - 1.0) ** 2 + 0.2 * (dy + 1.0) ** 2 + 0.75 * (1 - Math.cos(3.0 * dx)) + 0.55 * (1 - Math.cos(2.5 * dy)),
+        (dx, dy) => 0.2 * (dx + 1.1) ** 2 + 0.2 * (dy - 0.9) ** 2 + 0.55 * (1 - Math.cos(2.6 * dx)) + 0.75 * (1 - Math.cos(3.1 * dy)),
+      ],
+    ],
+  },
+];
+
+function getCurrentObjectiveFamily() {
+  return objectiveFamilies.find((family) => family.id === state.objectiveFamilyId) ?? objectiveFamilies[0];
+}
+
+function syncObjectiveFamilyOptions() {
+  objectiveFamilySelect.innerHTML = "";
+
+  for (const family of objectiveFamilies) {
+    const option = document.createElement("option");
+    option.value = family.id;
+    option.textContent = family.label;
+    objectiveFamilySelect.append(option);
+  }
+
+  objectiveFamilySelect.value = state.objectiveFamilyId;
+}
+
+function objectiveFunctions(x, y) {
+  const presets = getCurrentObjectiveFamily().presets;
+  const [f1, f2] = presets[state.objectivePreset];
+  return [f1(x, y), f2(x, y)];
+}
+
+function createSample(x, y) {
+  const [f1, f2] = objectiveFunctions(x, y);
+  return {
+    id: `sample-${nextSampleId++}`,
+    x,
+    y,
+    objectives: [f1, f2],
+    isPareto: false,
+  };
+}
+
+function regenerateSamples(count) {
+  state.samples = Array.from({ length: count }, () => {
+    const x = decisionBounds.xMin + Math.random() * (decisionBounds.xMax - decisionBounds.xMin);
+    const y = decisionBounds.yMin + Math.random() * (decisionBounds.yMax - decisionBounds.yMin);
+    return createSample(x, y);
+  });
+  evaluateSamples();
+}
+
+function evaluateSamples() {
+  for (const sample of state.samples) {
+    sample.objectives = objectiveFunctions(sample.x, sample.y);
+    sample.isPareto = false;
+  }
+
+  for (let i = 0; i < state.samples.length; i += 1) {
+    const candidate = state.samples[i];
+    let dominated = false;
+
+    for (let j = 0; j < state.samples.length; j += 1) {
+      if (i === j) {
+        continue;
+      }
+
+      const challenger = state.samples[j];
+      const noWorse =
+        challenger.objectives[0] <= candidate.objectives[0] &&
+        challenger.objectives[1] <= candidate.objectives[1];
+      const strictlyBetter =
+        challenger.objectives[0] < candidate.objectives[0] ||
+        challenger.objectives[1] < candidate.objectives[1];
+
+      if (noWorse && strictlyBetter) {
+        dominated = true;
+        break;
+      }
+    }
+
+    candidate.isPareto = !dominated;
+  }
+
+  const paretoCount = state.samples.filter((sample) => sample.isPareto).length;
+  stats.textContent = `${state.samples.length} samples, ${paretoCount} currently on the sampled Pareto front. ${getCurrentObjectiveFamily().description}`;
+  renderAll();
+}
+
+function lerp(a, b, t) {
+  return a + (b - a) * t;
+}
+
+function colorLerp(colorA, colorB, t) {
+  return colorA.map((value, index) => Math.round(lerp(value, colorB[index], t)));
+}
+
+function sampleHeatColor(normalized) {
+  if (normalized < 0.5) {
+    const firstHalf = colorLerp(objectivePalette.low, objectivePalette.mid, normalized / 0.5);
+    return `rgb(${firstHalf.join(",")})`;
+  }
+
+  const secondHalf = colorLerp(objectivePalette.mid, objectivePalette.high, (normalized - 0.5) / 0.5);
+  return `rgb(${secondHalf.join(",")})`;
+}
+
+function toCanvasX(x, canvas) {
+  const usableWidth = canvas.width - margins.left - margins.right;
+  return margins.left + ((x - decisionBounds.xMin) / (decisionBounds.xMax - decisionBounds.xMin)) * usableWidth;
+}
+
+function toCanvasY(y, canvas) {
+  const usableHeight = canvas.height - margins.top - margins.bottom;
+  return canvas.height - margins.bottom - ((y - decisionBounds.yMin) / (decisionBounds.yMax - decisionBounds.yMin)) * usableHeight;
+}
+
+function fromCanvasDecision(px, py, canvas) {
+  const usableWidth = canvas.width - margins.left - margins.right;
+  const usableHeight = canvas.height - margins.top - margins.bottom;
+  const x = decisionBounds.xMin + ((px - margins.left) / usableWidth) * (decisionBounds.xMax - decisionBounds.xMin);
+  const y = decisionBounds.yMin + ((canvas.height - margins.bottom - py) / usableHeight) * (decisionBounds.yMax - decisionBounds.yMin);
+
+  return {
+    x: clamp(x, decisionBounds.xMin, decisionBounds.xMax),
+    y: clamp(y, decisionBounds.yMin, decisionBounds.yMax),
+  };
+}
+
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function computeObjectiveExtents() {
+  const f1Values = state.samples.map((sample) => sample.objectives[0]);
+  const f2Values = state.samples.map((sample) => sample.objectives[1]);
+  const f1Min = Math.min(...f1Values);
+  const f1Max = Math.max(...f1Values);
+  const f2Min = Math.min(...f2Values);
+  const f2Max = Math.max(...f2Values);
+  const xPad = (f1Max - f1Min || 1) * 0.12;
+  const yPad = (f2Max - f2Min || 1) * 0.12;
+
+  return {
+    xMin: f1Min - xPad,
+    xMax: f1Max + xPad,
+    yMin: f2Min - yPad,
+    yMax: f2Max + yPad,
+  };
+}
+
+function toObjectiveCanvasX(value, canvas, extents) {
+  const usableWidth = canvas.width - margins.left - margins.right;
+  return margins.left + ((value - extents.xMin) / (extents.xMax - extents.xMin || 1)) * usableWidth;
+}
+
+function toObjectiveCanvasY(value, canvas, extents) {
+  const usableHeight = canvas.height - margins.top - margins.bottom;
+  return canvas.height - margins.bottom - ((value - extents.yMin) / (extents.yMax - extents.yMin || 1)) * usableHeight;
+}
+
+function drawAxes(ctx, canvas, xLabel, yLabel, bounds) {
+  ctx.save();
+  ctx.strokeStyle = "rgba(45, 36, 27, 0.18)";
+  ctx.lineWidth = 1;
+  ctx.font = "12px Segoe UI";
+  ctx.fillStyle = "#6d6255";
+
+  const plotLeft = margins.left;
+  const plotRight = canvas.width - margins.right;
+  const plotTop = margins.top;
+  const plotBottom = canvas.height - margins.bottom;
+
+  ctx.beginPath();
+  ctx.moveTo(plotLeft, plotTop);
+  ctx.lineTo(plotLeft, plotBottom);
+  ctx.lineTo(plotRight, plotBottom);
+  ctx.stroke();
+
+  const ticks = 5;
+  for (let i = 0; i <= ticks; i += 1) {
+    const t = i / ticks;
+    const x = lerp(plotLeft, plotRight, t);
+    const y = lerp(plotBottom, plotTop, t);
+
+    ctx.beginPath();
+    ctx.moveTo(x, plotBottom);
+    ctx.lineTo(x, plotBottom + 6);
+    ctx.moveTo(plotLeft - 6, y);
+    ctx.lineTo(plotLeft, y);
+    ctx.stroke();
+
+    const xValue = lerp(bounds.xMin, bounds.xMax, t).toFixed(2);
+    const yValue = lerp(bounds.yMin, bounds.yMax, t).toFixed(2);
+    ctx.fillText(xValue, x - 12, plotBottom + 20);
+    ctx.fillText(yValue, plotLeft - 36, y + 4);
+  }
+
+  ctx.font = "600 13px Segoe UI";
+  ctx.fillStyle = "#2d241b";
+  ctx.textAlign = "center";
+  ctx.fillText(xLabel, (plotLeft + plotRight) / 2, canvas.height - 14);
+
+  ctx.save();
+  ctx.translate(24, (plotTop + plotBottom) / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(yLabel, 0, 0);
+  ctx.restore();
+  ctx.restore();
+}
+
+function renderDecisionSurface(config) {
+  const { canvas, objectiveIndex } = config;
+  const ctx = canvas.getContext("2d");
+  const plotWidth = canvas.width - margins.left - margins.right;
+  const plotHeight = canvas.height - margins.top - margins.bottom;
+  const resolution = 88;
+
+  const values = [];
+  let min = Number.POSITIVE_INFINITY;
+  let max = Number.NEGATIVE_INFINITY;
+
+  for (let row = 0; row < resolution; row += 1) {
+    const rowValues = [];
+    for (let col = 0; col < resolution; col += 1) {
+      const x = decisionBounds.xMin + (col / (resolution - 1)) * (decisionBounds.xMax - decisionBounds.xMin);
+      const y = decisionBounds.yMin + ((resolution - 1 - row) / (resolution - 1)) * (decisionBounds.yMax - decisionBounds.yMin);
+      const value = objectiveFunctions(x, y)[objectiveIndex];
+      rowValues.push(value);
+      min = Math.min(min, value);
+      max = Math.max(max, value);
+    }
+    values.push(rowValues);
+  }
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  for (let row = 0; row < resolution; row += 1) {
+    for (let col = 0; col < resolution; col += 1) {
+      const normalized = (values[row][col] - min) / (max - min || 1);
+      ctx.fillStyle = sampleHeatColor(normalized);
+      const x = margins.left + (col / resolution) * plotWidth;
+      const y = margins.top + (row / resolution) * plotHeight;
+      ctx.fillRect(x, y, plotWidth / resolution + 1, plotHeight / resolution + 1);
+    }
+  }
+
+  drawDecisionContours(ctx, canvas, values, min, max);
+  drawAxes(ctx, canvas, "x1", "x2", decisionBounds);
+
+  drawDecisionSamples(ctx, canvas);
+}
+
+function drawDecisionContours(ctx, canvas, values, min, max) {
+  const resolution = values.length;
+  const plotWidth = canvas.width - margins.left - margins.right;
+  const plotHeight = canvas.height - margins.top - margins.bottom;
+  const levels = 7;
+  const stepX = plotWidth / (resolution - 1);
+  const stepY = plotHeight / (resolution - 1);
+
+  ctx.save();
+  ctx.strokeStyle = "rgba(255,255,255,0.45)";
+  ctx.lineWidth = 1.2;
+
+  for (let levelIndex = 1; levelIndex <= levels; levelIndex += 1) {
+    const threshold = min + (levelIndex / (levels + 1)) * (max - min);
+    ctx.beginPath();
+
+    for (let row = 0; row < resolution - 1; row += 1) {
+      for (let col = 0; col < resolution - 1; col += 1) {
+        const topLeft = values[row][col];
+        const topRight = values[row][col + 1];
+        const bottomRight = values[row + 1][col + 1];
+        const bottomLeft = values[row + 1][col];
+
+        const cellX = margins.left + col * stepX;
+        const cellY = margins.top + row * stepY;
+        const segments = getMarchingSquaresSegments(
+          topLeft,
+          topRight,
+          bottomRight,
+          bottomLeft,
+          threshold,
+          cellX,
+          cellY,
+          stepX,
+          stepY,
+        );
+
+        if (segments.length === 0) {
+          continue;
+        }
+
+        for (const segment of segments) {
+          ctx.moveTo(segment[0].x, segment[0].y);
+          ctx.lineTo(segment[1].x, segment[1].y);
+        }
+      }
+    }
+
+    ctx.stroke();
+  }
+
+  ctx.restore();
+}
+
+function interpolateContourPoint(valueA, valueB, threshold, pointA, pointB) {
+  const denominator = valueB - valueA;
+  const t = Math.abs(denominator) < 1e-12 ? 0.5 : (threshold - valueA) / denominator;
+  return {
+    x: lerp(pointA.x, pointB.x, t),
+    y: lerp(pointA.y, pointB.y, t),
+  };
+}
+
+function getMarchingSquaresSegments(topLeft, topRight, bottomRight, bottomLeft, threshold, cellX, cellY, stepX, stepY) {
+  const points = {
+    top: interpolateContourPoint(
+      topLeft,
+      topRight,
+      threshold,
+      { x: cellX, y: cellY },
+      { x: cellX + stepX, y: cellY },
+    ),
+    right: interpolateContourPoint(
+      topRight,
+      bottomRight,
+      threshold,
+      { x: cellX + stepX, y: cellY },
+      { x: cellX + stepX, y: cellY + stepY },
+    ),
+    bottom: interpolateContourPoint(
+      bottomLeft,
+      bottomRight,
+      threshold,
+      { x: cellX, y: cellY + stepY },
+      { x: cellX + stepX, y: cellY + stepY },
+    ),
+    left: interpolateContourPoint(
+      topLeft,
+      bottomLeft,
+      threshold,
+      { x: cellX, y: cellY },
+      { x: cellX, y: cellY + stepY },
+    ),
+  };
+
+  const index =
+    (topLeft >= threshold ? 8 : 0) |
+    (topRight >= threshold ? 4 : 0) |
+    (bottomRight >= threshold ? 2 : 0) |
+    (bottomLeft >= threshold ? 1 : 0);
+
+  switch (index) {
+    case 0:
+    case 15:
+      return [];
+    case 1:
+      return [[points.left, points.bottom]];
+    case 2:
+      return [[points.bottom, points.right]];
+    case 3:
+      return [[points.left, points.right]];
+    case 4:
+      return [[points.top, points.right]];
+    case 5: {
+      const center = (topLeft + topRight + bottomRight + bottomLeft) / 4;
+      return center >= threshold
+        ? [[points.top, points.left], [points.bottom, points.right]]
+        : [[points.top, points.right], [points.left, points.bottom]];
+    }
+    case 6:
+      return [[points.top, points.bottom]];
+    case 7:
+      return [[points.top, points.left]];
+    case 8:
+      return [[points.top, points.left]];
+    case 9:
+      return [[points.top, points.bottom]];
+    case 10: {
+      const center = (topLeft + topRight + bottomRight + bottomLeft) / 4;
+      return center >= threshold
+        ? [[points.top, points.right], [points.left, points.bottom]]
+        : [[points.top, points.left], [points.bottom, points.right]];
+    }
+    case 11:
+      return [[points.top, points.right]];
+    case 12:
+      return [[points.left, points.right]];
+    case 13:
+      return [[points.bottom, points.right]];
+    case 14:
+      return [[points.left, points.bottom]];
+    default:
+      return [];
+  }
+}
+
+function drawDecisionSamples(ctx, canvas) {
+  for (const sample of state.samples) {
+    const cx = toCanvasX(sample.x, canvas);
+    const cy = toCanvasY(sample.y, canvas);
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, pointRadius + (sample.isPareto ? 1.5 : 0), 0, Math.PI * 2);
+    ctx.fillStyle = sample.isPareto ? "rgba(217, 119, 6, 0.95)" : "rgba(31, 41, 55, 0.9)";
+    ctx.fill();
+    ctx.lineWidth = sample.isPareto ? 3 : 1.5;
+    ctx.strokeStyle = sample.isPareto ? "rgba(255, 251, 235, 0.95)" : "rgba(255,255,255,0.85)";
+    ctx.stroke();
+  }
+}
+
+function renderObjectiveSpace() {
+  const ctx = objectiveCanvas.getContext("2d");
+  ctx.clearRect(0, 0, objectiveCanvas.width, objectiveCanvas.height);
+
+  const extents = computeObjectiveExtents();
+  drawObjectiveGrid(ctx, objectiveCanvas, extents);
+
+  const paretoSamples = state.samples
+    .filter((sample) => sample.isPareto)
+    .sort((a, b) => a.objectives[0] - b.objectives[0]);
+
+  if (paretoSamples.length > 0 && state.showDominatedRegion) {
+    drawDominatedRegion(ctx, objectiveCanvas, extents, paretoSamples);
+  }
+
+  if (paretoSamples.length > 0 && state.showHypervolume) {
+    drawHypervolumeContributions(ctx, objectiveCanvas, extents, paretoSamples);
+  }
+
+  if (paretoSamples.length > 1) {
+    ctx.save();
+    ctx.strokeStyle = "rgba(190, 18, 60, 0.85)";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    paretoSamples.forEach((sample, index) => {
+      const x = toObjectiveCanvasX(sample.objectives[0], objectiveCanvas, extents);
+      const y = toObjectiveCanvasY(sample.objectives[1], objectiveCanvas, extents);
+      if (index === 0) {
+        ctx.moveTo(x, y);
+      } else {
+        const prevY = toObjectiveCanvasY(paretoSamples[index - 1].objectives[1], objectiveCanvas, extents);
+        ctx.lineTo(x, prevY);
+        ctx.lineTo(x, y);
+      }
+    });
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  for (const sample of state.samples) {
+    const cx = toObjectiveCanvasX(sample.objectives[0], objectiveCanvas, extents);
+    const cy = toObjectiveCanvasY(sample.objectives[1], objectiveCanvas, extents);
+    ctx.beginPath();
+    ctx.arc(cx, cy, pointRadius + (sample.isPareto ? 1.5 : 0), 0, Math.PI * 2);
+    ctx.fillStyle = sample.isPareto ? "rgba(217, 119, 6, 0.95)" : "rgba(31, 41, 55, 0.92)";
+    ctx.fill();
+    ctx.lineWidth = sample.isPareto ? 3 : 1.5;
+    ctx.strokeStyle = sample.isPareto ? "rgba(255, 247, 214, 0.95)" : "rgba(255,255,255,0.85)";
+    ctx.stroke();
+  }
+
+  drawAxes(ctx, objectiveCanvas, "f1(x1, x2)", "f2(x1, x2)", extents);
+}
+
+function drawDominatedRegion(ctx, canvas, extents, paretoSamples) {
+  const plotTop = margins.top;
+  const plotRight = canvas.width - margins.right;
+  const first = paretoSamples[0];
+  const firstX = toObjectiveCanvasX(first.objectives[0], canvas, extents);
+  const firstY = toObjectiveCanvasY(first.objectives[1], canvas, extents);
+
+  ctx.save();
+  ctx.fillStyle = "rgba(190, 18, 60, 0.12)";
+  ctx.beginPath();
+  ctx.moveTo(firstX, plotTop);
+  ctx.lineTo(firstX, firstY);
+
+  paretoSamples.forEach((sample, index) => {
+    const x = toObjectiveCanvasX(sample.objectives[0], canvas, extents);
+    const y = toObjectiveCanvasY(sample.objectives[1], canvas, extents);
+
+    if (index > 0) {
+      const prevY = toObjectiveCanvasY(paretoSamples[index - 1].objectives[1], canvas, extents);
+      ctx.lineTo(x, prevY);
+    }
+
+    ctx.lineTo(x, y);
+  });
+
+  const last = paretoSamples[paretoSamples.length - 1];
+  const lastY = toObjectiveCanvasY(last.objectives[1], canvas, extents);
+  ctx.lineTo(plotRight, lastY);
+  ctx.lineTo(plotRight, plotTop);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawHypervolumeContributions(ctx, canvas, extents, paretoSamples) {
+  const plotTop = margins.top;
+  const plotRight = canvas.width - margins.right;
+
+  paretoSamples.forEach((sample, index) => {
+    const x0 = toObjectiveCanvasX(sample.objectives[0], canvas, extents);
+    const x1 =
+      index < paretoSamples.length - 1
+        ? toObjectiveCanvasX(paretoSamples[index + 1].objectives[0], canvas, extents)
+        : plotRight;
+    const y = toObjectiveCanvasY(sample.objectives[1], canvas, extents);
+    const prevY =
+      index > 0
+        ? toObjectiveCanvasY(paretoSamples[index - 1].objectives[1], canvas, extents)
+        : plotTop;
+
+    ctx.save();
+    ctx.fillStyle = `hsla(${(index * 61) % 360}, 82%, 56%, 0.26)`;
+    ctx.fillRect(x0, prevY, Math.max(0, x1 - x0), Math.max(0, y - prevY));
+    ctx.restore();
+  });
+}
+
+function drawObjectiveGrid(ctx, canvas, extents) {
+  ctx.save();
+  ctx.strokeStyle = "rgba(45, 36, 27, 0.08)";
+  ctx.lineWidth = 1;
+
+  const plotLeft = margins.left;
+  const plotRight = canvas.width - margins.right;
+  const plotTop = margins.top;
+  const plotBottom = canvas.height - margins.bottom;
+  const ticks = 8;
+
+  for (let i = 0; i <= ticks; i += 1) {
+    const t = i / ticks;
+    const x = lerp(plotLeft, plotRight, t);
+    const y = lerp(plotTop, plotBottom, t);
+
+    ctx.beginPath();
+    ctx.moveTo(x, plotTop);
+    ctx.lineTo(x, plotBottom);
+    ctx.moveTo(plotLeft, y);
+    ctx.lineTo(plotRight, y);
+    ctx.stroke();
+  }
+
+  const goalX = toObjectiveCanvasX(extents.xMin, canvas, extents);
+  const goalY = toObjectiveCanvasY(extents.yMin, canvas, extents);
+  ctx.fillStyle = "rgba(14, 116, 144, 0.1)";
+  ctx.fillRect(plotLeft, goalY, goalX - plotLeft + 1, plotBottom - goalY);
+  ctx.restore();
+}
+
+function renderAll() {
+  decisionConfigs.forEach(renderDecisionSurface);
+  renderObjectiveSpace();
+}
+
+function getMousePosition(event, canvas) {
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+
+  return {
+    x: (event.clientX - rect.left) * scaleX,
+    y: (event.clientY - rect.top) * scaleY,
+  };
+}
+
+function findSampleAtPosition(position, canvas) {
+  return state.samples.find((sample) => {
+    const dx = toCanvasX(sample.x, canvas) - position.x;
+    const dy = toCanvasY(sample.y, canvas) - position.y;
+    return Math.hypot(dx, dy) <= pointRadius + 5;
+  });
+}
+
+function handleDecisionPointerDown(event, canvas) {
+  const position = getMousePosition(event, canvas);
+  const existingSample = findSampleAtPosition(position, canvas);
+
+  if (existingSample) {
+    state.dragSampleId = existingSample.id;
+    state.dragSource = canvas.id;
+    return;
+  }
+
+  const decision = fromCanvasDecision(position.x, position.y, canvas);
+  state.samples.push(createSample(decision.x, decision.y));
+  evaluateSamples();
+}
+
+function handleDecisionPointerMove(event, canvas) {
+  if (!state.dragSampleId) {
+    return;
+  }
+
+  const position = getMousePosition(event, canvas);
+  const decision = fromCanvasDecision(position.x, position.y, canvas);
+  const sample = state.samples.find((entry) => entry.id === state.dragSampleId);
+
+  if (!sample) {
+    return;
+  }
+
+  sample.x = decision.x;
+  sample.y = decision.y;
+  evaluateSamples();
+}
+
+function handleDecisionPointerUp() {
+  state.dragSampleId = null;
+  state.dragSource = null;
+}
+
+decisionConfigs.forEach(({ canvas }) => {
+  canvas.addEventListener("pointerdown", (event) => handleDecisionPointerDown(event, canvas));
+  canvas.addEventListener("pointermove", (event) => handleDecisionPointerMove(event, canvas));
+  canvas.addEventListener("pointerup", handleDecisionPointerUp);
+  canvas.addEventListener("pointerleave", handleDecisionPointerUp);
+});
+
+sampleCountInput.addEventListener("input", () => {
+  sampleCountValue.textContent = sampleCountInput.value;
+});
+
+regenerateBtn.addEventListener("click", () => {
+  regenerateSamples(Number(sampleCountInput.value));
+});
+
+shuffleBtn.addEventListener("click", () => {
+  state.objectivePreset = (state.objectivePreset + 1) % getCurrentObjectiveFamily().presets.length;
+  evaluateSamples();
+});
+
+objectiveFamilySelect.addEventListener("change", () => {
+  state.objectiveFamilyId = objectiveFamilySelect.value;
+  state.objectivePreset = 0;
+  evaluateSamples();
+});
+
+showDominatedRegionInput.addEventListener("change", () => {
+  state.showDominatedRegion = showDominatedRegionInput.checked;
+  renderAll();
+});
+
+showHypervolumeInput.addEventListener("change", () => {
+  state.showHypervolume = showHypervolumeInput.checked;
+  renderAll();
+});
+
+state.objectiveFamilyId = objectiveFamilies[0].id;
+syncObjectiveFamilyOptions();
+showDominatedRegionInput.checked = state.showDominatedRegion;
+showHypervolumeInput.checked = state.showHypervolume;
+regenerateSamples(Number(sampleCountInput.value));
+
+  </script>
+</body>
+</html>
+
+

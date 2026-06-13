@@ -1,0 +1,173 @@
+---
+title: "Anwendung A*"
+author: "Martin Zaefferer"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Anwendung A*
+
+```{r}
+require(GGally)
+```
+
+
+## Implementation A* in R
+
+Hilfsfunktion zum erstellen des Lösungspfades als Sequenz von Knoten:
+```{r}
+getpath <- function(previous,start,end){
+  #' @param previous vector, where each integer value indicates the node preceding another node in the graph
+  #' @param start start node of the path
+  #' @param start end node of the path
+  
+  i = end
+  ## optionally, generate an adjacency matrix for the solution:
+  #msol <- matrix(0,nrow=nrow(m),ncol=ncol(m)) 
+  path <- end
+  while(i != 0){
+    ii <- previous[i]
+    #msol[ii,i] <- 1
+    i=ii
+    if(i!= 0)
+      path <- c(ii,path)
+  }
+  #msol
+  path
+}
+```
+
+Hauptfunktion:
+```{r}
+## Based on, with changes:
+## https://www.algorithms-and-technologies.com/dijkstra/r
+## ClaasM
+## Posted: 2019-12-21 13:14, Last Updated: 2019-12-21 13:14
+astar <- function(graph, start, end, heuristic){ #A*
+  #' Implementation of A* using adjacency matrix.
+  #' @param graph an adjacency-matrix-representation of the graph where (x,y) is the weight of the edge or 0 if there is no edge.
+  #' @param start the node to start from.
+  #' @param end the node to end at.
+  #' @param heuristic vector of heuristic values (e.g., distance estimates to goal node) for each node.
+  #' @return an array containing the shortest distances from the given start node to each other node
+  
+  
+  # This contains the distances from the start node to all other nodes
+  distances = rep(Inf, nrow(graph))
+  
+  # This contains whether a node was already visited
+  visited = rep(FALSE, nrow(graph))
+  
+  # This contains the previous node of a current node in the path
+  previous = rep(NA, nrow(graph))
+  
+  # This contains the priorities for all nodes
+  priorities = rep(Inf, nrow(graph)) #A*
+  
+  # The distance from the start node to itself is of course 0
+  distances[start] = 0
+  
+  # Priority of the start node
+  priorities[start] = heuristic[start] #A*
+  
+  # And it has no previous node
+  previous[start] = 0
+  
+  # And it becomes the current node
+  current_node_index <- start
+  
+  # While there are nodes left to visit...
+  while(TRUE){ #A*
+    
+    # Current node is visited
+    visited[current_node_index] <- TRUE 
+    
+    # Stop if this is the end node
+    if(current_node_index==end){
+      break;
+    }
+    
+    # ... then, for all neighboring nodes that haven't been visited yet....
+    for(i in seq_along(graph[current_node_index,])) {
+      # ...if the path over this edge is shorter...
+      if(graph[current_node_index,i] != 0 && !visited[i] && distances[i] > distances[current_node_index] + graph[current_node_index,i]){
+        # ...save this path as new shortest path.
+        distances[i] = distances[current_node_index] + graph[current_node_index,i]
+        previous[i] = current_node_index
+        priorities[i] = distances[i]+heuristic[i] #A*
+      }
+    }
+    
+    # ... find the node with the currently shortest PRIORITY from the start node...
+    min_priority = Inf
+    current_node_index = -1
+    for(i in seq_along(priorities)) {
+      # ... by going through all nodes that haven't been visited yet
+      if(priorities[i] < min_priority && !visited[i]){
+        min_priority = priorities[i]
+        current_node_index = i
+      }
+    }
+  }
+  
+  ## determine shortest path sequence from start to end node
+  path <- getpath(previous,start,end)
+  
+  list(distances=distances,previous=previous,path=path)
+}
+```
+
+Anwendung des Algorithmus auf das Vorlesungsbeispiel:
+
+```{r}
+## original graph for the problem
+m <- matrix(
+  c(0, 1, 0, 0, 4, 0,
+    1, 0, 1, 0, 1, 0,
+    0, 1, 0, 1, 0, 0,
+    0, 0, 1, 0, 6, 1,
+    4, 1, 0, 6, 0, 0,
+    0, 0, 0, 1, 0, 0),
+  nrow = 6, ncol = 6
+)
+start = 1 ## start node
+end = 6 ## end node
+heuristic = c(1,0,0,0,1000,0)
+res <- astar(m,start=start,end=end,heuristic=heuristic) ## solver with end node
+res
+
+## plotting the solution
+require(network)
+require(ggnet)
+rownames(m) = 1:nrow(m)
+colnames(m) = 1:nrow(m)
+cols <- rep("black",nrow(m))
+pathnodes <- (1:nrow(m)) %in% res$path
+cols[pathnodes] <- "red"
+net <- network(m, directed=F, names.eval = "weights", ignore.eval = FALSE)
+set.seed(43)
+ggnet2(net, 
+       mode = "fruchtermanreingold", size = 10, label = T, 
+       vjust = 0.5,
+       node.color = cols, 
+       label.color = "grey80", arrow.size = 10, edge.label = "weights", 
+       arrow.gap = 0.05)
+```
+
+
+
+## Aufgabe
+
+-  Wenden Sie den Algorithmus auf das Ravensburg-Immenstaad Beispiel aus der Vorlesung an.
+
+
+    
+```{r}
+
+```
+    
