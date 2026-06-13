@@ -12,10 +12,13 @@
 
 - **Verändere, verschiebe oder lösche KEINE vorhandenen Dateien oder Ordner.** Alle bestehenden
   Materialien werden **nur gelesen**.
-- Du darfst **ausschließlich** einen **neuen** Ordner `output/` im aktuellen Fach-Ordner anlegen und
-  **nur dort hinein** schreiben.
-- Schreibe nichts außerhalb von `output/`.
-- Wenn `output/` schon existiert: bestehende Dateien darin **nicht überschreiben**, sondern
+- Du darfst **ausschließlich** in deine **eigenen** Unterordner schreiben (bei Bedarf neu anlegen):
+  - `output/erklaerung/` → das **Lernskript** und die **Abfragefragen** (zum Ausfüllen).
+  - `results/erklaerung/` → die **Abfrage-Lösungen / Ergebnisse**.
+- Bleibe in diesen beiden Unterordnern. Schreibe in **keine** anderen Ordner (auch nicht in
+  `output/aufgaben/`, `output/klausuren/` o. Ä. – die gehören anderen Prompts) und in keine vorhandenen
+  Materialordner.
+- Wenn die Ordner schon existieren: bestehende Dateien darin **nicht überschreiben**, sondern
   fortlaufend weiternummerieren.
 
 ---
@@ -76,35 +79,39 @@ Erstelle zum Selbsttesten einen Satz **Abfragefragen** über **alle** Themen:
   kleine **Rechen-/Beweisaufgaben** und einige **Ankreuz-/Wahr-Falsch-Fragen**.
 - Schwierigkeit mischen (leicht → schwer), nach Themen gruppiert.
 - Zu **jeder** Frage eine **kurze, korrekte Lösung** (kommt in den separaten Lösungsteil).
-- Geeignet zum aktiven Abfragen: erst die Frage, Lösung erst auf separater Seite / in separater Datei.
+- Geeignet zum aktiven Abfragen: erst die Frage, Lösung erst in der separaten Lösungs-Datei.
 
 ### Schritt 5 – Als PDF erzeugen
 
-Erzeuge im Ordner `output/erklaerungen/` (Ordner bei Bedarf neu anlegen):
+Erzeuge die PDFs in **getrennten** Ordnern:
 
-1. **`erklaerung_<NN>.pdf`** – das vollständige Lernskript.
-2. **`abfrage_<NN>.pdf`** – die Abfragefragen (mit etwas Platz zum Notieren), Lösungen **am Ende auf
-   eigenen Seiten** oder als separate Datei **`abfrage_<NN>_loesung.pdf`**.
+1. **`output/erklaerung/erklaerung_<NN>.pdf`** – das vollständige Lernskript.
+2. **`output/erklaerung/abfrage_<NN>.pdf`** – die Abfragefragen (mit etwas Platz zum Notieren).
+3. **`results/erklaerung/abfrage_<NN>_loesung.pdf`** – die Lösungen zu den Abfragefragen.
 
 `<NN>` ist eine fortlaufende Nummer (`01`, `02`, …); **nie eine vorhandene Datei überschreiben**.
 
 **Vorgehen:**
 
-1. Schreibe die LaTeX-Dokumente (`erklaerung_<NN>.tex`, `abfrage_<NN>.tex`) nach `output/erklaerungen/`.
+1. Schreibe `erklaerung_<NN>.tex` und `abfrage_<NN>.tex` nach `output/erklaerung/`, und
+   `abfrage_<NN>_loesung.tex` nach `results/erklaerung/`.
    - `\documentclass[a4paper,11pt]{article}`, `amsmath`, `amssymb`, `amsthm`.
    - Umlaute: bei **xelatex** `\usepackage{fontspec}`; bei **pdflatex** `\usepackage[utf8]{inputenc}`,
      `\usepackage[T1]{fontenc}`, `\usepackage[ngerman]{babel}`.
    - **Inhaltsverzeichnis** (`\tableofcontents`) und klare Abschnitte (`\section`/`\subsection`) pro Thema.
    - Definitionen/Sätze/Beispiele optisch hervorheben (z. B. `\theoremstyle` + `\newtheorem` oder Boxen).
-2. Kompiliere **jedes** Dokument mit **xelatex** (bevorzugt wegen Umlauten), sonst **pdflatex**, z. B.:
-   `xelatex -interaction=nonstopmode -output-directory=output/erklaerungen erklaerung_<NN>.tex`
+2. Kompiliere **jedes** Dokument mit **xelatex** (bevorzugt wegen Umlauten), sonst **pdflatex**, jeweils in
+   den passenden Ordner, z. B.:
+   `xelatex -interaction=nonstopmode -output-directory=output/erklaerung erklaerung_<NN>.tex`
+   und `xelatex -interaction=nonstopmode -output-directory=results/erklaerung abfrage_<NN>_loesung.tex`
    (zweimal laufen lassen wegen Inhaltsverzeichnis). Bei Fehlern Log lesen, `.tex` korrigieren, neu kompilieren.
 3. Mathematik konsequent in LaTeX-Mathematikumgebungen setzen.
 
 ### Schritt 6 – Überprüfen (Pflicht)
 
-1. **PDF-Check:** Bestätige, dass `erklaerung_<NN>.pdf` **und** die Abfrage-PDF(s) existieren, fehlerfrei
-   kompiliert wurden und Seitenzahl > 0 haben; das Inhaltsverzeichnis wurde erzeugt.
+1. **PDF-Check:** Bestätige, dass `output/erklaerung/erklaerung_<NN>.pdf`, `output/erklaerung/abfrage_<NN>.pdf`
+   **und** `results/erklaerung/abfrage_<NN>_loesung.pdf` existieren, fehlerfrei kompiliert wurden und
+   Seitenzahl > 0 haben; das Inhaltsverzeichnis wurde erzeugt.
 2. **Vollständigkeit:** Gleiche die Abschnitte mit deiner Themenliste aus Schritt 1 ab – **kein Thema fehlt**;
    auch der Abfrage-Teil deckt alle Themen ab.
 3. **Korrektheit:** Prüfe Definitionen, Formeln, durchgerechnete Beispiele **und alle Abfrage-Lösungen** auf
@@ -121,5 +128,6 @@ Anzahl der Abfragefragen und das Ergebnis der Überprüfung.
 
 - Arbeite **nur** im aktuellen Fach-Ordner; gehe nicht in andere Fächer.
 - Bei sehr viel Stoff darfst du mehrere PDFs pro Themenblock erzeugen
-  (`erklaerung_<NN>_<thema>.pdf`) – immer **nur in `output/erklaerungen/`** und ohne Überschreiben.
-- Du darfst Hilfsdateien (`.tex`, `.aux`, `.toc`, `.log`) erzeugen, aber **nur innerhalb von `output/`**.
+  (`erklaerung_<NN>_<thema>.pdf`) – immer **nur in `output/erklaerung/`** und ohne Überschreiben.
+- Du darfst Hilfsdateien (`.tex`, `.aux`, `.toc`, `.log`) erzeugen, aber **nur innerhalb von
+  `output/erklaerung/` und `results/erklaerung/`**.

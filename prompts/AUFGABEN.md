@@ -12,11 +12,14 @@
 
 - **Verändere, verschiebe oder lösche KEINE vorhandenen Dateien oder Ordner.** Alle bestehenden
   Materialien werden **nur gelesen**.
-- Du darfst **ausschließlich** einen **neuen** Ordner `output/` im aktuellen Fach-Ordner anlegen und
-  **nur dort hinein** schreiben.
-- Schreibe nichts außerhalb von `output/`. Lege keine Dateien in `vorlesungs_materialien/`,
-  `andere_materialien/`, `openbook/`, `übungen/`, `probeklausuren/` o. Ä. an.
-- Wenn `output/` schon existiert: bestehende Dateien darin **nicht überschreiben**, sondern
+- Du darfst **ausschließlich** in deine **eigenen** Unterordner schreiben (bei Bedarf neu anlegen):
+  - `output/aufgaben/` → die **Aufgaben zum Ausfüllen** (ohne Lösung).
+  - `results/aufgaben/` → die **Lösungen / Ergebnisse**.
+- Bleibe in diesen beiden Unterordnern. Schreibe in **keine** anderen Ordner (auch nicht in
+  `output/klausuren/`, `output/erklaerung/` o. Ä. – die gehören anderen Prompts) und in keine
+  vorhandenen Materialordner (`vorlesungs_materialien/`, `andere_materialien/`, `openbook/`,
+  `übungen/`, `probeklausuren/` …).
+- Wenn die Ordner schon existieren: bestehende Dateien darin **nicht überschreiben**, sondern
   fortlaufend weiternummerieren.
 
 ---
@@ -63,32 +66,34 @@ liegen und vollständig korrekt gelöst sein.
 
 ### Schritt 5 – Als PDF erzeugen
 
-Erzeuge **zwei** PDFs im Ordner `output/uebungsaufgaben/` (Ordner bei Bedarf neu anlegen):
+Erzeuge **zwei** PDFs in **getrennten** Ordnern:
 
-1. **`aufgaben_<NN>.pdf`** – nur die Aufgabenstellungen, **mit großzügigem Platz zum handschriftlichen
-   Ausfüllen** nach jeder Aufgabe (siehe unten).
-2. **`loesungen_<NN>.pdf`** – die vollständigen Musterlösungen.
+1. **`output/aufgaben/aufgaben_<NN>.pdf`** – nur die Aufgabenstellungen, **mit großzügigem Platz zum
+   handschriftlichen Ausfüllen** nach jeder Aufgabe (siehe unten).
+2. **`results/aufgaben/loesungen_<NN>.pdf`** – die vollständigen Musterlösungen.
 
 `<NN>` ist eine fortlaufende Nummer (`01`, `02`, …); **nie eine vorhandene Datei überschreiben**.
 
 **Vorgehen zur PDF-Erzeugung:**
 
-1. Schreibe je ein LaTeX-Dokument (`aufgaben_<NN>.tex`, `loesungen_<NN>.tex`) nach `output/uebungsaufgaben/`.
+1. Schreibe das Aufgaben-Dokument `aufgaben_<NN>.tex` nach `output/aufgaben/` und das Lösungs-Dokument
+   `loesungen_<NN>.tex` nach `results/aufgaben/`.
    - Nutze `\documentclass[a4paper,11pt]{article}`, `amsmath`, `amssymb`.
    - Für Umlaute: bei **xelatex** `\usepackage{fontspec}`; bei **pdflatex** `\usepackage[utf8]{inputenc}`
      und `\usepackage[T1]{fontenc}`, `\usepackage[ngerman]{babel}`.
 2. **Platz zum Ausfüllen** im Aufgaben-PDF: nach jeder Aufgabe abhängig vom Aufwand Leerraum lassen,
    z. B. `\vspace{5cm}` bzw. für Rechenaufgaben mehr. Optional Linien zum Schreiben (z. B. via
    `\hrulefill` in Wiederholung). Kopfzeile mit Feldern **Name** und **Datum**.
-3. Kompiliere mit **xelatex** (bevorzugt wegen Umlauten), sonst **pdflatex**:
-   `xelatex -interaction=nonstopmode -output-directory=output/uebungsaufgaben aufgaben_<NN>.tex`
+3. Kompiliere mit **xelatex** (bevorzugt wegen Umlauten), sonst **pdflatex**, jeweils in den passenden Ordner:
+   `xelatex -interaction=nonstopmode -output-directory=output/aufgaben aufgaben_<NN>.tex`
+   und `xelatex -interaction=nonstopmode -output-directory=results/aufgaben loesungen_<NN>.tex`
    (zweimal laufen lassen, falls Referenzen). Bei Fehlern Log lesen, `.tex` korrigieren, neu kompilieren.
 4. Mathematik konsequent in LaTeX-Mathematikumgebungen setzen.
 
 ### Schritt 6 – Überprüfen (Pflicht)
 
-1. **PDF-Check:** Bestätige, dass `aufgaben_<NN>.pdf` und `loesungen_<NN>.pdf` existieren und ohne
-   Fehler kompiliert wurden. Prüfe Seitenzahl > 0.
+1. **PDF-Check:** Bestätige, dass `output/aufgaben/aufgaben_<NN>.pdf` und
+   `results/aufgaben/loesungen_<NN>.pdf` existieren und ohne Fehler kompiliert wurden. Prüfe Seitenzahl > 0.
 2. **Inhaltliche Prüfung:** Rechne **jede** Musterlösung unabhängig nach bzw. überprüfe jeden Beweis.
    Korrigiere Fehler in der `.tex`-Datei und kompiliere neu, bis alle Lösungen korrekt sind.
 3. **Konsistenz:** Jede Aufgabe im Aufgaben-PDF hat genau eine Lösung im Lösungs-PDF; Nummerierung passt;
@@ -105,4 +110,5 @@ der Überprüfung.
 
 - Arbeite **nur** im aktuellen Fach-Ordner; gehe nicht in andere Fächer.
 - Erfinde keinen Stoff, der nicht zur Vorlesung passt – im Zweifel an den Materialien orientieren.
-- Du darfst Hilfsdateien (`.tex`, `.aux`, `.log`) erzeugen, aber **nur innerhalb von `output/`**.
+- Du darfst Hilfsdateien (`.tex`, `.aux`, `.log`) erzeugen, aber **nur innerhalb von `output/aufgaben/`
+  und `results/aufgaben/`**.

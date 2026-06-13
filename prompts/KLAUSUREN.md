@@ -12,11 +12,13 @@
 
 - **Verändere, verschiebe oder lösche KEINE vorhandenen Dateien oder Ordner.** Alle bestehenden
   Materialien werden **nur gelesen**.
-- Du darfst **ausschließlich** einen **neuen** Ordner `output/` im aktuellen Fach-Ordner anlegen und
-  **nur dort hinein** schreiben.
-- Schreibe nichts außerhalb von `output/`. Insbesondere **nicht** in den vorhandenen Ordner
-  `probeklausuren/` – dieser wird nur gelesen.
-- Wenn `output/` schon existiert: bestehende Dateien darin **nicht überschreiben**, sondern
+- Du darfst **ausschließlich** in deine **eigenen** Unterordner schreiben (bei Bedarf neu anlegen):
+  - `output/klausuren/` → die **Probeklausur zum Ausfüllen** (ohne Lösung).
+  - `results/klausuren/` → die **Musterlösung / Ergebnisse**.
+- Bleibe in diesen beiden Unterordnern. Schreibe in **keine** anderen Ordner (auch nicht in
+  `output/aufgaben/`, `output/erklaerung/` o. Ä. – die gehören anderen Prompts) und insbesondere **nicht**
+  in den vorhandenen Ordner `probeklausuren/` – dieser wird nur gelesen.
+- Wenn die Ordner schon existieren: bestehende Dateien darin **nicht überschreiben**, sondern
   fortlaufend weiternummerieren.
 
 ---
@@ -68,34 +70,36 @@ Zeitvorgabe wie die echte Klausur.
 
 ### Schritt 5 – Als PDF erzeugen
 
-Erzeuge **zwei** PDFs im Ordner `output/probeklausuren/` (Ordner bei Bedarf neu anlegen):
+Erzeuge **zwei** PDFs in **getrennten** Ordnern:
 
-1. **`probeklausur_<NN>.pdf`** – die Klausur mit Kopf (**Name**, **Datum**, **Bearbeitungszeit**,
-   **Gesamtpunkte**, **Hilfsmittel**) und **großzügigem Platz zum handschriftlichen Ausfüllen** nach
-   jeder Aufgabe.
-2. **`probeklausur_<NN>_loesung.pdf`** – die vollständigen Musterlösungen.
+1. **`output/klausuren/probeklausur_<NN>.pdf`** – die Klausur mit Kopf (**Name**, **Datum**,
+   **Bearbeitungszeit**, **Gesamtpunkte**, **Hilfsmittel**) und **großzügigem Platz zum handschriftlichen
+   Ausfüllen** nach jeder Aufgabe.
+2. **`results/klausuren/probeklausur_<NN>_loesung.pdf`** – die vollständigen Musterlösungen.
 
 `<NN>` ist eine fortlaufende Nummer (`01`, `02`, …); **nie eine vorhandene Datei überschreiben**.
 
 **Vorgehen zur PDF-Erzeugung:**
 
-1. Schreibe je ein LaTeX-Dokument (`probeklausur_<NN>.tex`, `probeklausur_<NN>_loesung.tex`) nach
-   `output/probeklausuren/`.
+1. Schreibe das Klausur-Dokument `probeklausur_<NN>.tex` nach `output/klausuren/` und das Lösungs-Dokument
+   `probeklausur_<NN>_loesung.tex` nach `results/klausuren/`.
    - `\documentclass[a4paper,11pt]{article}`, `amsmath`, `amssymb`.
    - Umlaute: bei **xelatex** `\usepackage{fontspec}`; bei **pdflatex** `\usepackage[utf8]{inputenc}`,
      `\usepackage[T1]{fontenc}`, `\usepackage[ngerman]{babel}`.
    - Kopf der Klausur mit Feldern Name/Datum und der Tabelle Aufgabe → Punkte (zum Eintragen).
 2. **Platz zum Ausfüllen**: nach jeder Aufgabe abhängig von Punkten/Aufwand Leerraum lassen
    (`\vspace{...}`, mehr Platz bei mehr Punkten); bei Multiple-Choice die Ankreuzkästchen einbauen.
-3. Kompiliere mit **xelatex** (bevorzugt), sonst **pdflatex**:
-   `xelatex -interaction=nonstopmode -output-directory=output/probeklausuren probeklausur_<NN>.tex`
+3. Kompiliere mit **xelatex** (bevorzugt), sonst **pdflatex**, jeweils in den passenden Ordner:
+   `xelatex -interaction=nonstopmode -output-directory=output/klausuren probeklausur_<NN>.tex`
+   und `xelatex -interaction=nonstopmode -output-directory=results/klausuren probeklausur_<NN>_loesung.tex`
    (zweimal laufen lassen, falls Referenzen). Bei Fehlern Log lesen, `.tex` korrigieren, neu kompilieren.
 4. Mathematik konsequent in LaTeX-Mathematikumgebungen setzen.
 
 ### Schritt 6 – Überprüfen (Pflicht)
 
-1. **PDF-Check:** Bestätige, dass `probeklausur_<NN>.pdf` und `probeklausur_<NN>_loesung.pdf` existieren,
-   fehlerfrei kompiliert wurden und Seitenzahl > 0 haben.
+1. **PDF-Check:** Bestätige, dass `output/klausuren/probeklausur_<NN>.pdf` und
+   `results/klausuren/probeklausur_<NN>_loesung.pdf` existieren, fehlerfrei kompiliert wurden und
+   Seitenzahl > 0 haben.
 2. **Inhaltliche Prüfung:** Rechne **jede** Musterlösung unabhängig nach bzw. überprüfe jeden Beweis.
    Korrigiere Fehler in der `.tex`-Datei und kompiliere neu, bis alle Lösungen korrekt sind.
 3. **Format-Check:** Punktesumme stimmt mit der angegebenen Gesamtpunktzahl überein; die Klausur ist in der
@@ -112,4 +116,5 @@ erzeugte Dateien (mit Pfad) und das Ergebnis der Überprüfung.
 
 - Arbeite **nur** im aktuellen Fach-Ordner; gehe nicht in andere Fächer.
 - Erfinde keinen Stoff, der nicht zur Vorlesung passt – im Zweifel an den Materialien orientieren.
-- Du darfst Hilfsdateien (`.tex`, `.aux`, `.log`) erzeugen, aber **nur innerhalb von `output/`**.
+- Du darfst Hilfsdateien (`.tex`, `.aux`, `.log`) erzeugen, aber **nur innerhalb von `output/klausuren/`
+  und `results/klausuren/`**.
