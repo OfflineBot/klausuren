@@ -18,7 +18,7 @@
 - Bleibe in diesen beiden Unterordnern. Schreibe in **keine** anderen Ordner (auch nicht in
   `output/klausuren/`, `output/erklaerung/` o. Ä. – die gehören anderen Prompts) und in keine
   vorhandenen Materialordner (`vorlesungs_materialien/`, `andere_materialien/`, `openbook/`,
-  `übungen/`, `probeklausuren/` …).
+  `übungen/`, `probeklausuren/`, `anmerkung/` …).
 - Wenn die Ordner schon existieren: bestehende Dateien darin **nicht überschreiben**, sondern
   fortlaufend weiternummerieren.
 
@@ -33,6 +33,17 @@ liegen und vollständig korrekt gelöst sein.
 ---
 
 ## Ablauf
+
+### Schritt 0 – Anmerkungen lesen (Pflicht, nur lesen)
+
+1. Lies die Datei `anmerkung/anmerkung.md` im aktuellen Fach-Ordner **vollständig** (falls vorhanden).
+2. Werte die drei Abschnitte aus und **berücksichtige sie verbindlich** bei allem Folgenden:
+   - **`# Kommt nicht dran:`** – diese Themen **komplett weglassen**: keine Aufgaben dazu erstellen.
+   - **`# Zusätzlich:`** – diese Punkte **zusätzlich aufnehmen** bzw. stärker gewichten, auch wenn sie im
+     Material untergeordnet wirken.
+   - **`# Anmerkung:`** – allgemeine Hinweise/Wünsche zum Output **beachten und umsetzen**.
+3. Leere Abschnitte einfach überspringen. Die Anmerkungen haben **Vorrang** vor der reinen Materiallage
+   (z. B. „kommt nicht dran“ schlägt ein häufiges Vorkommen im Material).
 
 ### Schritt 1 – Vorlesungsmaterialien analysieren (nur lesen)
 
@@ -62,6 +73,8 @@ liegen und vollständig korrekt gelöst sein.
 - Schwierigkeit mischen und kennzeichnen: **leicht / mittel / schwer**.
 - **Gleiche Notation und Fachsprache** wie in der Vorlesung.
 - **Keine Kopien** – eigenständige, neue Varianten.
+- **Anmerkungen aus Schritt 0 einhalten:** „Kommt nicht dran“-Themen ausschließen, „Zusätzlich“-Punkte
+  einbauen, „Anmerkung“-Hinweise berücksichtigen.
 - Zu **jeder** Aufgabe eine vollständige, nachvollziehbare **Musterlösung** mit allen Schritten.
 
 ### Schritt 5 – Als PDF erzeugen
@@ -107,6 +120,14 @@ Erzeuge **zwei** PDFs in **getrennten** Ordnern:
    ```
    Verwende nach jeder Aufgabe `\karo{5cm}` (Höhe je nach Aufwand anpassen), Karo-Schrittweite ca. 5 mm.
    Kopfzeile mit Feldern **Name** und **Datum**.
+3. **Seitenlayout – jede Aufgabe auf eigener Seite (Pflicht):** **Genug Platz zum Ausfüllen ist wichtig.**
+   Jede **Hauptüberschrift / jede Aufgabe beginnt auf einer neuen Seite** (vor jeder Aufgabe ein
+   `\clearpage`, danach die Überschrift und der Karo-Ausfüllbereich). So wird **nie** eine Aufgabe unten
+   auf einer Seite begonnen und auf der nächsten fortgesetzt, und es entsteht **nicht** der Fall, dass auf
+   einer Seite eine Aufgabe steht, darunter schon die nächste Überschrift und der eigentliche Inhalt erst
+   auf der Folgeseite. Eine Überschrift darf **nie** allein/ohne ihren Karo-Bereich am Seitenende stehen.
+   Bei mehrteiligen Aufgaben (a), b), c) …): pro Teilaufgabe genug Karo-Platz; reicht eine Seite nicht,
+   die Teilaufgabe sauber auf der nächsten Seite fortsetzen, ohne eine andere Aufgabe anzuschneiden.
 3. Kompiliere mit **xelatex** (bevorzugt wegen Umlauten), sonst **pdflatex**, jeweils in den passenden Ordner:
    `xelatex -interaction=nonstopmode -output-directory=output/aufgaben aufgaben_<NN>.tex`
    und `xelatex -interaction=nonstopmode -output-directory=results/aufgaben loesungen_<NN>.tex`
@@ -121,6 +142,8 @@ Erzeuge **zwei** PDFs in **getrennten** Ordnern:
    Korrigiere Fehler in der `.tex`-Datei und kompiliere neu, bis alle Lösungen korrekt sind.
 3. **Konsistenz:** Jede Aufgabe im Aufgaben-PDF hat genau eine Lösung im Lösungs-PDF; Nummerierung passt;
    Notation entspricht der Vorlesung.
+4. **Anmerkungs-Check:** Kein „Kommt nicht dran“-Thema kommt vor; alle „Zusätzlich“-Punkte sind abgedeckt;
+   die „Anmerkung“-Hinweise sind umgesetzt.
 
 ### Schritt 7 – Zusammenfassung ausgeben
 

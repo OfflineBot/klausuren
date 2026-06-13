@@ -1,0 +1,189 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}
+\geometry{margin=2.0cm}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{titlesec}
+
+\definecolor{base}{HTML}{1E1E2E}
+\definecolor{fg}{HTML}{CDD6F4}
+\definecolor{accent}{HTML}{89B4FA}
+\definecolor{accent2}{HTML}{F5C2E7}
+\definecolor{gridcolor}{HTML}{45475A}
+\pagecolor{base}
+\makeatletter
+\newenvironment{psmallmatrix}{\left(\begin{smallmatrix}}{\end{smallmatrix}\right)}
+\makeatother
+
+\newcommand{\transp}{^{\mathsf{T}}}
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+\newcommand{\inner}[2]{\left\langle #1,\, #2 \right\rangle}
+\newcommand{\rang}{\operatorname{rang}}
+\newcommand{\spur}{\operatorname{spur}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\schwierig}[1]{\hfill\textnormal{\color{accent2}\itshape (#1)}}
+
+\newcommand{\karo}[1]{\par\vspace{0.3cm}\noindent
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcolor, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par\vspace{0.3cm}}
+
+\titleformat{\section}{\color{accent}\normalfont\Large\bfseries}{}{0pt}{}
+
+\pagestyle{fancy}\fancyhf{}
+\lhead{\color{fg}\small Fortgeschrittene Lineare Algebra und Analytische Geometrie}
+\rhead{\color{fg}\small Übungsblatt 03}
+\cfoot{\color{fg}\thepage}
+\renewcommand{\headrule}{{\color{gridcolor}\hrule height 0.4pt}}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+\color{fg}
+\thispagestyle{fancy}
+
+\begin{center}
+  {\color{accent}\LARGE\bfseries Übungsblatt 03 -- restliche Vorlesungsthemen}\\[0.4em]
+  {\large Fortgeschrittene Lineare Algebra und Analytische Geometrie}\\[0.8em]
+\end{center}
+
+\noindent
+\begin{tabular}{@{}p{0.6\textwidth}p{0.35\textwidth}@{}}
+  \textbf{Name:} \textcolor{fg}{\hrulefill} & \textbf{Datum:} \textcolor{fg}{\hrulefill}
+\end{tabular}
+
+\vspace{0.4em}{\color{gridcolor}\hrule}\vspace{0.6em}
+
+\textit{Dieses Blatt deckt die Aufgabentypen ab, die in der Vorlesung/Open-Book vorkommen,
+aber auf Blatt 01/02 noch fehlten: Matrixpotenzen, vier Unterräume, Inneres-Produkt-Nachweis,
+Rechenregel-Beweise, Rang-1, PCA, trennende Hyperebene/Margin, Rang-$k$-Näherung (LoRA),
+$p$-Norm/Mahalanobis.}
+
+\vspace{0.8em}
+
+%==================================================================
+\section*{Aufgabe 1 -- Matrixpotenz über Diagonalisierung\schwierig{mittel}}
+Gegeben sei
+\[
+  A = \begin{pmatrix} 1 & 2 \\ 2 & 1 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie Eigenwerte und Eigenvektoren sowie $S$ und $D$ mit $A = SDS^{-1}$.
+  \item Leiten Sie eine allgemeine Formel für $A^{k}$ her ($A^k = SD^kS^{-1}$).
+  \item Berechnen Sie damit $A^{3}$.
+\end{enumerate}
+\karo{8cm}
+
+%==================================================================
+\section*{Aufgabe 2 -- Die vier Unterräume\schwierig{schwer}}
+Gegeben sei
+\[
+  A = \begin{pmatrix} 1 & 2 & 3 \\ 2 & 4 & 7 \\ 1 & 2 & 4 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Bringen Sie $A$ auf reduzierte Zeilenstufenform und bestimmen Sie den Rang $r$.
+  \item Geben Sie die CR-Zerlegung an.
+  \item Geben Sie die Dimensionen der vier Unterräume an
+        ($\dim C(A),\ \dim C(A\transp),\ \dim N(A),\ \dim N(A\transp)$).
+  \item Bestimmen Sie eine Basis des Nullraums $N(A)$.
+\end{enumerate}
+\karo{8.5cm}
+
+%==================================================================
+\section*{Aufgabe 3 -- Inneres-Produkt-Nachweis\schwierig{mittel}}
+Für eine symmetrische Matrix $A$ ist $\inner{\vec x}{\vec y} := \vec x\transp A\vec y$ genau
+dann ein inneres Produkt, wenn $A$ symmetrisch \emph{und} positiv definit ist.
+\begin{enumerate}[label=\alph*)]
+  \item Ist $\inner{\vec x}{\vec y} = \vec x\transp A\vec y$ mit
+        $A = \begin{psmallmatrix}2&1\\1&2\end{psmallmatrix}$ ein inneres Produkt? Begründen Sie.
+  \item Untersuchen Sie dieselbe Frage für $A = \begin{psmallmatrix}1&2\\2&1\end{psmallmatrix}$.
+        Geben Sie ggf.\ einen Vektor $\vec x$ mit $\vec x\transp A\vec x < 0$ an.
+  \item Berechnen Sie mit dem gültigen inneren Produkt aus a) den Wert
+        $\inner{\vec u}{\vec v}$ und die Norm $\norm{\vec u}$ für
+        $\vec u=(1,0)\transp$, $\vec v=(0,1)\transp$.
+\end{enumerate}
+\karo{7.5cm}
+
+%==================================================================
+\section*{Aufgabe 4 -- Rechenregeln \& Symmetrie beweisen\schwierig{mittel}}
+\begin{enumerate}[label=\alph*)]
+  \item Zeigen Sie, dass $B\transp B$ für jede Matrix $B$ symmetrisch ist.
+  \item Vereinfachen Sie $\big((A\transp)^{-1}\big)\transp$ (für invertierbares $A$).
+  \item Sei $A$ symmetrisch und $Q$ orthogonal. Zeigen Sie, dass $Q\transp A Q$ symmetrisch ist.
+\end{enumerate}
+\karo{7.5cm}
+
+%==================================================================
+\section*{Aufgabe 5 -- Rang-1-Matrix\schwierig{leicht}}
+Gegeben sei
+\[
+  M = \begin{pmatrix} 2 & 4 & 6 \\ 1 & 2 & 3 \\ 3 & 6 & 9 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Begründen Sie, dass $M$ den Rang $1$ hat.
+  \item Schreiben Sie $M = \vec u\,\vec v\transp$ (äußeres Produkt).
+  \item Wie viele Singulärwerte $\ne 0$ hat $M$, und wie groß ist der größte?
+\end{enumerate}
+\karo{7cm}
+
+%==================================================================
+\section*{Aufgabe 6 -- PCA\schwierig{schwer}}
+Gegeben seien die Datenpunkte (Zeilen)
+\[
+  (4,5),\quad (5,4),\quad (2,1),\quad (1,2).
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Zentrieren Sie die Daten (Spaltenmittel abziehen).
+  \item Bestimmen Sie die Kovarianzmatrix $C = \tfrac{1}{n-1}A_c\transp A_c$.
+  \item Bestimmen Sie die erste Hauptkomponente (Eigenvektor zum größten Eigenwert).
+  \item Welcher Anteil der Varianz wird durch PC1 erklärt?
+\end{enumerate}
+\karo{8.5cm}
+
+%==================================================================
+\section*{Aufgabe 7 -- Trennende Hyperebene \& Margin\schwierig{schwer}}
+Zwei Klassen von Punkten:
+\[
+  \text{Klasse } A:\ (3,3),(3,1),\qquad \text{Klasse } B:\ (-1,1),(-1,-1).
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie $\vec n$ (Richtung zwischen den Klassenmitteln) und
+        $b = -\vec n\transp\vec m$ (mit Mittelpunkt $\vec m$).
+  \item Geben Sie die Ebenengleichung $\vec n\transp\vec x + b = 0$ an.
+  \item Klassifizieren Sie den Testpunkt $p = (2,0)\transp$ über das Vorzeichen von
+        $w = \vec n\transp p + b$.
+  \item Bestimmen Sie den Margin (kleinster Abstand eines Punktes zur Ebene).
+\end{enumerate}
+\karo{8.5cm}
+
+%==================================================================
+\section*{Aufgabe 8 -- Beste Rang-1-Näherung (LoRA)\schwierig{schwer}}
+Gegeben sei $A = \begin{psmallmatrix}3&0\\0&4\\0&0\end{psmallmatrix}$ mit der SVD
+$\sigma_1 = 4$ ($\vec u_1=(0,1,0)\transp,\ \vec v_1=(0,1)\transp$),
+$\sigma_2 = 3$ ($\vec u_2=(1,0,0)\transp,\ \vec v_2=(1,0)\transp$).
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie die beste Rang-1-Näherung $A_1 = \sigma_1\,\vec u_1\vec v_1\transp$.
+  \item Wie groß ist der Approximationsfehler $\norm{A - A_1}_2$?
+  \item Wie viele Zahlen muss man für $A_1$ speichern (statt $m\cdot n$)?
+\end{enumerate}
+\karo{7cm}
+
+%==================================================================
+\section*{Aufgabe 9 -- $p$-Norm, Mahalanobis, Metrik\schwierig{mittel}}
+\begin{enumerate}[label=\alph*)]
+  \item Für $\vec x = (1,-2,2)\transp$: berechnen Sie $\norm{\vec x}_1$, $\norm{\vec x}_2$,
+        $\norm{\vec x}_\infty$ und geben Sie $\norm{\vec x}_3$ als Term an.
+  \item Berechnen Sie den Mahalanobis-Abstand $\sqrt{\vec x\transp\Sigma^{-1}\vec x}$ für
+        $\vec x=(2,0)\transp$, $\Sigma = \begin{psmallmatrix}4&0\\0&1\end{psmallmatrix}$.
+  \item Bestimmen Sie $d(\vec x,\vec y)=\norm{\vec x-\vec y}$ für
+        $\vec x=(1,2,2)\transp$, $\vec y=(0,0,1)\transp$.
+\end{enumerate}
+\karo{7cm}
+
+\end{document}

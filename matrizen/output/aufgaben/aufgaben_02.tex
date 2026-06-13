@@ -1,0 +1,294 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}
+\geometry{margin=2.0cm}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{titlesec}
+
+%================= Dark-Mode Farben (Catppuccin Mocha) =================
+\definecolor{base}{HTML}{1E1E2E}
+\definecolor{fg}{HTML}{CDD6F4}
+\definecolor{accent}{HTML}{89B4FA}
+\definecolor{accent2}{HTML}{F5C2E7}
+\definecolor{gridcolor}{HTML}{45475A}
+\pagecolor{base}
+
+\newcommand{\transp}{^{\mathsf{T}}}
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+\newcommand{\inner}[2]{\left\langle #1,\, #2 \right\rangle}
+\newcommand{\rang}{\operatorname{rang}}
+\newcommand{\spur}{\operatorname{spur}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\schwierig}[1]{\hfill\textnormal{\color{accent2}\itshape (#1)}}
+
+% Karierte Antwortfläche (Karopapier)
+\newcommand{\karo}[1]{\par\vspace{0.3cm}\noindent
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcolor, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par\vspace{0.3cm}}
+
+\titleformat{\section}{\color{accent}\normalfont\Large\bfseries}{}{0pt}{}
+
+\pagestyle{fancy}\fancyhf{}
+\lhead{\color{fg}\small Fortgeschrittene Lineare Algebra und Analytische Geometrie}
+\rhead{\color{fg}\small Übungsblatt 02}
+\cfoot{\color{fg}\thepage}
+\renewcommand{\headrule}{{\color{gridcolor}\hrule height 0.4pt}}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+\color{fg}
+\thispagestyle{fancy}
+
+\begin{center}
+  {\color{accent}\LARGE\bfseries Übungsblatt 02 -- gezielt gegen deine Fehler}\\[0.4em]
+  {\large Fortgeschrittene Lineare Algebra und Analytische Geometrie}\\[0.8em]
+\end{center}
+
+\noindent
+\begin{tabular}{@{}p{0.6\textwidth}p{0.35\textwidth}@{}}
+  \textbf{Name:} \textcolor{fg}{\hrulefill} & \textbf{Datum:} \textcolor{fg}{\hrulefill}
+\end{tabular}
+
+\vspace{0.4em}{\color{gridcolor}\hrule}\vspace{0.6em}
+
+\textit{Dieses Blatt übt genau die Themen, bei denen es auf Blatt 01 hakte:
+Definitheit, Diagonalisierbarkeit, SVD-Aufbau, Cholesky, Matrixinverse, Abstand,
+saubere Gauß-Elimination, Finite Differenzen und Regression. Begleitend:
+\texttt{output/erklaerung/erklaerung\_01.pdf}.}
+
+\vspace{0.8em}
+
+%==================================================================
+\section*{Aufgabe 1 -- Quickies (Wahr oder Falsch)\schwierig{leicht}}
+Begründe jeweils kurz.
+\begin{enumerate}[label=\alph*)]
+  \item Eine positiv definite Matrix kann einen Eigenwert $\le 0$ besitzen.
+  \item Die Eigenwertzerlegung $A = S\Lambda S^{-1}$ existiert für \emph{jede} quadratische Matrix.
+  \item Eine Hyperebene mit $n_0 = 0$ (durch den Ursprung) ist ein Untervektorraum.
+  \item In der SVD $A = U\Sigma V\transp$ einer $3\times 2$-Matrix ist $\Sigma$ eine $3\times 2$-Matrix.
+  \item Die Spalten von $V$ (aus der SVD) sind die Eigenvektoren von $A\transp A$.
+  \item Bei der Cholesky-Zerlegung teilt man zur Bestimmung von $\ell_{ij}$ durch $a_{jj}$.
+\end{enumerate}
+\karo{5.5cm}
+
+%==================================================================
+\section*{Aufgabe 2 -- Definitheit\schwierig{mittel}}
+Gegeben sei
+\[
+  A = \begin{pmatrix} 2 & 1 & 0 \\ 1 & 2 & 1 \\ 0 & 1 & 2 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie die führenden Hauptminoren $\Delta_1,\Delta_2,\Delta_3$ und entscheiden
+        Sie über die Definitheit.
+  \item Bestimmen Sie die Eigenwerte und bestätigen Sie das Ergebnis. Welche \emph{Einträge}
+        von $A$ sind negativ -- spielt das für die Definitheit eine Rolle?
+\end{enumerate}
+\karo{7cm}
+
+%==================================================================
+\section*{Aufgabe 3 -- Matrixinverse\schwierig{mittel}}
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie mit der $2\times2$-Formel die Inverse von
+        $B = \begin{pmatrix} 3 & 5 \\ 1 & 2 \end{pmatrix}$.
+  \item Bestimmen Sie die Inverse von
+        $A = \begin{pmatrix} 1 & 2 & 0 \\ 0 & 1 & 2 \\ 0 & 0 & 1 \end{pmatrix}$
+        mit dem Gauß-Jordan-Verfahren $(A\mid E)\to(E\mid A^{-1})$.
+\end{enumerate}
+\karo{8cm}
+
+%==================================================================
+\section*{Aufgabe 4 -- Cholesky-Zerlegung\schwierig{mittel}}
+Gegeben sei
+\[
+  A = \begin{pmatrix} 9 & 3 & 6 \\ 3 & 5 & 4 \\ 6 & 4 & 9 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Zeigen Sie mit den führenden Hauptminoren, dass $A$ positiv definit ist.
+  \item Bestimmen Sie $L$ mit $A = LL\transp$. \emph{Achten Sie darauf, durch $\ell_{jj}$
+        (nicht durch $a_{jj}$) zu teilen.}
+\end{enumerate}
+\karo{7.5cm}
+
+%==================================================================
+\section*{Aufgabe 5 -- LU-Zerlegung und LGS\schwierig{mittel}}
+Gegeben seien
+\[
+  A = \begin{pmatrix} 1 & 2 & 1 \\ 2 & 5 & 3 \\ 3 & 8 & 7 \end{pmatrix},\qquad
+  b = \begin{pmatrix} 4 \\ 10 \\ 18 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie $L$ und $U$ mit $A = LU$ (rechnen Sie die Vorzeichen sauber!).
+  \item Bestimmen Sie $\det(A)$.
+  \item Lösen Sie $A\vec{x} = b$ über $L\vec{y}=b$ (vorwärts) und $U\vec{x}=\vec{y}$ (rückwärts).
+  \item Bestimmen Sie $A^{-1}$ \emph{über die LU-Zerlegung}: löse $A\vec{x}_i = \vec{e}_i$
+        spaltenweise (jeweils $L\vec{y}=\vec{e}_i$ vorwärts, dann $U\vec{x}_i=\vec{y}$ rückwärts).
+\end{enumerate}
+\karo{10.5cm}
+
+%==================================================================
+\section*{Aufgabe 6 -- SVD\schwierig{schwer}}
+Gegeben sei
+\[
+  A = \begin{pmatrix} 3 & 0 \\ 0 & 4 \\ 0 & 0 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Berechnen Sie $A\transp A$ und die Singulärwerte (absteigend).
+  \item Bestimmen Sie $V$, $\Sigma$ und $U$. Achten Sie auf die \emph{Dimensionen}
+        ($U$: $3\times3$, $\Sigma$: $3\times2$, $V$: $2\times2$).
+  \item Bestätigen Sie $U\Sigma V\transp = A$.
+\end{enumerate}
+\karo{8.5cm}
+
+%==================================================================
+\section*{Aufgabe 7 -- Eigenwerte und Diagonalisierung\schwierig{mittel}}
+Gegeben sei
+\[
+  A = \begin{pmatrix} 0 & 1 \\ -2 & 3 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie Eigenwerte und Eigenvektoren.
+  \item Geben Sie $V$, $D$ mit $A = VDV^{-1}$ an und berechnen Sie $V^{-1}$ (vollständig!).
+  \item Überprüfen Sie $\spur(A) = \sum_i\lambda_i$ und $\det(A) = \prod_i\lambda_i$.
+\end{enumerate}
+\karo{8cm}
+
+%==================================================================
+\section*{Aufgabe 8 -- Spektralzerlegung\schwierig{schwer}}
+Gegeben sei die symmetrische Matrix
+\[
+  A = \begin{pmatrix} 3 & 1 \\ 1 & 3 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie die Eigenwerte und eine \emph{orthonormale} Eigenvektorbasis.
+  \item Geben Sie $A = Q\Lambda Q\transp$ an.
+  \item Berechnen Sie $A^{-1} = Q\Lambda^{-1}Q\transp$.
+\end{enumerate}
+\karo{8cm}
+
+%==================================================================
+\section*{Aufgabe 9 -- Hyperebenen\schwierig{mittel}}
+Gegeben sei die Ebene
+\[
+  E:\quad 2x_1 + 2x_2 + x_3 = 4 .
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Geben Sie $\vec{n}$ und die Dimension von $E$ an. Verläuft $E$ durch den Ursprung?
+  \item Liegt $p = (2,2,2)\transp$ auf $E$?
+  \item Berechnen Sie den Abstand $d$ \emph{mit dem Konstantenterm} und bestimmen Sie, auf
+        welcher Seite $p$ liegt ($\operatorname{sign}$).
+\end{enumerate}
+\karo{6.5cm}
+
+%==================================================================
+\section*{Aufgabe 10 -- Finite Differenzen\schwierig{schwer}}
+Gegeben sei
+\[
+  -u''(x) = 12 ,\qquad u(0) = u(1) = 0 ,
+\]
+mit $x_1=0{,}25,\ x_2=0{,}5,\ x_3=0{,}75$ ($h=0{,}25$).
+\begin{enumerate}[label=\alph*)]
+  \item Leiten Sie das LGS $A\vec{u} = \vec{b}$ her (mit dem zentralen Differenzenquotienten).
+  \item Welche vier strukturellen Eigenschaften hat $A$?
+  \item Lösen Sie das System ($u_1,u_2,u_3$).
+\end{enumerate}
+\karo{8.5cm}
+
+%==================================================================
+\section*{Aufgabe 11 -- Lineare Regression\schwierig{schwer}}
+Zu den Datenpunkten $(x,y)\in\{(1,2),\,(2,3),\,(3,5)\}$ soll die Ausgleichsgerade
+$y = c_0 + c_1 x$ bestimmt werden.
+\begin{enumerate}[label=\alph*)]
+  \item Stellen Sie $X$ und $\vec{y}$ auf und notieren Sie $X\transp X\,\vec{c} = X\transp\vec{y}$.
+  \item Lösen Sie nach $\vec{c}$ auf ($\vec{c} = (X\transp X)^{-1}X\transp\vec{y}$).
+  \item Geben Sie die Geradengleichung an.
+\end{enumerate}
+\karo{8cm}
+
+%==================================================================
+\section*{Aufgabe 12 -- Skalarprodukt, Orthogonalität, Winkel\schwierig{leicht}}
+\begin{enumerate}[label=\alph*)]
+  \item Sind $\vec{u} = (2,1,-2)\transp$ und $\vec{v} = (1,2,2)\transp$ orthogonal?
+  \item Bestimmen Sie den Winkel $\alpha$ zwischen $\vec{a} = (1,1,0)\transp$ und
+        $\vec{b} = (0,1,1)\transp$.
+  \item Für welches $t\in\mathbb{R}$ stehen $(1,t,2)\transp$ und $(3,-2,1)\transp$ senkrecht?
+\end{enumerate}
+\karo{6.5cm}
+
+%==================================================================
+\section*{Aufgabe 13 -- CR-Zerlegung\schwierig{mittel}}
+Gegeben sei
+\[
+  A = \begin{pmatrix} 1 & 2 & 3 \\ 2 & 5 & 7 \\ 1 & 3 & 4 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Bringen Sie $A$ auf reduzierte Zeilenstufenform (\emph{Vorzeichen sauber!}) und
+        bestimmen Sie den Rang.
+  \item Geben Sie eine Basis des Spaltenraums an.
+  \item Bestimmen Sie die CR-Zerlegung $A = CR$ und machen Sie die Probe $CR=A$.
+\end{enumerate}
+\karo{7.5cm}
+
+%==================================================================
+\section*{Aufgabe 14 -- QR-Zerlegung\schwierig{mittel}}
+Gegeben seien
+\[
+  Q = \frac{1}{5}\begin{pmatrix} 4 & -3 \\ 3 & 4 \end{pmatrix},\qquad
+  R = \begin{pmatrix} 5 & 5 \\ 0 & 10 \end{pmatrix},\qquad
+  A = QR,\qquad
+  b = \begin{pmatrix} 2 \\ 14 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Weisen Sie nach, dass $Q$ orthogonal ist, und \emph{rechnen Sie $A = QR$ aus}.
+  \item Lösen Sie $A\vec{x} = b$ mithilfe der QR-Zerlegung ($R\vec{x} = Q\transp b$).
+  \item Bestimmen Sie $Q^{-1}$.
+\end{enumerate}
+\karo{7.5cm}
+
+%==================================================================
+\section*{Aufgabe 15 -- Finite Differenzen II (feineres Gitter)\schwierig{schwer}}
+Gegeben sei
+\[
+  -u''(x) = 10 ,\qquad u(0) = u(1) = 0 ,
+\]
+diesmal mit \textbf{vier} inneren Gitterpunkten $x_i = \tfrac{i}{5}$ ($i=1,\dots,4$,
+also $h = \tfrac15$).
+\begin{enumerate}[label=\alph*)]
+  \item Stellen Sie das LGS $A\vec{u} = \vec{b}$ auf ($A$ ist jetzt $4\times4$).
+  \item Lösen Sie das System (Tipp: nutzen Sie die Symmetrie $u_1=u_4,\ u_2=u_3$).
+\end{enumerate}
+\karo{8.5cm}
+
+%==================================================================
+\section*{Aufgabe 16 -- Finite Differenzen III (nicht-konstante rechte Seite)\schwierig{schwer}}
+\begin{enumerate}[label=\alph*)]
+  \item Geben Sie die Differenzenquotienten für $u'(x)$ (vorwärts, rückwärts, zentral)
+        und für $u''(x)$ (zentral) an.
+  \item Gegeben $-u''(x) = 24x$, $u(0)=u(1)=0$, mit $x_1=0{,}25,\,x_2=0{,}5,\,x_3=0{,}75$
+        ($h=0{,}25$). Stellen Sie $A\vec{u}=\vec{b}$ auf (beachten Sie: die rechte Seite
+        $h^2 f_i$ hängt jetzt von $x_i$ ab, ist also \emph{nicht} konstant).
+  \item Lösen Sie das System ($u_1,u_2,u_3$). Ist es noch symmetrisch in $u_1,u_3$? Warum?
+\end{enumerate}
+\karo{9cm}
+
+%==================================================================
+\section*{Aufgabe 17 -- Pseudoinverse\schwierig{mittel}}
+Gegeben sei die Matrix mit vollem Spaltenrang
+\[
+  A = \begin{pmatrix} 1 & 0 \\ 1 & 1 \\ 1 & 2 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Berechnen Sie $A\transp A$ und $(A\transp A)^{-1}$.
+  \item Bestimmen Sie die Moore-Penrose-Pseudoinverse $A^{+} = (A\transp A)^{-1}A\transp$.
+  \item Verifizieren Sie $A^{+}A = E$.
+\end{enumerate}
+\karo{7.5cm}
+
+\end{document}

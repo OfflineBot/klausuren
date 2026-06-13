@@ -17,7 +17,7 @@
   - `results/klausuren/` → die **Musterlösung / Ergebnisse**.
 - Bleibe in diesen beiden Unterordnern. Schreibe in **keine** anderen Ordner (auch nicht in
   `output/aufgaben/`, `output/erklaerung/` o. Ä. – die gehören anderen Prompts) und insbesondere **nicht**
-  in den vorhandenen Ordner `probeklausuren/` – dieser wird nur gelesen.
+  in den vorhandenen Ordner `probeklausuren/` – dieser wird nur gelesen. Auch `anmerkung/` wird **nur gelesen**.
 - Wenn die Ordner schon existieren: bestehende Dateien darin **nicht überschreiben**, sondern
   fortlaufend weiternummerieren.
 
@@ -32,6 +32,17 @@ Zeitvorgabe wie die echte Klausur.
 ---
 
 ## Ablauf
+
+### Schritt 0 – Anmerkungen lesen (Pflicht, nur lesen)
+
+1. Lies die Datei `anmerkung/anmerkung.md` im aktuellen Fach-Ordner **vollständig** (falls vorhanden).
+2. Werte die drei Abschnitte aus und **berücksichtige sie verbindlich** bei allem Folgenden:
+   - **`# Kommt nicht dran:`** – diese Themen **komplett weglassen**: keine Aufgaben dazu in die Klausur.
+   - **`# Zusätzlich:`** – diese Punkte **zusätzlich aufnehmen** bzw. stärker gewichten, auch wenn sie im
+     Material untergeordnet wirken.
+   - **`# Anmerkung:`** – allgemeine Hinweise/Wünsche zum Output **beachten und umsetzen**.
+3. Leere Abschnitte einfach überspringen. Die Anmerkungen haben **Vorrang** vor der reinen Materiallage
+   (z. B. „kommt nicht dran“ schlägt ein häufiges Vorkommen im Material).
 
 ### Schritt 1 – Probeklausuren analysieren (nur lesen)
 
@@ -63,6 +74,8 @@ Zeitvorgabe wie die echte Klausur.
 - **Gleiche Gesamtpunktzahl und Punkteverteilung**; jede Aufgabe mit Punktangabe.
 - **Zeitvorgabe** übernehmen (falls bekannt).
 - **Repräsentative Themenabdeckung** über den klausurrelevanten Stoff – nicht nur ein Thema.
+- **Anmerkungen aus Schritt 0 einhalten:** „Kommt nicht dran“-Themen ausschließen, „Zusätzlich“-Punkte
+  einbauen, „Anmerkung“-Hinweise berücksichtigen.
 - **Gleiche Notation und Fachsprache** wie in der Vorlesung.
 - **Keine Kopien** – eigenständige neue Aufgaben im gleichen Stil und Niveau.
 - Eine vollständige, nachvollziehbare **Musterlösung** zu jeder Aufgabe (mit Punktevergabe pro Schritt,
@@ -114,6 +127,15 @@ Erzeuge **zwei** PDFs in **getrennten** Ordnern:
    ```
    Verwende nach jeder Aufgabe `\karo{5cm}` (Höhe je nach Punkten/Aufwand), Karo-Schrittweite ca. 5 mm.
    Bei Multiple-Choice die Ankreuzkästchen einbauen.
+3. **Seitenlayout – jede Aufgabe auf eigener Seite (Pflicht):** **Genug Platz zum Ausfüllen ist wichtig.**
+   Jede **Hauptüberschrift / jede Aufgabe beginnt auf einer neuen Seite** (vor jeder Aufgabe ein
+   `\clearpage`, danach die Überschrift und der Karo-Ausfüllbereich). So wird **nie** eine Aufgabe unten
+   auf einer Seite begonnen und auf der nächsten fortgesetzt, und es entsteht **nicht** der Fall, dass auf
+   einer Seite eine Aufgabe steht, darunter schon die nächste Überschrift und der eigentliche Inhalt erst
+   auf der Folgeseite. Eine Überschrift darf **nie** allein/ohne ihren Karo-Bereich am Seitenende stehen.
+   Bei mehrteiligen Aufgaben (a), b), c) …): pro Teilaufgabe genug Karo-Platz; reicht eine Seite nicht,
+   die Teilaufgabe sauber auf der nächsten Seite fortsetzen, ohne eine andere Aufgabe anzuschneiden.
+   (Ausnahme: der Klausur-Kopf mit Name/Datum/Punktetabelle steht vor Aufgabe 1 auf der ersten Seite.)
 3. Kompiliere mit **xelatex** (bevorzugt), sonst **pdflatex**, jeweils in den passenden Ordner:
    `xelatex -interaction=nonstopmode -output-directory=output/klausuren probeklausur_<NN>.tex`
    und `xelatex -interaction=nonstopmode -output-directory=results/klausuren probeklausur_<NN>_loesung.tex`
@@ -129,6 +151,8 @@ Erzeuge **zwei** PDFs in **getrennten** Ordnern:
    Korrigiere Fehler in der `.tex`-Datei und kompiliere neu, bis alle Lösungen korrekt sind.
 3. **Format-Check:** Punktesumme stimmt mit der angegebenen Gesamtpunktzahl überein; die Klausur ist in der
    angegebenen Zeit **realistisch lösbar**; jede Aufgabe hat genau eine Lösung; Notation wie in der Vorlesung.
+4. **Anmerkungs-Check:** Kein „Kommt nicht dran“-Thema kommt vor; alle „Zusätzlich“-Punkte sind abgedeckt;
+   die „Anmerkung“-Hinweise sind umgesetzt.
 
 ### Schritt 7 – Zusammenfassung ausgeben
 

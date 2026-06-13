@@ -1,0 +1,71 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}
+\geometry{margin=2.2cm}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+
+\definecolor{base}{HTML}{1E1E2E}
+\definecolor{fg}{HTML}{CDD6F4}
+\definecolor{accent}{HTML}{89B4FA}
+\definecolor{rulecol}{HTML}{45475A}
+\pagecolor{base}
+
+\newcommand{\transp}{^{\mathsf{T}}}
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+\newcommand{\antwort}[1]{\par\vspace{#1}}
+
+\usepackage{titlesec}
+\titleformat{\section}{\color{accent}\normalfont\large\bfseries}{}{0pt}{}
+
+\pagestyle{fancy}\fancyhf{}
+\lhead{\color{fg}\small Abfrage -- Matrizen}
+\rhead{\color{fg}\small Selbsttest 01}
+\cfoot{\color{fg}\thepage}
+\renewcommand{\headrule}{{\color{rulecol}\hrule height 0.4pt}}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+\color{fg}
+\begin{center}
+  {\color{accent}\LARGE\bfseries Selbsttest 01 -- deine Schwachstellen}\\[0.2em]
+  {\small Erst selbst überlegen, dann mit \texttt{results/erklaerung/abfrage\_01\_loesung.pdf} kontrollieren.}
+\end{center}
+\vspace{0.4em}{\color{rulecol}\hrule}\vspace{0.6em}
+
+\section*{Verständnis / Wahr--Falsch}
+\begin{enumerate}[label=\arabic*.,leftmargin=*]
+  \item Wahr oder falsch: Eine symmetrische positiv definite Matrix kann einen Eigenwert $0$ besitzen. Begründe.
+  \item Wahr oder falsch: Jede quadratische Matrix ist diagonalisierbar. Wann genau geht es?
+  \item Wann ist eine Hyperebene $\vec n\transp\vec x + n_0=0$ ein Untervektorraum?
+  \item Welche Dimensionen haben $U,\Sigma,V$ in der SVD einer $m\times n$-Matrix?
+        Was steht in den Spalten von $V$?
+  \item Bei der Cholesky-Zerlegung: durch welche Größe teilst du, um $\ell_{ij}$ ($i>j$) zu bestimmen?
+\end{enumerate}
+\antwort{4.5cm}
+
+\section*{Rechnen}
+\begin{enumerate}[label=\arabic*.,leftmargin=*,resume]
+  \item Ist $A=\begin{pmatrix}2&1\\1&2\end{pmatrix}$ positiv definit?
+        Prüfe über die führenden Hauptminoren \emph{und} über die Eigenwerte.
+  \item Bestimme die Inverse von $\begin{pmatrix}4&3\\2&2\end{pmatrix}$ mit der 2$\times$2-Formel.
+  \item Cholesky von $A=\begin{pmatrix}9&3\\3&5\end{pmatrix}$: bestimme $L$ mit $A=LL\transp$.
+  \item $E:\ x_1+2x_2+2x_3=6$. Abstand des Punktes $p=(1,1,1)\transp$ zu $E$?
+  \item SVD-Start: für $A=\begin{pmatrix}3&0\\0&0\\0&4\end{pmatrix}$ berechne $A\transp A$ und die Singulärwerte.
+\end{enumerate}
+\antwort{6.5cm}
+
+\section*{Erklären}
+\begin{enumerate}[label=\arabic*.,leftmargin=*,resume]
+  \item Leite für $-u''=f$ mit dem zentralen Differenzenquotienten die Gleichung
+        $-u_{i-1}+2u_i-u_{i+1}=h^2 f_i$ her. Warum ist die Systemmatrix tridiagonal?
+  \item Warum löst man bei linearer Regression $X\transp X\,\vec c=X\transp\vec y$
+        statt $X\vec c=\vec y$?
+\end{enumerate}
+\antwort{4cm}
+
+\end{document}

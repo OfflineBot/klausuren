@@ -17,7 +17,7 @@
   - `results/erklaerung/` → die **Abfrage-Lösungen / Ergebnisse**.
 - Bleibe in diesen beiden Unterordnern. Schreibe in **keine** anderen Ordner (auch nicht in
   `output/aufgaben/`, `output/klausuren/` o. Ä. – die gehören anderen Prompts) und in keine vorhandenen
-  Materialordner.
+  Materialordner (auch `anmerkung/` wird **nur gelesen**).
 - Wenn die Ordner schon existieren: bestehende Dateien darin **nicht überschreiben**, sondern
   fortlaufend weiternummerieren.
 
@@ -37,6 +37,17 @@ Lösung kontrollieren).
 ---
 
 ## Ablauf
+
+### Schritt 0 – Anmerkungen lesen (Pflicht, nur lesen)
+
+1. Lies die Datei `anmerkung/anmerkung.md` im aktuellen Fach-Ordner **vollständig** (falls vorhanden).
+2. Werte die drei Abschnitte aus und **berücksichtige sie verbindlich** bei allem Folgenden:
+   - **`# Kommt nicht dran:`** – diese Themen **weglassen** (weder im Lernskript erklären noch abfragen).
+   - **`# Zusätzlich:`** – diese Punkte **zusätzlich aufnehmen** bzw. stärker gewichten, auch wenn sie im
+     Material untergeordnet wirken.
+   - **`# Anmerkung:`** – allgemeine Hinweise/Wünsche zum Output **beachten und umsetzen**.
+3. Leere Abschnitte einfach überspringen. Die Anmerkungen haben **Vorrang** vor der reinen Materiallage
+   (z. B. „kommt nicht dran“ schlägt ein häufiges Vorkommen im Material).
 
 ### Schritt 1 – Vorlesungsmaterialien analysieren (nur lesen)
 
@@ -66,7 +77,8 @@ Arbeite die Gliederung aus Schritt 1 vollständig durch. Für **jedes Thema**:
 - Querverweise zu verwandten Themen, wo sinnvoll.
 
 Regeln:
-- **Decke wirklich alle Themen** des Stoffs ab – nichts auslassen.
+- **Decke wirklich alle Themen** des Stoffs ab – nichts auslassen, **außer** den unter „Kommt nicht dran“
+  (Schritt 0) genannten; „Zusätzlich“-Punkte ergänzen, „Anmerkung“-Hinweise berücksichtigen.
 - **Gleiche Notation und Fachsprache** wie in der Vorlesung.
 - Erkläre **verständlich und vom Einfachen zum Schweren**; lieber ein Beispiel mehr.
 - Erfinde keinen Stoff, der nicht in den Materialien vorkommt.
@@ -112,8 +124,10 @@ Erzeuge die PDFs in **getrennten** Ordnern:
 1. **PDF-Check:** Bestätige, dass `output/erklaerung/erklaerung_<NN>.pdf`, `output/erklaerung/abfrage_<NN>.pdf`
    **und** `results/erklaerung/abfrage_<NN>_loesung.pdf` existieren, fehlerfrei kompiliert wurden und
    Seitenzahl > 0 haben; das Inhaltsverzeichnis wurde erzeugt.
-2. **Vollständigkeit:** Gleiche die Abschnitte mit deiner Themenliste aus Schritt 1 ab – **kein Thema fehlt**;
-   auch der Abfrage-Teil deckt alle Themen ab.
+2. **Vollständigkeit:** Gleiche die Abschnitte mit deiner Themenliste aus Schritt 1 ab – **kein Thema fehlt**
+   (bis auf die „Kommt nicht dran“-Themen); auch der Abfrage-Teil deckt alle Themen ab.
+   **Anmerkungs-Check:** Kein „Kommt nicht dran“-Thema kommt vor; alle „Zusätzlich“-Punkte sind abgedeckt;
+   die „Anmerkung“-Hinweise sind umgesetzt.
 3. **Korrektheit:** Prüfe Definitionen, Formeln, durchgerechnete Beispiele **und alle Abfrage-Lösungen** auf
    Richtigkeit. Korrigiere Fehler in der `.tex`-Datei und kompiliere neu, bis alles stimmt.
 

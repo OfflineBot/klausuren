@@ -1,0 +1,431 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{geometry}
+\geometry{margin=2.3cm}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+%================= Dark-Mode Farben (Catppuccin Mocha) =================
+\definecolor{base}{HTML}{1E1E2E}
+\definecolor{fg}{HTML}{CDD6F4}
+\definecolor{accent}{HTML}{89B4FA}   % Überschriften
+\definecolor{good}{HTML}{A6E3A1}     % richtig / Merke
+\definecolor{bad}{HTML}{F38BA8}      % Fehler / Achtung
+\definecolor{rulecol}{HTML}{45475A}
+\pagecolor{base}
+\makeatletter
+\newenvironment{psmallmatrix}{\left(\begin{smallmatrix}}{\end{smallmatrix}\right)}
+\makeatother
+
+\hypersetup{colorlinks=true, linkcolor=accent, urlcolor=accent}
+
+\newcommand{\transp}{^{\mathsf{T}}}
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+\newcommand{\inner}[2]{\left\langle #1,\, #2 \right\rangle}
+\newcommand{\rang}{\operatorname{rang}}
+\newcommand{\spur}{\operatorname{spur}}
+\newcommand{\diag}{\operatorname{diag}}
+
+%================= Theorem-/Box-Stile =================
+\newtheoremstyle{def0}{6pt}{6pt}{}{}{\bfseries\color{accent}}{}{.5em}{}
+\theoremstyle{def0}
+\newtheorem*{defn}{Definition}
+\newtheorem*{merke}{\textcolor{good}{Merke}}
+\newtheorem*{fehler}{\textcolor{bad}{Dein Fehler im Blatt}}
+\newtheorem*{bsp}{Beispiel}
+
+%================= Kopf-/Fußzeile, Überschriften =================
+\usepackage{titlesec}
+\titleformat{\section}{\color{accent}\normalfont\Large\bfseries}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\color{accent}\normalfont\large\bfseries}{\thesubsection}{0.6em}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\color{fg}\small Lernzettel -- Matrizen}
+\rhead{\color{fg}\small Nach Übungsblatt 01}
+\cfoot{\color{fg}\thepage}
+\renewcommand{\headrule}{{\color{rulecol}\hrule height 0.4pt}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.4em}
+
+\begin{document}
+\color{fg}
+% hyperref/toc Linkfarbe + Inhaltsverzeichnis hell
+\begingroup
+\begin{center}
+  {\color{accent}\LARGE\bfseries Lernzettel: Deine Schwachstellen}\\[0.3em]
+  {\large Fortgeschrittene Lineare Algebra und Analytische Geometrie}\\[0.2em]
+  {\small erstellt aus deinem ausgefüllten Übungsblatt 01}
+\end{center}
+\endgroup
+
+\vspace{0.4em}{\color{rulecol}\hrule}\vspace{0.6em}
+
+Dieser Zettel behandelt \emph{gezielt} die Themen, bei denen auf deinem Blatt etwas
+\textbf{konzeptionell} schiefging, plus die zwei Themen, die du nochmal erklärt haben
+wolltest (Finite Differenzen, Regression). Jeder Abschnitt: \emph{Intuition} $\to$
+\emph{Definition/Formel} $\to$ \emph{durchgerechnetes Beispiel} $\to$ \emph{dein Fehler}.
+Alle Formeln stehen auch im Open-Book-Zettel -- die Verweise stehen jeweils dabei.
+
+\tableofcontents
+\vspace{0.4em}{\color{rulecol}\hrule}
+
+%==================================================================
+\section{Positiv definite Matrizen \& Definitheit}
+
+\textbf{Intuition.} „Positiv definit“ (PD) heißt: die Matrix $A$ „zieht“ jeden Vektor
+auf seine eigene Seite -- $\vec{x}\transp A\vec{x} > 0$ für alle $\vec{x}\ne\vec{0}$.
+Das ist die Matrix-Verallgemeinerung von „eine positive Zahl“.
+
+\begin{defn}
+Eine \emph{symmetrische} Matrix $A$ heißt \textbf{positiv definit}, wenn
+$\vec{x}\transp A\vec{x} > 0$ für alle $\vec{x}\ne\vec{0}$.
+\end{defn}
+
+\textbf{Zwei Tests (Open-Book S.\,2 „Definitheit“ \& S.\,1 „LU“):}
+\begin{itemize}[noitemsep]
+  \item \textbf{Eigenwerte:} $A$ ist PD $\iff$ \emph{alle} Eigenwerte $\lambda_i > 0$.
+        (PSD: $\lambda_i\ge0$; indefinit: positive \emph{und} negative.)
+  \item \textbf{Führende Hauptminoren:} alle führenden Unterdeterminanten
+        $\Delta_1,\Delta_2,\dots,\Delta_n > 0$.
+\end{itemize}
+
+\begin{bsp}
+$A=\begin{psmallmatrix}4&2&2\\2&5&5\\2&5&14\end{psmallmatrix}$:\quad
+$\Delta_1=4>0$,\;
+$\Delta_2=\det\begin{psmallmatrix}4&2\\2&5\end{psmallmatrix}=16>0$,\;
+$\Delta_3=\det A = 144>0$ $\Rightarrow$ PD.
+\end{bsp}
+
+\begin{fehler}
+In A1c und A6a hast du gesagt, eine positiv definite Matrix \emph{könne auch negative
+Eigenwerte haben} bzw.\ du hast Definitheit über „$A\ge0$ für jedes Element“ geprüft.
+\textbf{Beides ist falsch:} Definitheit hat \emph{nichts} mit den einzelnen Einträgen zu
+tun. Prüfe \textbf{Eigenwerte} ($>0$) oder \textbf{Hauptminoren} ($>0$). PD $\Rightarrow$
+\emph{ausschließlich} positive Eigenwerte (A1c ist also \emph{wahr}).
+\end{fehler}
+
+%==================================================================
+\section{Diagonalisierbarkeit: wann existiert \texorpdfstring{$A=S\Lambda S^{-1}$}{A=SLS-1}?}
+
+\textbf{Intuition.} Diagonalisieren heißt: eine Basis aus Eigenvektoren finden, in der
+$A$ nur noch streckt (Diagonalmatrix $\Lambda$). Das geht aber \emph{nur}, wenn man
+genug Eigenvektoren hat, um ganz $\mathbb{R}^n$ aufzuspannen.
+
+\begin{merke}
+$A\in\mathbb{R}^{n\times n}$ ist diagonalisierbar ($A=S\Lambda S^{-1}$ mit
+$S=[\vec v_1\;\dots\;\vec v_n]$) $\iff$ es gibt $n$ \textbf{linear unabhängige}
+Eigenvektoren. Sonst existiert die Zerlegung \emph{nicht}.\\
+\textbf{Spezialfall:} $A$ symmetrisch $\Rightarrow$ \emph{immer} diagonalisierbar, sogar
+orthogonal: $A=Q\Lambda Q\transp$ mit $Q^{-1}=Q\transp$ (Spektralsatz).
+\end{merke}
+
+\begin{bsp}
+$A=\begin{psmallmatrix}1&1\\0&1\end{psmallmatrix}$ hat nur den Eigenwert $\lambda=1$ mit
+\emph{einem} Eigenvektor $(1,0)\transp$ -- es fehlt ein zweiter unabhängiger.
+$A$ ist \textbf{nicht} diagonalisierbar.
+\end{bsp}
+
+\begin{fehler}
+In A1d hast du „Ja“ angekreuzt (jede quadratische Matrix sei zerlegbar). Das ist
+\textbf{falsch}: nur diagonalisierbare Matrizen. Merksatz: „brauche $n$ unabhängige
+Eigenvektoren“ (Open-Book S.\,1 „$S\Lambda S^{-1}$“, Limit-Zeile).
+\end{fehler}
+
+%==================================================================
+\section{Untervektorraum vs.\ affiner Raum (Hyperebenen)}
+
+\textbf{Intuition.} Ein Untervektorraum (UVR) muss den \textbf{Ursprung} enthalten -- er
+geht „durch null“. Eine verschobene Gerade/Ebene ist zwar flach, aber \emph{kein} UVR.
+
+\begin{merke}
+$U$ ist UVR $\iff$ (1) $\vec0\in U$, (2) abgeschlossen unter $+$, (3) abgeschlossen
+unter Skalarmultiplikation. \textbf{Schnelltest:} Geht das Gebilde durch den Ursprung?
+\end{merke}
+
+Eine Hyperebene $E:\ \vec n\transp\vec x + n_0 = 0$ geht genau dann durch den Ursprung,
+wenn $n_0=0$ (denn $\vec n\transp\vec0 = 0$). Nur dann ist sie ein UVR; sonst ein
+\emph{affiner} (verschobener) Unterraum.
+
+\begin{fehler}
+A1f hast du mit „weiß ich nicht“ gelassen. Antwort: \textbf{falsch} -- eine Hyperebene
+ist nur für $n_0=0$ ein Untervektorraum (Open-Book S.\,2 „Untervektorraum“).
+\end{fehler}
+
+%==================================================================
+\section{SVD richtig aufstellen}
+
+\textbf{Intuition.} Jede Matrix wirkt als: \emph{drehen} ($V\transp$) $\to$
+\emph{strecken} ($\Sigma$) $\to$ \emph{drehen} ($U$). $A=U\Sigma V\transp$.
+
+\begin{merke}
+\textbf{Dimensionen sind entscheidend:} für $A\in\mathbb{R}^{m\times n}$ ist
+$U\in\mathbb{R}^{m\times m}$, $\Sigma\in\mathbb{R}^{m\times n}$ (\emph{gleiche Form wie}
+$A$!), $V\in\mathbb{R}^{n\times n}$. $U,V$ sind \emph{orthogonal}; ihre Spalten sind
+\textbf{orthonormale Eigenvektoren} -- nicht die Eigenwerte!
+\end{merke}
+
+\textbf{Ablauf (Open-Book S.\,1 „SVD“):}
+\begin{enumerate}[noitemsep]
+  \item $A\transp A$ bilden (symmetrisch, $n\times n$). Eigenwerte $\lambda_i\ge0$,
+        normierte Eigenvektoren $\to$ \textbf{Spalten von $V$}.
+  \item $\sigma_i=\sqrt{\lambda_i}$, absteigend $\to$ Diagonale von $\Sigma$ (Rest mit
+        Nullen auf $m\times n$ auffüllen).
+  \item $\vec u_i = \tfrac{1}{\sigma_i}A\vec v_i$ $\to$ Spalten von $U$ (fehlende zu ONB
+        ergänzen).
+\end{enumerate}
+
+\begin{bsp}
+$A=\begin{psmallmatrix}2&0\\0&0\\0&5\end{psmallmatrix}$.\;
+$A\transp A=\begin{psmallmatrix}4&0\\0&25\end{psmallmatrix}$,
+Eigenwerte $25,4$, also $\sigma_1=5,\ \sigma_2=2$.
+Eigenvektoren (absteigend): $\vec v_1=(0,1)\transp$, $\vec v_2=(1,0)\transp$, d.h.
+$V=\begin{psmallmatrix}0&1\\1&0\end{psmallmatrix}$.\;
+$\vec u_1=\tfrac15A\vec v_1=(0,0,1)\transp$, $\vec u_2=\tfrac12A\vec v_2=(1,0,0)\transp$,
+ergänzt $\vec u_3=(0,1,0)\transp$.
+\[
+U=\begin{psmallmatrix}0&1&0\\0&0&1\\1&0&0\end{psmallmatrix},\quad
+\Sigma=\begin{psmallmatrix}5&0\\0&2\\0&0\end{psmallmatrix}\ (3\times2!),\quad
+V=\begin{psmallmatrix}0&1\\1&0\end{psmallmatrix}.
+\]
+\end{bsp}
+
+\begin{fehler}
+In A10 hast du $V=\begin{psmallmatrix}4&0\\0&25\end{psmallmatrix}$ gesetzt (das sind die
+\emph{Eigenwerte}, nicht die Eigenvektoren!) und $\Sigma$ quadratisch gemacht. Deshalb
+ging die Probe schief. Richtig: $V=$ orthonormale Eigenvektoren von $A\transp A$, und
+$\Sigma$ hat \textbf{dieselbe Form wie} $A$ ($3\times2$).
+\end{fehler}
+
+%==================================================================
+\section{Cholesky: die Formel und der häufige Fehler}
+
+\textbf{Intuition.} $A=LL\transp$ ist die „Wurzel“ einer symmetrisch-PD Matrix: ein
+einziges Dreieck $L$ statt $L$ und $U$.
+
+\begin{merke}
+Open-Book S.\,1 „$LL\transp$“, Reihenfolge $\ell_{11},\ell_{21},\ell_{31},\ell_{22},\dots$:
+\[
+\ell_{jj}=\sqrt{\,a_{jj}-\textstyle\sum_{k<j}\ell_{jk}^2\,},\qquad
+\ell_{ij}=\frac{a_{ij}-\sum_{k<j}\ell_{ik}\ell_{jk}}{\boxed{\ell_{jj}}}\quad(i>j).
+\]
+\textbf{Geteilt wird durch $\ell_{jj}$ -- NICHT durch $a_{jj}$!}
+\end{merke}
+
+\begin{bsp}
+$A=\begin{psmallmatrix}4&2&2\\2&5&5\\2&5&14\end{psmallmatrix}$:\;
+$\ell_{11}=\sqrt4=2$;\;
+$\ell_{21}=\tfrac{2}{\ell_{11}}=\tfrac22=1$;\;
+$\ell_{31}=\tfrac{2}{2}=1$;\;
+$\ell_{22}=\sqrt{5-1^2}=2$;\;
+$\ell_{32}=\tfrac{5-\ell_{31}\ell_{21}}{\ell_{22}}=\tfrac{5-1}{2}=2$;\;
+$\ell_{33}=\sqrt{14-1-4}=3$.
+\[
+L=\begin{psmallmatrix}2&0&0\\1&2&0\\1&2&3\end{psmallmatrix}.
+\]
+\end{bsp}
+
+\begin{fehler}
+In A6b hast du $\ell_{21}=\tfrac{2}{4}=\tfrac12$ gerechnet -- du hast durch $a_{11}=4$
+geteilt statt durch $\ell_{11}=\sqrt4=2$. Dadurch lief alles Weitere schief. Immer durch
+$\ell_{jj}$ teilen (das ist schon die Wurzel).
+\end{fehler}
+
+%==================================================================
+\section{Matrixinverse berechnen}
+
+Das hat dir in A5c, A8c und A11 gefehlt -- hier die drei Standardwege.
+
+\subsection{2$\times$2 -- auswendig (Open-Book S.\,2)}
+\[
+\begin{pmatrix}a&b\\c&d\end{pmatrix}^{-1}
+=\frac{1}{ad-bc}\begin{pmatrix}d&-b\\-c&a\end{pmatrix}.
+\]
+\begin{bsp}(A11) $A\transp A=\begin{psmallmatrix}3&6\\6&14\end{psmallmatrix}$,
+$\det=3\cdot14-6\cdot6=6$, also
+$(A\transp A)^{-1}=\tfrac16\begin{psmallmatrix}14&-6\\-6&3\end{psmallmatrix}$.
+Damit $A^{+}=(A\transp A)^{-1}A\transp
+=\begin{psmallmatrix}\tfrac43&\tfrac13&-\tfrac23\\[2pt]-\tfrac12&0&\tfrac12\end{psmallmatrix}$,
+und $A^{+}A=E$.\end{bsp}
+
+\subsection{$n\times n$ -- Gauß-Jordan $(A\mid E)\to(E\mid A^{-1})$}
+Schreibe $A$ neben die Einheitsmatrix und forme \emph{beide} gleichzeitig um, bis links
+$E$ steht; rechts steht dann $A^{-1}$.
+\begin{bsp}(A5) Für $A=\begin{psmallmatrix}2&1&1\\4&3&3\\8&7&9\end{psmallmatrix}$ ergibt das
+\[
+A^{-1}=\begin{psmallmatrix}\tfrac32&-\tfrac12&0\\[2pt]-3&\tfrac52&-\tfrac12\\[2pt]1&-\tfrac32&\tfrac12\end{psmallmatrix}.
+\]
+Probe: 1.\ Zeile von $A$ mal 1.\ Spalte von $A^{-1}$: $2\cdot\tfrac32+1\cdot(-3)+1\cdot1=1$.~\checkmark
+\end{bsp}
+
+\subsection{Über die LU-Zerlegung (das war A5c!)}
+\textbf{Idee:} Die $i$-te \emph{Spalte} von $A^{-1}$ ist die Lösung von
+$A\vec x_i=\vec e_i$ (denn $A\,A^{-1}=E$, und $E$ hat als Spalten die $\vec e_i$).
+Hast du $A=LU$ schon, löse das für jede Spalte in \emph{zwei} Schritten -- ohne neue
+Elimination:
+\[
+  L\vec y=\vec e_i\ (\text{vorwärts}),\qquad U\vec x_i=\vec y\ (\text{rückwärts}).
+\]
+\begin{bsp}(genau die Matrix aus A5)
+$A=\begin{psmallmatrix}2&1&1\\4&3&3\\8&7&9\end{psmallmatrix}$ mit
+$L=\begin{psmallmatrix}1&0&0\\2&1&0\\4&3&1\end{psmallmatrix}$,
+$U=\begin{psmallmatrix}2&1&1\\0&1&1\\0&0&2\end{psmallmatrix}$.\\[2pt]
+\textbf{Spalte 1}, $\vec e_1=(1,0,0)\transp$:\;
+$L\vec y=\vec e_1$: $y_1=1$, $2y_1+y_2=0\Rightarrow y_2=-2$,
+$4y_1+3y_2+y_3=0\Rightarrow y_3=2$, also $\vec y=(1,-2,2)\transp$.\;
+$U\vec x=\vec y$ (rückwärts): $2x_3=2\Rightarrow x_3=1$, $x_2+x_3=-2\Rightarrow x_2=-3$,
+$2x_1+x_2+x_3=1\Rightarrow x_1=\tfrac32$. $\Rightarrow$ \textbf{1.\ Spalte} $=(\tfrac32,-3,1)\transp$.\\[2pt]
+Genauso mit $\vec e_2,\vec e_3$. Zusammengesetzt:
+\[
+A^{-1}=\begin{psmallmatrix}\tfrac32&-\tfrac12&0\\[2pt]-3&\tfrac52&-\tfrac12\\[2pt]1&-\tfrac32&\tfrac12\end{psmallmatrix}.
+\]
+\end{bsp}
+\textbf{Merke:} Das ist \emph{derselbe} Vorwärts/Rückwärts-Trick wie beim LGS-Lösen -- nur
+dreimal (einmal pro Einheitsvektor). Bei symmetrischem $A=Q\Lambda Q\transp$ geht es noch
+schneller: $A^{-1}=Q\Lambda^{-1}Q\transp$ (Kehrwerte auf der Diagonale).
+
+%==================================================================
+\section{Abstand Punkt -- Ebene}
+
+\begin{merke}
+Ebene $E:\ \vec n\transp\vec x + n_0 = 0$. Für einen Punkt $\vec p$ setze
+$w=\vec n\transp\vec p + n_0$. Dann:
+\[
+d=\frac{|\,\vec n\transp\vec p + n_0\,|}{\norm{\vec n}},\qquad
+\text{Seite}=\operatorname{sign}(w),\qquad w=0:\ \text{auf der Ebene.}
+\]
+\end{merke}
+
+\begin{bsp}
+$E:\ 2x_1-x_2+2x_3=3$, also $\vec n=(2,-1,2)\transp$, $n_0=-3$, $\norm{\vec n}=3$.
+Punkt $\vec p=(1,2,3)\transp$:\;
+$w=(2-2+6)-3=3$, also $d=\tfrac{|3|}{3}=1$.
+\end{bsp}
+
+\begin{fehler}
+In A13c hast du $d=\tfrac{2p_1-p_2+2p_3}{\norm{\vec n}}$ geschrieben -- der
+\textbf{Konstantenterm $n_0=-3$ fehlt}, und du hast nicht zu Ende gerechnet. Richtig:
+$|\,\vec n\transp\vec p + n_0\,|/\norm{\vec n}=1$.
+\end{fehler}
+
+%==================================================================
+\section{Sauber Gauß-eliminieren (Vorzeichen!)}
+
+In A4 und A5 ist dir mehrfach derselbe Fehler passiert: beim Schritt
+\textbf{Zielzeile $-$ Faktor$\cdot$Pivotzeile} hast du dich im Vorzeichen vertan
+(z.\,B.\ $5-2\cdot2$ als $-1$ statt $1$). Das pflanzt sich in $L$, $U$, $R$, $\det$ fort.
+
+\begin{merke}
+$\text{Faktor}=\dfrac{\text{zu eliminierender Eintrag}}{\text{Pivot}}$, dann
+\textbf{neue Zeile} $=$ \textbf{alte Zielzeile} $-$ \textbf{Faktor}$\cdot$\textbf{Pivotzeile}.
+Die Faktoren stehen \emph{positiv} in $L$ (Open-Book S.\,1 „LU“).
+Mach immer die \textbf{Probe} $LU=A$ bzw.\ $CR=A$!
+\end{merke}
+
+\begin{bsp}(A5, korrekt)
+$\begin{psmallmatrix}2&1&1\\4&3&3\\8&7&9\end{psmallmatrix}$:
+$Z_2-2Z_1=(0,1,1)$, $Z_3-4Z_1=(0,3,5)$, dann $Z_3-3Z_2=(0,0,2)$.
+\[
+L=\begin{psmallmatrix}1&0&0\\2&1&0\\4&3&1\end{psmallmatrix},\quad
+U=\begin{psmallmatrix}2&1&1\\0&1&1\\0&0&2\end{psmallmatrix},\quad
+\det A = 2\cdot1\cdot2 = 4\ (\text{nicht } -4!).
+\]
+Du hattest $\ell_{31}=2$ (statt $4$) und Vorzeichen in $U$ falsch.
+\end{bsp}
+
+%==================================================================
+\section{Finite Differenzen -- nochmal von vorn}
+
+\textbf{Intuition.} Wir können $-u''=f$ nicht exakt am Computer lösen, also ersetzen wir
+die Ableitung durch einen \emph{Differenzenquotienten} an wenigen Gitterpunkten und
+erhalten ein \textbf{lineares Gleichungssystem} $A\vec u=\vec b$.
+
+\textbf{Baustein (Open-Book S.\,2 „Finite Differenzen“):} zweite Ableitung
+\[
+u''(x_i)\approx\frac{u_{i-1}-2u_i+u_{i+1}}{h^2}.
+\]
+Einsetzen in $-u''=f$ ergibt pro innerem Punkt:
+$-u_{i-1}+2u_i-u_{i+1}=h^2 f_i$, mit Randwerten $u_0=u_{n+1}=0$.
+
+\begin{bsp}
+$-u''=2$, $u(0)=u(1)=0$, $h=\tfrac14$ (Punkte $0{,}25;0{,}5;0{,}75$). $h^2=\tfrac1{16}$,
+also $h^2f_i=\tfrac{2}{16}=\tfrac18$. Multipliziert man $-u_{i-1}+2u_i-u_{i+1}=\tfrac18$
+mit $16$:
+\[
+32u_i-16u_{i-1}-16u_{i+1}=2,\quad
+A=\begin{psmallmatrix}32&-16&0\\-16&32&-16\\0&-16&32\end{psmallmatrix},\
+\vec b=\begin{psmallmatrix}2\\2\\2\end{psmallmatrix}.
+\]
+$A$ ist \textbf{tridiagonal, symmetrisch, positiv definit, dünn besetzt}.
+Lösung (Symmetrie $u_1=u_3$): $u_1=u_3=\tfrac{3}{16}$, $u_2=\tfrac14$.
+\end{bsp}
+
+%==================================================================
+\section{Lineare Regression -- die Idee}
+
+\textbf{Intuition.} Wir legen die „bestpassende“ Gerade durch Punkte: die Gerade, die die
+Summe der quadrierten Abstände minimiert. Das führt \emph{nicht} auf ein lösbares
+$X\vec c=\vec y$ (zu viele Gleichungen), sondern auf die \textbf{Normalengleichung}.
+
+\begin{merke}
+$X$ = Designmatrix (1.\ Spalte Einsen, dann $x$-Werte), $\vec y$ = Messwerte. Dann
+\[
+X\transp X\,\vec c = X\transp\vec y\quad\Longrightarrow\quad
+\vec c=(X\transp X)^{-1}X\transp\vec y .
+\]
+$X\transp X$ ist symmetrisch (und bei unabhängigen Spalten PD) -- daher mit
+Cholesky/QR lösbar. ($X\transp X$ ist genau das, was die Pseudoinverse $A^{+}$ macht!)
+\end{merke}
+
+\begin{bsp}
+Punkte $(1,1),(2,2),(3,2)$:
+$X=\begin{psmallmatrix}1&1\\1&2\\1&3\end{psmallmatrix}$,
+$\vec y=(1,2,2)\transp$,
+$X\transp X=\begin{psmallmatrix}3&6\\6&14\end{psmallmatrix}$,
+$X\transp\vec y=(5,11)\transp$.
+\[
+\vec c=\tfrac16\begin{psmallmatrix}14&-6\\-6&3\end{psmallmatrix}\begin{psmallmatrix}5\\11\end{psmallmatrix}
+=\begin{psmallmatrix}\tfrac23\\[2pt]\tfrac12\end{psmallmatrix}
+\ \Rightarrow\ y=\tfrac23+\tfrac12 x.
+\]
+\end{bsp}
+
+%==================================================================
+\section{Winkel zwischen Vektoren (das war A3d)}
+
+\textbf{Intuition.} Das Skalarprodukt misst, „wie sehr zwei Vektoren in dieselbe Richtung
+zeigen“. Aus ihm bekommt man direkt den Winkel.
+
+\begin{merke}
+\[
+  \cos\alpha = \frac{\inner{\vec u}{\vec v}}{\norm{\vec u}\,\norm{\vec v}},\qquad
+  \alpha = \arccos\!\left(\frac{\vec u\transp\vec v}{\norm{\vec u}\,\norm{\vec v}}\right).
+\]
+Sonderfall: $\inner{\vec u}{\vec v}=0 \Rightarrow \alpha = 90^\circ$ (orthogonal).
+\end{merke}
+
+\begin{bsp}
+$\vec u=(1,1,0)\transp$, $\vec v=(1,0,1)\transp$:\;
+$\inner{\vec u}{\vec v}=1$, $\norm{\vec u}=\norm{\vec v}=\sqrt2$, also
+$\cos\alpha=\tfrac{1}{2}\Rightarrow\alpha=60^\circ$.
+\end{bsp}
+
+\begin{fehler}
+A3d hast du übersprungen (mit der Vermutung, das käme nicht dran). Es ist aber
+Standard -- und kommt in der Probeklausur indirekt über das Skalarprodukt vor. Formel
+oben, mehr nicht.
+\end{fehler}
+
+\vspace{0.6em}{\color{rulecol}\hrule}\vspace{0.4em}
+\textit{Tipp: Übe diese Themen mit dem zugehörigen Blatt
+\texttt{output/aufgaben/aufgaben\_02.pdf} und teste dich mit
+\texttt{output/erklaerung/abfrage\_01.pdf}.}
+
+\end{document}
