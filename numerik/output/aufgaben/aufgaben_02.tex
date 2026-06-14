@@ -1,0 +1,236 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{tikz}
+\usepackage{needspace}
+\usepackage{enumitem}
+\usepackage{geometry}
+\geometry{a4paper,margin=2.2cm}
+
+% ----- Dark Mode (Pflicht) -----
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{accent}{HTML}{89B4FA}
+\definecolor{accent2}{HTML}{F9E2AF}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{rulecol}{HTML}{6A6A6A}
+\pagecolor{bgdark}
+\color{fgtext}
+\setlength{\arrayrulewidth}{0.3pt}
+\arrayrulecolor{rulecol}
+
+% ----- Karo-Raster -----
+\newcommand{\karo}[1]{\par\noindent
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcol, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par}
+
+\newcommand{\kopf}{%
+  \noindent
+  {\large\bfseries\color{accent} Numerische Methoden\, --\, Theorie- \& Verständnisfragen (Blatt 02)}\\[2pt]
+  {\small\color{fgtext} Alle Begriffe einmal abgefragt \;·\; Stil der Probeklausur („Erklären/Begründen/Nennen Sie``)}\\[6pt]
+  \noindent\textcolor{rulecol}{\rule{\linewidth}{0.4pt}}\\[4pt]
+  {\small Name:\; \textcolor{rulecol}{\rule{6cm}{0.3pt}} \hfill Datum:\; \textcolor{rulecol}{\rule{4cm}{0.3pt}}}\\[2pt]
+  \noindent\textcolor{rulecol}{\rule{\linewidth}{0.4pt}}
+  \par\vspace{8pt}
+}
+
+\newcommand{\aufg}[3]{%
+  \needspace{4\baselineskip}
+  \par\vspace{2pt}
+  {\large\bfseries\color{accent2} Aufgabe #1}\hfill
+  {\small\color{fgtext}#2 Punkte \;·\; #3}\\[2pt]
+  \noindent\textcolor{rulecol}{\rule{\linewidth}{0.3pt}}
+  \par\vspace{6pt}
+}
+
+\setlist[enumerate]{leftmargin=2.2em,itemsep=2pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+
+\begin{document}
+
+\kopf
+
+Beantworten Sie jede Frage in eigenen Worten und vollständig in ganzen Sätzen.
+Wo gefordert: Definition exakt, Beispiel konkret, Begründung knapp. Nutzen Sie
+das Karo-Raster.
+
+% =====================================================================
+\clearpage
+\aufg{1 \;--\; Grundlagen: Numerik, Diskretisierung, Fehlerarten}{12}{leicht}
+
+\textbf{(a)} Wann braucht man \emph{numerische} statt \emph{analytischer}
+Verfahren? Nennen Sie zwei Gründe und je ein Beispiel. \karo{4cm}
+
+\textbf{(b)} Was bedeutet \emph{Diskretisierung}? Beschreiben Sie den Trade-off
+der Schrittweite $h$ (sehr klein vs. sehr groß). \karo{4cm}
+
+\textbf{(c)} Nennen und definieren Sie die drei \emph{Fehlerarten}
+(Modell-, Abschneide-/Diskretisierungs-, Rundungsfehler) mit je einem Beispiel.
+\karo{5cm}
+
+\textbf{(d)} Unterschied \emph{absoluter} vs. \emph{relativer} Fehler -- wann
+ist welcher aussagekräftiger? \karo{4cm}
+
+% =====================================================================
+\clearpage
+\aufg{2 \;--\; Zahldarstellung: Gleitkomma \& Festkomma}{13}{mittel}
+
+\textbf{(a)} Beschreiben Sie den Aufbau einer Gleitkommazahl
+$x=(-1)^s\,m\,2^{e}$: Rolle von Vorzeichen, Mantisse, Exponent und Bias. Was
+heißt \emph{normalisiert} (implizites führendes Bit)? \karo{4.5cm}
+
+\textbf{(b)} Was ist das \emph{Maschinenepsilon} konzeptuell? Warum gibt es eine
+kleinste relative Auflösung? \karo{4cm}
+
+\textbf{(c)} Gleitkomma vs. Festkomma: je ein Vor- und ein Nachteil. In welcher
+Situation ist Festkomma sinnvoll? \karo{4cm}
+
+\clearpage
+\textbf{(d)} Was ist \emph{Auslöschung} (catastrophic cancellation)? Warum ist
+sie gefährlich? Formen Sie $\sqrt{x+1}-\sqrt{x}$ (für großes $x$) so um, dass
+die Auslöschung vermieden wird. \karo{6cm}
+
+\textbf{(e)} Was bedeuten \emph{Overflow} und \emph{Underflow}? \karo{4cm}
+
+% =====================================================================
+\clearpage
+\aufg{3 \;--\; Fehleranalyse: Kondition vs. Stabilität}{12}{schwer}
+
+\textbf{(a)} Definieren Sie die \emph{Kondition} eines Problems. Was heißt gut/
+schlecht konditioniert? Ist Kondition eine Eigenschaft des \emph{Problems} oder
+des \emph{Algorithmus}? \karo{4.5cm}
+
+\textbf{(b)} Definieren Sie die \emph{Stabilität}. Eigenschaft wovon? \karo{4cm}
+
+\textbf{(c)} \emph{Kernfrage:} Erklären Sie in einem Satz den Unterschied
+zwischen Kondition und Stabilität. Kann ein \emph{stabiler} Algorithmus ein
+\emph{schlecht konditioniertes} Problem „retten``? Begründen Sie. \karo{5cm}
+
+\textbf{(d)} Definieren Sie \emph{Konsistenz} und \emph{Konvergenz} und
+erläutern Sie den Zusammenhang „Konvergenz $\approx$ Konsistenz $+$
+Stabilität``. \karo{5cm}
+
+% =====================================================================
+\clearpage
+\aufg{4 \;--\; Newton- \& Sekantenverfahren}{12}{mittel}
+
+\textbf{(a)} Leiten Sie die Newton-Iteration
+$x_{n+1}=x_n-\frac{f(x_n)}{f'(x_n)}$ aus der Taylor-Entwicklung erster Ordnung
+her. \karo{5cm}
+
+\textbf{(b)} Was bedeutet \emph{quadratische Konvergenz}
+$|e_{n+1}|\le C|e_n|^2$ praktisch (Stichwort Stellenverdopplung)? \karo{4cm}
+
+\textbf{(c)} Nennen Sie das Konvergenzkriterium und drei \emph{Versagensfälle}
+des Newton-Verfahrens. \karo{4.5cm}
+
+\clearpage
+\textbf{(d)} Beschreiben Sie das \emph{Sekantenverfahren}. Wodurch ersetzt es
+$f'$? Geben Sie die Iterationsformel an, die Konvergenzordnung ($\approx 1{,}618$)
+sowie je einen Vor- und Nachteil gegenüber Newton. \karo{6cm}
+
+% =====================================================================
+\clearpage
+\aufg{5 \;--\; Optimierung: lokal vs. global}{14}{mittel}
+
+\textbf{(a)} Definieren Sie \emph{lokales} und \emph{globales} Minimum. Warum
+scheitern lokale Optimierer (z.\,B.\ Gradientenabstieg) an multimodalen
+Funktionen? \karo{4.5cm}
+
+\textbf{(b)} \emph{Newton für Optimierung:} Wie wird aus der Nullstellensuche
+von $f'$ ein Optimierungsverfahren? Geben Sie die Iteration an und erklären Sie
+die Rolle von $f''$. \karo{4.5cm}
+
+\textbf{(c)} \emph{Random Restarts:} Idee und Herleitung der Formel
+$P=1-(1-p)^K$. \karo{4cm}
+
+\clearpage
+\textbf{(d)} \emph{Simulated Annealing:} Erklären Sie die Akzeptanzregel
+$e^{-\Delta E/T}$ und die Rolle der sinkenden Temperatur. Was macht
+\emph{Basin Hopping}? \karo{5cm}
+
+\textbf{(e)} Was ist \emph{Gradientenabstieg}? Welche Rolle spielt die Lernrate,
+und was passiert, wenn sie zu groß bzw. zu klein ist? \karo{4.5cm}
+
+% =====================================================================
+\clearpage
+\aufg{6 \;--\; Anfangswertprobleme: Euler \& Runge-Kutta}{13}{mittel}
+
+\textbf{(a)} Unterschied \emph{explizites} vs. \emph{implizites}
+Euler-Verfahren. Vor-/Nachteil bezüglich Stabilität. \karo{4.5cm}
+
+\textbf{(b)} \emph{Lokaler} vs. \emph{globaler} Diskretisierungsfehler. Was ist
+die Konvergenzordnung $p$? \karo{4cm}
+
+\textbf{(c)} Warum ist RK4 bei gleicher Schrittweite genauer als Euler? (Ordnung,
+Funktionsauswertungen.) \karo{4cm}
+
+\clearpage
+\textbf{(d)} Was kodiert ein \emph{Butcher-Tableau} (Knoten $c_i$, Gewichte
+$b_i$, Matrix $a_{ij}$)? Woran erkennt man ein \emph{explizites} Verfahren?
+\karo{5cm}
+
+\textbf{(e)} Was bedeutet \emph{Steifheit} (stiffness), und warum sind explizite
+Verfahren bei steifen Problemen problematisch? \karo{4.5cm}
+
+% =====================================================================
+\clearpage
+\aufg{7 \;--\; Integration \& Interpolation}{15}{schwer}
+
+\textbf{(a)} Newton-Cotes-Idee: Wie entstehen Trapez- und Simpson-Regel aus
+Interpolation? Was bedeutet \emph{Exaktheitsgrad}? \karo{4.5cm}
+
+\textbf{(b)} Warum integriert die Simpson-Regel Polynome bis Grad $3$ exakt,
+obwohl sie nur eine Parabel anpasst? \karo{4cm}
+
+\textbf{(c)} \emph{Existenz/Eindeutigkeit:} Wie viele Stützpunkte legen ein
+Interpolationspolynom vom Grad $\le n$ eindeutig fest? Begründen Sie kurz.
+\karo{4cm}
+
+\clearpage
+\textbf{(d)} \emph{Runge-Phänomen:} Was ist es, warum tritt es auf, und welche
+Gegenmaßnahme gibt es? \karo{4.5cm}
+
+\textbf{(e)} Nennen Sie einen Vorteil der \emph{Spline}- gegenüber der
+Polynominterpolation. \karo{3.5cm}
+
+\textbf{(f)} Was ist \emph{Romberg}-Integration (Richardson-Extrapolation auf
+die Trapezregel)? \karo{4cm}
+
+\textbf{(g)} \emph{Monte-Carlo:} Warum skaliert der Fehler wie $1/\sqrt{N}$ und
+\emph{unabhängig} von der Dimension? Was ist der \emph{Fluch der Dimensionen}?
+\karo{4.5cm}
+
+% =====================================================================
+\clearpage
+\aufg{8 \;--\; Fourier-Analyse \& FFT}{13}{schwer}
+
+\textbf{(a)} Was berechnet die kontinuierliche Fourier-Transformation
+$F(\omega)=\int f(t)e^{-i\omega t}\,dt$, und was die Rücktransformation?
+\karo{4.5cm}
+
+\textbf{(b)} Eulersche Formel $e^{i\omega t}=\cos(\omega t)+i\sin(\omega t)$:
+Warum erzeugt ein reeller Kosinus zwei Spektrallinien bei $\pm\omega$? \karo{4cm}
+
+\textbf{(c)} Was bedeutet \emph{Interferenz}/Superposition eines Signals?
+\karo{3.5cm}
+
+\clearpage
+\textbf{(d)} Unterschied \emph{DFT} vs. kontinuierliche FT -- was genau ist
+diskret? \karo{4cm}
+
+\textbf{(e)} \emph{FFT:} Wie kommt die Komplexität $O(N\log N)$ gegenüber
+$O(N^2)$ der direkten DFT zustande (Grundidee gerade/ungerade)? \karo{4.5cm}
+
+\textbf{(f)} Spektrum-Interpretation: Was bedeuten \emph{Peaks}? Was ist die
+\emph{Nyquist-Frequenz} und was \emph{Aliasing} (Unterabtastung)? \karo{5cm}
+
+\end{document}

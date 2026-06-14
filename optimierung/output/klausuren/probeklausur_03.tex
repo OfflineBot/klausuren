@@ -1,0 +1,175 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage[margin=2cm]{geometry}
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{accent}{HTML}{6CB6FF}
+\pagecolor{bgdark}
+\color{fgtext}
+\arrayrulecolor{fgtext}
+\setlength{\parindent}{0pt}
+\newcommand{\karo}[1]{\par\noindent\begin{tikzpicture}\draw[step=5mm,gridcol,very thin](0,0) grid (\linewidth,#1);\end{tikzpicture}\par\vspace{2mm}}
+\newcommand{\aufgabe}[2]{\vspace{3mm}\par\noindent{\large\color{accent}\textbf{Aufgabe #1}}\hfill{\color{gridcol}\normalsize (#2 Punkte)}\par\vspace{1mm}}
+
+\begin{document}
+\begin{center}
+  {\LARGE\color{accent}\textbf{Optimierungsverfahren}}\\[3pt]
+  {\large Probeklausur 03 (XL) --- Teil 2: Grafische \& konzeptionelle Aufgaben}\\[2pt]
+  {\small Ergänzt \texttt{probeklausur\_01/02}: deckt die grafischen und konzeptionellen Typen des restlichen Stoffs ab.}
+\end{center}
+\vspace{2mm}
+\noindent\textbf{Name:}\ \underline{\hspace{6cm}}\hfill\textbf{Datum:}\ \underline{\hspace{4cm}}\\[4pt]
+\noindent\textbf{Gesamtpunkte:}\ 50 \hfill \textbf{Bearbeitungszeit:}\ ca.\ 70 Minuten \hfill \textbf{Hilfsmittel:}\ Open-Book, Taschenrechner\\[3pt]
+{\color{gridcol}\rule{\linewidth}{0.4pt}}
+\par\vspace{1mm}
+\noindent{\small Abgedeckt: ganzzahlige Optimierung (grafisch), Simplex-Suchverlauf, DIRECT (potentiell optimale Rechtecke), SMBO/Surrogat, EA-Operatoren, Simulated Annealing, PSO \& ACO, NSGA-II vs.\ SMS-EMOA, Pareto-Mengen, Konvexität.}
+
+% ===== B1 =====
+\clearpage
+\aufgabe{1 --- Ganzzahlige Optimierung (grafisch)}{7}
+Gegeben sei das lineare (ganzzahlige) Optimierungsproblem
+\[
+\max_{\vec x}\ f(\vec x)=x_1+x_2 \quad\text{u.d.N.}\quad
+3x_1+2x_2\le 12,\ \ x_1+2x_2\le 7,\ \ x_1,x_2\ge 0,\ \ x_1,x_2\in\mathbb Z.
+\]
+\begin{center}
+\begin{tikzpicture}[scale=0.78]
+  \fill[white,opacity=0.06] (0,0)--(4,0)--(2.5,2.25)--(0,3.5)--cycle;
+  \draw[gridcol,very thin,step=1] (0,0) grid (6,6);
+  \draw[->,fgtext] (0,0)--(6.4,0) node[right]{$x_1$};
+  \draw[->,fgtext] (0,0)--(0,6.4) node[above]{$x_2$};
+  \foreach \i in {1,2,3,4,5,6}{\node[fgtext,below] at (\i,0){\small\i}; \node[fgtext,left] at (0,\i){\small\i};}
+  \draw[accent,very thick] (4,0)--(0,6) node[right,pos=0.1]{\small$3x_1{+}2x_2{=}12$};
+  \draw[accent,very thick] (7,0)--(0,3.5) node[above right,pos=0.45]{\small$x_1{+}2x_2{=}7$};
+  \draw[blue!60!white,dashed] (4.75,0)--(0,4.75);
+  \fill[red!80!white] (2.5,2.25) circle(2.6pt) node[above right,fgtext]{\small kont.\ Opt.};
+\end{tikzpicture}
+\end{center}
+\textbf{(a.)} (4 P) Bestimmen Sie die \emph{kontinuierliche} optimale Lösung (Schnittpunkt der Restriktionen) und $f$.\\
+\textbf{(b.)} (3 P) Bestimmen Sie die \emph{ganzzahlige} optimale Lösung und $f$. Stimmen die optimalen Zielfunktionswerte überein?
+\karo{6cm}
+
+% ===== B2 =====
+\clearpage
+\aufgabe{2 --- Simplex-Suchverlauf (grafisch)}{5}
+Gegeben sei das lineare Optimierungsproblem
+\[
+\max_{\vec x}\ f(\vec x)=2x_1+3x_2 \quad\text{u.d.N.}\quad x_1\le 4,\ \ x_2\le 5,\ \ x_1+x_2\le 7,\ \ x_1,x_2\ge 0.
+\]
+\begin{center}
+\begin{tikzpicture}[scale=0.62]
+  \fill[white,opacity=0.06] (0,0)--(4,0)--(4,3)--(2,5)--(0,5)--cycle;
+  \draw[gridcol,very thin,step=1] (0,0) grid (8,7);
+  \draw[->,fgtext] (0,0)--(8.4,0) node[right]{$x_1$};
+  \draw[->,fgtext] (0,0)--(0,7.4) node[above]{$x_2$};
+  \foreach \i in {2,4,6,8}{\node[fgtext,below] at (\i,0){\small\i};}
+  \foreach \j in {2,4,6}{\node[fgtext,left] at (0,\j){\small\j};}
+  \draw[accent,very thick] (4,0)--(4,7) node[above]{\small$x_1{=}4$};
+  \draw[accent,very thick] (0,5)--(8,5) node[right]{\small$x_2{=}5$};
+  \draw[accent,very thick] (7,0)--(0,7) node[above right,pos=0.2]{\small$x_1{+}x_2{=}7$};
+\end{tikzpicture}
+\end{center}
+Zeichnen Sie (bzw.\ beschreiben Sie) den Suchverlauf des einfachen Simplex-Algorithmus mit Start in $(0,0)$. Geben Sie die optimale Ecke $\vec x^{\,*}$ und $f(\vec x^{\,*})$ an.
+\karo{6.5cm}
+
+% ===== B3 =====
+\clearpage
+\aufgabe{3 --- DIRECT: potentiell optimale Rechtecke}{6}
+Für einen DIRECT-Durchlauf (Minimierung) sind unten sieben Rechtecke durch ihre Größe $d_i$ und den Funktionswert ihres Mittelpunkts $f(c_i)$ gegeben. Geben Sie die Nummern der Rechtecke an, die \textbf{potentiell optimal} sind, und begründen Sie über die $(d,f)$-Darstellung.
+\begin{center}
+\begin{tabular}{c|ccccccc}
+Nr.\ $i$ & 1 & 2 & 3 & 4 & 5 & 6 & 7\\\hline
+$d_i$ & 1 & 1 & 2 & 2 & 4 & 4 & 6\\
+$f(c_i)$ & 5 & 8 & 4 & 7 & 3 & 6 & 5\\
+\end{tabular}
+\end{center}
+\begin{center}
+\begin{tikzpicture}[scale=0.7]
+  \draw[gridcol,very thin,step=1] (0,0) grid (7,9);
+  \draw[->,fgtext] (0,0)--(7.4,0) node[right]{$d$};
+  \draw[->,fgtext] (0,0)--(0,9.4) node[above]{$f(c)$};
+  \foreach \i in {1,2,3,4,5,6}{\node[fgtext,below] at (\i,0){\small\i};}
+  \foreach \j in {2,4,6,8}{\node[fgtext,left] at (0,\j){\small\j};}
+  \foreach \n/\x/\y in {1/1/5,2/1/8,3/2/4,4/2/7,5/4/3,6/4/6,7/6/5}{
+    \fill[accent](\x,\y) circle(2.6pt); \node[fgtext,above right]{}; \node[fgtext,above right] at (\x,\y){\small \n};}
+\end{tikzpicture}
+\end{center}
+\karo{5.5cm}
+
+% ===== B4 =====
+\clearpage
+\aufgabe{4 --- SMBO / Surrogatmodell}{4}
+Ein SMBO-Algorithmus (Surrogate-Model-Based Optimization) minimiert eine teure Zielfunktion. Das aktuelle Surrogatmodell hat sein Minimum bei $x\approx 1.2$, während das (unbekannte) wahre Minimum bei $x\approx 0.5$ liegt.
+\begin{enumerate}[label=(\alph*),nosep,leftmargin=1.6em]
+  \item Welche Lösung würde der SMBO-Algorithmus als nächstes auswerten?
+  \item Was passiert mit dem Surrogatmodell und dem Optimierungsverlauf nach dieser Auswertung?
+\end{enumerate}
+\karo{8cm}
+
+% ===== B5 =====
+\clearpage
+\aufgabe{5 --- EA-Operatoren (binär)}{5}
+Für ein Optimierungsproblem mit binären Variablen wird ein evolutionärer Algorithmus eingesetzt.
+\begin{enumerate}[label=(\alph*),nosep,leftmargin=1.6em]
+  \item Geben Sie für $x=(1,0,1,1,0,0,1,0)$ \emph{zwei} mutierte Individuen mit \emph{unterschiedlichen} Mutationsoperatoren an.
+  \item Wenden Sie Single-Point-Crossover (Schnitt nach Position 4) auf die Eltern
+  $x_1=(1,1,0,0,1,1,0,0)$ und $x_2=(0,0,1,1,0,0,1,1)$ an.
+\end{enumerate}
+\karo{8cm}
+
+% ===== B6 =====
+\clearpage
+\aufgabe{6 --- Simulated Annealing}{5}
+\begin{enumerate}[label=(\alph*),nosep,leftmargin=1.6em]
+  \item Bei einem Minimierungsproblem wird eine Nachbarlösung betrachtet, die um $\Delta f=2$ \emph{schlechter} ist. Die aktuelle Temperatur ist $T=4$. Mit welcher Wahrscheinlichkeit $p=\exp(-\Delta f/T)$ wird diese schlechtere Lösung akzeptiert? Wird sie bei einer Zufallszahl $u=0.5$ angenommen?
+  \item Welche Rolle spielt die Temperatur $T$ über den Verlauf des Algorithmus (hohe vs.\ niedrige Temperatur)?
+\end{enumerate}
+\karo{8cm}
+
+% ===== B7 =====
+\clearpage
+\aufgabe{7 --- Partikelschwarm (PSO) \& Ameisen (ACO)}{4}
+\begin{enumerate}[label=(\alph*),nosep,leftmargin=1.6em]
+  \item Aus welchen drei Komponenten setzt sich die Geschwindigkeits-Aktualisierung eines Partikels bei der Partikelschwarmoptimierung (PSO) zusammen?
+  \item Welche Rolle spielen Pheromone und deren Verdunstung (Evaporation) bei der Ameisenalgorithmus-Optimierung (ACO)?
+\end{enumerate}
+\karo{8cm}
+
+% ===== B8 =====
+\clearpage
+\aufgabe{8 --- NSGA-II vs.\ SMS-EMOA}{5}
+Beschreiben Sie den Ablauf des NSGA-II (zentrale Schritte) und nennen Sie den zentralen Unterschied zum SMS-EMOA.
+\karo{9cm}
+
+% ===== B9 =====
+\clearpage
+\aufgabe{9 --- Pareto-Menge bestimmen}{5}
+Gegeben sei das mehrkriterielle Minimierungsproblem mit einer Variable $x\in\mathbb R$:
+\[
+\min_x\ \big(f_1(x)=(x-1)^2,\quad f_2(x)=(x-4)^2\big).
+\]
+Bestimmen Sie die Pareto-optimale Menge im Entscheidungsraum und begründen Sie kurz.
+\karo{7cm}
+
+% ===== B10 =====
+\clearpage
+\aufgabe{10 --- Konvexität}{4}
+\begin{enumerate}[label=(\alph*),nosep,leftmargin=1.6em]
+  \item Ist $f(x)=x^4$ konvex? Begründen Sie über die zweite Ableitung.
+  \item Ist $f(x)=x^3$ auf ganz $\mathbb R$ konvex? Begründen Sie.
+  \item Ist die Menge $\{\vec x\in\mathbb R^2 : x_1^2+x_2^2\le 4\}$ konvex?
+\end{enumerate}
+\karo{7cm}
+
+\vfill
+\begin{center}{\color{gridcol}\small--- Ende Probeklausur 03 ---}\end{center}
+\end{document}

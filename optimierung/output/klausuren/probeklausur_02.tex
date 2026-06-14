@@ -1,0 +1,140 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage[margin=2cm]{geometry}
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{accent}{HTML}{6CB6FF}
+\pagecolor{bgdark}
+\color{fgtext}
+\arrayrulecolor{fgtext}
+\setlength{\parindent}{0pt}
+\newcommand{\karo}[1]{\par\noindent\begin{tikzpicture}\draw[step=5mm,gridcol,very thin](0,0) grid (\linewidth,#1);\end{tikzpicture}\par\vspace{2mm}}
+\newcommand{\aufgabe}[2]{\vspace{3mm}\par\noindent{\large\color{accent}\textbf{Aufgabe #1}}\hfill{\color{gridcol}\normalsize (#2 Punkte)}\par\vspace{1mm}}
+
+\begin{document}
+\begin{center}
+  {\LARGE\color{accent}\textbf{Optimierungsverfahren}}\\[3pt]
+  {\large Probeklausur 02 (XL) --- Teil 2: Rechenverfahren (Vollabdeckung)}\\[2pt]
+  {\small Ergänzt \texttt{probeklausur\_01}: deckt die Rechen-Aufgabentypen ab, die in der Originalklausur \emph{nicht} vorkamen.}
+\end{center}
+\vspace{2mm}
+\noindent\textbf{Name:}\ \underline{\hspace{6cm}}\hfill\textbf{Datum:}\ \underline{\hspace{4cm}}\\[4pt]
+\noindent\textbf{Gesamtpunkte:}\ 68 \hfill \textbf{Bearbeitungszeit:}\ ca.\ 90 Minuten \hfill \textbf{Hilfsmittel:}\ Open-Book, Taschenrechner\\[3pt]
+{\color{gridcol}\rule{\linewidth}{0.4pt}}
+\par\vspace{1mm}
+\noindent{\small Abgedeckt: analytische Optima (1D \& 2D mit Hesse), Gradientenabstieg, Newton-Verfahren, Standardform-Umformungen, Transport (Nordwesteck-, Matrix-Minimum-, Vogel-Methode), KKT vollständig lösen, $(1{+}1)$-ES über mehrere Iterationen, Hypervolumen \& HV-Beitrag.}
+
+% ===== A1 =====
+\clearpage
+\aufgabe{1 --- Analytische Optima (eine Variable)}{5}
+Bestimmen Sie analytisch \emph{alle} lokalen Minima und Maxima der Funktion
+\[
+f(x)=2x^3-9x^2+12x.
+\]
+Geben Sie jeweils Lage, Funktionswert und Art (Min/Max) an und begründen Sie über die zweite Ableitung.
+\karo{11cm}
+
+% ===== A2 =====
+\clearpage
+\aufgabe{2 --- Analytische Optima (zwei Variablen, Hesse-Matrix)}{7}
+Bestimmen Sie analytisch die stationären Punkte der Funktion
+\[
+f(\vec x)=x_1^3-3x_1+x_2^2
+\]
+und klassifizieren Sie diese (Minimum / Maximum / Sattelpunkt) über die Hesse-Matrix und deren Eigenwerte.
+\karo{12cm}
+
+% ===== A3 =====
+\clearpage
+\aufgabe{3 --- Gradientenabstieg (ein Schritt)}{5}
+Gegeben sei $f(\vec x)=x_1^2+2x_2^2$. Führen Sie \emph{einen} Schritt des Gradientenabstiegs durch, mit Schrittweite $\lambda=0.1$ und Startpunkt $\vec x_0=(2,1)^{\mathsf T}$. Geben Sie $\nabla f(\vec x_0)$, den neuen Punkt $\vec x_1$ sowie die Funktionswerte $f(\vec x_0)$ und $f(\vec x_1)$ an.
+\karo{10cm}
+
+% ===== A4 =====
+\clearpage
+\aufgabe{4 --- Newton-Verfahren (ein Schritt)}{4}
+Die Funktion $f(x)=\tfrac{1}{3}x^3-2x$ soll minimiert werden. Führen Sie ausgehend von $x_0=2$ \emph{einen} Schritt des Newton-Verfahrens zur Optimierung durch
+\[
+x_{n+1}=x_n-\frac{f'(x_n)}{f''(x_n)},
+\]
+und geben Sie $x_1$ an. Wogegen konvergiert das Verfahren?
+\karo{9cm}
+
+% ===== A5 =====
+\clearpage
+\aufgabe{5 --- Standardform der Linearen Optimierung}{6}
+\begin{enumerate}[label=(\alph*),nosep,leftmargin=1.6em]
+  \item Wandeln Sie die Gleichungs-Nebenbedingung $3x_1-x_2+2x_3=5$ in Ungleichungs-Nebenbedingungen um.
+  \item Wandeln Sie die Ungleichungs-Nebenbedingung $2x_1+5x_2\le 40$ in eine Gleichungs-Nebenbedingung um (Slack-Variable).
+  \item Wandeln Sie die zu maximierende Zielfunktion $f(\vec x)=2x_1-3x_2+x_3$ in eine zu minimierende um.
+  \item Die Variable $x_2$ hat den Wertebereich $x_2\in[-3,8]$. Wie erhält man daraus eine nicht-negative Variable?
+  \item Wozu dienen Slack-/Schlupfvariablen?
+\end{enumerate}
+\karo{9cm}
+
+% ===== A6 =====
+\clearpage
+\aufgabe{6 --- Transportproblem: Nordwesteckenregel}{5}
+Gegeben sei ein klassisches Transportproblem mit $3$ Produktionsstätten (Angebot $30,\,40,\,20$) und $3$ Läden (Nachfrage $25,\,35,\,30$). Transportkosten:
+\[
+C=\begin{pmatrix} 8 & 6 & 10\\ 9 & 12 & 13\\ 14 & 9 & 16 \end{pmatrix}
+\]
+Bestimmen Sie mit der \textbf{Nordwesteckenregel} eine zulässige Startlösung. Dokumentieren Sie Ihr Vorgehen und geben Sie die Gesamttransportkosten an.
+\karo{10cm}
+
+% ===== A7 =====
+\clearpage
+\aufgabe{7 --- Transportproblem: Matrix-Minimum-Methode}{6}
+Bestimmen Sie für das Transportproblem aus Aufgabe 6 (gleiches Angebot, gleiche Nachfrage, gleiche Kostenmatrix $C$) mit der \textbf{Matrix-Minimum-Methode (MMM)} eine zulässige Lösung. Dokumentieren Sie Ihr Vorgehen und geben Sie die Gesamttransportkosten an.
+\karo{11cm}
+
+% ===== A8 =====
+\clearpage
+\aufgabe{8 --- Transportproblem: Vogelsche Approximationsmethode}{7}
+Bestimmen Sie für das Transportproblem aus Aufgabe 6 mit der \textbf{Vogelschen Approximationsmethode (VAM)} eine zulässige Lösung. Dokumentieren Sie die Penalty-Berechnung in jedem Schritt und geben Sie die Gesamttransportkosten an. Vergleichen Sie das Ergebnis mit den Aufgaben 6 und 7.
+\karo{12cm}
+
+% ===== A9 =====
+\clearpage
+\aufgabe{9 --- KKT vollständig lösen}{8}
+Lösen Sie das folgende Problem analytisch mit den KKT-Bedingungen (inkl.\ Fallunterscheidung und Prüfung, ob ein Minimum vorliegt):
+\[
+\min_{\vec x}\ f(x,y)=(x-2)^2+(y-2)^2 \quad\text{u.d.N.}\quad g(x,y): x^2+y^2-1\le 0.
+\]
+\karo{13cm}
+
+% ===== A10 =====
+\clearpage
+\aufgabe{10 --- $(1+1)$-Evolutionsstrategie über mehrere Iterationen}{8}
+Führen Sie per Hand die $(1+1)$-Evolutionsstrategie für die Minimierung von $f(\vec x)=x_1^2+(x_2-1)^2$ durch. Startpunkt $\vec x=(2,2)$, Speicherlänge $g=5$, Schrittweitenmultiplikator $a=2$, initiale Schrittweite $\vec\sigma=(1,1)$. Führen Sie \textbf{5 Iterationen} durch und geben Sie die gefundene Lösung an. Verwenden Sie als $\mathcal N(0,1)$-Zufallswerte nacheinander:
+\[
+0.8,\ 1.5,\ -1.0,\ -1.2,\ -0.9,\ -0.4,\ 0.7,\ 1.0,\ 1.1,\ -0.8.
+\]
+\karo{12cm}
+
+% ===== A11 =====
+\clearpage
+\aufgabe{11 --- Hypervolumen \& Hypervolumen-Beitrag}{7}
+Gegeben sind die folgenden Pareto-optimalen Punkte im Zielraum (Minimierung beider Ziele):
+\[
+P_1=(2,8),\quad P_2=(4,5),\quad P_3=(7,3).
+\]
+Wählen Sie als Referenzpunkt $P_R=(10,10)$.
+\begin{enumerate}[label=(\alph*),nosep,leftmargin=1.6em]
+  \item Bestimmen Sie das Hypervolumen der Pareto-Front.
+  \item Bestimmen Sie den Hypervolumen-Beitrag $HVC$ jedes einzelnen Punktes.
+\end{enumerate}
+\karo{10cm}
+
+\vfill
+\begin{center}{\color{gridcol}\small--- Ende Probeklausur 02 ---}\end{center}
+\end{document}
