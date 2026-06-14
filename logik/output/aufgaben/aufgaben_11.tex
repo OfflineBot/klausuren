@@ -1,0 +1,511 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage[margin=2cm]{geometry}
+\usepackage{enumitem}
+\usepackage{array}
+\usepackage[table]{xcolor}
+\usepackage{tikz}
+\usepackage[most]{tcolorbox}
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{accent}{HTML}{6CB6FF}
+\definecolor{loescol}{HTML}{7FD18C}
+\definecolor{panel}{HTML}{2A2A2A}
+\definecolor{warncol}{HTML}{F0A868}
+\pagecolor{bgdark}
+\color{fgtext}
+\arrayrulecolor{fgtext}
+\setlength{\parindent}{0pt}
+
+\newcommand{\karo}[1]{\par\noindent\begin{tikzpicture}\draw[step=5mm,gridcol,very thin](0,0) grid (\linewidth,#1);\end{tikzpicture}\par\vspace{1mm}}
+\newcommand{\block}[2]{\clearpage{\Large\color{accent}\textbf{#1}}\hfill{\color{gridcol}\small Schwerpunkt: #2}\par\vspace{1mm}{\color{gridcol}\rule{\linewidth}{0.4pt}}\par\vspace{2mm}}
+\newcommand{\uebung}[2]{\par\vspace{2mm}\noindent{\large\color{accent}\textbf{Übung #1}}\hfill{\color{gridcol}[#2]}\par\vspace{1mm}}
+\newtcolorbox{vorgehen}{colback=panel,colframe=loescol,coltext=fgtext,
+  fonttitle=\bfseries\color{bgdark},title={So geht's --- Vorgehen \& Musterbeispiel},
+  colbacktitle=loescol,boxrule=0.6pt,arc=2pt,left=2mm,right=2mm,top=1mm,bottom=1mm,breakable}
+\newtcolorbox{merke}{colback=panel,colframe=warncol,coltext=fgtext,
+  fonttitle=\bfseries\color{bgdark},title={Achtung --- typische Fehlerquelle},
+  colbacktitle=warncol,boxrule=0.6pt,arc=2pt,left=2mm,right=2mm,top=1mm,bottom=1mm,breakable}
+
+\begin{document}
+
+% ====================== KOPF ======================
+\begin{center}
+  {\LARGE\color{accent}\textbf{Übungsaufgaben Logik --- gezieltes Nacharbeiten}}\\[3pt]
+  {\large RADM Teil A --- Schwerpunkte aus der Probeklausur}\\[2pt]
+  {\small Blatt 11 \quad$\bullet$\quad Erklärung + eigene Aufgaben \quad$\bullet$\quad Fokus: KNF/DNF/kDN/kKN \& KV-Diagramme}
+\end{center}
+\vspace{2mm}
+\noindent\textbf{Name:}\ \underline{\hspace{6cm}}\hfill\textbf{Datum:}\ \underline{\hspace{4cm}}\\[4pt]
+{\color{gridcol}\rule{\linewidth}{0.4pt}}
+\vspace{2mm}
+
+\noindent Dieses Blatt arbeitet genau die Stellen auf, an denen es in der Probeklausur gehakt hat. In jedem Block steht zuerst ein \textbf{vollständig vorgerechnetes Beispiel} (grüner Kasten ,,So geht's``), danach kommen \textbf{2--3 Aufgaben, die du selbst löst} (Karo-Fläche). Die Musterlösungen stehen in \texttt{loesungen\_11.pdf}. Notation: Negation $\neg a$ (Aussagenlogik) bzw.\ $a'$ (Schaltalgebra) --- beides bedeutet dasselbe.
+
+\noindent\vspace{2mm}\\
+{\small\color{gridcol}Reihenfolge der Blöcke: A) DNF \& KNF \quad B) kanonische kDN \& kKN aus der Wahrheitstafel \quad C) KV-Diagramme \& Minimalform \quad D) Mengen (Potenz-/Kreuzprodukt) \quad E) Relationen (irreflexiv/asymmetrisch) \quad F) Abbildungen \& Schubfach \quad G) A$^\ast$ ablesen.}
+
+% =======================================================================
+% BLOCK A
+% =======================================================================
+\block{Block A --- Disjunktive (DNF) \& Konjunktive (KNF) Normalform}{Umformen mit Gesetzen}
+
+\begin{vorgehen}
+\textbf{Worum geht's?}
+\begin{itemize}[nosep,leftmargin=1.4em]
+  \item \textbf{DNF} = \emph{ODER von UNDs}: eine $\vee$-Verknüpfung von Konjunktionstermen, z.\,B. $(a\wedge\neg b)\vee(\neg a\wedge c)$.
+  \item \textbf{KNF} = \emph{UND von ODERs}: eine $\wedge$-Verknüpfung von Disjunktionstermen, z.\,B. $(a\vee\neg b)\wedge(\neg a\vee c)$.
+\end{itemize}
+\textbf{Werkzeugkasten:}
+\[
+a\to b \equiv \neg a\vee b,\qquad
+a\leftrightarrow b \equiv (a\wedge b)\vee(\neg a\wedge \neg b),\qquad
+\neg(a\wedge b)\equiv\neg a\vee\neg b,\quad \neg(a\vee b)\equiv\neg a\wedge\neg b
+\]
+\[
+\text{für \textbf{DNF}: } a\wedge(b\vee c)\equiv (a\wedge b)\vee(a\wedge c)\qquad\qquad
+\text{für \textbf{KNF}: } a\vee(b\wedge c)\equiv (a\vee b)\wedge(a\vee c)
+\]
+\textbf{Merkregel:} Für eine DNF willst du am Ende nur noch $\vee$ ,,ganz außen``; für eine KNF nur noch $\wedge$ ,,ganz außen``. Entsprechend das passende Distributivgesetz wählen.
+\par\vspace{2mm}
+\textbf{Beispiel:} Bestimme DNF \emph{und} KNF von $\;F = a\vee(b\wedge\neg c)$.
+\begin{itemize}[nosep,leftmargin=1.4em]
+  \item \textbf{DNF:} $F = a\vee(b\wedge\neg c)$ ist bereits ein ODER von UND-Termen (der erste Term ist das einzelne Literal $a$). \textbf{Fertig.}
+  \item \textbf{KNF:} $\vee$ über $\wedge$ ziehen:
+  \[
+  a\vee(b\wedge\neg c) = (a\vee b)\wedge(a\vee\neg c).\quad\text{\textbf{Fertig (KNF).}}
+  \]
+\end{itemize}
+Dieselbe Funktion --- zwei verschiedene Normalformen, je nachdem welche Verknüpfung außen steht.
+\end{vorgehen}
+
+\clearpage
+\uebung{A1}{leicht}
+Bestimme jeweils eine \textbf{DNF} und eine \textbf{KNF} von
+\[ F(a,b,c) = (a\vee b)\wedge\neg c. \]
+\karo{9cm}
+
+\clearpage
+\uebung{A2}{mittel}
+Gegeben $F(a,b,c) = (a\to b)\wedge(b\to c)$.
+\begin{enumerate}[nosep,label=(\alph*),leftmargin=1.6em]
+  \item Forme zuerst die Implikationen um. Welche Normalform (DNF oder KNF) liegt dann unmittelbar vor?
+  \item Bestimme anschließend die jeweils \emph{andere} Normalform durch Ausmultiplizieren.
+\end{enumerate}
+\karo{11cm}
+
+\clearpage
+\uebung{A3}{mittel}
+Bestimme eine \textbf{DNF} und eine \textbf{KNF} von $\;F(a,b) = \neg(a\leftrightarrow b)$ (das ist das ,,exklusive Oder``).
+\karo{10cm}
+
+% =======================================================================
+% BLOCK B
+% =======================================================================
+\block{Block B --- Kanonische DNF (kDN) \& kanonische KNF (kKN) aus der Wahrheitstafel}{aus Wertetabellen ablesen}
+
+\begin{vorgehen}
+\textbf{Idee:} Stelle die volle Wahrheitstafel auf. Dann liest du die kanonischen Formen direkt zeilenweise ab:
+\begin{itemize}[nosep,leftmargin=1.4em]
+  \item \textbf{kDN} $\to$ schaue auf die \textbf{1-Zeilen}. Pro 1-Zeile ein \textbf{UND-Term (Minterm)} über \emph{alle} Variablen: Variable \emph{direkt}, wenn sie in der Zeile $1$ ist, \emph{negiert}, wenn $0$. Alle Minterme mit $\vee$ verbinden.
+  \item \textbf{kKN} $\to$ schaue auf die \textbf{0-Zeilen}. Pro 0-Zeile ein \textbf{ODER-Term (Maxterm)} über \emph{alle} Variablen: Variable \emph{direkt}, wenn sie in der Zeile $0$ ist, \emph{negiert}, wenn $1$ (also genau umgekehrt zur kDN!). Alle Maxterme mit $\wedge$ verbinden.
+\end{itemize}
+\textbf{Eselsbrücke:} \emph{kD\underline{N} = Ein\underline{s}en, Variable so wie sie ist bei 1}. \emph{kK\underline{N} = N\underline{u}llen, Variable so wie sie ist bei 0}.
+\par\vspace{2mm}
+\textbf{Beispiel:} $F(a,b,c)$ sei durch die Tafel gegeben:
+\par\vspace{1mm}
+\renewcommand{\arraystretch}{1.15}
+\begin{center}
+\begin{tabular}{ccc|c|l}
+$a$&$b$&$c$&$F$ & \\\hline
+0&0&0&0 & \\
+0&0&1&\textbf{1} & $\to$ Minterm $\neg a\wedge\neg b\wedge c$\\
+0&1&0&\textbf{1} & $\to$ Minterm $\neg a\wedge b\wedge\neg c$\\
+0&1&1&0 & $\to$ Maxterm $(a\vee\neg b\vee\neg c)$\\
+1&0&0&0 & $\to$ Maxterm $(\neg a\vee b\vee c)$\\
+1&0&1&0 & $\to$ Maxterm $(\neg a\vee b\vee\neg c)$\\
+1&1&0&0 & $\to$ Maxterm $(\neg a\vee\neg b\vee c)$\\
+1&1&1&\textbf{1} & $\to$ Minterm $a\wedge b\wedge c$\\
+\end{tabular}
+\end{center}
+\renewcommand{\arraystretch}{1}
+\[
+\textbf{kDN} = (\neg a\wedge\neg b\wedge c)\vee(\neg a\wedge b\wedge\neg c)\vee(a\wedge b\wedge c)
+\]
+\[
+\textbf{kKN} = (a\vee\neg b\vee\neg c)\wedge(\neg a\vee b\vee c)\wedge(\neg a\vee b\vee\neg c)\wedge(\neg a\vee\neg b\vee c)
+\]
+(Probe: $3$ Einsen $\Rightarrow$ $3$ Minterme in der kDN; $5$ Nullen $\Rightarrow$ $5$ Maxterme in der kKN.)
+\end{vorgehen}
+
+\clearpage
+\uebung{B1}{leicht}
+$F(a,b,c)$ sei $1$ \textbf{genau dann, wenn genau eine} der drei Variablen $1$ ist.
+\begin{enumerate}[nosep,label=(\alph*),leftmargin=1.6em]
+  \item Stelle die vollständige Wahrheitstafel auf.
+  \item Lies die \textbf{kDN} ab.
+  \item Lies die \textbf{kKN} ab.
+\end{enumerate}
+\karo{11cm}
+
+\clearpage
+\uebung{B2}{mittel}
+Gegeben ist die folgende Wahrheitstafel von $F(a,b,c)$ (Zeilen in Reihenfolge $000,001,\dots,111$):
+\par\vspace{1mm}
+\begin{center}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{ccc|c}
+$a$&$b$&$c$&$F$\\\hline
+0&0&0&1\\ 0&0&1&0\\ 0&1&0&0\\ 0&1&1&1\\
+1&0&0&1\\ 1&0&1&0\\ 1&1&0&1\\ 1&1&1&0\\
+\end{tabular}
+\renewcommand{\arraystretch}{1}
+\end{center}
+Gib die \textbf{kDN} und die \textbf{kKN} an.
+\karo{9cm}
+
+\clearpage
+\uebung{B3}{mittel}
+Betrachte die Implikation $F(a,b) = a\to b$.
+\begin{enumerate}[nosep,label=(\alph*),leftmargin=1.6em]
+  \item Stelle die Wahrheitstafel auf.
+  \item Gib die \textbf{kDN} und die \textbf{kKN} an.
+  \item Vergleiche die kKN mit dem bekannten Ausdruck $\neg a\vee b$. Was fällt auf?
+\end{enumerate}
+\karo{9cm}
+
+% =======================================================================
+% BLOCK C
+% =======================================================================
+\block{Block C --- KV-Diagramme \& Disjunktive Minimalform (DM)}{Blöcke bilden, Rand beachten}
+
+\begin{vorgehen}
+\textbf{Schritt für Schritt:}
+\begin{enumerate}[nosep,leftmargin=1.6em]
+  \item \textbf{Felder gruppieren} (,,Blöcke``): rechteckige Gruppen aus $1$en, deren Größe eine Zweierpotenz ist ($1,2,4,8,\dots$). \textbf{So groß wie möglich!} Blöcke dürfen sich überlappen.
+  \item \textbf{Rand-Trick (wichtig!):} Das Diagramm ist außen ,,zusammengeklebt`` (wie ein Schlauch/Torus): \emph{linke Spalte berührt rechte Spalte}, \emph{oberste Zeile berührt unterste Zeile}. $1$en an gegenüberliegenden Rändern sind benachbart und bilden zusammen einen Block. Auch die \emph{vier Ecken} bilden einen $2\times2$-Block.
+  \item \textbf{Block ablesen:} Behalte nur die Variablen, die im ganzen Block \emph{konstant} sind --- konstant $1$ $\Rightarrow$ Variable direkt, konstant $0$ $\Rightarrow$ negiert. Variablen, die im Block wechseln, fallen weg.
+  \item \textbf{DM} $=$ ODER-Verknüpfung der (möglichst wenigen, möglichst großen) Blöcke, die \emph{alle} $1$en abdecken.
+\end{enumerate}
+\textbf{Beispiel (4 Variablen).} Spalten $a,b$ in Reihenfolge $00,01,11,10$; Zeilen $c,d$ in Reihenfolge $00,01,11,10$ (Gray-Code: zwischen Nachbarn ändert sich nur ein Bit).
+\par\vspace{1mm}
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{cc|cccc}
+ & & \multicolumn{4}{c}{$a,b$}\\
+ & & $00$ & $01$ & $11$ & $10$\\\hline
+$c,d$
+ & $00$ & $1$ & $1$ & $1$ & $1$\\
+ & $01$ &     &     & $1$ & $1$\\
+ & $11$ &     &     & $1$ & $1$\\
+ & $10$ & $1$ & $1$ & $1$ & $1$\\
+\end{tabular}
+\renewcommand{\arraystretch}{1}
+\end{center}
+\begin{itemize}[nosep,leftmargin=1.4em]
+  \item \textbf{Block 1 (Rand oben+unten):} Zeile $cd{=}00$ und Zeile $cd{=}10$ sind über den oberen/unteren Rand benachbart $\Rightarrow$ ein $2\times4$-Block. In beiden Zeilen ist $d=0$ konstant ($c$ wechselt, $a,b$ wechseln) $\Rightarrow$ Block $=d'$.
+  \item \textbf{Block 2 (rechte Spalten):} Spalten $ab{=}11$ und $ab{=}10$, alle Zeilen $\Rightarrow$ $4\times2$-Block. In beiden ist $a=1$ konstant ($b$ wechselt) $\Rightarrow$ Block $=a$.
+\end{itemize}
+\[
+\boxed{\textbf{DM} = a\vee d'}
+\]
+\textbf{Genau hier lag der Klausurfehler:} Wer Block 1 \emph{nicht} über den Rand bildet, nimmt zwei kleinere $1\times4$-Blöcke ($c'd'$ oben und $cd'$ unten) und erhält $a\vee(c'd')\vee(cd')$ --- richtig wäre der eine große Block $d'$, also $a\vee d'$.
+\end{vorgehen}
+
+\begin{merke}
+$a'$ heißt ,,$a$ negiert``. Ein Block mit $2^k$ Feldern eliminiert genau $k$ Variablen. Wenn dein DM-Term \emph{mehr} Literale hat als nötig, war dein Block zu klein --- suche nach einer Vergrößerung (auch über den Rand!).
+\end{merke}
+
+\clearpage
+\uebung{C1}{leicht}
+$3$ Variablen. Spalten $b,c$ in Reihenfolge $00,01,11,10$; Zeilen $a=0,1$. Bestimme die DM:
+\par\vspace{1mm}
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{c|cccc}
+\multicolumn{1}{c}{} & \multicolumn{4}{c}{$b,c$}\\
+$a$ & $00$ & $01$ & $11$ & $10$\\\hline
+$0$ & $0$ & $0$ & $1$ & $1$\\
+$1$ & $0$ & $0$ & $1$ & $1$\\
+\end{tabular}
+\renewcommand{\arraystretch}{1}
+\end{center}
+\karo{7cm}
+
+\clearpage
+\uebung{C2}{mittel}
+$4$ Variablen. Spalten $a,b$ ($00,01,11,10$), Zeilen $c,d$ ($00,01,11,10$). Bestimme die DM (Tipp: ein waagrechter $2\times4$-Block und ein senkrechter $4\times1$-Block):
+\par\vspace{1mm}
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{cc|cccc}
+ & & \multicolumn{4}{c}{$a,b$}\\
+ & & $00$ & $01$ & $11$ & $10$\\\hline
+$c,d$
+ & $00$ & $1$ & $1$ & $1$ & $1$\\
+ & $01$ & $1$ & $1$ & $1$ & $1$\\
+ & $11$ &     &     & $1$ &    \\
+ & $10$ &     &     & $1$ &    \\
+\end{tabular}
+\renewcommand{\arraystretch}{1}
+\end{center}
+\karo{8cm}
+
+\clearpage
+\uebung{C3}{schwer}
+$4$ Variablen (Spalten $a,b$; Zeilen $c,d$, je $00,01,11,10$). Hier sind nur die \textbf{vier Ecken} mit $1$ belegt. Bestimme die DM (denk an den Rand-Trick --- die Ecken bilden \emph{einen} Block!):
+\par\vspace{1mm}
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{cc|cccc}
+ & & \multicolumn{4}{c}{$a,b$}\\
+ & & $00$ & $01$ & $11$ & $10$\\\hline
+$c,d$
+ & $00$ & $1$ &     &     & $1$\\
+ & $01$ &     &     &     &    \\
+ & $11$ &     &     &     &    \\
+ & $10$ & $1$ &     &     & $1$\\
+\end{tabular}
+\renewcommand{\arraystretch}{1}
+\end{center}
+\karo{8cm}
+
+% =======================================================================
+% BLOCK D
+% =======================================================================
+\block{Block D --- Mengen (ausführlich)}{Operationen, Potenzmenge, Kreuzprodukt, Beweise}
+
+\begin{vorgehen}
+\textbf{Operationen} (Grundmenge $E$):\quad
+$A\cap B$ = was in \emph{beiden} liegt; \;$A\cup B$ = in \emph{mindestens einem}; \;$A\setminus B$ = in $A$, \emph{nicht} in $B$; \;$\overline{A}=E\setminus A$ = Komplement.
+\par\vspace{1.5mm}
+\textbf{Potenzmenge} $\mathcal{P}(A)$ = Menge \emph{aller Teilmengen} von $A$. Ihre Elemente sind selbst \textbf{Mengen}; $|\mathcal{P}(A)|=2^{|A|}$.
+\par\vspace{1mm}
+\textbf{Kreuzprodukt} $A\times B=\{(x,y)\mid x\in A,\,y\in B\}$ = Menge \emph{geordneter Paare}. Ihre Elemente sind \textbf{Tupel}; $|A\times B|=|A|\cdot|B|$. Reihenfolge zählt: i.\,A.\ $A\times B\neq B\times A$.
+\par\vspace{1mm}
+\textbf{DeMorgan:} $\overline{A\cup B}=\overline{A}\cap\overline{B}$,\; $\overline{A\cap B}=\overline{A}\cup\overline{B}$.\qquad
+\textbf{Distributiv:} $A\cap(B\cup C)=(A\cap B)\cup(A\cap C)$.\qquad
+\textbf{Kardinalität:} $|A\cup B|=|A|+|B|-|A\cap B|$.
+\par\vspace{2mm}
+\textbf{Beispiel 1 (Potenzmenge \& Kreuzprodukt).} $A=\{1,2\}$:
+\[
+\mathcal{P}(A)=\{\,\emptyset,\ \{1\},\ \{2\},\ \{1,2\}\,\}\ \ (4\text{ Mengen}),\qquad
+A\times A=\{(1,1),(1,2),(2,1),(2,2)\}\ \ (4\text{ Paare}).
+\]
+Eine Menge $\{1\}$ ist nie gleich einem Paar $(1,2)$ $\Rightarrow$ kein gemeinsames Element $\Rightarrow$ $\;\mathcal{P}(A)\cap(A\times A)=\emptyset$.
+\par\vspace{2mm}
+\textbf{Beispiel 2 ($\in$ gegen $\subseteq$).} Mit $A=\{1,2\}$:
+\[
+1\in A\ \text{(wahr)},\quad \{1\}\subseteq A\ \text{(wahr, denn $1\in A$)},\quad \{1\}\in A\ \text{(falsch)},\quad \{1\}\in\mathcal{P}(A)\ \text{(wahr)}.
+\]
+\end{vorgehen}
+
+\begin{merke}
+$\in$ (,,ist Element von``) und $\subseteq$ (,,ist Teilmenge von``) sind \emph{nicht} dasselbe! $1$ ist ein \emph{Element} von $\{1,2\}$, aber $\{1\}$ ist eine \emph{Teilmenge}. Merke: $\emptyset\subseteq A$ gilt \emph{immer}; $\emptyset\in A$ nur, wenn $\emptyset$ wirklich aufgelistet ist. Und: Mengen $\{x\}$ sind keine Paare $(x,y)$ --- darum $\mathcal{P}(A)\cap(A\times A)=\emptyset$.
+\end{merke}
+
+\clearpage
+\uebung{D1 --- Grundoperationen}{leicht}
+Grundmenge $E=\{1,2,\dots,10\}$, sowie $A=\{1,2,3,4,6,8\}$, $B=\{2,3,5,7\}$, $C=\{4,5,6\}$. Bestimme:
+\[
+A\cap B,\quad A\cup C,\quad A\setminus B,\quad B\setminus A,\quad \overline{C}\;(=E\setminus C),\quad (A\cap B)\cup C.
+\]
+\karo{7cm}
+
+\clearpage
+\uebung{D2 --- Potenzmenge}{leicht}
+\begin{enumerate}[nosep,label=(\alph*),leftmargin=1.6em]
+  \item Sei $M=\{p,q,r\}$. Gib $\mathcal{P}(M)$ vollständig an und bestimme $|\mathcal{P}(M)|$.
+  \item Bestimme $\mathcal{P}(\mathcal{P}(\emptyset))$ und $|\mathcal{P}(\mathcal{P}(\emptyset))|$.
+\end{enumerate}
+\karo{8cm}
+
+\clearpage
+\uebung{D3 --- Kreuzprodukt}{leicht}
+$M=\{a,b\}$, $N=\{1,2,3\}$.
+\begin{enumerate}[nosep,label=(\alph*),leftmargin=1.6em]
+  \item Gib $M\times N$ an und bestimme $|M\times N|$.
+  \item Gib $N\times M$ an. Gilt $M\times N = N\times M$? Begründe.
+\end{enumerate}
+\karo{8cm}
+
+\clearpage
+\uebung{D4 --- DeMorgan}{mittel}
+$E=\{1,2,\dots,8\}$, $A=\{1,2,3,4\}$, $B=\{3,4,5,6\}$. Verifiziere durch Berechnung \emph{beider} Seiten:
+\begin{enumerate}[nosep,label=(\alph*),leftmargin=1.6em]
+  \item $\overline{A\cup B}=\overline{A}\cap\overline{B}$,
+  \item $\overline{A\cap B}=\overline{A}\cup\overline{B}$.
+\end{enumerate}
+\karo{9cm}
+
+\clearpage
+\uebung{D5 --- Potenzmenge $\cap$ Kreuzprodukt}{mittel}
+Sei $A=\{x,y\}$ und $B=\{y,z\}$.
+\begin{enumerate}[nosep,label=(\alph*),leftmargin=1.6em]
+  \item Bestimme $A\times B$.
+  \item Bestimme $\mathcal{P}(A)\cap(A\times A)$.
+  \item Wie viele Elemente hat $\mathcal{P}(A\times B)$?
+\end{enumerate}
+\karo{8cm}
+
+\clearpage
+\uebung{D6 --- $\in$ oder $\subseteq$?}{mittel}
+Sei $A=\{1,2,\{3\}\}$. Entscheide jeweils \textbf{wahr} oder \textbf{falsch} (mit kurzer Begründung):
+\begin{enumerate}[nosep,label=(\alph*),leftmargin=1.6em]
+  \item $1\in A$ \qquad (b) $3\in A$ \qquad (c) $\{3\}\in A$ \qquad (d) $\{1\}\subseteq A$
+  \item[(e)] $\{1\}\in A$ \qquad (f) $\emptyset\subseteq A$ \qquad (g) $\emptyset\in A$ \qquad (h) $\{1,2\}\subseteq A$
+\end{enumerate}
+\karo{8cm}
+
+\clearpage
+\uebung{D7 --- Mengenbeweis}{schwer}
+Beweise für beliebige Mengen $A,B,C$ das Distributivgesetz
+\[ A\cap(B\cup C) = (A\cap B)\cup(A\cap C). \]
+\emph{Hinweis:} Element-Beweis --- zeige ,,$x\in$ linke Seite $\Leftrightarrow x\in$ rechte Seite`` und nutze das aussagenlogische Distributivgesetz.
+\karo{8cm}
+
+\clearpage
+\uebung{D8 --- Kardinalität (Inklusion-Exklusion)}{mittel}
+In einer Gruppe von $30$ Studierenden belegen $18$ den Kurs Mathe, $15$ den Kurs Physik, und $8$ belegen \emph{beide}.
+\begin{enumerate}[nosep,label=(\alph*),leftmargin=1.6em]
+  \item Wie viele belegen \emph{mindestens einen} der beiden Kurse?
+  \item Wie viele belegen \emph{keinen}?
+  \item Wie viele belegen \emph{genau einen}?
+\end{enumerate}
+\karo{7cm}
+
+% =======================================================================
+% BLOCK E
+% =======================================================================
+\block{Block E --- Relationen: Fokus irreflexiv \& asymmetrisch}{die Rolle der $(x,x)$-Paare}
+
+\begin{vorgehen}
+\textbf{Die sechs Eigenschaften --- und worauf du achten musst:}
+\begin{itemize}[nosep,leftmargin=1.4em]
+  \item \textbf{Reflexiv:} \emph{alle} $(x,x)\in R$.
+  \item \textbf{Irreflexiv:} \emph{kein} $(x,x)\in R$. \;$\Rightarrow$ Schon \emph{ein einziges} $(x,x)\in R$ macht $R$ \textbf{nicht} irreflexiv. (,,Nicht reflexiv`` und ,,irreflexiv`` sind \emph{nicht} dasselbe --- eine Relation kann \emph{weder} reflexiv \emph{noch} irreflexiv sein.)
+  \item \textbf{Symmetrisch:} aus $(x,y)\in R$ folgt $(y,x)\in R$.
+  \item \textbf{Asymmetrisch:} aus $(x,y)\in R$ folgt $(y,x)\notin R$. \;$\Rightarrow$ Das schließt $(x,x)$ aus: wäre $(x,x)\in R$, müsste $(x,x)\notin R$ sein --- Widerspruch. \textbf{Ein einziges $(x,x)\in R$ macht $R$ also nicht asymmetrisch.} (Jede asymmetrische Relation ist automatisch irreflexiv.)
+  \item \textbf{Antisymmetrisch:} aus $(x,y)\in R$ \emph{und} $(y,x)\in R$ folgt $x=y$. (Reflexive Paare $(x,x)$ sind hier \emph{erlaubt}.)
+  \item \textbf{Transitiv:} aus $(x,y)\in R$ und $(y,z)\in R$ folgt $(x,z)\in R$.
+\end{itemize}
+\textbf{Beispiel:} $M=\{a,b,c\}$, $R=\{(a,a),(a,b),(b,c),(a,c)\}$.
+\begin{enumerate}[nosep,leftmargin=1.8em,label=\arabic*.]
+  \item Reflexiv? \textbf{Nein}, $(b,b),(c,c)\notin R$.
+  \item Irreflexiv? \textbf{Nein}, denn $(a,a)\in R$.
+  \item Symmetrisch? \textbf{Nein}, $(a,b)\in R$ aber $(b,a)\notin R$.
+  \item Asymmetrisch? \textbf{Nein}, denn $(a,a)\in R$.
+  \item Antisymmetrisch? \textbf{Ja}, kein Paar $(x,y)$ mit $x\neq y$ hat auch $(y,x)$.
+  \item Transitiv? \textbf{Ja}, $(a,b)\wedge(b,c)\Rightarrow(a,c)\in R$, sonst nichts Neues.
+\end{enumerate}
+\end{vorgehen}
+
+\clearpage
+\uebung{E1}{mittel}
+$M=\{1,2,3\}$, $R=\{(1,2),(2,3),(1,3)\}$ (die strikte Ordnung $<$). Prüfe alle sechs Eigenschaften (reflexiv, irreflexiv, symmetrisch, asymmetrisch, antisymmetrisch, transitiv) mit kurzer Begründung. Achte besonders auf irreflexiv \& asymmetrisch.
+\karo{10cm}
+
+\clearpage
+\uebung{E2}{mittel}
+$M=\{1,2,3\}$, $R=\{(1,1),(2,2),(3,3),(1,2),(2,1)\}$. Prüfe alle sechs Eigenschaften mit kurzer Begründung. Um welche besondere Art von Relation handelt es sich?
+\karo{10cm}
+
+% =======================================================================
+% BLOCK F
+% =======================================================================
+\block{Block F --- Abbildungen \& Schubfachprinzip}{$|D|>|W|$, nicht $\neq$}
+
+\begin{vorgehen}
+\textbf{Begriffe:}
+\begin{itemize}[nosep,leftmargin=1.4em]
+  \item \textbf{injektiv:} verschiedene Urbilder $\to$ verschiedene Bilder ($x\neq y\Rightarrow f(x)\neq f(y)$); jedes Zielelement wird \emph{höchstens einmal} getroffen.
+  \item \textbf{surjektiv:} jedes Element der Zielmenge wird \emph{mindestens einmal} getroffen.
+  \item \textbf{bijektiv:} injektiv \emph{und} surjektiv.
+\end{itemize}
+\textbf{Abzählkriterium (Schubfachprinzip):}
+\[
+\text{injektiv möglich} \iff |D|\le|W|,\qquad
+\text{surjektiv möglich} \iff |D|\ge|W|.
+\]
+\begin{merke}\small
+In der Klausur war die Begründung ,,$|D|\neq|W|$`` --- das reicht \textbf{nicht}! Bei $|D|<|W|$ ist eine injektive Abbildung sehr wohl möglich. Was Injektivität verhindert, ist allein $|D|>|W|$: dann müssen nach dem Schubfachprinzip zwei Urbilder dasselbe Bild teilen.
+\end{merke}
+\textbf{Beispiel:} $D=\{1,2,3\}$, $W=\{x,y\}$. Es ist $|D|=3>2=|W|$. Bei drei Urbildern und nur zwei möglichen Bildern landen zwei verschiedene Urbilder auf demselben Bild $\Rightarrow$ \emph{nicht} injektiv.
+\end{vorgehen}
+
+\clearpage
+\uebung{F1}{leicht}
+$D=\{1,2,3,4,5,6\}$, $W=\{a,b,c\}$.
+\begin{enumerate}[nosep,label=(\alph*),leftmargin=1.6em]
+  \item Ist eine \emph{injektive} Abbildung $f:D\to W$ möglich? Begründe mit $|D|,|W|$.
+  \item Ist eine \emph{surjektive} Abbildung $f:D\to W$ möglich? Begründe.
+\end{enumerate}
+\karo{8cm}
+
+\clearpage
+\uebung{F2}{mittel}
+Untersuche jede Abbildung auf injektiv / surjektiv / bijektiv:
+\begin{enumerate}[nosep,label=(\alph*),leftmargin=1.6em]
+  \item $f:\mathbb{R}\to\mathbb{R}$, $f(x)=3x-2$.
+  \item $g:\mathbb{R}\to\mathbb{R}$, $g(x)=x^2$.
+\end{enumerate}
+\karo{8cm}
+
+% =======================================================================
+% BLOCK G
+% =======================================================================
+\block{Block G --- A$^\ast$-Algorithmus: Tabelle führen und Pfad ablesen}{Rückverfolgung}
+
+\begin{vorgehen}
+\textbf{Ablauf:} Jeder Knoten hat $g$ (kürzeste bekannte Distanz vom Start), $h$ (Heuristik) und $f=g+h$.
+\begin{enumerate}[nosep,leftmargin=1.6em]
+  \item Start: $g(\text{Start})=0$. Offene Liste $=\{\text{Start}\}$.
+  \item Wähle aus der offenen Liste den Knoten mit \emph{kleinstem $f$} und expandiere ihn.
+  \item \textbf{Relaxieren:} für jeden Nachbarn $n$ über den aktuellen Knoten $u$: $g_{\text{neu}}=g(u)+w(u,n)$. Ist $g_{\text{neu}}<g(n)$, dann $g(n):=g_{\text{neu}}$ und \textbf{Vorgänger} $a(n):=u$ merken.
+  \item Wiederhole, bis das Ziel expandiert wird.
+  \item \textbf{Pfad ablesen (das ist der Knackpunkt!):} Beim Ziel anfangen und den \emph{Vorgängern $a(\cdot)$ rückwärts} bis zum Start folgen, dann die Reihenfolge umdrehen. Die \textbf{Länge} ist $g(\text{Ziel})$.
+\end{enumerate}
+\textbf{Beispiel (der Klausurgraph):} Kanten $A\text{-}B{:}2,\ A\text{-}C{:}4,\ B\text{-}C{:}1,\ B\text{-}D{:}7,\ C\text{-}E{:}3,\ D\text{-}E{:}2,\ D\text{-}F{:}1,\ E\text{-}F{:}5$; \;$h(A){=}8,h(B){=}7,h(C){=}6,h(D){=}1,h(E){=}3,h(F){=}0$.
+\par\vspace{1mm}
+\renewcommand{\arraystretch}{1.2}
+\begin{center}
+\begin{tabular}{c|l|l|l}
+\textbf{Schritt} & \textbf{expandiert} & \textbf{Updates} $(g,a)$ & \textbf{offen} $(f{=}g{+}h)$\\\hline
+1 & $A\,(g{=}0)$ & $B{:}\,2,A$;\ $C{:}\,4,A$ & $B(9),C(10)$\\
+2 & $B\,(g{=}2)$ & $C{:}\,3,B$;\ $D{:}\,9,B$ & $C(9),D(10)$\\
+3 & $C\,(g{=}3)$ & $E{:}\,6,C$ & $E(9),D(10)$\\
+4 & $E\,(g{=}6)$ & $D{:}\,8,E$;\ $F{:}\,11,E$ & $D(9),F(11)$\\
+5 & $D\,(g{=}8)$ & $F{:}\,9,D$ & $F(9)$\\
+6 & $F\,(g{=}9)$ & Ziel erreicht & ---\\
+\end{tabular}
+\end{center}
+\renewcommand{\arraystretch}{1}
+\textbf{Rückverfolgung:} $F\xleftarrow{a}D\xleftarrow{a}E\xleftarrow{a}C\xleftarrow{a}B\xleftarrow{a}A$. \quad
+\[
+\boxed{\text{Pfad: } A\text{-}B\text{-}C\text{-}E\text{-}D\text{-}F,\qquad \text{Länge } = g(F) = 9.}
+\]
+\end{vorgehen}
+
+\clearpage
+\uebung{G1}{mittel}
+Wende den A$^\ast$-Algorithmus auf folgenden Graphen an (Start $S$, Ziel $Z$). Kanten:
+\[ S\text{-}A{:}1,\ S\text{-}B{:}4,\ A\text{-}B{:}2,\ A\text{-}C{:}5,\ B\text{-}C{:}1,\ B\text{-}D{:}3,\ C\text{-}Z{:}2,\ D\text{-}Z{:}4. \]
+Heuristik: $h(S){=}6,\ h(A){=}5,\ h(B){=}3,\ h(C){=}2,\ h(D){=}4,\ h(Z){=}0$.
+Führe die Tabelle und gib den kürzesten Pfad $S\to Z$ samt Länge an.
+\karo{11cm}
+
+\clearpage
+\uebung{G2}{leicht}
+Reines Ablesen: Ein A$^\ast$-Lauf von $S$ nach $T$ ist fertig. Die gemerkten Vorgänger sind
+\[ a(T)=R,\quad a(R)=Q,\quad a(Q)=P,\quad a(P)=S,\qquad g(T)=11. \]
+Gib den kürzesten Pfad als Knotenfolge und seine Länge an.
+\karo{5cm}
+
+\vfill
+\begin{center}{\color{gridcol}\small--- Ende Blatt 11 --- viel Erfolg beim Üben! ---}\end{center}
+
+\end{document}
