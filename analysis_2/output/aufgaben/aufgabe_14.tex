@@ -1,0 +1,176 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{array}
+\usepackage[a4paper,margin=2.2cm]{geometry}
+
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{accent}{HTML}{6CB6FF}
+\definecolor{leicht}{HTML}{7BD88F}
+\definecolor{mittel}{HTML}{E6C07B}
+\definecolor{schwer}{HTML}{E06C75}
+\pagecolor{bgdark}
+\color{fgtext}
+
+\newcommand{\karo}[1]{\par\noindent
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcol, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par}
+\newcommand{\aufgabe}[4]{\vspace{0.4em}\par\noindent
+  \textbf{\large Aufgabe #1}\quad #2 \hfill {\color{#3}\textbf{[#4]}}\par\smallskip}
+\newcommand{\warnung}[1]{\par\vspace{0.1em}{\color{schwer}\small\textbf{!\ Das war dein Konzeptfehler:}\ \textit{#1}}\par\vspace{0.3em}}
+\newcommand{\anleitung}[1]{\par\vspace{0.1em}{\color{accent}\small\textbf{Regel:}}\ {\small #1}\par\vspace{0.35em}}
+\newcommand{\teil}[1]{{\color{accent}\large\bfseries #1}\par\vspace{0.2em}{\color{gridcol}\hrule height 0.8pt}\par\vspace{0.5em}}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+\begin{center}
+  {\color{accent}\Huge\bfseries Analysis II}\\[0.3em]
+  {\Large Übungsaufgaben 14 — Konzept-Drill: e-Funktionen \& Integrieren}\\[0.8em]
+\end{center}
+
+\noindent\textbf{Name:} \rule{6cm}{0.4pt} \hfill \textbf{Datum:} \rule{3.5cm}{0.4pt}
+\vspace{0.4em}
+{\color{gridcol}\hrule height 1pt}
+\vspace{0.3em}
+
+\small\textit{Dieses Blatt übt \textbf{nur} die echten Konzeptfehler von Blatt 13 — keine Zahlen-Spielereien.
+Es geht um: die {\color{accent}e-Funktions-Gesetze} ($e^a e^b=e^{a+b}$, $e^{-A}=\tfrac1{e^A}$),
+das {\color{accent}Integrieren von $e^{kx}$} (\emph{nicht} Potenzregel!), das {\color{accent}Integrieren
+negativer Exponenten} ($\int y^{-2}=-\tfrac1y$) und die {\color{accent}Trennung mit $y$ im Nenner}.
+Schwierigkeit: {\color{leicht}\textbf{leicht}}, {\color{mittel}\textbf{mittel}}, {\color{schwer}\textbf{schwer}}.}
+\normalsize
+
+%==================================================================
+\clearpage
+\teil{Teil A — e-Funktions-Gesetze (Aufwärmen, isoliert)}
+\aufgabe{1}{Vereinfache zu \emph{einer} e-Potenz}{leicht}{leicht}
+Schreibe jeden Ausdruck als ein einziges $e^{(\dots)}$ bzw.\ als Potenz von $x$:
+\[
+  \text{(a)}\ e^{3u}\,e^{-u}\qquad
+  \text{(b)}\ \frac{e^{5t}}{e^{2t}}\qquad
+  \text{(c)}\ e^{2\ln x}\qquad
+  \text{(d)}\ e^{-2\ln x}
+\]
+\warnung{Auf Blatt 13 wurde $e^{3u}e^{-u}=e^{4u}$ gerechnet (Exponenten addiert statt $3+(-1)=2$)
+und $e^{-2\ln x}=x^{2}$ statt $x^{-2}$.}
+\anleitung{$e^a\,e^b=e^{a+b}$, \ $\dfrac{e^a}{e^b}=e^{a-b}$, \ $e^{k\ln x}=x^{k}$ (also $e^{-2\ln x}=x^{-2}=\tfrac1{x^2}$).}
+\karo{6cm}
+
+\clearpage
+\teil{Teil A — e-Funktions-Gesetze (Aufwärmen, isoliert)}
+\aufgabe{2}{Nach $y$ auflösen}{leicht}{leicht}
+Löse die folgende Gleichung nach $y$ auf:
+\[
+  \ln y = e^{x} + C.
+\]
+\warnung{Auf Blatt 13 wurde daraus $y=e^{e^{x}}+e^{C}$ gemacht. Aber $e^{a+b}=e^a\cdot e^b$ — ein
+\emph{Produkt}, keine Summe! $e^{a+b}\neq e^a+e^b$.}
+\karo{6cm}
+
+%==================================================================
+\clearpage
+\teil{Teil B — Integrieren: $e^{kx}$ vs.\ Potenzregel}
+\aufgabe{3}{Integrale von $e^{kx}$}{leicht}{leicht}
+Berechne (mit $+c$):
+\[
+  \text{(a)}\ \int e^{2u}\,du\qquad
+  \text{(b)}\ \int 3e^{-u}\,du\qquad
+  \text{(c)}\ \int e^{4u}\,du
+\]
+\warnung{Auf Blatt 13 wurde $\int e^{4u}\,du$ wie die Potenzregel als $\tfrac15 e^{5u}$ gerechnet.
+Eine e-Funktion wird \emph{nicht} wie $x^n$ behandelt!}
+\anleitung{$\displaystyle\int e^{ku}\,du=\frac1k\,e^{ku}+c$ — der Exponent bleibt gleich, du teilst nur durch $k$.}
+\karo{6.5cm}
+
+\clearpage
+\teil{Teil B — Integrieren: negative \& gebrochene Exponenten}
+\aufgabe{4}{Integrale von $x^{n}$ mit $n<0$}{mittel}{mittel}
+Berechne (mit $+c$):
+\[
+  \text{(a)}\ \int y^{-2}\,dy\qquad
+  \text{(b)}\ \int x^{-3}\,dx\qquad
+  \text{(c)}\ \int \frac{1}{\sqrt{x}}\,dx
+\]
+\warnung{Auf Blatt 13 wurde $\int y^{-2}\,dy$ als $\tfrac13 y^{3}$ gerechnet (wie $\int y^2$). Richtig:
+Exponent um $1$ \emph{erhöhen} ($-2\to-1$) und durch den \emph{neuen} Exponenten teilen.}
+\anleitung{$\displaystyle\int y^{n}\,dy=\frac{y^{n+1}}{n+1}+c$. Also $\int y^{-2}\,dy=\frac{y^{-1}}{-1}=-\frac1y$.}
+\karo{6.5cm}
+
+%==================================================================
+\clearpage
+\teil{Teil C — Typ C: linear inhomogen ($y'=a(x)\,y+b(x)$)}
+\aufgabe{5}{Typ C mit $e^{3x}$}{schwer}{schwer}
+Löse das Anfangswertproblem
+\[
+  y'(x) = y(x) + e^{3x},\quad y(0)=0.
+\]
+\warnung{Im Integral steht $e^{3u}\,e^{-u}$ — das ist $e^{2u}$ (nicht $e^{4u}$), und $\int e^{2u}\,du=\tfrac12 e^{2u}$
+(nicht $\tfrac15 e^{5u}$).}
+\anleitung{$y=e^{A}\big(y_0+\int_{x_0}^x b\,e^{-A}\,du\big)$ mit $A=\int a\,dx$. Erst $b\,e^{-A}$ mit den
+e-Gesetzen zusammenfassen, dann integrieren.}
+\karo{8cm}
+
+\clearpage
+\teil{Teil C — Typ C: linear inhomogen ($y'=a(x)\,y+b(x)$)}
+\aufgabe{6}{Typ C mit $a(x)=\tfrac2x$}{schwer}{schwer}
+Löse das Anfangswertproblem
+\[
+  y'(x) = \frac{2}{x}\,y(x) + x^2,\quad y(1)=0.
+\]
+\warnung{$A=2\ln x$, also $e^{-A}=e^{-2\ln x}=x^{-2}$ (nicht $x^{2}$!). Damit wird $b\,e^{-A}=x^2\cdot x^{-2}=1$.
+Achte auch auf $x_0=1,\ y_0=0$ (aus $y(1)=0$).}
+\karo{8.5cm}
+
+\clearpage
+\teil{Teil C — Typ C: linear inhomogen ($y'=a(x)\,y+b(x)$)}
+\aufgabe{7}{Typ C wie in der Probeklausur}{schwer}{schwer}
+Löse das Anfangswertproblem
+\[
+  y'(x) = \frac{y(x)}{x} - \sqrt{x},\quad y(1)=1.
+\]
+\warnung{$a=\tfrac1x\Rightarrow A=\ln x,\ e^{A}=x,\ e^{-A}=\tfrac1x$. Hier ist $b(x)=-\sqrt{x}$ (Minus!) —
+also $b\,e^{-A}=-\sqrt{x}\cdot\tfrac1x=-x^{-1/2}$.}
+\karo{8.5cm}
+
+%==================================================================
+\clearpage
+\teil{Teil D — Typ D: getrennte Veränderliche mit e-Funktion}
+\aufgabe{8}{$y$ im Nenner}{mittel}{mittel}
+Löse das Anfangswertproblem
+\[
+  y'(x) = \frac{e^{x}}{y(x)},\quad y(0)=1.
+\]
+\warnung{$y$ im \emph{Nenner} $\Rightarrow$ $y$ kommt als \emph{Faktor} nach links: $y\,dy=e^x\,dx$ — \emph{nicht}
+$\tfrac1y\,dy$. Danach Anfangswert einsetzen.}
+\karo{8cm}
+
+\clearpage
+\teil{Teil D — Typ D: getrennte Veränderliche mit e-Funktion}
+\aufgabe{9}{$e^{y}$ trennen (Probeklausur-Typ)}{schwer}{schwer}
+Löse das Anfangswertproblem
+\[
+  y'(x) = -\,e^{y},\quad y(0)=0.
+\]
+\warnung{$e^{y}$ steht bei $h(y)$: teile durch $e^{y}$, also $e^{-y}\,dy=-\,dx$. Dann $\int e^{-y}\,dy=-e^{-y}$
+(e-Funktion integrieren!), zum Schluss mit $\ln$ nach $y$ auflösen.}
+\karo{8cm}
+
+\clearpage
+\teil{Teil D — Typ D: getrennte Veränderliche mit e-Funktion}
+\aufgabe{10}{$e^{x-y}$ aufspalten}{mittel}{mittel}
+Löse das Anfangswertproblem
+\[
+  y'(x) = e^{\,x-y},\quad y(0)=0.
+\]
+\warnung{$e^{x-y}=e^{x}\,e^{-y}$ (Gesetz $e^{a+b}=e^a e^b$!). So wird es trennbar: $e^{y}\,dy=e^{x}\,dx$.}
+\karo{8cm}
+
+\end{document}

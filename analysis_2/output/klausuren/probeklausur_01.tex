@@ -1,0 +1,222 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage[table]{xcolor}
+\usepackage{tikz}
+\usepackage{geometry}
+\usepackage{array}
+\geometry{margin=2cm}
+
+% ---- Dark-Mode-Farben (Pflicht) ----
+\definecolor{bgdark}{HTML}{1E1E1E}   % dunkler Hintergrund
+\definecolor{fgtext}{HTML}{E6E6E6}   % heller Text
+\definecolor{accent}{HTML}{89B4FA}   % Akzent (blau)
+\definecolor{accent2}{HTML}{F38BA8}  % Akzent (rot/pink)
+\definecolor{gridcol}{HTML}{4A4A4A}  % gedämpfte Gitterfarbe
+\definecolor{panel}{HTML}{2A2A2A}    % Panel-Hintergrund
+
+\pagecolor{bgdark}
+\color{fgtext}
+\arrayrulecolor{fgtext}
+
+\setlength{\parindent}{0pt}
+
+% ---- Karo-Raster als Ausfüllfläche ----
+\newcommand{\karo}[1]{\par\nobreak\vspace{0.4em}\noindent
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcol, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par}
+
+% ---- Teilaufgabe zusammenhalten (Text + Karo nie über Seitenumbruch trennen) ----
+\newcommand{\sub}{\filbreak\medskip}
+
+% ---- Aufgabenkopf: #1 Nummer, #2 Titel, #3 Punkte ----
+\newcommand{\aufgabe}[3]{\clearpage
+  {\large\bfseries\color{accent} Aufgabe #1\quad #2}\hfill{\bfseries\color{fgtext} #3 Punkte}\par
+  \vspace{0.3em}\noindent\textcolor{gridcol}{\rule{\linewidth}{0.8pt}}\par\vspace{0.8em}}
+
+\begin{document}
+
+% ================= KOPF =================
+\begin{center}
+  {\LARGE\bfseries\color{accent} Probeklausur -- Analysis II}\\[0.3em]
+  {\normalsize Prof. Dr. Daniel Blochinger \quad$\cdot$\quad DHBW Ravensburg}
+\end{center}
+\vspace{0.6em}
+\noindent\textcolor{gridcol}{\rule{\linewidth}{1pt}}\par\vspace{0.8em}
+
+\renewcommand{\arraystretch}{1.8}
+\noindent
+\begin{tabular}{@{}p{2.2cm}p{5.3cm}@{\quad}p{3.6cm}p{4.5cm}@{}}
+\textbf{Name:} & \textcolor{gridcol}{\hrulefill} & \textbf{Matrikel-Nr.:} & \textcolor{gridcol}{\hrulefill}\\
+\textbf{Datum:} & \textcolor{gridcol}{\hrulefill} & \textbf{Bearbeitungszeit:} & 120 Minuten\\
+\end{tabular}
+\renewcommand{\arraystretch}{1.0}
+
+\vspace{0.6em}
+\noindent\textbf{Gesamtpunktzahl:} 65 Punkte\\[0.4em]
+\noindent\textbf{Zugelassene Hilfsmittel:} Stifte, Lineale \& Geodreiecke sowie gedruckte und
+handgeschriebene Unterlagen (Skripte, Mathebücher, selbst erstellte Formelsammlungen usw.).\\[0.2em]
+\noindent\textbf{Nicht zulässig:} Taschenrechner und sämtliche computerartigen und/oder
+internetfähigen Geräte (Laptops, Tablets, E-Book-Reader, Smartphones, Smartwatches usw.).
+
+\vspace{1.0em}
+
+% ---- Punktetabelle ----
+\renewcommand{\arraystretch}{1.6}
+\noindent
+\begin{tabular}{|>{\bfseries}l|c|c|c|c|c||c|}
+\hline
+Aufgabe & 1 & 2 & 3 & 4 & 5 & $\Sigma$\\\hline
+Thema & Diff.rechnung & Vektoranalysis & DGL & Integralr. & Trigonometrie & \\\hline
+erreicht & von 8 & von 20 & von 13 & von 9 & von 15 & von 65\\\hline
+\end{tabular}
+\renewcommand{\arraystretch}{1.0}
+
+\vspace{1.0em}
+\noindent\textit{Hinweis: Begründen Sie Ihre Rechenwege nachvollziehbar. Zwischenschritte werden
+bewertet (Folgefehler werden berücksichtigt).}
+
+% ================= AUFGABE 1 =================
+\aufgabe{1}{Wiederholung Differenzialrechnung}{8}
+
+\textbf{a)} Bestimmen Sie die erste Ableitung der folgenden Funktionen.\hfill\textbf{[4 Punkte]}
+\vspace{0.4em}
+
+(i)\quad $f(x) = x^3\, e^{-2x}$
+\karo{3.2cm}
+
+(ii)\quad $g(x) = \ln\!\left(x^2+1\right)$
+\karo{3cm}
+
+(iii)\quad $h(x) = \dfrac{x^2+1}{x-1}$
+\karo{3.2cm}
+
+\vspace{0.4em}
+\textbf{b)} Gegeben sei die Funktion
+\[
+  f(x) = \begin{cases} x^2 & \text{für } x \le 1,\\[2pt] a\,x + b & \text{für } x > 1.\end{cases}
+\]
+Bestimmen Sie $a, b \in \mathbb{R}$ so, dass $f$ an der Stelle $x=1$ stetig \emph{und}
+differenzierbar ist.\hfill\textbf{[4 Punkte]}
+\karo{5.5cm}
+
+% ================= AUFGABE 2 =================
+\aufgabe{2}{Vektoranalysis}{20}
+
+\sub\textbf{a)} Gegeben sei das Skalarfeld $f(x,y) = xy + x$ sowie der Punkt $P=(3,3)$.\hfill\textbf{[5 Punkte]}
+\begin{itemize}\setlength\itemsep{0pt}
+  \item[(i)] Berechnen Sie den Gradienten $\operatorname{grad} f$ und werten Sie ihn in $P$ aus.
+  \item[(ii)] Geben Sie den \emph{Betrag der höchsten Steigung} in $P$ und die \emph{Richtung des
+        steilsten Anstiegs} an.
+  \item[(iii)] Berechnen Sie die Richtungsableitung von $f$ in $P$ in Richtung $\vec v = (3,4)$
+        (auf Länge $1$ normieren).
+\end{itemize}
+\karo{6.5cm}
+
+\sub\textbf{b)} Bestimmen Sie das totale Differenzial $df$ von $f(x,y)=x^2 y$ und schätzen Sie damit
+$f(2{,}1\,;\,1{,}1)$ näherungsweise ab (ausgehend von $(x,y)=(2,1)$).\hfill\textbf{[3 Punkte]}
+\karo{4.5cm}
+
+\sub\textbf{c)} Berechnen Sie für den Vektor $\vec v = (3,\,-4,\,12)$ die Norm
+$\lVert \vec v\rVert_1$, $\lVert \vec v\rVert_2$ und $\lVert \vec v\rVert_\infty$.\hfill\textbf{[2 Punkte]}
+\karo{3.5cm}
+
+\sub\textbf{d)} An welchen Stellen erfüllt $f(x,y) = x^2 + y^2 - xy - 3y$ die notwendige Bedingung für
+eine Extremstelle?\hfill\textbf{[2 Punkte]}
+\karo{4.5cm}
+
+\sub\textbf{e)} Gegeben seien die Vektorfelder
+\[
+  \vec f(x,y) = \begin{pmatrix} x^2 y \\[2pt] x\,y^2 \end{pmatrix},
+  \qquad
+  \vec g(x,y,z) = \begin{pmatrix} x y z \\[2pt] y z \\[2pt] z \end{pmatrix}.
+\]
+Berechnen Sie $\operatorname{div}\vec f$ und $\operatorname{rot}\vec f$ sowie $\operatorname{rot}\vec g$.
+Geben Sie für $\vec f$ zusätzlich an, unter welchen Bedingungen Quellen- bzw. Wirbelfreiheit
+besteht.\hfill\textbf{[6 Punkte]}
+\karo{8cm}
+
+\sub\textbf{f)} (i) Berechnen Sie den Laplace-Operator $\Delta f$ für $f(x,y)=x^3+y^3$.
+(ii) Zeigen Sie allgemein $\operatorname{rot}(\operatorname{grad} f)=0$ (in $\mathbb{R}^2$) und
+$\operatorname{div}(\operatorname{rot}\vec g)=0$ (in $\mathbb{R}^3$).\hfill\textbf{[2 Punkte]}
+\karo{5cm}
+
+% ================= AUFGABE 3 =================
+\aufgabe{3}{Gewöhnliche Differenzialgleichungen}{13}
+
+Lösen Sie die folgenden Anfangswertprobleme (a--d).
+\vspace{0.4em}
+
+\sub\textbf{a)}\quad $y' = 3y, \qquad y(0) = 2$ \hfill\textbf{[1,5 Punkte]}
+\karo{3cm}
+
+\sub\textbf{b)}\quad $y' = \dfrac{2}{x}\,y, \qquad y(1) = 3$ \hfill\textbf{[2,5 Punkte]}
+\karo{4.5cm}
+
+\sub\textbf{c)}\quad $y' = x\,y^2, \qquad y(0) = 1$ \hfill\textbf{[3 Punkte]}
+\karo{5cm}
+
+\sub\textbf{d)}\quad $y' = -y + e^{2x}, \qquad y(0) = 0$ \hfill\textbf{[3,5 Punkte]}
+\karo{6cm}
+
+\sub\textbf{e)} \emph{Anwendung:} Eine radioaktive Substanz zerfällt gemäß $N'(t) = -0{,}2\,N(t)$ mit
+$N(0)=100$. Bestimmen Sie $N(t)$ und die Halbwertszeit $T_{1/2}$.\hfill\textbf{[2,5 Punkte]}
+\karo{4.5cm}
+
+% ================= AUFGABE 4 =================
+\aufgabe{4}{Integralrechnung}{9}
+
+Berechnen Sie die folgenden Integrale.
+\vspace{0.4em}
+
+\textbf{a)}\quad $\displaystyle \int_0^1 x\, e^{x^2}\, dx$ \quad(Substitution)\hfill\textbf{[2 Punkte]}
+\karo{4cm}
+
+\textbf{b)}\quad $\displaystyle \int \ln(x)\, dx$ \quad(partielle Integration)\hfill\textbf{[2,5 Punkte]}
+\karo{4cm}
+
+\textbf{c)}\quad $\displaystyle \int_1^2 \left(\frac{1}{x^2} + \frac{1}{x}\right) dx$\hfill\textbf{[2 Punkte]}
+\karo{4cm}
+
+\textbf{d)}\quad $\displaystyle \int_0^1 \int_0^2 (x + 2y)\; dx\, dy$\hfill\textbf{[2,5 Punkte]}
+\karo{4.5cm}
+
+% ================= AUFGABE 5 =================
+\aufgabe{5}{Trigonometrie}{15}
+
+\sub\textbf{a)} Rechnen Sie $135^\circ$ ins Bogenmaß um und bestimmen Sie $\sin$ und $\cos$ dieses
+Winkels.\hfill\textbf{[1,5 Punkte]}
+\karo{3cm}
+
+\sub\textbf{b)} Eine Schwingung wird durch $s(t) = 3\sin(4\pi t)$ beschrieben. Bestimmen Sie Amplitude,
+Kreisfrequenz $\omega$, Frequenz $f$, Periodendauer $T$ und Wellenlänge $\lambda = \tfrac{2\pi}{\omega}$.\hfill\textbf{[2,5 Punkte]}
+\karo{4cm}
+
+\sub\textbf{c)} Differenzieren Sie:\hfill\textbf{[3 Punkte]}\\
+(i)\ $u(x) = \sin(x)\cos(x)$\qquad (ii)\ $v(x) = \arctan(x^2)$\qquad (iii)\ $w(x) = \arcsin(x)$
+\karo{4.5cm}
+
+\sub\textbf{d)} Zeigen Sie mithilfe der Definitionen $\cosh(x)=\dfrac{e^x+e^{-x}}{2}$ und
+$\sinh(x)=\dfrac{e^x-e^{-x}}{2}$, dass $\cosh^2(x) - \sinh^2(x) = 1$ gilt.\hfill\textbf{[2 Punkte]}
+\karo{4cm}
+
+\sub\textbf{e)} Bestimmen Sie die exakten Werte von $\arcsin\!\left(\tfrac{1}{2}\right)$ und
+$\arccos(0)$.\hfill\textbf{[1,5 Punkte]}
+\karo{3cm}
+
+\sub\textbf{f)} Berechnen Sie für $x=\dfrac{\pi}{3}$ die Werte der Kehrwertfunktionen
+$\sec(x)$, $\csc(x)$ und $\cot(x)$.\hfill\textbf{[2 Punkte]}
+\karo{3.5cm}
+
+\sub\textbf{g)} Zeigen Sie mithilfe von $\cos^2(x)+\sin^2(x)=1$, dass
+$1 + \tan^2(x) = \sec^2(x)$ gilt.\hfill\textbf{[1,5 Punkte]}
+\karo{3cm}
+
+\sub\textbf{h)} Drücken Sie $\tanh(x)$ durch $\sinh(x)$ und $\cosh(x)$ aus und zeigen Sie damit
+$\tanh(x) = \dfrac{e^x - e^{-x}}{e^x + e^{-x}}$.\hfill\textbf{[1 Punkt]}
+\karo{2.8cm}
+
+\end{document}

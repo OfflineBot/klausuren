@@ -1,0 +1,262 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{array}
+\usepackage[a4paper,margin=2.2cm]{geometry}
+
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{accent}{HTML}{6CB6FF}
+\definecolor{leicht}{HTML}{7BD88F}
+\definecolor{mittel}{HTML}{E6C07B}
+\definecolor{schwer}{HTML}{E06C75}
+\pagecolor{bgdark}
+\color{fgtext}
+
+\newcommand{\karo}[1]{\par\noindent
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcol, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par}
+\newcommand{\aufgabe}[4]{\vspace{0.4em}\par\noindent
+  \textbf{\large Aufgabe #1}\quad #2 \hfill {\color{#3}\textbf{[#4]}}\par\smallskip}
+\newcommand{\liefgut}{\par\vspace{0.1em}{\color{leicht}\small$\checkmark$\ \textbf{Lief zuletzt gut}\ — zur Festigung.}\par\vspace{0.3em}}
+\newcommand{\warnung}[1]{\par\vspace{0.1em}{\color{schwer}\small\textbf{!\ War zuletzt noch nicht sicher:}\ \textit{#1}}\par\vspace{0.3em}}
+\newcommand{\anleitung}[1]{\par\vspace{0.1em}{\color{accent}\small\textbf{So rechnest du zu Ende:}}\ {\small #1}\par\vspace{0.35em}}
+\newcommand{\teil}[1]{{\color{accent}\large\bfseries #1}\par\vspace{0.2em}{\color{gridcol}\hrule height 0.8pt}\par\vspace{0.5em}}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+\begin{center}
+  {\color{accent}\Huge\bfseries Analysis II}\\[0.3em]
+  {\Large Übungsaufgaben 13 — DGL-Typen, Integrale \& Vektoranalysis}\\[0.8em]
+\end{center}
+
+\noindent\textbf{Name:} \rule{6cm}{0.4pt} \hfill \textbf{Datum:} \rule{3.5cm}{0.4pt}
+\vspace{0.4em}
+{\color{gridcol}\hrule height 1pt}
+\vspace{0.3em}
+
+\small\textit{Unter jeder Aufgabe steht, wie es zuletzt lief: {\color{leicht}$\checkmark$ grün} =
+saß schon, {\color{schwer}! rot} = war noch nicht sicher (mit dem konkreten Fehler von letztem
+Mal). Schwierigkeit: {\color{leicht}\textbf{leicht}}, {\color{mittel}\textbf{mittel}},
+{\color{schwer}\textbf{schwer}}.}
+\normalsize
+
+%==================================================================
+\clearpage
+\teil{Teil A — Integral-Restpunkte}
+\aufgabe{1}{Bestimmtes Integral mit $\tfrac{1}{x^2}$}{leicht}{leicht}
+Berechne
+\[
+  \int_{1}^{3} \frac{6}{x^2}\,dx.
+\]
+\warnung{Beim Einsetzen der Grenzen ist $\tfrac{1}{x^2}$ der \emph{Kehrwert} — an der Stelle $3$
+also $\tfrac19$, nicht $9$. (Zuletzt hattest du $\tfrac14$ als $4$ gerechnet.)}
+\karo{7cm}
+
+\clearpage
+\teil{Teil A — Integral-Restpunkte}
+\aufgabe{2}{Zweifache partielle Integration}{schwer}{schwer}
+Berechne das unbestimmte Integral
+\[
+  \int x^2\,e^{x}\,dx.
+\]
+\warnung{Das verbleibende $\int 2x\,e^x\,dx$ \emph{nicht} faktorweise abkürzen und \emph{nicht}
+das $2x$ aus dem Integral ziehen — sondern ein zweites Mal partiell integrieren. (Das war auf
+Blatt 03 und 12 der Fehler.)}
+\karo{9cm}
+
+\clearpage
+\teil{Teil A — Integral-Restpunkte}
+\aufgabe{3}{Substitution mit Wurzel im Nenner}{mittel}{mittel}
+Berechne das unbestimmte Integral
+\[
+  \int \frac{x}{\sqrt{x^2+1}}\,dx.
+\]
+\liefgut
+\karo{7.5cm}
+
+%==================================================================
+%  TYP A
+%==================================================================
+\clearpage
+\teil{Teil B — Typ A: linear homogen, konstant ($y'=\alpha y$)}
+\aufgabe{4}{Typ A}{leicht}{leicht}
+Löse das Anfangswertproblem
+\[
+  y'(x) = 3\,y(x),\quad y(0)=2.
+\]
+\liefgut
+\karo{6.5cm}
+
+\clearpage
+\teil{Teil B — Typ A: linear homogen, konstant ($y'=\alpha y$)}
+\aufgabe{5}{Typ A}{leicht}{leicht}
+Löse das Anfangswertproblem
+\[
+  y'(x) = -\,y(x),\quad y(2)=4.
+\]
+\liefgut
+\karo{6.5cm}
+
+\clearpage
+\teil{Teil B — Typ A: linear homogen, konstant ($y'=\alpha y$)}
+\aufgabe{6}{Typ A (Anwendung: Verdopplung)}{mittel}{mittel}
+Ein Kapital wächst gemäß $y'(t)=\alpha\,y(t)$ mit $y(0)=K$ und verdoppelt sich in $5$ Jahren.
+Bestimme $\alpha$ und gib die Lösungsfunktion an.
+\liefgut
+\karo{7cm}
+
+%==================================================================
+%  TYP B
+%==================================================================
+\clearpage
+\teil{Teil B — Typ B: linear homogen mit $a(x)$ ($y'=a(x)\,y$)}
+\aufgabe{7}{Typ B}{mittel}{mittel}
+Löse das Anfangswertproblem
+\[
+  y'(x) = 4x^3\,y(x),\quad y(0)=1.
+\]
+\liefgut
+\karo{6.5cm}
+
+\clearpage
+\teil{Teil B — Typ B: linear homogen mit $a(x)$ ($y'=a(x)\,y$)}
+\aufgabe{8}{Typ B}{mittel}{mittel}
+Löse das Anfangswertproblem
+\[
+  y'(x) = \cos(x)\,y(x),\quad y(0)=2.
+\]
+\liefgut
+\karo{6.5cm}
+
+\clearpage
+\teil{Teil B — Typ B: linear homogen mit $a(x)$ ($y'=a(x)\,y$)}
+\aufgabe{9}{Typ B}{mittel}{mittel}
+Löse das Anfangswertproblem
+\[
+  y'(x) = (3x^2-1)\,y(x),\quad y(0)=1.
+\]
+\liefgut
+\karo{6.5cm}
+
+%==================================================================
+%  TYP C
+%==================================================================
+\clearpage
+\teil{Teil B — Typ C: linear inhomogen ($y'=a(x)\,y+b(x)$)}
+\aufgabe{10}{Typ C — bis zum Ende!}{schwer}{schwer}
+Löse das Anfangswertproblem
+\[
+  y'(x) = y(x) + 3,\quad y(0)=0.
+\]
+\warnung{Zuletzt hast du die Lösungsformel nur \emph{aufgestellt}, aber nicht zu Ende gerechnet.}
+\anleitung{Nach $y=e^{A}\big(y_0+\int_{x_0}^x b\,e^{-A}\,du\big)$ das Integral wirklich ausrechnen
+(hier $\int 3e^{-u}\,du=-3e^{-u}$), die Grenzen einsetzen und mit $e^{A}$ multiplizieren — erst dann
+steht die fertige Funktion (ohne Integralzeichen).}
+\karo{8cm}
+
+\clearpage
+\teil{Teil B — Typ C: linear inhomogen ($y'=a(x)\,y+b(x)$)}
+\aufgabe{11}{Typ C — bis zum Ende!}{schwer}{schwer}
+Löse das Anfangswertproblem
+\[
+  y'(x) = \frac{2}{x}\,y(x) + x^2,\quad y(1)=0.
+\]
+\warnung{Integral komplett auswerten, dann mit $e^{A}$ multiplizieren — kein Integralzeichen darf
+im Ergebnis übrig bleiben.}
+\karo{8.5cm}
+
+\clearpage
+\teil{Teil B — Typ C: linear inhomogen ($y'=a(x)\,y+b(x)$)}
+\aufgabe{12}{Typ C — bis zum Ende!}{schwer}{schwer}
+Löse das Anfangswertproblem
+\[
+  y'(x) = y(x) + e^{3x},\quad y(0)=0.
+\]
+\warnung{Im Integral kürzt sich $e^{3u}\,e^{-u}=e^{2u}$ — das dann auch wirklich integrieren.}
+\karo{8.5cm}
+
+%==================================================================
+%  TYP D
+%==================================================================
+\clearpage
+\teil{Teil B — Typ D: getrennte Veränderliche ($y'=g(x)\,h(y)$)}
+\aufgabe{13}{Typ D — Trennung + Anfangswert!}{mittel}{mittel}
+Löse das Anfangswertproblem
+\[
+  y'(x) = \frac{x}{y(x)},\quad y(0)=2.
+\]
+\warnung{Steht $y$ im \emph{Nenner}, kommt es als \emph{Faktor} nach links: $y\,dy=x\,dx$ — nicht
+$\tfrac1y\,dy$. (Genau das war zuletzt der Fehler.)}
+\anleitung{Trennen, beide Seiten integrieren, nach $y$ auflösen — und zum Schluss \emph{unbedingt}
+den Anfangswert einsetzen, um die Konstante $c$ zu bestimmen (nicht $c$ im Ergebnis stehen lassen).}
+\karo{8cm}
+
+\clearpage
+\teil{Teil B — Typ D: getrennte Veränderliche ($y'=g(x)\,h(y)$)}
+\aufgabe{14}{Typ D — Trennung + Anfangswert!}{mittel}{mittel}
+Löse das Anfangswertproblem
+\[
+  y'(x) = 3x^2\,y(x)^2,\quad y(0)=1.
+\]
+\warnung{Nach dem Integrieren nach $y$ auflösen \emph{und} den Anfangswert einsetzen — $c$ darf nicht
+im Ergebnis bleiben.}
+\karo{8cm}
+
+\clearpage
+\teil{Teil B — Typ D: getrennte Veränderliche ($y'=g(x)\,h(y)$)}
+\aufgabe{15}{Typ D — Trennung + Anfangswert!}{schwer}{schwer}
+Löse das Anfangswertproblem
+\[
+  y'(x) = \frac{e^{x}}{y(x)},\quad y(0)=1.
+\]
+\warnung{$y$ steht wieder im Nenner $\Rightarrow y\,dy = e^x\,dx$. Anfangswert zuletzt einsetzen.}
+\karo{8cm}
+
+%==================================================================
+%  TEIL C — VEKTORANALYSIS  (deckt Klausur-Aufgabe 1 ab)
+%==================================================================
+\clearpage
+\teil{Teil C — Vektoranalysis: kritische Stellen}
+\aufgabe{16}{Notwendige Bedingung für eine Extremstelle}{leicht}{leicht}
+An welchen Stellen erfüllt $f(x,y)=xy-2x+y$ die notwendige Bedingung
+$\operatorname{grad}(f)=\vec 0$?
+\liefgut
+\anleitung{$\operatorname{grad}f=\big(\partial_x f,\ \partial_y f\big)$ bilden und beide Komponenten
+gleich null setzen — das liefert ein kleines Gleichungssystem für $x$ und $y$.}
+\karo{7cm}
+
+\clearpage
+\teil{Teil C — Vektoranalysis: Divergenz \& Rotation ($\mathbb{R}^2$)}
+\aufgabe{17}{Divergenz, Rotation, Quellen-/Wirbelfreiheit}{mittel}{mittel}
+Berechne $\operatorname{div}(f)$ und $\operatorname{rot}(f)$ von
+\[
+  f(x,y)=\begin{pmatrix} x\,y^2 \\[2pt] 2x-y^2 \end{pmatrix}
+\]
+und gib an, wo das Feld quellenfrei bzw.\ wirbelfrei ist.
+\warnung{Bei der Divergenz ist $\partial_y(-y^2)=-2y$ — \emph{mit Minus}! (Zuletzt hattest du $+2y$.)}
+\anleitung{$\operatorname{div}\binom{f_1}{f_2}=\partial_x f_1+\partial_y f_2$ (quellenfrei, wo $=0$);\quad
+$\operatorname{rot}\binom{f_1}{f_2}=\partial_x f_2-\partial_y f_1$ (wirbelfrei, wo $=0$).}
+\karo{8cm}
+
+\clearpage
+\teil{Teil C — Vektoranalysis: Rotation ($\mathbb{R}^3$)}
+\aufgabe{18}{Rotation eines räumlichen Vektorfeldes}{mittel}{mittel}
+Berechne die Rotation von
+\[
+  g(x,y,z)=\begin{pmatrix} x\,y\,z \\[2pt] x\,y \\[2pt] x \end{pmatrix}.
+\]
+\warnung{Mittlere Komponente: $\partial_z(xyz)=xy$ (nach $z$ ableiten, $x,y$ sind konstant) — nicht
+$yz$! (Genau das war zuletzt der Fehler.)}
+\anleitung{$\operatorname{rot}\,g=\big(\partial_y g_3-\partial_z g_2,\ \partial_z g_1-\partial_x g_3,\
+\partial_x g_2-\partial_y g_1\big)$.}
+\karo{8cm}
+
+\end{document}

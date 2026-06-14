@@ -1,0 +1,208 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage[margin=2cm]{geometry}
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{accent}{HTML}{6CB6FF}
+\definecolor{loescol}{HTML}{7FD18C}
+\pagecolor{bgdark}
+\color{fgtext}
+\arrayrulecolor{fgtext}
+\setlength{\parindent}{0pt}
+\newcommand{\karo}[1]{\par\noindent\begin{tikzpicture}\draw[step=5mm,gridcol,very thin](0,0) grid (\linewidth,#1);\end{tikzpicture}\par\vspace{2mm}}
+\newcommand{\aufgabe}[2]{\vspace{3mm}\par\noindent{\large\color{accent}\textbf{Aufgabe #1}}\hfill{\color{gridcol}\normalsize (#2 Punkte)}\par\vspace{1mm}}
+
+\begin{document}
+
+% ====================== KOPF ======================
+\begin{center}
+  {\LARGE\color{accent}\textbf{Relationen, Algebra, Diskrete Mathematik}}\\[3pt]
+  {\large Probeklausur --- Teil A: Logik (RADM)}\\[2pt]
+  {\small M. Zaefferer (Stil) \quad$\bullet$\quad Übungsklausur, klausurnah}
+\end{center}
+\vspace{2mm}
+\noindent\textbf{Name:}\ \underline{\hspace{6cm}}\hfill\textbf{Matrikelnr.:}\ \underline{\hspace{4cm}}\\[4pt]
+\noindent\textbf{Datum:}\ \underline{\hspace{4cm}}\hfill\textbf{Bearbeitungszeit:}\ ca.\ 60 Minuten\\[4pt]
+\noindent\textbf{Gesamtpunkte:}\ 50 \hfill \textbf{Hilfsmittel:}\ Open-Book (eigene Unterlagen/Formelsammlung), Taschenrechner\\[4pt]
+{\color{gridcol}\rule{\linewidth}{0.4pt}}
+\vspace{2mm}
+
+\noindent\textbf{Punktetabelle} (wird von der Korrektur ausgefüllt):
+\par\vspace{1mm}
+\renewcommand{\arraystretch}{1.5}
+\noindent\begin{tabular}{|>{\centering\arraybackslash}m{1.6cm}|c|c|c|c|c|c|c|c|c|c||c|}
+\hline
+\textbf{Aufgabe} & 1.1 & 1.2 & 1.3 & 1.4 & 1.5 & 1.6 & 1.7 & 1.8 & 1.9 & 1.10 & $\Sigma$ \\\hline
+\textbf{max} & 2 & 5 & 2 & 5 & 4 & 6 & 4 & 6 & 6 & 10 & 50 \\\hline
+\textbf{erreicht} & & & & & & & & & & & \\\hline
+\end{tabular}
+\renewcommand{\arraystretch}{1}
+\par\vspace{3mm}
+\noindent{\small\color{gridcol}Hinweise: Schreiben Sie Ihren Lösungsweg nachvollziehbar auf. Reine Ergebnisse ohne Rechenweg geben i.\,d.\,R. keine volle Punktzahl. Wahrheitswerte $0/1$ bzw. $w/f$, Negation $\neg a$ bzw. $a'$ wie in der Vorlesung.}
+
+% ====================== AUFGABE 1.1 ======================
+\clearpage
+\aufgabe{1.1 --- Aussagen}{2}
+Sind die folgenden Sätze \textbf{Aussagen} im Sinne der Aussagenlogik?
+\begin{enumerate}[nosep,label=\arabic*.,leftmargin=1.8em]
+  \item \emph{Berlin ist die Hauptstadt von Deutschland.}
+  \item \emph{Vielleicht gewinnt unsere Mannschaft am Sonntag.}
+\end{enumerate}
+Bitte begründen Sie Ihre Antwort jeweils kurz.
+\karo{8cm}
+
+% ====================== AUFGABE 1.2 ======================
+\clearpage
+\aufgabe{1.2 --- Wahrheitstabelle}{5}
+Prüfen Sie \textbf{mittels Wahrheitstabelle}, ob die folgende logische Formel $F_2$ erfüllbar, widerspruchsvoll oder eine Tautologie ist. Begründen Sie kurz.
+\[
+F_2(a,b,c) = (a \wedge \neg b) \vee c \leftrightarrow a
+\]
+\karo{12cm}
+
+% ====================== AUFGABE 1.3 ======================
+\clearpage
+\aufgabe{1.3 --- Tautologie ergänzen}{2}
+Ersetzen Sie in folgender unvollständiger Formel $F_3$ das Fragezeichen durch eine logische Verknüpfung, sodass die Formel zur \textbf{Tautologie} wird. Begründen Sie kurz.
+\[
+F_3(a,b) = (a \to b)\ ?\ (\neg a \to \neg b)
+\]
+\karo{9cm}
+
+% ====================== AUFGABE 1.4 ======================
+\clearpage
+\aufgabe{1.4 --- Disjunktive Normalform}{5}
+Überführen Sie die folgende logische Formel $F_4$ in eine \textbf{disjunktive Normalform}:
+\[
+F_4(a,b,c,d) = (a \leftrightarrow b) \to (c \vee \neg d)
+\]
+\karo{12cm}
+
+% ====================== AUFGABE 1.5 ======================
+\clearpage
+\aufgabe{1.5 --- Resolution}{4}
+Gegeben sei die folgende Behauptung:
+\[
+a \wedge b \wedge (\neg c \vee a) \wedge (c \vee b) \wedge (a \vee \neg a) \models (a \vee b \vee c)
+\]
+Beweisen oder widerlegen Sie diese Behauptung \textbf{mithilfe der Resolution}.
+\karo{12cm}
+
+% ====================== AUFGABE 1.6 ======================
+\clearpage
+\aufgabe{1.6 --- Mengen}{6}
+Gegeben ist die Menge $A = \{p,q\}$ und die Menge $B = \{r\}$.
+\par\vspace{1mm}
+Bestimmen Sie die folgenden beiden Mengen, d.\,h., geben Sie an, aus welchen Elementen diese bestehen:
+\[
+M_1 = \mathcal{P}(A) \cap (A \times A)
+\]
+\[
+M_2 = (A \cup B \cup A) \cup (B \cap A \cap A)
+\]
+Hinweis: $\mathcal{P}$ steht für die Potenzmenge.
+\karo{11cm}
+
+% ====================== AUFGABE 1.7 ======================
+\clearpage
+\aufgabe{1.7 --- Abbildungen}{4}
+Gegeben sind die Mengen $D = \{1,2,3,4,5\}$ und $W = \{u,v\}$.
+\par\vspace{1mm}
+Warum ist es \textbf{nicht} möglich, für diese beiden Mengen eine \textbf{injektive} Abbildung $f : D \to W$ zu definieren?
+\karo{9cm}
+
+% ====================== AUFGABE 1.8 ======================
+\clearpage
+\aufgabe{1.8 --- Eigenschaften einer Relation}{6}
+Gegeben sei die Menge $M = \{a,b,c,d\}$
+\par\vspace{1mm}
+und die Relation $R \subseteq M \times M = \{(a,a),(b,b),(a,b),(b,c),(a,c)\}$.
+\par\vspace{1mm}
+Begründen Sie jeweils kurz, ob die Relation die folgenden Eigenschaften erfüllt:
+\par\vspace{2mm}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{p{4cm}l}
+\textbf{Bezeichnung} & \textbf{Bedeutung}\\
+1. Reflexiv & $\forall x \in M$ gilt $xRx$\\
+2. Irreflexiv & $\nexists x \in M$ mit $xRx$\\
+3. Symmetrisch & $\forall x,y \in M$ gilt $xRy \to yRx$\\
+4. Asymmetrisch & $\forall x,y \in M$ gilt $xRy \to \neg yRx$\\
+5. Antisymmetrisch & $\forall x,y \in M$ gilt $xRy \wedge yRx \to x=y$\\
+6. Transitiv & $\forall x,y,z \in M$ gilt $xRy \wedge yRz \to xRz$\\
+\end{tabular}
+\renewcommand{\arraystretch}{1}
+\karo{10cm}
+
+% ====================== AUFGABE 1.9 ======================
+\clearpage
+\aufgabe{1.9 --- KV-Diagramm}{6}
+Gegeben ist ein KV-Diagramm für die Schaltfunktion $F_{10}(a,b,c,d)$:
+\par\vspace{2mm}
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{cc|cccc}
+ & & \multicolumn{4}{c}{$a,b$}\\
+ & & $00$ & $01$ & $11$ & $10$\\\hline
+$c,d$
+ & $00$ & $1$ & $1$ & $1$ & $1$\\
+ & $01$ &     &     & $1$ & $1$\\
+ & $11$ &     &     & $1$ & $1$\\
+ & $10$ & $1$ & $1$ & $1$ & $1$\\
+\end{tabular}
+\renewcommand{\arraystretch}{1}
+\end{center}
+\par\vspace{2mm}
+Nehmen Sie an, dass jemand versucht, die \textbf{Disjunktive Minimalform (DM)} zu bestimmen, und auf folgendes Ergebnis kommt:
+\[
+F_{10}(a,b,c,d) = a \vee (c'd') \vee (cd').
+\]
+Was wurde hier falsch gemacht und wie lautet die richtige DM?
+\karo{8cm}
+
+% ====================== AUFGABE 1.10 ======================
+\clearpage
+\aufgabe{1.10 --- A$^{*}$-Algorithmus}{10}
+Wenden Sie den \textbf{A$^{*}$-Algorithmus} an, um den kürzesten Pfad zwischen Knoten $A$ und $F$ im folgenden Graphen zu finden. Dokumentieren Sie Ihr Vorgehen so, dass die Anwendung des Algorithmus ersichtlich ist. Geben Sie am Ende sowohl den Pfad als Sequenz der relevanten Knoten an als auch die entsprechende Länge des Pfades (Summe der Kantengewichte).
+\par\vspace{3mm}
+\begin{center}
+\begin{tikzpicture}[scale=1.0,
+   knoten/.style={draw=fgtext,fill=gridcol!60,rounded corners=2pt,
+                  minimum size=7mm,inner sep=2pt,text=fgtext,font=\bfseries},
+   kante/.style={fgtext,thick},
+   gew/.style={accent,font=\small}]
+  \node[knoten] (A) at (0,0)   {A};
+  \node[knoten] (B) at (-3,1.8){B};
+  \node[knoten] (C) at (3,1.8) {C};
+  \node[knoten] (D) at (-3,5.0){D};
+  \node[knoten] (E) at (3,5.0) {E};
+  \node[knoten] (F) at (0,6.8) {F};
+  \draw[kante] (A)--(B) node[gew,midway,below left]{2};
+  \draw[kante] (A)--(C) node[gew,midway,below right]{4};
+  \draw[kante] (B)--(C) node[gew,midway,above]{1};
+  \draw[kante] (B)--(D) node[gew,midway,left]{7};
+  \draw[kante] (C)--(E) node[gew,midway,right]{3};
+  \draw[kante] (D)--(E) node[gew,midway,above]{2};
+  \draw[kante] (D)--(F) node[gew,midway,above left]{1};
+  \draw[kante] (E)--(F) node[gew,midway,above right]{5};
+\end{tikzpicture}
+\end{center}
+\par\vspace{2mm}
+Die Werte der benötigten Heuristik für A$^{*}$ sind:
+\begin{center}
+$h(A)=8,\quad h(B)=7,\quad h(C)=6,\quad h(D)=1,\quad h(E)=3,\quad h(F)=0.$
+\end{center}
+\karo{11cm}
+
+\vfill
+\begin{center}{\color{gridcol}\small--- Ende der Probeklausur (Teil A) ---}\end{center}
+
+\end{document}

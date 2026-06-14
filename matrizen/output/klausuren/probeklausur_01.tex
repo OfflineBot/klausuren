@@ -1,0 +1,265 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}
+\geometry{margin=2.0cm}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{titlesec}
+\usepackage{array}
+\usepackage{colortbl}
+
+%================= Dark-Mode Farben (Catppuccin Mocha) =================
+\definecolor{base}{HTML}{1E1E2E}     % Hintergrund
+\definecolor{fg}{HTML}{CDD6F4}       % Text (heller Vordergrund)
+\definecolor{accent}{HTML}{89B4FA}   % Überschriften / Akzent
+\definecolor{accent2}{HTML}{F5C2E7}  % Punkteangabe
+\definecolor{gridcolor}{HTML}{45475A}% Karo-Gitter / Linien (dezent)
+
+\pagecolor{base}
+
+\newcommand{\transp}{^{\mathsf{T}}}
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+\newcommand{\rang}{\operatorname{rang}}
+\newcommand{\diag}{\operatorname{diag}}
+
+% Punkteangabe rechtsbündig an der Aufgabenüberschrift
+\newcommand{\pkt}[1]{\hfill\textnormal{\color{accent2}\itshape (#1)}}
+
+% Karierte Antwortfläche (Karopapier) -- #1 = Höhe des Bereichs (z. B. 5cm).
+% Durchgehendes Karo-Raster, keine einzelnen Schreiblinien, kein \hrulefill.
+\newcommand{\karo}[1]{\par\vspace{0.3cm}\noindent
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcolor, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par\vspace{0.3cm}}
+
+% Ankreuzkästchen
+\newcommand{\kasten}{{\color{gridcolor}$\square$}}
+
+%================= Überschriften in Akzentfarbe =================
+\titleformat{\section}{\color{accent}\normalfont\Large\bfseries}{}{0pt}{}
+
+%================= Kopf-/Fußzeile =================
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\color{fg}\small FLA \& Analytische Geometrie}
+\rhead{\color{fg}\small Probeklausur 01}
+\cfoot{\color{fg}\thepage}
+\renewcommand{\headrule}{{\color{gridcolor}\hrule height 0.4pt}}
+
+\arrayrulecolor{gridcolor}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+\color{fg}
+
+\thispagestyle{fancy}
+
+\begin{center}
+  {\color{accent}\LARGE\bfseries Probeklausur}\\[0.3em]
+  {\color{fg}\large Fortgeschrittene Lineare Algebra und Analytische Geometrie}\\[0.6em]
+  {\color{gridcolor}\rule{\linewidth}{0.4pt}}
+\end{center}
+
+\vspace{0.4em}
+
+% ---------------- Kopf: Name / Datum / Rahmendaten ----------------
+\renewcommand{\arraystretch}{1.6}
+\begin{tabular}{@{}p{0.5\linewidth}@{}p{0.5\linewidth}@{}}
+  Name: \ \rule[-2pt]{0.7\linewidth}{0.4pt} &
+  Datum: \ \rule[-2pt]{0.55\linewidth}{0.4pt}
+\end{tabular}
+
+\vspace{0.6em}
+
+\begin{tabular}{@{}l p{0.72\linewidth}@{}}
+  \textbf{\color{accent}Bearbeitungszeit:} & 90 Minuten \\
+  \textbf{\color{accent}Gesamtpunkte:}     & 60 Punkte \\
+  \textbf{\color{accent}Hilfsmittel:}      & ein beidseitig handbeschriebenes Formelblatt (DIN A4), nicht-programmierbarer Taschenrechner \\
+\end{tabular}
+
+\vspace{0.4em}
+
+\textit{\color{fg}\small Hinweis: Alle Ergebnisse sind durch nachvollziehbare Rechenwege zu begründen. Notieren Sie Zwischenschritte.}
+
+\vspace{1.0em}
+
+% ---------------- Punktetabelle ----------------
+\renewcommand{\arraystretch}{1.5}
+\noindent
+\begin{tabular}{|c|*{9}{c|}c|}
+\hline
+\textbf{Aufgabe} & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & \textbf{$\Sigma$} \\
+\hline
+\textbf{max.\ Punkte} & 5 & 6 & 9 & 6 & 8 & 7 & 6 & 5 & 8 & \textbf{60} \\
+\hline
+\textbf{erreicht} & & & & & & & & & & \\
+\hline
+\end{tabular}
+
+\renewcommand{\arraystretch}{1.0}
+
+% ================================================================
+\clearpage
+\section*{Aufgabe 1 -- Quickies \pkt{5 Punkte}}
+
+Sind die folgenden Aussagen \emph{wahr} oder \emph{falsch}? Kreuzen Sie jeweils an.
+
+\vspace{0.6em}
+\begin{enumerate}[label=\alph*)]
+  \item Jede reelle symmetrische Matrix ist diagonalisierbar.
+        \hfill \kasten\ wahr \quad \kasten\ falsch
+  \item Für eine orthogonale Matrix $Q$ gilt $Q^{-1} = Q\transp$.
+        \hfill \kasten\ wahr \quad \kasten\ falsch
+  \item Jede invertierbare Matrix ist positiv definit.
+        \hfill \kasten\ wahr \quad \kasten\ falsch
+  \item Die Determinante einer oberen Dreiecksmatrix ist das Produkt ihrer Diagonaleinträge.
+        \hfill \kasten\ wahr \quad \kasten\ falsch
+  \item Die Singulärwerte einer Matrix können negativ sein.
+        \hfill \kasten\ wahr \quad \kasten\ falsch
+\end{enumerate}
+
+\karo{5cm}
+
+% ================================================================
+\clearpage
+\section*{Aufgabe 2 -- CR-Zerlegung \pkt{6 Punkte}}
+
+Gegeben sei
+\[
+A = \begin{pmatrix} 1 & 2 & 4 \\ 1 & 3 & 5 \\ 2 & 5 & 9 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie den Rang von $A$. \pkt{2}
+  \item Wählen Sie eine Basis des Spaltenraums. \pkt{1}
+  \item Bestimmen Sie die CR-Zerlegung $A = CR$. \pkt{3}
+\end{enumerate}
+
+\karo{12cm}
+
+% ================================================================
+\clearpage
+\section*{Aufgabe 3 -- LU-Zerlegung \pkt{9 Punkte}}
+
+Gegeben sei
+\[
+A = \begin{pmatrix} 2 & 1 & 1 \\ 4 & 3 & 5 \\ 2 & 4 & 12 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie eine LU-Zerlegung. \pkt{4}
+  \item Bestimmen Sie $\det(A)$. \pkt{1}
+  \item Berechnen Sie $A^{-1}$. \pkt{4}
+\end{enumerate}
+
+\karo{14cm}
+
+% ================================================================
+\clearpage
+\section*{Aufgabe 4 -- Cholesky-Zerlegung \pkt{6 Punkte}}
+
+Gegeben sei
+\[
+A = \begin{pmatrix} 9 & 3 & 6 \\ 3 & 5 & 4 \\ 6 & 4 & 14 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Prüfen Sie die positive Definitheit. \pkt{3}
+  \item Bestimmen Sie die Cholesky-Zerlegung $A = L L\transp$. \pkt{3}
+\end{enumerate}
+
+\karo{13cm}
+
+% ================================================================
+\clearpage
+\section*{Aufgabe 5 -- QR-Zerlegung \pkt{8 Punkte}}
+
+Gegeben seien
+\[
+Q = \frac{1}{5}\begin{pmatrix} 3 & -4 \\ 4 & 3 \end{pmatrix},
+\qquad
+R = \begin{pmatrix} 5 & 10 \\ 0 & 5 \end{pmatrix}.
+\]
+Weiter sei $A = QR$ und
+\[
+b = \begin{pmatrix} 7 \\ 26 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie $A = QR$. \pkt{2}
+  \item Lösen Sie das Gleichungssystem $Ax = b$ mithilfe der QR-Zerlegung. \pkt{4}
+  \item Bestimmen Sie $Q^{-1}$. \pkt{2}
+\end{enumerate}
+
+\karo{13cm}
+
+% ================================================================
+\clearpage
+\section*{Aufgabe 6 -- Eigenwerte und Diagonalisierung \pkt{7 Punkte}}
+
+Gegeben sei
+\[
+A = \begin{pmatrix} 0 & 1 \\ 2 & 1 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie die Eigenwerte. \pkt{3}
+  \item Bestimmen Sie Eigenvektoren. \pkt{2}
+  \item Geben Sie $V$ und $D$ mit $A = V D V^{-1}$ an. \pkt{2}
+\end{enumerate}
+
+\karo{13cm}
+
+% ================================================================
+\clearpage
+\section*{Aufgabe 7 -- SVD und Pseudoinverse \pkt{6 Punkte}}
+
+Gegeben sei
+\[
+A = \begin{pmatrix} 4 & 0 \\ 0 & 0 \\ 0 & 3 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Berechnen Sie $A\transp A$. \pkt{2}
+  \item Bestimmen Sie die Singulärwerte. \pkt{2}
+  \item Bestimmen Sie die Pseudoinverse $A^{+}$. \pkt{2}
+\end{enumerate}
+
+\karo{12cm}
+
+% ================================================================
+\clearpage
+\section*{Aufgabe 8 -- Hyperebene \pkt{5 Punkte}}
+
+Gegeben sei die Hyperebene
+\[
+2x_1 - x_2 + 2x_3 = 4.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie einen Normalenvektor. \pkt{1}
+  \item Liegt $p = (1,2,3)\transp$ auf der Ebene? \pkt{2}
+  \item Berechnen Sie den Abstand von $p$ zur Ebene. \pkt{2}
+\end{enumerate}
+
+\karo{12cm}
+
+% ================================================================
+\clearpage
+\section*{Aufgabe 9 -- Finite Differenzen \pkt{8 Punkte}}
+
+Gegeben sei das Randwertproblem
+\[
+-u''(x) = 6, \qquad u(0) = u(1) = 0.
+\]
+Verwenden Sie die inneren Gitterpunkte
+\[
+x_1 = 0{,}25, \quad x_2 = 0{,}5, \quad x_3 = 0{,}75.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Leiten Sie mit dem zentralen Differenzenquotienten aus der Differential\-gleichung das lineare Gleichungssystem $Ax = b$ her. \pkt{6}
+  \item Nennen Sie vier strukturelle Eigenschaften der Matrix $A$. \pkt{2}
+\end{enumerate}
+
+\karo{13cm}
+
+\end{document}

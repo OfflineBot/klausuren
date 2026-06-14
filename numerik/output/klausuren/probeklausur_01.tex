@@ -1,0 +1,416 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{tikz}
+\usepackage{needspace}
+\usepackage{geometry}
+\geometry{a4paper,margin=2.2cm}
+
+% ----- Dark Mode (Pflicht) -----
+\definecolor{bgdark}{HTML}{1E1E1E}   % dunkler Hintergrund
+\definecolor{fgtext}{HTML}{E6E6E6}   % heller Text
+\definecolor{accent}{HTML}{89B4FA}   % Akzent (hellblau)
+\definecolor{accent2}{HTML}{F9E2AF}  % Akzent (gelb)
+\definecolor{muted}{HTML}{A6ADC8}    % gedämpfter Text
+\definecolor{gridcol}{HTML}{4A4A4A}  % gedämpfte Gitterfarbe
+\definecolor{rulecol}{HTML}{6A6A6A}  % helle Linienfarbe
+\pagecolor{bgdark}
+\color{fgtext}
+
+\setlength{\arrayrulewidth}{0.3pt}
+\arrayrulecolor{rulecol}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+
+% ----- Karo-Raster zum Ausfüllen -----
+\newcommand{\karo}[1]{\par\noindent
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcol, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par}
+
+% ----- Laufende Kopfzeile -----
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{\footnotesize\color{muted}\textsc{Numerische Methoden} $\cdot$ Pr\"ufung 01 Probeklausur}
+\fancyhead[R]{\footnotesize\color{muted}Matr.-Nr.\ \textcolor{rulecol}{\rule{2.4cm}{0.3pt}}\quad \thepage}
+
+% ----- Aufgabenkopf -----
+\newcommand{\aufg}[3]{%
+  \par\vspace{2pt}
+  \noindent\textcolor{rulecol}{\rule{\linewidth}{0.3pt}}\\[3pt]
+  {\large\bfseries\color{accent} Aufgabe #1\ \ \textcolor{fgtext}{\normalsize\mdseries #2}}\hfill
+  {\bfseries\color{accent2}#3 Punkte}\\[1pt]
+  \noindent\textcolor{rulecol}{\rule{\linewidth}{0.3pt}}
+  \par\vspace{6pt}
+}
+\newcommand{\tp}[1]{\hfill{\small\color{muted}\textit{#1 Punkte}}}
+
+\begin{document}
+
+% =====================================================================
+% DECKBLATT
+% =====================================================================
+\thispagestyle{fancy}
+
+{\small\color{muted}\textsc{DHBW Ravensburg} \\ Duale Hochschule Baden-W\"urttemberg}
+
+\vspace{10pt}
+{\fontsize{34}{38}\selectfont\bfseries\color{accent} Pr\"ufung}\\[2pt]
+{\itshape\color{fgtext} Numerische Methoden $\cdot$ Pr\"ufung 01 Probeklausur}
+
+\vspace{10pt}
+\noindent\textcolor{rulecol}{\rule{\linewidth}{0.4pt}}
+\vspace{4pt}
+
+\renewcommand{\arraystretch}{1.32}
+\noindent\begin{tabular}{@{}p{4.2cm}p{11cm}@{}}
+\textsc{\color{muted}Studiengang}     & W4DSKI\_108 Data Science und K\"unstliche Intelligenz\\
+\textsc{\color{muted}Jahrgang}        & RV-WDS125 / RV-WDS225\\
+\textsc{\color{muted}Modul}           & Fortgeschrittene Lineare Algebra und Analysis\\
+\textsc{\color{muted}Veranstaltung}   & Numerische Methoden\\
+\textsc{\color{muted}Pr\"ufer}        & Prof.\ Dr.-Ing.\ Mark Schutera\\
+\textsc{\color{muted}Datum}           & \rule{4cm}{0.3pt}\\
+\textsc{\color{muted}Bearbeitungszeit}& 90 Minuten\\
+\textsc{\color{muted}Max.\ Punktzahl} & 75 Punkte\\
+\textsc{\color{muted}Hilfsmittel}     & kein Taschenrechner. Open book; alle gedruckten oder
+                                        handschriftlichen Unterlagen, die auf Papier mitgebracht werden.\\
+\end{tabular}
+
+\vspace{6pt}
+\noindent\textcolor{rulecol}{\rule{\linewidth}{0.4pt}}
+
+\vspace{10pt}
+{\small\color{muted}\textsc{Anweisungen}}\par
+\vspace{2pt}
+{\small
+Schreiben Sie Ihre L\"osungen und L\"osungswege leserlich in die vorgesehenen Bereiche.
+Ordnen Sie jede L\"osung deutlich der zugeh\"origen Aufgabe zu. \textbf{Begr\"unden Sie Ihre
+Antworten kurz: eine reine Zahl ohne Rechenweg gibt keine volle Punktzahl.} Br\"uche d\"urfen
+als L\"osung stehen bleiben; Ableitungen d\"urfen analytisch gebildet werden, sofern nicht
+ausdr\"ucklich anders verlangt. Lesen Sie die Aufgabenstellung sorgf\"altig, bevor Sie mit der
+Bearbeitung beginnen. Viel Erfolg!}
+
+\vspace{12pt}
+{\small\color{muted}\textsc{Durch Pr\"ufer auszuf\"ullen}}\par
+\vspace{3pt}
+\renewcommand{\arraystretch}{1.4}
+\noindent\begin{tabular}{|l|c|c|c|c|c|c|c|}
+\hline
+\color{muted}Aufgabe & 1 & 2 & 3 & 4 & 5 & 6 & $\Sigma$\\
+\hline
+\color{muted}Maximal & 16 & 7 & 14 & 13 & 14 & 11 & 75\\
+\hline
+\color{muted}Erreicht & & & & & & & \\
+\hline
+\end{tabular}
+
+% =====================================================================
+% AUFGABE 1 -- Block 1
+% =====================================================================
+\clearpage
+\aufg{1}{Gleitkomma, Festkomma \& Brute Force}{16}
+
+\textbf{(a)} Sie entwerfen ein Gleitkommasystem (floating-point system) mit $1$ Vorzeichenbit
+und weiteren Bits, die Sie frei auf Mantisse (mantissa) und Exponent (exponent) verteilen.
+\tp{6}
+
+\smallskip
+Diskutieren Sie den Trade-off: Welche Eigenschaft verbessert sich, wenn Sie ein Bit der
+\emph{Mantisse} zuweisen, welche, wenn Sie es dem \emph{Exponenten} geben? Argumentieren Sie
+\"uber Aufl\"osung (resolution) und Wertebereich (dynamic range).
+
+\smallskip
+Fixieren wir die Aufteilung auf $3$ Mantissenbits (normalisierte Mantisse $1{.}b_1b_2b_3$ mit
+implizitem f\"uhrenden Bit) und $3$ Exponentenbits mit Bias $3$. Bestimmen Sie das
+Maschinenepsilon $\varepsilon_{\mathrm{mach}}$ und berechnen Sie in diesem System
+\[
+   \frac{1}{\bigl(1+\tfrac{1}{32}\bigr)-1}.
+\]
+Geben Sie den Nenner nach Rundung sowie das Endergebnis an, vergleichen Sie mit dem
+mathematischen Wert und erkl\"aren Sie die Ausl\"oschung (catastrophic cancellation).
+
+\karo{7.5cm}
+
+\clearpage
+\textbf{(b)} Ein \emph{Festkommasystem} (fixed-point) verwende $8$ Bit, davon $4$ Vorkomma-
+und $4$ Nachkommabits (Skalierungsfaktor $2^{-4}$).
+\tp{3}
+
+\smallskip
+Geben Sie die Aufl\"osung und die gr\"o\ss te darstellbare (vorzeichenlose) Zahl an.
+Stellen Sie $3{,}25$ in diesem System bin\"ar dar. Vergleichen Sie Festkomma und Gleitkomma:
+Wie unterscheiden sich die Abst\"ande benachbarter darstellbarer Zahlen, und welche Rolle
+spielt der Skalierungsfaktor?
+
+\karo{7cm}
+
+\clearpage
+\textbf{(c)} Wir diskretisieren das Intervall $[0,1]$ mit $N=4$ gleich gro\ss en
+Teilintervallen.
+\tp{3}
+
+\smallskip
+Berechnen Sie die Schrittweite $h=\frac{b-a}{N}$ und geben Sie alle Gitterpunkte an.
+Ordnen Sie anschlie\ss end die folgenden drei Fehlerquellen jeweils einem Fehlertyp zu
+(\emph{Modellfehler}, \emph{Abschneidefehler}, \emph{Rundungsfehler}) und begr\"unden Sie kurz:
+\begin{enumerate}\setlength{\itemsep}{1pt}
+\item[(i)]   Bei der Simulation wird die Luftreibung vernachl\"assigt.
+\item[(ii)]  Die Reihe $e^x=\sum_{n\ge0}\tfrac{x^n}{n!}$ wird nach drei Gliedern abgebrochen.
+\item[(iii)] Der Wert $\tfrac13$ wird als $0{,}333$ gespeichert.
+\end{enumerate}
+
+\karo{6.5cm}
+
+\clearpage
+\textbf{(d)} Wir suchen die L\"osung des linearen Systems
+\[
+  \begin{pmatrix} 2 & 1 \\ 1 & 3 \end{pmatrix}
+  \begin{pmatrix} w \\ b \end{pmatrix}
+  =
+  \begin{pmatrix} 3 \\ 5 \end{pmatrix}
+\]
+mit einer Gitter-Suche (grid search) \"uber $w,b\in\{0,1,2\}$.
+\tp{4}
+
+\smallskip
+W\"ahlen Sie ein Fehlerma\ss\ und begr\"unden Sie es kurz; bestimmen Sie $w^\ast,b^\ast$.
+Vergleichen Sie mit der exakten L\"osung. Findet die Gitter-Suche das System exakt? Wie l\"asst
+sich die Methode verbessern?
+
+\smallskip
+{\small\color{muted}\textsc{Hinweis.} Exakte L\"osung: $w^\star=4/5$, $b^\star=7/5$.}
+
+\karo{8cm}
+
+% =====================================================================
+% AUFGABE 2 -- Block 2
+% =====================================================================
+\clearpage
+\aufg{2}{Fehleranalyse}{7}
+
+Wir bestimmen die Ableitung $f'$ von $f(x)=x^3$ (wahres Problem: $f'(x)=3x^2$) numerisch mit
+der Vorw\"artsdifferenz
+\[
+  D_h(x)=\frac{f(x+h)-f(x)}{h}.
+\]
+Die Eingabe sei durch einen Messfehler um $\tilde x=x+\delta$ gest\"ort. Untersuchen Sie
+nacheinander die vier Eigenschaften der Fehleranalyse.
+\tp{7}
+
+\smallskip
+\emph{Kondition (conditioning):} Quantifizieren Sie die Kondition von $f'(x)=3x^2$ an den
+Stellen $x=0$ und $x=2$; benennen Sie den gut bzw.\ schlecht konditionierten Bereich.
+
+\smallskip
+\emph{Konsistenz (consistency):} Zeigen Sie $D_h(x)=3x^2+3xh+h^2$ und quantifizieren Sie den
+Konsistenzfehler $|D_h(x)-f'(x)|$ am Punkt $x=1$ f\"ur $h_1=1$ und $h_2=\tfrac12$. Welche
+Schrittweite ist konsistenter?
+
+\smallskip
+\emph{Stabilit\"at (stability) \& Konvergenz (convergence):} Erkl\"aren Sie, warum eine
+\emph{immer kleinere} Schrittweite bei endlicher Rechengenauigkeit nicht zwingend zu einer
+besseren Approximation f\"uhrt (Konsistenz- vs.\ Rundungsfehler).
+
+\karo{9cm}
+
+% =====================================================================
+% AUFGABE 3 -- Block 3 + 4
+% =====================================================================
+\clearpage
+\aufg{3}{Nullstellen \& Globale Optimierung}{14}
+
+\textbf{(a)} Wir suchen eine Nullstelle (root) von $f(x)=x^2-3$.
+\tp{8}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.8]
+  \draw[->,rulecol] (-1.4,0) -- (3.2,0) node[right]{\small$x$};
+  \draw[->,rulecol] (0,-3.6) -- (0,6.4) node[above]{\small$f(x)$};
+  \foreach \y in {3,6} \draw[rulecol] (-0.08,\y) -- (0.08,\y) node[left=2pt]{\scriptsize$\y$};
+  \foreach \x in {1,2,3} \draw[rulecol] (\x,-0.08) -- (\x,0.08) node[below=2pt]{\scriptsize$\x$};
+  \draw[accent,thick,domain=-1.3:3.05,samples=80,smooth] plot (\x,{(\x)*(\x)-3});
+  \draw[accent2,thick] (2,1) circle (2.5pt);
+  \node[accent2] at (2.45,1.4) {\scriptsize$x_0$};
+\end{tikzpicture}
+\end{center}
+
+\textbf{Leiten Sie} das Newton-Verfahren $x_{n+1}=x_n-\frac{f(x_n)}{f'(x_n)}$ \emph{aus der
+Taylor-Entwicklung} erster Ordnung her. F\"uhren Sie dann mit $x_0=2$ zwei Iterationen durch
+($x_1,x_2$ als Bruch) und nennen Sie das Konvergenzkriterium.
+
+\smallskip
+Nehmen Sie an, $f$ sei nur durch Funktionsauswertungen zug\"anglich. Geben Sie eine numerische
+Approximation f\"ur $f'(x_0)$ samt Approximationsfehler an und leiten Sie daraus ein
+\emph{ableitungsfreies} Verfahren ab, das einen Versagensmodus von Newton umgeht. Benennen Sie
+diesen Versagensmodus.
+
+\karo{8.5cm}
+
+\clearpage
+\textbf{(b)} Wir wechseln zur Minimumsuche.
+\tp{6}
+
+\smallskip
+\emph{(i)} Erkl\"aren Sie kurz den Unterschied zwischen \emph{lokalem} und \emph{globalem}
+Minimum und warum eine multimodale Landschaft wie die \emph{Shekel-Foxholes} (viele
+``L\"ocher'') f\"ur lokale Optimierer schwierig ist.
+
+\smallskip
+\emph{(ii)} F\"ur die Funktion $g(x)=x^3-3x$ f\"uhren Sie \emph{einen} Schritt des
+Newton-Verfahrens \emph{f\"ur Optima}
+\[
+   x_{n+1}=x_n-\frac{g'(x_n)}{|g''(x_n)|}
+\]
+mit Startwert $x_0=2$ durch.
+
+\smallskip
+\emph{(iii)} Bei \emph{zuf\"alligen Neustarts} (random restarts) treffe ein Start mit
+Wahrscheinlichkeit $p=\tfrac12$ das globale Becken. Berechnen Sie $P=1-(1-p)^K$ f\"ur $K=3$
+und bestimmen Sie das kleinste $K$ mit $P>0{,}9$.
+
+\smallskip
+\emph{(iv)} Nennen Sie einen weiteren Ansatz gegen raue Landschaften (z.\,B.\ Gl\"attung,
+Basin Hopping, Simulated Annealing) und w\"ahlen Sie ihn passend.
+
+\karo{8.5cm}
+
+% =====================================================================
+% AUFGABE 4 -- Block 5
+% =====================================================================
+\clearpage
+\aufg{4}{Differenzialgleichungen}{13}
+
+Anfangswertproblem $y'=t+y$, $\;y(0)=1$.
+
+\smallskip
+\textbf{(a)} Berechnen Sie zwei Schritte des expliziten Euler-Verfahrens mit $h=1$
+(N\"aherungen f\"ur $y(1)$ und $y(2)$).
+\tp{3}
+
+\karo{5cm}
+
+\clearpage
+\textbf{(b)} Gegeben das Butcher-Tableau
+\(
+  \renewcommand{\arraystretch}{1.2}
+  \begin{array}{c|cc} 0 & 0 & 0\\ \tfrac12 & \tfrac12 & 0\\ \hline & 0 & 1\end{array}
+\).
+Bestimmen Sie die Ordnung (\"uber $\sum_i b_i=1$ und $\sum_i b_i c_i=\tfrac12$) und f\"uhren Sie
+\emph{einen} Schritt dieses Runge-Kutta-Verfahrens ($k_1,k_2,y_1$) f\"ur das Anfangswertproblem
+mit $h=1$ aus.
+\tp{4}
+
+\karo{7.5cm}
+
+\clearpage
+\textbf{(c)} F\"uhren Sie \emph{einen} Schritt des klassischen \textbf{RK4}-Verfahrens
+\[
+  y_{n+1}=y_n+\tfrac{h}{6}\bigl(k_1+2k_2+2k_3+k_4\bigr)
+\]
+mit $h=1$ f\"ur dasselbe Anfangswertproblem aus. Berechnen Sie $k_1,k_2,k_3,k_4$ und $y(1)$ und
+vergleichen Sie mit dem Euler- und dem RK2-Ergebnis.
+\tp{4}
+
+\karo{8cm}
+
+\clearpage
+\textbf{(d)} Betrachten Sie $y'=-\lambda y$, $\lambda>0$. F\"ur welche Schrittweiten $h$ ist das
+explizite Euler-Verfahren stabil? Geben Sie die Stabilit\"atsbedingung an und beschreiben Sie,
+was f\"ur zu gro\ss e $h$ passiert.
+\tp{2}
+
+\karo{5.5cm}
+
+% =====================================================================
+% AUFGABE 5 -- Block 6
+% =====================================================================
+\clearpage
+\aufg{5}{Integration \& Interpolation}{14}
+
+\textbf{(a)} Bestimmen Sie das Lagrange-Interpolationspolynom $p(x)$ durch
+$(0,1),(1,3),(2,7)$ und werten Sie es bei $x=\tfrac12$ aus. Erkl\"aren Sie au\ss erdem kurz,
+was ein \emph{(kubischer) Spline} ist und welchen Vorteil er gegen\"uber einem
+Interpolationspolynom hohen Grades hat (Stichwort Runge-Ph\"anomen).
+\tp{4}
+
+\karo{7.5cm}
+
+\clearpage
+\textbf{(b)} Wir betrachten $I=\int_0^2 (x^2+1)\,dx$ mit St\"utzwerten $f(0)=1,f(1)=2,f(2)=5$.
+\tp{5}
+
+\smallskip
+Geben Sie die Gewichte/Formeln der Newton-Cotes-Regeln \emph{Mittelpunkt}, \emph{Trapez},
+\emph{Simpson}, \emph{3/8} und \emph{Boole} an. Berechnen Sie $I$ dann mit der Trapezregel
+($h=1$), der Simpson-Regel ($h=1$) und der 3/8-Regel (3 Teilintervalle, $h=\tfrac23$),
+vergleichen Sie mit dem exakten Wert und erkl\"aren Sie, warum Simpson und 3/8 hier exakt sind,
+die Trapezregel aber nicht.
+
+\karo{8.5cm}
+
+\clearpage
+\textbf{(c)} Die Romberg-Methode extrapoliert die Trapezregel (Richardson). Mit den
+Trapezwerten $T(h)$ und $T(h/2)$ lautet der erste Romberg-Schritt
+\[
+  R = \frac{4\,T(h/2)-T(h)}{3}.
+\]
+Berechnen Sie $T(h{=}2)$ und $T(h{=}1)$ f\"ur $I$ aus (b) und daraus $R$. Was f\"allt auf?
+\tp{2}
+
+\karo{6cm}
+
+\clearpage
+\textbf{(d)} Erkl\"aren Sie die Monte-Carlo-Integration mit Sch\"atzer
+$\hat I=|\Omega|\,\tfrac1N\sum_{i=1}^N f(X_i)$ und Standardfehler
+$\mathrm{SE}=|\Omega|\,\sigma_f/\sqrt N$. Um welchen Faktor muss $N$ wachsen, um den SE zu
+halbieren? Warum ist Monte-Carlo im Hochdimensionalen vorteilhaft (Fluch der Dimensionen)?
+\tp{3}
+
+\karo{6.5cm}
+
+% =====================================================================
+% AUFGABE 6 -- Block 7
+% =====================================================================
+\clearpage
+\aufg{6}{Fourier-Transformation}{11}
+
+\textbf{(a)} Berechnen Sie f\"ur das diskrete Signal $x=[\,1,0,-1,0\,]$ ($N=4$) die DFT
+\[
+   X_k=\sum_{n=0}^{3} x_n\,e^{-i\,2\pi k n/4},\qquad k=0,1,2,3,
+\]
+von Hand ($e^{-i\pi/2}=-i$). Geben Sie $|X_k|$ an und interpretieren Sie das Spektrum.
+\tp{5}
+
+\karo{8cm}
+
+\clearpage
+\textbf{(b)} Geben Sie die \emph{kontinuierliche} Fourier-Transformation $F(\omega)$ und ihre
+Rücktransformation an. Betrachten Sie das Interferenzsignal
+\[
+   f(t)=A_1\cos(\omega_1 t)+A_2\cos(\omega_2 t),\qquad \omega_1\neq\omega_2 .
+\]
+Wie viele Peaks zeigt $|F(\omega)|$ und bei welchen Frequenzen? Nutzen Sie die Euler-Formel
+$e^{i\omega t}=\cos(\omega t)+i\sin(\omega t)$ zur Begr\"undung.
+\tp{4}
+
+\karo{7.5cm}
+
+\clearpage
+\textbf{(c)} Ein Sensor tastet mit $f_s=8\,\mathrm{Hz}$ ab und liefert $N=8$ Werte. Im
+Betragsspektrum liegt ein Peak im Bin $k=2$. Welcher Frequenz $f$ entspricht das
+($f_k=k\,f_s/N$)? Bis zu welcher Frequenz ist eindeutige Darstellung m\"oglich (Nyquist), und
+was passiert mit h\"oheren Frequenzen?
+\tp{2}
+
+\karo{5.5cm}
+
+\end{document}
