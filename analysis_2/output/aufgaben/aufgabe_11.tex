@@ -1,0 +1,137 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{array}
+\usepackage[a4paper,margin=2.2cm]{geometry}
+
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{accent}{HTML}{6CB6FF}
+\definecolor{leicht}{HTML}{7BD88F}
+\definecolor{mittel}{HTML}{E6C07B}
+\definecolor{schwer}{HTML}{E06C75}
+\pagecolor{bgdark}
+\color{fgtext}
+
+\newcommand{\karo}[1]{\par\noindent
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcol, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par}
+\newcommand{\aufgabe}[4]{\vspace{0.4em}\par\noindent
+  \textbf{\large Aufgabe #1}\quad #2 \hfill {\color{#3}\textbf{[#4]}}\par\smallskip}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+\begin{center}
+  {\color{accent}\Huge\bfseries Analysis II}\\[0.3em]
+  {\Large Übungsaufgaben 11 — Integralrechnung (Trainingsblatt)}\\[0.8em]
+\end{center}
+
+\noindent\textbf{Name:} \rule{6cm}{0.4pt} \hfill \textbf{Datum:} \rule{3.5cm}{0.4pt}
+\vspace{0.4em}
+{\color{gridcol}\hrule height 1pt}
+\vspace{0.3em}
+
+\small\textit{Jede Aufgabe trainiert ein Konzept aus \textbf{erklaerung\_02\_integral.pdf}.
+Hilfsmittel: Potenzregel $\int x^n dx=\frac{x^{n+1}}{n+1}\,(n\neq-1)$, $\int\frac1x dx=\ln|x|$,
+partielle Integration $\int u'v=uv-\int uv'$, Substitution. Schwierigkeit:
+{\color{leicht}\textbf{leicht}}, {\color{mittel}\textbf{mittel}}, {\color{schwer}\textbf{schwer}}.}
+\normalsize
+
+%==================================================================
+\clearpage
+\aufgabe{1}{Potenzregel mit negativen Exponenten und $\tfrac1x$}{leicht}{leicht}
+Berechne (achte auf den Unterschied zwischen $\tfrac{1}{x^2}$ und $\tfrac{1}{x}$):
+\[
+  \int_{1}^{2}\left( 4x - \frac{3}{x^2} + \frac{1}{x} \right) dx.
+\]
+\karo{7cm}
+
+%==================================================================
+\clearpage
+\aufgabe{2}{Substitution: das $\tfrac{f'}{f}$-Muster}{mittel}{mittel}
+Berechne das unbestimmte Integral
+\[
+  \int \frac{2x}{x^2+1}\,dx.
+\]
+\karo{7.5cm}
+
+%==================================================================
+\clearpage
+\aufgabe{3}{Partielle Integration: die richtige Wahl}{mittel}{mittel}
+Berechne das unbestimmte Integral. Überlege zuerst, welcher Faktor abgeleitet wird:
+\[
+  \int x\,e^{3x}\,dx.
+\]
+\karo{8cm}
+
+%==================================================================
+\clearpage
+\aufgabe{4}{Partielle Integration mit Logarithmus}{mittel}{mittel}
+Berechne das unbestimmte Integral
+\[
+  \int x^2\,\ln(x)\,dx.
+\]
+\karo{8cm}
+
+%==================================================================
+\clearpage
+\aufgabe{5}{Zweifache partielle Integration}{schwer}{schwer}
+Berechne das unbestimmte Integral (die partielle Integration muss zweimal angewendet werden):
+\[
+  \int x^2\,\sin(x)\,dx.
+\]
+\karo{9cm}
+
+%==================================================================
+\clearpage
+\aufgabe{6}{Substitution mit Wurzel}{mittel}{mittel}
+Berechne das unbestimmte Integral
+\[
+  \int 3x^2\,\sqrt{x^3+1}\,dx.
+\]
+\karo{8cm}
+
+%==================================================================
+\clearpage
+\aufgabe{7}{Substitution, die zum Logarithmus führt}{mittel}{mittel}
+Berechne das unbestimmte Integral
+\[
+  \int \frac{\cos(x)}{\sin(x)}\,dx.
+\]
+\karo{7.5cm}
+
+%==================================================================
+\clearpage
+\aufgabe{8}{Trigonometrisches Integral mit Umformung}{schwer}{schwer}
+Forme den Integranden zuerst mit $\sin^2x+\cos^2x=1$ um, dann integriere:
+\[
+  \int \left( \sin^3(x) + \cos^2(x)\,\sin(x) \right) dx.
+\]
+\karo{8cm}
+
+%==================================================================
+\clearpage
+\aufgabe{9}{Doppelintegral (separierbar)}{leicht}{leicht}
+Berechne von innen nach außen ($y$ beim inneren Integral als Konstante behandeln):
+\[
+  \int_{0}^{1}\!\int_{0}^{2} x\,y^2 \;dx\,dy.
+\]
+\karo{7.5cm}
+
+%==================================================================
+\clearpage
+\aufgabe{10}{Doppelintegral über ein Skalarfeld}{mittel}{mittel}
+Berechne
+\[
+  \int_{0}^{1}\!\int_{0}^{1} \left( x^2 + y \right) dx\,dy.
+\]
+\karo{8cm}
+
+\end{document}

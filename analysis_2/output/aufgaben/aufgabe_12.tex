@@ -1,0 +1,239 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{array}
+\usepackage[a4paper,margin=2.2cm]{geometry}
+
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{accent}{HTML}{6CB6FF}
+\definecolor{leicht}{HTML}{7BD88F}
+\definecolor{mittel}{HTML}{E6C07B}
+\definecolor{schwer}{HTML}{E06C75}
+\pagecolor{bgdark}
+\color{fgtext}
+
+\newcommand{\karo}[1]{\par\noindent
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcol, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par}
+\newcommand{\aufgabe}[4]{\vspace{0.4em}\par\noindent
+  \textbf{\large Aufgabe #1}\quad #2 \hfill {\color{#3}\textbf{[#4]}}\par\smallskip}
+\newcommand{\hinweis}[1]{\par\vspace{0.1em}{\color{mittel}\small\textit{$\triangleright$\ Worauf es ankommt: #1}}\par\vspace{0.35em}}
+\newcommand{\anleitung}[1]{\par\vspace{0.15em}\noindent{\color{leicht}\textbf{So funktioniert's:}}\ {\small #1}\par\vspace{0.4em}}
+\newcommand{\teil}[1]{{\color{accent}\large\bfseries #1}\par\vspace{0.2em}{\color{gridcol}\hrule height 0.8pt}\par\vspace{0.5em}}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+\begin{center}
+  {\color{accent}\Huge\bfseries Analysis II}\\[0.3em]
+  {\Large Übungsaufgaben 12 — Feinschliff: Integrale \& Differenzialgleichungen}\\[0.8em]
+\end{center}
+
+\noindent\textbf{Name:} \rule{6cm}{0.4pt} \hfill \textbf{Datum:} \rule{3.5cm}{0.4pt}
+\vspace{0.4em}
+{\color{gridcol}\hrule height 1pt}
+\vspace{0.3em}
+
+\small\textit{Teil A trainiert die zuletzt noch wackeligen Integral-Stellen (Hinweis in
+{\color{mittel}gelb}, worauf zu achten ist). In Teil B kommen pro DGL-Typ drei Aufgaben: die
+\textbf{erste} mit Anleitung in {\color{leicht}grün}, die \textbf{beiden anderen ohne Hilfe}.
+Schwierigkeit: {\color{leicht}\textbf{leicht}}, {\color{mittel}\textbf{mittel}}, {\color{schwer}\textbf{schwer}}.}
+\normalsize
+
+%==================================================================
+\clearpage
+\teil{Teil A — Integralrechnung (Feinschliff)}
+\aufgabe{1}{Potenzregel mit negativem Exponenten}{leicht}{leicht}
+Berechne
+\[
+  \int_{1}^{2}\left( \frac{2}{x^3} - \frac{1}{x} \right) dx.
+\]
+\hinweis{Ein negativer Exponent wird \emph{trotzdem} mit der Potenzregel integriert
+(Exponent um $1$ erhöhen, durch den neuen Exponenten teilen). Der Logarithmus erscheint \emph{nur}
+beim Exponenten genau $-1$ — nicht bei $\tfrac{1}{x^3}$.}
+\karo{7cm}
+
+%==================================================================
+\clearpage
+\teil{Teil A — Integralrechnung (Feinschliff)}
+\aufgabe{2}{Wurzeln als Potenz}{leicht}{leicht}
+Berechne das unbestimmte Integral
+\[
+  \int \left( 2\sqrt{x} + \frac{1}{\sqrt{x}} \right) dx.
+\]
+\hinweis{Wurzeln zuerst als Potenz mit gebrochenem Exponenten schreiben, dann Potenzregel.
+Auch hier wird der Exponent \emph{größer}, nicht kleiner.}
+\karo{7cm}
+
+%==================================================================
+\clearpage
+\teil{Teil A — Integralrechnung (Feinschliff)}
+\aufgabe{3}{Substitution mit Wurzel}{mittel}{mittel}
+Berechne das unbestimmte Integral
+\[
+  \int 2x\,\sqrt{x^2+3}\,dx.
+\]
+\hinweis{Nach der Substitution bleibt ein Wurzel-Integral übrig — und auch dieses löst du mit der
+Potenzregel (Exponent erhöhen) und vergisst den entstehenden Vorfaktor nicht.}
+\karo{7.5cm}
+
+%==================================================================
+\clearpage
+\teil{Teil A — Integralrechnung (Feinschliff)}
+\aufgabe{4}{Zweifache partielle Integration (Winkelfunktion)}{schwer}{schwer}
+Berechne das unbestimmte Integral
+\[
+  \int x^2\,\cos(x)\,dx.
+\]
+\hinweis{Das Polynom wird in \emph{jeder} Runde abgeleitet. Beim Integrieren der Winkelfunktion
+auf die Vorzeichen achten — Sinus und Kosinus wechseln sich beim Integrieren ab, und vor dem
+Restintegral steht ein Minus.}
+\karo{9cm}
+
+%==================================================================
+\clearpage
+\teil{Teil A — Integralrechnung (Feinschliff)}
+\aufgabe{5}{Doppelintegral — sauber zu Ende rechnen}{mittel}{mittel}
+Berechne
+\[
+  \int_{0}^{2}\!\int_{0}^{3} x^2\,y \;dx\,dy.
+\]
+\hinweis{Inneres Integral mit der Potenzregel, die andere Variable bleibt Konstante. Erst danach
+das äußere Integral — und beim Einsetzen der Grenzen am Schluss sorgfältig rechnen.}
+\karo{7.5cm}
+
+%==================================================================
+%  TEIL B — DIFFERENZIALGLEICHUNGEN
+%==================================================================
+
+% ---------- Typ A ----------
+\clearpage
+\teil{Teil B — Typ A: linear homogen, konstante Koeffizienten ($y'=\alpha y$)}
+\aufgabe{6}{Typ A — mit Anleitung}{leicht}{leicht}
+Löse das Anfangswertproblem
+\[
+  y'(x) = 2\,y(x),\quad y(0)=5.
+\]
+\anleitung{Diese Form hat \emph{immer} die Lösung $y(x)=y_0\,e^{\alpha(x-x_0)}$. Lies ab:
+$\alpha$ ist der Faktor vor $y$, $x_0$ der Stelle des Anfangswerts, $y_0$ der Startwert. Einsetzen.
+Liegt der Anfangswert bei $x_0=0$, fällt die Verschiebung weg.}
+\karo{6.5cm}
+
+\clearpage
+\teil{Teil B — Typ A: linear homogen, konstante Koeffizienten ($y'=\alpha y$)}
+\aufgabe{7}{Typ A — ohne Hilfe}{leicht}{leicht}
+Löse das Anfangswertproblem
+\[
+  y'(x) = -4\,y(x),\quad y(1)=2.
+\]
+\karo{7cm}
+
+\clearpage
+\teil{Teil B — Typ A: linear homogen, konstante Koeffizienten ($y'=\alpha y$)}
+\aufgabe{8}{Typ A (Anwendung) — ohne Hilfe}{mittel}{mittel}
+Von einem Stoff sind zu Beginn $80\,$g vorhanden, nach $6\,$Stunden nur noch $20\,$g.
+Beschreibe den Zerfall durch $y'(t)=\alpha\,y(t)$, bestimme $\alpha$ und die Halbwertszeit.
+\karo{7.5cm}
+
+% ---------- Typ B ----------
+\clearpage
+\teil{Teil B — Typ B: linear homogen mit Funktion $a(x)$ ($y'=a(x)\,y$)}
+\aufgabe{9}{Typ B — mit Anleitung}{mittel}{mittel}
+Löse das Anfangswertproblem
+\[
+  y'(x) = 2x\,y(x),\quad y(0)=4.
+\]
+\anleitung{Bilde $A(x)=\int a(x)\,dx$, also die Stammfunktion des Faktors vor $y$. Die allgemeine
+Lösung ist dann $y(x)=c\,e^{A(x)}$ — die Konstante steht als Faktor \emph{vor} der $e$-Funktion.
+Setze zuletzt den Anfangswert ein, um $c$ zu bestimmen.}
+\karo{6.5cm}
+
+\clearpage
+\teil{Teil B — Typ B: linear homogen mit Funktion $a(x)$ ($y'=a(x)\,y$)}
+\aufgabe{10}{Typ B — ohne Hilfe}{mittel}{mittel}
+Löse das Anfangswertproblem
+\[
+  y'(x) = 3x^2\,y(x),\quad y(0)=2.
+\]
+\karo{7cm}
+
+\clearpage
+\teil{Teil B — Typ B: linear homogen mit Funktion $a(x)$ ($y'=a(x)\,y$)}
+\aufgabe{11}{Typ B — ohne Hilfe}{mittel}{mittel}
+Löse das Anfangswertproblem
+\[
+  y'(x) = (2x+1)\,y(x),\quad y(0)=1.
+\]
+\karo{7cm}
+
+% ---------- Typ C ----------
+\clearpage
+\teil{Teil B — Typ C: linear inhomogen ($y'=a(x)\,y+b(x)$)}
+\aufgabe{12}{Typ C — mit Anleitung}{schwer}{schwer}
+Löse das Anfangswertproblem
+\[
+  y'(x) = y(x) + 1,\quad y(0)=0.
+\]
+\anleitung{Identifiziere $a(x)$ (Faktor vor $y$) und den Störterm $b(x)$. Bilde $A=\int a\,dx$ und
+setze in die Lösungsformel
+$y=e^{A}\big(y_0+\int_{x_0}^{x} b(u)\,e^{-A(u)}\,du\big)$ ein. Achtung: außen steht $e^{+A}$, im
+Integral $e^{-A}$; der Anfangswert $y_0$ steht \emph{innerhalb} der Klammer.}
+\karo{7.5cm}
+
+\clearpage
+\teil{Teil B — Typ C: linear inhomogen ($y'=a(x)\,y+b(x)$)}
+\aufgabe{13}{Typ C — ohne Hilfe}{schwer}{schwer}
+Löse das Anfangswertproblem
+\[
+  y'(x) = \frac{1}{x}\,y(x) + x,\quad y(1)=0.
+\]
+\karo{8.5cm}
+
+\clearpage
+\teil{Teil B — Typ C: linear inhomogen ($y'=a(x)\,y+b(x)$)}
+\aufgabe{14}{Typ C — ohne Hilfe}{schwer}{schwer}
+Löse das Anfangswertproblem
+\[
+  y'(x) = y(x) + e^{2x},\quad y(0)=0.
+\]
+\karo{8.5cm}
+
+% ---------- Typ D ----------
+\clearpage
+\teil{Teil B — Typ D: getrennte Veränderliche ($y'=g(x)\,h(y)$)}
+\aufgabe{15}{Typ D — mit Anleitung}{mittel}{mittel}
+Löse das Anfangswertproblem
+\[
+  y'(x) = x\,y(x)^2,\quad y(0)=1.
+\]
+\anleitung{Schreibe $y'=\frac{dy}{dx}$ und bringe alles mit $y$ nach links, alles mit $x$ nach
+rechts. Integriere beide Seiten (eine Konstante genügt), löse nach $y$ auf und bestimme die
+Konstante zuletzt über den Anfangswert.}
+\karo{7.5cm}
+
+\clearpage
+\teil{Teil B — Typ D: getrennte Veränderliche ($y'=g(x)\,h(y)$)}
+\aufgabe{16}{Typ D — ohne Hilfe}{mittel}{mittel}
+Löse das Anfangswertproblem
+\[
+  y'(x) = \frac{2x}{y(x)},\quad y(0)=1.
+\]
+\karo{8cm}
+
+\clearpage
+\teil{Teil B — Typ D: getrennte Veränderliche ($y'=g(x)\,h(y)$)}
+\aufgabe{17}{Typ D — ohne Hilfe}{schwer}{schwer}
+Löse das Anfangswertproblem
+\[
+  y'(x) = 2x\,e^{y(x)},\quad y(0)=0.
+\]
+\karo{8cm}
+
+\end{document}

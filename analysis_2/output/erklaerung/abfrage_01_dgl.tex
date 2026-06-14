@@ -1,0 +1,83 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage[a4paper,margin=2.2cm]{geometry}
+
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{accent}{HTML}{6CB6FF}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\pagecolor{bgdark}
+\color{fgtext}
+
+\titleformat{\section}{\large\bfseries\color{accent}}{\thesection}{0.7em}{}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.4em}
+
+% Karo-Notizfeld
+\newcommand{\karo}[1]{\par\noindent
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcol, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par}
+
+\newcounter{frage}
+\newcommand{\frage}[1]{\refstepcounter{frage}\par\smallskip
+  \textbf{\color{accent}F\thefrage.}\ #1\par}
+
+\begin{document}
+
+\begin{center}
+  {\color{accent}\Huge\bfseries Analysis II}\\[0.3em]
+  {\Large Abfrage 01 — Differenzialgleichungen}\\[0.3em]
+  {\color{gridcol}\small Erst selbst überlegen, dann in abfrage\_01\_dgl\_loesung.pdf kontrollieren.}
+\end{center}
+\vspace{0.3em}
+{\color{gridcol}\hrule height 1pt}
+
+\section{Grundbegriffe \& Einordnung}
+\frage{Was unterscheidet eine DGL von einer gewöhnlichen Gleichung?}
+\frage{Wahr oder falsch: $y'=x^2y$ ist nichtlinear, weil $x^2$ vorkommt.}
+\frage{Ordne ein (Ordnung / linear? / homogen?): \;(a) $y'=\sin(y)$\quad(b) $y''=y'+x$\quad(c) $y'=xy+x^2$.}
+\frage{Was ist der Unterschied zwischen allgemeiner und spezieller Lösung? Wozu dient der Anfangswert?}
+\karo{3.5cm}
+
+\section{Typ A: $y'=\alpha y$}
+\frage{Gib die Lösungsformel für $y'=\alpha y,\ y(x_0)=y_0$ an.}
+\frage{Löse: $y'=3y,\ y(0)=2$.}
+\frage{Löse: $y'=-2y,\ y(1)=5$.}
+\frage{Ein Stoff hat $\alpha=-0{,}05\,$min$^{-1}$. Wie lautet die Halbwertszeit?}
+\frage{Wahr oder falsch: Bei radioaktivem Zerfall ist $\alpha>0$.}
+\karo{4cm}
+
+\section{Typ B: $y'=a(x)\,y$}
+\frage{Beschreibe das Verfahren in drei Schritten.}
+\frage{Löse: $y'=2x\,y,\ y(0)=3$.}
+\frage{Löse: $y'=(2x+1)\,y,\ y(0)=1$.}
+\karo{4.5cm}
+
+\section{Typ C: $y'=a(x)\,y+b(x)$}
+\frage{Gib die Lösungsformel an. Wo steht $e^{+A}$, wo $e^{-A}$?}
+\frage{Löse: $y'=y+e^{x},\ y(0)=0$.}
+\frage{Löse: $y'=x^{-1}y+3x^{3},\ y(2)=0$.}
+\karo{5.5cm}
+
+\section{Typ D: Trennung der Variablen}
+\frage{Wann ist die Methode anwendbar, und wie geht man vor?}
+\frage{Löse: $y'=x\,y^2,\ y(0)=1$.}
+\frage{Löse: $y'=\dfrac{x}{y},\ y(0)=2$.}
+\frage{Löse: $y'=2x\,e^{y},\ y(0)=0$.}
+\karo{6cm}
+
+\section{Anwendungen \& Probe}
+\frage{Ein Kapital verdoppelt sich in $7$ Jahren ($y'=\alpha y,\ y(0)=K$). Bestimme $\alpha$ und $y(t)$.}
+\frage{CO$_2$: $+8\,$g/min Zunahme, $1\,\%$/min Abnahme, $y(0)=0$. Stelle die DGL auf und gib den Grenzwert $x\to\infty$ an.}
+\frage{Prüfe per Probe, ob $y=xe^x$ die DGL $y'=y+e^x$ löst.}
+\karo{5cm}
+
+\end{document}

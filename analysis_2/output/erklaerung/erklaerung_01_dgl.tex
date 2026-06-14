@@ -1,0 +1,334 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage[most]{tcolorbox}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage[a4paper,margin=2.2cm]{geometry}
+
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{accent}{HTML}{6CB6FF}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{panel}{HTML}{2A2A2A}
+\definecolor{gruen}{HTML}{7BD88F}
+\definecolor{gelb}{HTML}{E6C07B}
+\definecolor{rot}{HTML}{E06C75}
+\pagecolor{bgdark}
+\color{fgtext}
+
+\titleformat{\section}{\Large\bfseries\color{accent}}{\thesection}{0.8em}{}
+\titleformat{\subsection}{\large\bfseries\color{accent}}{\thesubsection}{0.7em}{}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.4em}
+
+\newtcolorbox{defbox}[1]{enhanced,breakable,colback=panel,colframe=accent,coltext=fgtext,
+  coltitle=bgdark,colbacktitle=accent,fonttitle=\bfseries,title={#1},boxrule=0.6pt,arc=2pt}
+\newtcolorbox{satzbox}[1]{enhanced,breakable,colback=panel,colframe=gruen,coltext=fgtext,
+  coltitle=bgdark,colbacktitle=gruen,fonttitle=\bfseries,title={#1},boxrule=0.6pt,arc=2pt}
+\newtcolorbox{bspbox}[1]{enhanced,breakable,colback=panel,colframe=gridcol,coltext=fgtext,
+  coltitle=fgtext,colbacktitle=gridcol,fonttitle=\bfseries,title={#1},boxrule=0.6pt,arc=2pt}
+\newtcolorbox{fehlerbox}{enhanced,breakable,colback=panel,colframe=rot,coltext=fgtext,
+  coltitle=bgdark,colbacktitle=rot,fonttitle=\bfseries,title={Typische Fehler},boxrule=0.6pt,arc=2pt}
+\newtcolorbox{merkbox}{enhanced,breakable,colback=panel,colframe=gelb,coltext=fgtext,
+  coltitle=bgdark,colbacktitle=gelb,fonttitle=\bfseries,title={Merkhilfe},boxrule=0.6pt,arc=2pt}
+
+\renewcommand{\contentsname}{\color{accent}Inhaltsverzeichnis}
+
+\begin{document}
+
+\begin{center}
+  {\color{accent}\Huge\bfseries Analysis II}\\[0.3em]
+  {\Large Lernskript 01 — Gewöhnliche Differenzialgleichungen}\\[0.4em]
+  {\color{gridcol}\small Verstehen $\to$ einordnen $\to$ rechnen}
+\end{center}
+\vspace{0.4em}
+{\color{gridcol}\hrule height 1pt}
+\vspace{0.8em}
+
+{\color{fgtext}\tableofcontents}
+\vspace{0.6em}
+{\color{gridcol}\hrule height 1pt}
+
+%====================================================================
+\section{Was ist eine Differenzialgleichung?}
+
+\textbf{Intuition.} Eine gewöhnliche Gleichung wie $x^2=4$ sucht eine \emph{Zahl}.
+Eine \emph{Differenzialgleichung} (DGL) sucht dagegen eine ganze \emph{Funktion} $y(x)$.
+Der Clou: In der Gleichung steht nicht nur $y$, sondern auch ihre Ableitung $y'$. Eine
+DGL beschreibt also einen \emph{Zusammenhang zwischen einer Größe und ihrer Änderungs\-rate}.
+
+Das wichtigste Bild des ganzen Kapitels:
+\[
+  y' = \alpha\, y \quad\Longleftrightarrow\quad
+  \text{,,Die Änderung ist proportional zum Bestand.''}
+\]
+Das ist Wachstum (Zinsen, Bakterien) bzw.\ Zerfall (Radioaktivität), und die Lösung ist
+\emph{immer} eine $e$-Funktion. Wer dieses eine Beispiel verstanden hat, hat den roten Faden.
+
+\begin{defbox}{Grundbegriffe}
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item Eine \textbf{(gewöhnliche) DGL} ist eine Gleichung, die $x$, die gesuchte Funktion
+        $y(x)$ und deren Ableitungen $y',y'',\dots$ verknüpft.
+  \item Die \textbf{Ordnung} ist die höchste vorkommende Ableitung
+        (nur $y'$: 1.\ Ordnung;\ $y''$: 2.\ Ordnung).
+  \item Eine \textbf{Lösung} ist eine Funktion $y(x)$, die die Gleichung für alle $x$ erfüllt.
+  \item Die \textbf{allgemeine Lösung} enthält eine freie Konstante $c$ (unendlich viele Kurven).
+        Ein \textbf{Anfangswert} $y(x_0)=y_0$ legt $c$ fest $\Rightarrow$ \textbf{spezielle Lösung}.
+  \item DGL $+$ Anfangswert $=$ \textbf{Anfangswertproblem (AWP)}.
+\end{itemize}
+\end{defbox}
+
+\begin{bspbox}{Beispiel: eine Lösung erraten und prüfen}
+Behauptung: $y(x)=e^{2x}$ löst $y'=2y$. Probe: $y'=2e^{2x}=2\,y$. \checkmark\;
+Auch $y=c\,e^{2x}$ löst es für jedes $c$ — das ist die allgemeine Lösung. Mit $y(0)=5$
+folgt $c=5$, also die spezielle Lösung $y=5e^{2x}$.
+\end{bspbox}
+
+%====================================================================
+\section{Einordnung: die drei Fragen}
+
+Bevor du \emph{irgendetwas} rechnest, ordne die DGL ein. Drei Fragen entscheiden über die Methode.
+
+\begin{defbox}{Die drei Einordnungs-Fragen}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}p{3.1cm}p{4.1cm}p{7.5cm}@{}}
+\textbf{(a) Ordnung?} & 1., 2., \dots & höchste Ableitung: $y'\Rightarrow1$,\ $y''\Rightarrow2$ \\
+\textbf{(b) linear?} & linear / nichtlinear &
+  \textbf{linear}: $y,y'$ nur ,,pur'' (mal Funktionen von $x$).
+  \textbf{nichtlinear}: $y^2,\sqrt y,\sin(y),y\cdot y',\dots$ \\
+\textbf{(c) homogen?} & homogen / inhomogen &
+  \textbf{homogen}: jeder Term enthält $y$ oder $y'$.
+  \textbf{inhomogen}: zusätzlicher ,,Störterm'' rein aus $x$ / konstant \\
+\end{tabular}
+\end{defbox}
+
+\begin{bspbox}{Einordnen im Kopf}
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item $y'=x^2y$ — 1.\ Ordnung, \textbf{linear}, \textbf{homogen}.
+  \item $y'=\sin(y)$ — 1.\ Ordnung, \textbf{nichtlinear} ($y$ im Sinus), homogen.
+  \item $y''=y'+x$ — \textbf{2.\ Ordnung}, linear, \textbf{inhomogen} (Störterm $x$).
+  \item $y'=xy+x^2$ — 1.\ Ordnung, linear, \textbf{inhomogen} (Störterm $x^2$).
+\end{itemize}
+\end{bspbox}
+
+\begin{fehlerbox}
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item ,,Linear'' verwechseln mit ,,$x$ kommt nur linear vor''. Es geht um $y$ und $y'$!
+        $y'=x^2y$ ist linear, obwohl $x^2$ auftaucht.
+  \item Den konstanten Störterm übersehen: $y'=y+3$ ist \emph{inhomogen} (die $3$ enthält kein $y$).
+\end{itemize}
+\end{fehlerbox}
+
+%====================================================================
+\section{Entscheidungsbaum: welcher Typ -- welche Methode}
+
+\begin{bspbox}{Strategie}
+\ttfamily\small
+LINEAR? (y, y' nur pur)\\
+|\\
++-- JA --> Faktor vor y konstant?\\
+\hspace*{2.2em}|\\
+\hspace*{2.2em}+-- ja:  y' = a*y\hspace{2.6em}--> TYP A  (e-Funktion direkt)\\
+\hspace*{2.2em}+-- nein: y' = a(x)*y\\
+\hspace*{2.2em}\hspace*{4.5em}|\\
+\hspace*{2.2em}\hspace*{4.5em}+-- homogen          --> TYP B  (y = c*e\^{}A)\\
+\hspace*{2.2em}\hspace*{4.5em}+-- inhomogen (+b(x)) --> TYP C  (Loesungsformel)\\
+|\\
++-- NEIN (nichtlinear) --> trennbar?  y' = g(x)*h(y)  --> TYP D
+\end{bspbox}
+
+Die folgenden vier Abschnitte sind genau die vier Typen.
+
+%====================================================================
+\section{Typ A: $y'=\alpha y$ (linear, konstanter Koeffizient)}
+
+\textbf{Intuition.} Änderung proportional zum Bestand $\Rightarrow$ exponentiell.
+$\alpha>0$: Wachstum, $\alpha<0$: Zerfall.
+
+\begin{satzbox}{Lösungsformel (auswendig!)}
+\[
+  y'=\alpha y,\quad y(x_0)=y_0 \qquad\Longrightarrow\qquad
+  \boxed{\,y(x)=y_0\,e^{\alpha (x-x_0)}\,}
+\]
+Hier wird \emph{nicht} integriert — nur $\alpha,\ x_0,\ y_0$ ablesen und einsetzen.
+\end{satzbox}
+
+\begin{satzbox}{Halbwerts- und Verdopplungszeit}
+\[
+  t_{1/2}=\frac{\ln 2}{|\alpha|}\quad(\alpha<0,\ \text{Zerfall}),
+  \qquad
+  t_{2}=\frac{\ln 2}{\alpha}\quad(\alpha>0,\ \text{Wachstum}).
+\]
+\end{satzbox}
+
+\begin{bspbox}{Durchgerechnet: Zerfall}
+$100\,$g zerfallen in $10\,$h auf $25\,$g. DGL: $y'=\alpha y,\ y(0)=100$, also $y(t)=100e^{\alpha t}$.
+\[
+  100e^{10\alpha}=25 \;\Rightarrow\; e^{10\alpha}=\tfrac14
+  \;\Rightarrow\; 10\alpha=\ln\tfrac14 \;\Rightarrow\; \alpha=\tfrac{\ln(1/4)}{10}\approx-0{,}1386.
+\]
+Halbwertszeit $t_{1/2}=\dfrac{\ln 2}{0{,}1386}=5\,$h. (Kontrolle: $100\to50\to25$, zwei
+Halbierungen in $10\,$h.)
+\end{bspbox}
+
+\begin{fehlerbox}
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item Bei $x_0\neq0$ das $(x-x_0)$ vergessen: $y'=-2y,\ y(1)=5 \Rightarrow y=5e^{-2(x-1)}$,
+        \emph{nicht} $5e^{-2x}$.
+  \item Vorzeichen von $\alpha$: $\ln(1/4)<0$ — bei Zerfall muss $\alpha$ negativ sein.
+\end{itemize}
+\end{fehlerbox}
+
+%====================================================================
+\section{Typ B: $y'=a(x)\,y$ (linear, homogen, variabler Koeffizient)}
+
+\textbf{Intuition.} Wie Typ A, aber der Proportionalitätsfaktor ist jetzt eine Funktion $a(x)$.
+
+\begin{satzbox}{Verfahren}
+\begin{enumerate}[leftmargin=1.6em,itemsep=2pt]
+  \item $A(x)=\displaystyle\int a(x)\,dx$\quad (eine Stammfunktion, ohne Konstante).
+  \item Allgemeine Lösung: $\boxed{\,y(x)=c\,e^{A(x)}\,}$.
+  \item $c$ aus dem Anfangswert bestimmen.
+\end{enumerate}
+Typ A ist der Spezialfall $a(x)=\alpha=\text{const}\Rightarrow A(x)=\alpha x$.
+\end{satzbox}
+
+\begin{bspbox}{Durchgerechnet}
+$y'=2x\,y,\ y(0)=3$. \quad $A(x)=\int 2x\,dx=x^2 \Rightarrow y=c\,e^{x^2}$.
+Anfangswert: $y(0)=c\,e^0=c=3 \Rightarrow y(x)=3\,e^{x^2}$.
+\end{bspbox}
+
+\begin{fehlerbox}
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item $A(x)$ ist die \emph{Stammfunktion} von $a(x)$, nicht $a(x)$ selbst.
+  \item Die Konstante steht \emph{vor} der $e$-Funktion ($c\,e^{A}$), nicht im Exponenten.
+\end{itemize}
+\end{fehlerbox}
+
+%====================================================================
+\section{Typ C: $y'=a(x)\,y+b(x)$ (linear, inhomogen)}
+
+\textbf{Intuition.} Jetzt kommt ein Störterm $b(x)$ dazu (von außen ,,eingespeist''). Die
+Gesamtlösung ist homogene Lösung plus eine partikuläre — beides steckt in einer Formel.
+
+\begin{satzbox}{Lösungsformel}
+\[
+  \boxed{\,y(x)=e^{A(x)}\Big(y_0+\int_{x_0}^{x} b(u)\,e^{-A(u)}\,du\Big)\,},
+  \qquad A(x)=\int a(x)\,dx.
+\]
+\end{satzbox}
+
+\begin{merkbox}
+Stur in 5 Schritten abarbeiten:
+\textbf{1.} $a(x),b(x)$ ablesen $\to$ \textbf{2.} $A(x)=\int a\,dx$ $\to$
+\textbf{3.} $e^{A}$ und $e^{-A}$ hinschreiben $\to$ \textbf{4.} Integral $\int b\,e^{-A}\,du$
+lösen $\to$ \textbf{5.} mit $e^{A}$ multiplizieren und $y_0$ einsetzen.
+Oft kürzt sich $e^{-A}$ mit $b$ schön weg.
+\end{merkbox}
+
+\begin{bspbox}{Durchgerechnet (1)}
+$y'=y+e^{x},\ y(0)=0$. \quad $a=1,\ A=x,\ b=e^x$.
+\[
+  y=e^{x}\Big(0+\int_0^x e^{u}e^{-u}\,du\Big)=e^x\int_0^x 1\,du=e^x\cdot x = x\,e^x.
+\]
+Probe: $y'=e^x+xe^x=e^x+y$. \checkmark
+\end{bspbox}
+
+\begin{bspbox}{Durchgerechnet (2)}
+$y'=x^{-1}y+3x^{3},\ y(2)=0$. \quad $a=x^{-1},\ A=\ln x,\ b=3x^3$. \;
+Mit $e^{A}=x$ und $e^{-A}=x^{-1}$:
+\[
+  y=x\Big(0+\int_2^x 3u^3\cdot u^{-1}\,du\Big)=x\int_2^x 3u^2\,du
+   =x\big[u^3\big]_2^x=x(x^3-8)=x^4-8x.
+\]
+Probe: $y(2)=16-16=0$. \checkmark
+\end{bspbox}
+
+\begin{fehlerbox}
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item Im Integral $e^{-A}$ (Minus!) verwenden, außen $e^{+A}$.
+  \item Bei bestimmten Grenzen: die \emph{Integrationsvariable} ist $u$, die Grenze ist $x$
+        (nicht $x$ als Integrationsvariable benutzen).
+  \item $y_0$ steht \emph{innerhalb} der Klammer, wird also auch mit $e^{A}$ multipliziert.
+\end{itemize}
+\end{fehlerbox}
+
+%====================================================================
+\section{Typ D: Trennung der Variablen (nichtlinear, aber trennbar)}
+
+\textbf{Intuition.} Wenn sich die DGL als $y'=g(x)\cdot h(y)$ schreiben lässt, kann man $x$
+und $y$ ,,auf getrennte Seiten'' bringen und beide einzeln integrieren.
+
+\begin{satzbox}{Verfahren}
+\begin{enumerate}[leftmargin=1.6em,itemsep=2pt]
+  \item Schreibe $y'=\dfrac{dy}{dx}=g(x)\,h(y)$ und trenne:
+        $\displaystyle \frac{1}{h(y)}\,dy=g(x)\,dx$.
+  \item Beide Seiten integrieren (eine Konstante $c$ genügt).
+  \item Nach $y$ auflösen (wenn möglich).
+  \item Anfangswert $\to$ $c$.
+\end{enumerate}
+\end{satzbox}
+
+\begin{bspbox}{Durchgerechnet (1)}
+$y'=x\,y^2,\ y(0)=1$.
+\[
+  \int y^{-2}\,dy=\int x\,dx \;\Rightarrow\; -\frac1y=\tfrac12x^2+c.
+\]
+$y(0)=1\Rightarrow -1=c$. Also $-\tfrac1y=\tfrac12x^2-1 \Rightarrow y=\dfrac{2}{2-x^2}$.
+\end{bspbox}
+
+\begin{bspbox}{Durchgerechnet (2)}
+$y'=2x\,e^{y},\ y(0)=0$.
+\[
+  \int e^{-y}\,dy=\int 2x\,dx \;\Rightarrow\; -e^{-y}=x^2+c.
+\]
+$y(0)=0\Rightarrow -1=c \Rightarrow e^{-y}=1-x^2 \Rightarrow y=-\ln(1-x^2)$.
+\end{bspbox}
+
+\begin{fehlerbox}
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item Nach dem Integrieren das \textbf{Auflösen nach $y$} nicht vergessen.
+  \item Beim Teilen durch $h(y)$ kann die Lösung $h(y)=0$ verloren gehen (z.\,B.\ $y\equiv0$).
+  \item Vorzeichen bei $\int e^{-y}dy=-e^{-y}$ beachten.
+\end{itemize}
+\end{fehlerbox}
+
+%====================================================================
+\section{Strategie \& Probe -- der rote Faden}
+
+\begin{merkbox}
+\textbf{Goldene Reihenfolge bei jeder Aufgabe:}
+\;1) Ordnung / linear / homogen bestimmen
+\;$\to$ 2) Typ A/B/C/D festlegen
+\;$\to$ 3) Rezept abarbeiten
+\;$\to$ 4) Anfangswert einsetzen
+\;$\to$ 5) Probe.
+\end{merkbox}
+
+\textbf{Probe (kostet 30 Sekunden, rettet Punkte):} Setze deine Lösung in die
+\emph{ursprüngliche} DGL ein ($y'$ ableiten, mit rechter Seite vergleichen) und prüfe
+zusätzlich $y(x_0)=y_0$.
+
+\begin{satzbox}{Spickzettel}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{@{}p{4.3cm}p{3.5cm}p{6.6cm}@{}}
+\textbf{Form} & \textbf{Typ} & \textbf{Lösung} \\[2pt]
+$y'=\alpha y$ & A: linear, konst. & $y=y_0\,e^{\alpha(x-x_0)}$ \\
+$y'=a(x)\,y$ & B: linear homogen & $y=c\,e^{A(x)},\ A=\int a\,dx$ \\
+$y'=a(x)\,y+b(x)$ & C: linear inhom. & $y=e^{A}\big(y_0+\int b\,e^{-A}\,du\big)$ \\
+$y'=g(x)\,h(y)$ & D: trennbar & $\int\frac{dy}{h(y)}=\int g(x)\,dx$ \\
+\end{tabular}
+\end{satzbox}
+
+\vfill
+{\color{gridcol}\hrule height 1pt}
+\vspace{0.3em}
+{\color{gridcol}\small Zum Selbsttesten: siehe \textbf{abfrage\_01\_dgl.pdf}; Lösungen in
+\textbf{abfrage\_01\_dgl\_loesung.pdf}.}
+
+\end{document}

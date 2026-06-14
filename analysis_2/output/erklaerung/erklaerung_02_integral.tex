@@ -1,0 +1,325 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage[most]{tcolorbox}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage[a4paper,margin=2.2cm]{geometry}
+
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{accent}{HTML}{6CB6FF}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{panel}{HTML}{2A2A2A}
+\definecolor{gruen}{HTML}{7BD88F}
+\definecolor{gelb}{HTML}{E6C07B}
+\definecolor{rot}{HTML}{E06C75}
+\pagecolor{bgdark}
+\color{fgtext}
+
+\titleformat{\section}{\Large\bfseries\color{accent}}{\thesection}{0.8em}{}
+\titleformat{\subsection}{\large\bfseries\color{accent}}{\thesubsection}{0.7em}{}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.4em}
+
+\newtcolorbox{defbox}[1]{enhanced,breakable,colback=panel,colframe=accent,coltext=fgtext,
+  coltitle=bgdark,colbacktitle=accent,fonttitle=\bfseries,title={#1},boxrule=0.6pt,arc=2pt}
+\newtcolorbox{satzbox}[1]{enhanced,breakable,colback=panel,colframe=gruen,coltext=fgtext,
+  coltitle=bgdark,colbacktitle=gruen,fonttitle=\bfseries,title={#1},boxrule=0.6pt,arc=2pt}
+\newtcolorbox{bspbox}[1]{enhanced,breakable,colback=panel,colframe=gridcol,coltext=fgtext,
+  coltitle=fgtext,colbacktitle=gridcol,fonttitle=\bfseries,title={#1},boxrule=0.6pt,arc=2pt}
+\newtcolorbox{fehlerbox}{enhanced,breakable,colback=panel,colframe=rot,coltext=fgtext,
+  coltitle=bgdark,colbacktitle=rot,fonttitle=\bfseries,title={Typische Fehler},boxrule=0.6pt,arc=2pt}
+\newtcolorbox{merkbox}{enhanced,breakable,colback=panel,colframe=gelb,coltext=fgtext,
+  coltitle=bgdark,colbacktitle=gelb,fonttitle=\bfseries,title={Merkhilfe},boxrule=0.6pt,arc=2pt}
+
+\renewcommand{\contentsname}{\color{accent}Inhaltsverzeichnis}
+
+\begin{document}
+
+\begin{center}
+  {\color{accent}\Huge\bfseries Analysis II}\\[0.3em]
+  {\Large Lernskript 02 — Integralrechnung (Konzepte)}\\[0.4em]
+  {\color{gridcol}\small Die Ideen hinter jedem Rechenschritt — passend zu Aufgabenblatt 11}
+\end{center}
+\vspace{0.4em}
+{\color{gridcol}\hrule height 1pt}
+\vspace{0.6em}
+{\color{fgtext}\tableofcontents}
+\vspace{0.4em}
+{\color{gridcol}\hrule height 1pt}
+
+%====================================================================
+\section{Integrieren ist das Umkehren des Ableitens}
+
+\textbf{Intuition.} Ableiten fragt: ,,Wie schnell ändert sich $F$?'' $\to F'$.
+Integrieren fragt das Gegenteil: ,,Welche Funktion $F$ hat die Ableitung $f$?'' Diese $F$
+heißt \emph{Stammfunktion}, und $\int f\,dx=F+c$. Das ,,$+c$'' steht da, weil eine Konstante
+beim Ableiten verschwindet — es gibt also unendlich viele Stammfunktionen.
+
+\begin{merkbox}
+\textbf{Die wichtigste Selbstkontrolle überhaupt:} Leite dein Ergebnis wieder ab. Kommt der
+ursprüngliche Integrand heraus, ist alles richtig. Diese Probe kostet Sekunden und entlarvt
+fast jeden Fehler.
+\end{merkbox}
+
+\begin{fehlerbox}
+\textbf{Integrieren und Ableiten verwechseln.} Das ist \emph{der} häufigste Fehler. Ableiten
+macht den Exponenten kleiner, Integrieren macht ihn größer. Wer beim Integrieren den Exponenten
+verkleinert, hat in Wahrheit abgeleitet.
+\end{fehlerbox}
+
+%====================================================================
+\section{Die Potenzregel (und negative Exponenten)}
+
+\textbf{Intuition.} Beim Integrieren wird der Exponent um $1$ \emph{größer}, und man teilt durch
+den neuen Exponenten — genau umgekehrt zum Ableiten.
+
+\begin{satzbox}{Potenzregel}
+\[
+  \int x^{n}\,dx=\frac{x^{\,n+1}}{n+1}+c \qquad (n\neq -1)
+\]
+Gilt auch für \textbf{negative} und gebrochene Exponenten — vorher Brüche/Wurzeln als Potenz
+schreiben: $\dfrac{1}{x^{k}}=x^{-k}$, $\ \sqrt{x}=x^{1/2}$.
+\end{satzbox}
+
+\begin{bspbox}{Konzept-Beispiel (negativer Exponent)}
+$\dfrac{1}{x^{2}}=x^{-2}$. Exponent $+1$ ergibt $-1$, teilen durch $-1$:
+\[
+  \int x^{-2}\,dx=\frac{x^{-1}}{-1}+c=-\frac{1}{x}+c.
+\]
+Probe: $\frac{d}{dx}\!\left(-x^{-1}\right)=x^{-2}=\frac{1}{x^2}$. \checkmark
+\end{bspbox}
+
+\begin{fehlerbox}
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item $\dfrac{1}{x^2}$ \emph{nicht} als $\ln$ integrieren — das ist die Potenzregel,
+        Ergebnis $-\frac1x$. (Der Logarithmus kommt nur bei Exponent genau $-1$, siehe nächster
+        Abschnitt.)
+  \item Exponent verkleinern statt vergrößern ($x^2\to 2x$): das ist Ableiten, nicht Integrieren.
+  \item Das Teilen durch den neuen Exponenten vergessen.
+\end{itemize}
+\end{fehlerbox}
+
+%====================================================================
+\section{Der Sonderfall $\tfrac1x$ und das Logarithmus-Muster}
+
+\textbf{Intuition.} Die Potenzregel scheitert nur an einer Stelle: bei $n=-1$ stünde im Nenner
+$n+1=0$. Genau dort springt der Logarithmus ein.
+
+\begin{satzbox}{Logarithmus-Integrale}
+\[
+  \int \frac{1}{x}\,dx=\ln|x|+c,
+  \qquad\qquad
+  \int \frac{f'(x)}{f(x)}\,dx=\ln\bigl|f(x)\bigr|+c.
+\]
+\end{satzbox}
+
+Das zweite ist das ,,$\ln$-Muster'': \emph{steht im Zähler (bis auf einen konstanten Faktor)
+die Ableitung des Nenners, ist das Integral ein Logarithmus.}
+
+\begin{bspbox}{Konzept-Beispiel (ln-Muster)}
+Im Integranden $\dfrac{g'(x)}{g(x)}$ ist der Zähler die Ableitung des Nenners $\Rightarrow$
+Ergebnis $\ln|g(x)|$. Steht nur ein \emph{konstanter} Faktor davor, zieht man ihn heraus, z.\,B.
+$\displaystyle\int\frac{2x}{x^2+1}\,dx=\ln(x^2+1)+c$ (Zähler $=$ Ableitung des Nenners).
+\end{bspbox}
+
+\begin{fehlerbox}
+Den Logarithmus an der falschen Stelle benutzen: \emph{nur} bei Exponent $-1$ bzw.\ beim
+$\frac{f'}{f}$-Muster. Umgekehrt bei $\frac1u$ den Logarithmus \emph{vergessen} und (falsch)
+die Potenzregel auf $u^{-1}$ anwenden.
+\end{fehlerbox}
+
+%====================================================================
+\section{Produkte kann man NICHT faktorweise integrieren}
+
+\textbf{Das zentrale Missverständnis.} Bei Summen darf man gliedweise integrieren. Bei
+\emph{Produkten} und \emph{Quotienten} gilt das \textbf{nicht}:
+\[
+  \int f(x)\,g(x)\,dx \;\neq\; \Bigl(\textstyle\int f\,dx\Bigr)\Bigl(\int g\,dx\Bigr).
+\]
+
+\begin{merkbox}
+Triffst du auf ein Produkt/Quotienten, gibt es nur zwei legale Wege:
+\textbf{(1)} erst \emph{algebraisch vereinfachen} (kürzen, ausmultiplizieren, trig.\ umformen),
+bis kein echtes Produkt mehr dasteht — oder \textbf{(2)} eine \emph{Methode} anwenden:
+partielle Integration oder Substitution.
+\end{merkbox}
+
+\begin{bspbox}{Konzept-Beispiel (erst vereinfachen)}
+$\dfrac{1}{x}\cdot\dfrac{x^{2}}{2}=\dfrac{x}{2}$ — das ist gar kein Produkt mehr, sondern
+$\frac12 x$, und $\int\frac12 x\,dx=\frac14 x^2$. Faktorweise (falsch) käme stattdessen
+$\ln x\cdot\frac{x^3}{6}$ heraus.
+\end{bspbox}
+
+%====================================================================
+\section{Partielle Integration}
+
+\textbf{Intuition.} Sie ist die ,,Produktregel rückwärts''. Man tauscht ein schwieriges Produkt
+gegen ein hoffentlich einfacheres Integral.
+
+\begin{satzbox}{Formel}
+\[
+  \int u'\,v\,dx = u\,v-\int u\,v'\,dx.
+\]
+\end{satzbox}
+
+\begin{merkbox}
+\textbf{Wer wird abgeleitet, wer integriert?} Den Faktor, der durchs \emph{Ableiten einfacher}
+wird, wählt man als $v$ (wird abgeleitet); den anderen als $u'$ (wird integriert).
+Eselsbrücke \textbf{,,LIPET''}: \underline{L}ogarithmus, \underline{I}nverse,
+\underline{P}otenz/Polynom, \underline{E}xponential, \underline{T}rigonometrisch — was weiter
+vorne steht, wird abgeleitet.
+\begin{itemize}[leftmargin=1.4em,itemsep=1pt]
+  \item Polynom $\times$ $e$-Funktion/Sinus $\Rightarrow$ Polynom ableiten.
+  \item Polynom $\times$ $\ln$ $\Rightarrow$ den $\ln$ ableiten (er wird zu $\frac1x$).
+\end{itemize}
+\end{merkbox}
+
+\begin{bspbox}{Konzept: mehrfach anwenden}
+Steht nach einer Runde im Restintegral immer noch ein Produkt (z.\,B.\ ein Polynom $\times$
+$e$-Funktion, dessen Polynomgrad nur um $1$ gesunken ist), wendet man die partielle Integration
+\textbf{erneut} an — so oft, bis das Polynom verschwindet. Den Restintegral-Term \emph{niemals}
+faktorweise abkürzen.
+\end{bspbox}
+
+\begin{fehlerbox}
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item Falsche Wahl (Polynom integriert statt abgeleitet) — das Integral wird dadurch
+        \emph{schwerer} statt leichter.
+  \item Das verbleibende $\int u\,v'\,dx$ faktorweise ,,integrieren''.
+  \item Bei höherem Polynomgrad die zweite (dritte) Runde weglassen.
+  \item Vorzeichen: vor dem Restintegral steht ein Minus.
+\end{itemize}
+\end{fehlerbox}
+
+%====================================================================
+\section{Substitution}
+
+\textbf{Intuition.} Die ,,Kettenregel rückwärts''. Man benennt eine \emph{innere Funktion} in
+$u$ um, sodass ein einfaches Grundintegral übrig bleibt.
+
+\begin{satzbox}{Verfahren}
+\begin{enumerate}[leftmargin=1.6em,itemsep=2pt]
+  \item Innere Funktion $u=g(x)$ wählen.
+  \item $\dfrac{du}{dx}=g'(x)$ bilden und nach $dx$ auflösen: $dx=\dfrac{du}{g'(x)}$.
+  \item Alles im Integral durch $u$ ausdrücken — \textbf{$x$ und $dx$ müssen komplett
+        verschwinden} (oft kürzt sich ein Faktor weg).
+  \item Das $u$-Integral lösen, dann $u=g(x)$ zurücksetzen.
+\end{enumerate}
+\end{satzbox}
+
+\begin{bspbox}{Konzept-Beispiel}
+Bei $\int g'(x)\,h\bigl(g(x)\bigr)\,dx$ setzt man $u=g(x)$; dann ist $g'(x)\,dx=du$ und es bleibt
+$\int h(u)\,du$. Steht der ,,störende'' Faktor $g'(x)$ als Faktor da, kürzt er sich also genau
+weg — das ist das Zeichen, dass Substitution passt.
+\end{bspbox}
+
+\begin{fehlerbox}
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item $dx$ nicht ersetzen (das $\frac{du}{g'}$ vergessen) — dann bleibt fälschlich ein $x$ stehen.
+  \item Am Ende das Rücksubstituieren $u\to g(x)$ vergessen.
+  \item Bei $\int\frac1u\,du$ wieder die Potenzregel statt $\ln|u|$ nehmen.
+\end{itemize}
+\end{fehlerbox}
+
+%====================================================================
+\section{Trigonometrische Integrale: erst umformen}
+
+\textbf{Intuition.} Viele trigonometrische Integrale sehen schlimm aus und sind nach einer
+Umformung trivial. Werkzeuge: $\sin^2x+\cos^2x=1$ und $\tan x=\frac{\sin x}{\cos x}$.
+
+\begin{merkbox}
+Vor dem Integrieren \emph{ausklammern} und den ,,trigonometrischen Pythagoras''
+$\sin^2x+\cos^2x=1$ suchen. Oft bleibt nur $\int\sin x$ oder $\int\cos x$ übrig.
+\end{merkbox}
+
+\begin{bspbox}{Konzept-Beispiel}
+Ein Ausdruck der Form $\cos x\,(\cos^2x+\sin^2x)$ ist wegen $\cos^2x+\sin^2x=1$ einfach
+$\cos x$. Erst \emph{nach} dieser Vereinfachung integrieren — dann ist es ein Grundintegral.
+\end{bspbox}
+
+\begin{fehlerbox}
+$\cos^3x$ oder $\sin^3x$ ,,direkt'' integrieren (z.\,B.\ $\cos^3x\to-\sin^3x$) — das ist falsch,
+weil wieder ein Produkt faktorweise behandelt wird. Erst umformen!
+\end{fehlerbox}
+
+%====================================================================
+\section{Bestimmtes Integral: Grenzen einsetzen}
+
+\begin{satzbox}{Hauptsatz}
+\[
+  \int_a^b f(x)\,dx=\bigl[F(x)\bigr]_a^b=F(b)-F(a).
+\]
+\end{satzbox}
+Beim \emph{bestimmten} Integral entfällt das ,,$+c$'' (es kürzt sich bei der Differenz weg).
+Zuerst die Stammfunktion bilden, \emph{dann} die Grenzen einsetzen und subtrahieren.
+
+\begin{fehlerbox}
+Obere und untere Grenze vertauschen (Vorzeichen!) oder die Subtraktion $F(b)-F(a)$ vergessen.
+\end{fehlerbox}
+
+%====================================================================
+\section{Mehrfachintegrale (Doppelintegrale)}
+
+\textbf{Intuition.} Ein Doppelintegral rechnet man \emph{von innen nach außen} — wie eine
+verschachtelte Klammer. Beim inneren Integral ist die \emph{andere} Variable eine Konstante.
+
+\begin{satzbox}{Vorgehen}
+\[
+  \int_{c}^{d}\!\!\int_{a}^{b} f(x,y)\,dx\,dy
+  =\int_{c}^{d}\underbrace{\left(\int_a^b f(x,y)\,dx\right)}_{\text{$y$ ist hier konstant}}dy.
+\]
+Erst inneres Integral (Stammfunktion nach $x$, Grenzen $a,b$ einsetzen), das Ergebnis hängt nur
+noch von $y$ ab, dann äußeres Integral nach $y$.
+\end{satzbox}
+
+\begin{bspbox}{Konzept-Beispiel}
+Im inneren Integral $\int_a^b x^2\,dx$ wirkt die Potenzregel ganz normal: $x^2\to\frac{x^3}{3}$.
+Ein Faktor wie $y$ bleibt als Konstante stehen und wird einfach mitgeschleppt. Erst danach folgt
+das Integral nach $y$.
+\end{bspbox}
+
+\begin{fehlerbox}
+\begin{itemize}[leftmargin=1.4em,itemsep=2pt]
+  \item Das innere Integral gar nicht bilden / den Integranden unverändert ,,einklammern''.
+  \item Auch hier $x^2\to2x$ (abgeleitet statt integriert).
+  \item Die zweite Integration (nach $y$) weglassen.
+\end{itemize}
+\end{fehlerbox}
+
+%====================================================================
+\section{Strategie \& Grundintegrale}
+
+\begin{merkbox}
+\textbf{Entscheidungsreihenfolge bei jedem Integral:}
+\;1) Lässt es sich \emph{vereinfachen} (kürzen, ausmultiplizieren, trig.\ umformen)?
+\;$\to$ 2) Ist es eine \emph{Summe}? Gliedweise mit Potenzregel/Grundintegralen.
+\;$\to$ 3) Steckt eine \emph{innere Funktion} drin ($\frac{f'}{f}$, $h(g(x))\,g'$)? Substitution.
+\;$\to$ 4) Ein \emph{Produkt} Polynom$\times$($e$/$\sin$/$\ln$)? Partielle Integration (evtl.\ mehrfach).
+\;$\to$ 5) Zum Schluss: \emph{Probe durch Ableiten}.
+\end{merkbox}
+
+\begin{satzbox}{Grundintegrale (Spickzettel)}
+\renewcommand{\arraystretch}{1.6}
+\begin{tabular}{@{}p{6.2cm}p{6.2cm}@{}}
+$\displaystyle\int x^{n}\,dx=\frac{x^{n+1}}{n+1}\ (n\neq-1)$ &
+$\displaystyle\int \frac{1}{x}\,dx=\ln|x|$ \\
+$\displaystyle\int e^{ax}\,dx=\frac{1}{a}e^{ax}$ &
+$\displaystyle\int \frac{f'}{f}\,dx=\ln|f|$ \\
+$\displaystyle\int \sin x\,dx=-\cos x$ &
+$\displaystyle\int \cos x\,dx=\sin x$ \\
+\end{tabular}
+\end{satzbox}
+
+\vfill
+{\color{gridcol}\hrule height 1pt}
+\vspace{0.3em}
+{\color{gridcol}\small Üben: \textbf{aufgabe\_11.pdf} (Lösungen: \textbf{aufgabe\_11\_loesung.pdf}).
+Jede Aufgabe dort trainiert genau einen der obigen Abschnitte.}
+
+\end{document}
