@@ -1,0 +1,508 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage[margin=2cm]{geometry}
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{accent}{HTML}{6CB6FF}
+\definecolor{loescol}{HTML}{7FD18C}
+\definecolor{markcol}{HTML}{F2A65A}
+\pagecolor{bgdark}
+\color{fgtext}
+\arrayrulecolor{fgtext}
+\setlength{\parindent}{0pt}
+% --- leeres Koordinatensystem 1. Quadrant (x1,x2), #1=xmax #2=ymax ---
+\newcommand{\sysI}[2]{\begin{center}\begin{tikzpicture}[scale=0.6]
+ \draw[gridcol,very thin,step=1](0,0) grid (#1,#2);
+ \draw[->,fgtext,thick](0,0)--(#1+0.7,0) node[right]{$x_1$};
+ \draw[->,fgtext,thick](0,0)--(0,#2+0.7) node[above]{$x_2$};
+ \foreach \i in {1,...,#1}{\node[fgtext,below,font=\tiny] at (\i,0){\i};}
+ \foreach \j in {1,...,#2}{\node[fgtext,left,font=\tiny] at (0,\j){\j};}
+\end{tikzpicture}\end{center}}
+% --- leeres Zielraum-System (f1,f2), #1=xmax #2=ymax ---
+\newcommand{\sysF}[2]{\begin{center}\begin{tikzpicture}[scale=0.6]
+ \draw[gridcol,very thin,step=1](0,0) grid (#1,#2);
+ \draw[->,fgtext,thick](0,0)--(#1+0.7,0) node[right]{$f_1$};
+ \draw[->,fgtext,thick](0,0)--(0,#2+0.7) node[above]{$f_2$};
+ \foreach \i in {1,...,#1}{\node[fgtext,below,font=\tiny] at (\i,0){\i};}
+ \foreach \j in {1,...,#2}{\node[fgtext,left,font=\tiny] at (0,\j){\j};}
+\end{tikzpicture}\end{center}}
+\newcommand{\titel}[1]{\begin{center}{\LARGE\color{accent}\textbf{Optimierungsverfahren}}\\[3pt]{\large #1}\end{center}\vspace{1mm}\noindent\textbf{Name:}\ \underline{\hspace{6cm}}\hfill\textbf{Datum:}\ \underline{\hspace{4cm}}\\[3pt]{\color{gridcol}\rule{\linewidth}{0.4pt}}\vspace{2mm}}
+\newcommand{\thema}[2]{\clearpage{\large\color{accent}\textbf{Thema #1:\ #2}}\par\vspace{1mm}{\color{gridcol}\rule{\linewidth}{0.4pt}}\par\vspace{2mm}}
+\newcommand{\bsp}{\par\vspace{1mm}\noindent{\color{loescol}\large\textbf{Musterbeispiel --- so zeichnet man es}}\par\vspace{0.5mm}}
+\newcommand{\loesweg}{\par\vspace{0.5mm}\noindent{\color{loescol}\textbf{Lösungsweg:}}\ }
+\newcommand{\uebung}[2]{\clearpage\noindent{\large\color{accent}\textbf{Aufgabe #1}}\hfill{\color{gridcol}\normalsize #2}\par\vspace{1mm}}
+\newcommand{\obref}[1]{\par\vspace{0.3mm}{\color{markcol}\small$\rightarrow$\ \textbf{Im Openbook nachschlagen:} #1}\par\vspace{1.2mm}}
+
+\begin{document}
+\titel{Grafik-Zettel --- Blatt 07: \textbf{Grafische Aufgaben (Teil 1)}}
+
+\noindent Auf diesem Zettel wird \textbf{wirklich gezeichnet}. Zu jedem Thema:
+\begin{itemize}[nosep,leftmargin=1.4em]
+  \item ein \textbf{Musterbeispiel} mit \emph{fertig eingezeichneter} Lösung im Koordinatensystem, und
+  \item \textbf{zwei Übungen} mit \emph{leerem} Koordinatensystem zum Selbst-Einzeichnen (Lösungen im Lösungs-PDF).
+\end{itemize}
+\emph{Konventionen:} zulässiger Bereich schraffieren/markieren, Ecken als Punkte, Optimum deutlich
+kennzeichnen, bei Höhenlinien mehrere Niveaus andeuten.
+\par\vspace{2mm}
+\noindent{\color{markcol}\textbf{Du brauchst nur deinen Openbook-Spickzettel.}} Bei jedem Thema steht, wo du
+dort nachschlägst (Seite + Abschnitt). Übersicht:
+\par\vspace{1.5mm}
+\begin{center}\small
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{>{\color{accent}}l l l}
+\textbf{Thema (Blatt 07)} & \textbf{Openbook} & \textbf{Abschnitt}\\\hline
+1\ Funktionsgraph \& Extrema (1D) & S.\,1 & „Analytische Optima``, „Hinreichend --- Hesse``\\
+2\ Grafisches LP & S.\,1 & „Grafische Lösung (2 Variablen)``, „Simplex``\\
+3\ Ganzzahlige Optimierung & S.\,1 & „Ganzzahlige LP``, „Grafische Lösung``\\
+4\ Grafische nichtlineare Opt. & S.\,1 & „Grafische Lösung (2 Variablen)``, „Lagrange \& KKT``\\
+5\ Simplex-Suchverlauf & S.\,1 & „Simplex --- Ablauf (geometrisch)``\\
+6\ Nelder-Mead & S.\,1 & „Nelder-Mead (Downhill-Simplex)``\\
+7\ Dominanz \& Pareto-Front & S.\,2 & „Mehrzieloptimierung``, „Non-Dominated-Sorting``\\
+8\ Hypervolumen & S.\,2 & „Hypervolumen``\\
+9\ Non-Dominated-Sorting (Schichten) & S.\,2 & „Non-Dominated-Sorting-Rang``\\
+10\ Crowding Distance & S.\,2 & „Crowding Distance``\\
+11\ DIRECT & S.\,1 & „DIRECT (DIviding RECTangles)``\\
+12\ Gradientenabstieg-Pfad & S.\,1 & „Gradientenverfahren``\\
+\end{tabular}
+\end{center}
+\par\vspace{1mm}{\color{gridcol}\rule{\linewidth}{0.4pt}}
+
+% ============================================================
+% G1 — Funktionsgraph & Extrema (1D)
+% ============================================================
+\thema{1}{Funktionsgraph zeichnen \& Extrema ablesen (1D)}
+\obref{Openbook S.\,1 --- „Analytische Optima`` ($\nabla f=0$ bzw.\ 1D: $f'=0$) und „Hinreichend --- Hesse`` (1D: $f''$-Vorzeichen).}
+\bsp
+Zeichne $f(x)=x^3-3x$ auf $[-2,2]$ und markiere die lokalen Extrema.
+\loesweg $f'(x)=3x^2-3=0\Rightarrow x=\pm1$; $f(-1)=2$ (Maximum), $f(1)=-2$ (Minimum).
+\begin{center}\begin{tikzpicture}[scale=0.95]
+ \draw[gridcol,very thin,step=1](-2,-3) grid (2,3);
+ \draw[->,fgtext](-2.3,0)--(2.4,0) node[right]{$x$};
+ \draw[->,fgtext](0,-3.3)--(0,3.4) node[above]{$f(x)$};
+ \foreach \i in {-2,-1,1,2}{\node[fgtext,below,font=\tiny] at (\i,-0.05){\i};}
+ \foreach \j in {-3,-2,-1,1,2,3}{\node[fgtext,left,font=\tiny] at (-0.05,\j){\j};}
+ \draw[red!75!white,very thick,smooth,samples=80,domain=-1.93:1.93] plot(\x,{\x*\x*\x-3*\x});
+ \fill[markcol](-1,2) circle(2.3pt) node[above right,font=\tiny,markcol]{Max $(-1,2)$};
+ \fill[markcol](1,-2) circle(2.3pt) node[below left,font=\tiny,markcol]{Min $(1,-2)$};
+\end{tikzpicture}\end{center}
+
+\uebung{1.1 --- Parabel}{leicht}
+Zeichne $f(x)=x^2-2x$ auf $[-1,3]$ und markiere das Extremum (Scheitelpunkt).
+\begin{center}\begin{tikzpicture}[scale=0.9]
+ \draw[gridcol,very thin,step=1](-1,-2) grid (3,4);
+ \draw[->,fgtext](-1.3,0)--(3.4,0) node[right]{$x$};
+ \draw[->,fgtext](0,-2.3)--(0,4.4) node[above]{$f(x)$};
+ \foreach \i in {-1,1,2,3}{\node[fgtext,below,font=\tiny] at (\i,-0.05){\i};}
+ \foreach \j in {-2,-1,1,2,3,4}{\node[fgtext,left,font=\tiny] at (-0.05,\j){\j};}
+\end{tikzpicture}\end{center}
+
+\uebung{1.2 --- Nach unten geöffnet}{leicht}
+Zeichne $f(x)=-x^2+4x$ auf $[0,4]$ und markiere das Maximum.
+\begin{center}\begin{tikzpicture}[scale=0.9]
+ \draw[gridcol,very thin,step=1](0,0) grid (4,4);
+ \draw[->,fgtext](-0.3,0)--(4.4,0) node[right]{$x$};
+ \draw[->,fgtext](0,-0.3)--(0,4.4) node[above]{$f(x)$};
+ \foreach \i in {1,2,3,4}{\node[fgtext,below,font=\tiny] at (\i,-0.05){\i};}
+ \foreach \j in {1,2,3,4}{\node[fgtext,left,font=\tiny] at (-0.05,\j){\j};}
+\end{tikzpicture}\end{center}
+
+% ============================================================
+% G2 — Grafisches LP
+% ============================================================
+\thema{2}{Grafisches LP --- zulässiger Bereich \& Optimum}
+\obref{Openbook S.\,1 --- „Grafische Lösung (2 Variablen)`` (NB als Geraden, zulässiger Bereich, Optimum an einer Ecke); ergänzend „Simplex --- Ablauf`` \& „Slackvariable``.}
+\bsp
+$\max z=3x_1+2x_2$ unter $x_1+x_2\le4$, $x_1+3x_2\le6$, $x_1,x_2\ge0$.
+\loesweg Beide Restriktionsgeraden zeichnen, zulässigen Bereich (Schnittmenge, $\le$ $\Rightarrow$ unterhalb)
+schraffieren, Ecken bestimmen, Zielwert vergleichen. Optimum: Ecke $(4,0)$, $z=12$.
+\begin{center}\begin{tikzpicture}[scale=0.62]
+ \draw[gridcol,very thin,step=1](0,0) grid (7,7);
+ \draw[->,fgtext](0,0)--(7.5,0) node[right]{$x_1$};
+ \draw[->,fgtext](0,0)--(0,7.5) node[above]{$x_2$};
+ \foreach \i in {1,...,7}{\node[fgtext,below,font=\tiny] at (\i,0){\i};}
+ \foreach \j in {1,...,7}{\node[fgtext,left,font=\tiny] at (0,\j){\j};}
+ \fill[accent,opacity=0.20] (0,0)--(4,0)--(3,1)--(0,2)--cycle;
+ \draw[accent,very thick] (4,0)--(0,4) node[pos=0.18,above right,font=\tiny]{$x_1{+}x_2{=}4$};
+ \draw[markcol,very thick] (6,0)--(0,2) node[pos=0.55,above right,font=\tiny]{$x_1{+}3x_2{=}6$};
+ \draw[loescol,dashed,thick] (4,0)--(0,6);
+ \fill[white](3,1)circle(2pt); \fill[white](0,2)circle(2pt);
+ \fill[red!80!white](4,0)circle(2.6pt) node[below,font=\tiny,red!85!white]{Opt $(4,0)$};
+\end{tikzpicture}\end{center}
+\emph{(gestrichelt: eine Zielfunktionsgerade $z=12$).}
+
+\uebung{2.1 --- LP zeichnen I}{mittel}
+$\max z=x_1+x_2$ unter $2x_1+x_2\le10$, $x_1+3x_2\le15$, $x_1,x_2\ge0$. Zeichne den zulässigen Bereich,
+bestimme die Ecken und das Optimum.
+\sysI{10}{10}
+
+\uebung{2.2 --- LP zeichnen II}{mittel}
+$\max z=2x_1+3x_2$ unter $x_1+2x_2\le8$, $3x_1+2x_2\le12$, $x_1,x_2\ge0$. Zeichne den zulässigen Bereich
+und markiere das Optimum.
+\sysI{8}{6}
+
+% ============================================================
+% G3 — Ganzzahlige Optimierung grafisch
+% ============================================================
+\thema{3}{Ganzzahlige Optimierung (grafisch)}
+\obref{Openbook S.\,1 --- „Ganzzahlige LP ($\vec x\in\mathbb Z^n$)`` (kont.\ lösen, dann zulässige Gitterpunkte prüfen --- Runden ist nicht immer optimal); ergänzend „Grafische Lösung (2 Variablen)``.}
+\bsp
+$\max z=x_1+x_2$ unter $3x_1+2x_2\le12$, $x_1+2x_2\le6$, $x_1,x_2\in\mathbb Z_{\ge0}$.
+\loesweg Zulässigen Bereich zeichnen, \emph{Gitterpunkte} (ganzzahlig) markieren, besten ganzzahligen Punkt
+suchen. Kont.\ Optimum $(3;1{,}5)$, beste ganzzahlige Punkte $(3,1)$ und $(2,2)$ mit $z=4$.
+\begin{center}\begin{tikzpicture}[scale=0.7]
+ \draw[gridcol,very thin,step=1](0,0) grid (5,5);
+ \draw[->,fgtext](0,0)--(5.5,0) node[right]{$x_1$};
+ \draw[->,fgtext](0,0)--(0,5.5) node[above]{$x_2$};
+ \foreach \i in {1,...,5}{\node[fgtext,below,font=\tiny] at (\i,0){\i};}
+ \foreach \j in {1,...,5}{\node[fgtext,left,font=\tiny] at (0,\j){\j};}
+ \fill[accent,opacity=0.18](0,0)--(4,0)--(3,1.5)--(0,3)--cycle;
+ \draw[accent,very thick](4,0)--(0,6);
+ \draw[markcol,very thick](6,0)--(0,3);
+ \foreach \p in {(0,0),(1,0),(2,0),(3,0),(4,0),(0,1),(1,1),(2,1),(3,1),(0,2),(1,2),(2,2),(0,3)}{\fill[fgtext]\p circle(1.6pt);}
+ \fill[red!80!white](3,1)circle(2.6pt); \fill[red!80!white](2,2)circle(2.6pt);
+ \node[red!85!white,font=\tiny,below right] at (3,1){$z{=}4$};
+ \node[red!85!white,font=\tiny,above right] at (2,2){$z{=}4$};
+ \draw[loescol,dashed](3,1.5)circle(2.6pt) node[above right,font=\tiny,loescol]{kont.};
+\end{tikzpicture}\end{center}
+
+\uebung{3.1 --- Gitterpunkte I}{mittel}
+$\max z=4x_1+5x_2$ unter $x_1+4x_2\le10$, $3x_1+2x_2\le12$, $x_1,x_2\in\mathbb Z_{\ge0}$. Zeichne den Bereich,
+markiere die Gitterpunkte und den besten ganzzahligen Punkt.
+\sysI{6}{5}
+
+\uebung{3.2 --- Gitterpunkte II}{mittel}
+$\max z=5x_1+4x_2$ unter $6x_1+4x_2\le24$, $x_1+2x_2\le6$, $x_1,x_2\in\mathbb Z_{\ge0}$. Zeichne den Bereich
+und den besten ganzzahligen Punkt.
+\sysI{6}{6}
+
+% ============================================================
+% G4 — Grafische nichtlineare Optimierung (Höhenlinien)
+% ============================================================
+\thema{4}{Grafische nichtlineare Optimierung (Höhenlinien)}
+\obref{Openbook S.\,1 --- „Grafische Lösung (2 Variablen)`` (Höhenlinien/Niveaus, Berührpunkt mit der NB); ergänzend „Analytische Optima`` \& „Lagrange \& KKT``.}
+\bsp
+$\min f(x,y)=(x-3)^2+(y-2)^2$ unter $x+y\le4$, $x,y\ge0$.
+\loesweg Höhenlinien sind \emph{Kreise} um $(3,2)$. Das unbeschränkte Minimum $(3,2)$ ist unzulässig
+($3{+}2{=}5{>}4$); das Optimum liegt dort, wo ein Höhenkreis die Gerade $x+y=4$ gerade berührt:
+Lotfußpunkt $(2{,}5;\,1{,}5)$, $f=0{,}5$.
+\begin{center}\begin{tikzpicture}[scale=0.7]
+ \draw[gridcol,very thin,step=1](0,0) grid (6,6);
+ \draw[->,fgtext](0,0)--(6.5,0) node[right]{$x_1$};
+ \draw[->,fgtext](0,0)--(0,6.5) node[above]{$x_2$};
+ \foreach \i in {1,...,6}{\node[fgtext,below,font=\tiny] at (\i,0){\i};}
+ \foreach \j in {1,...,6}{\node[fgtext,left,font=\tiny] at (0,\j){\j};}
+ \fill[accent,opacity=0.15](0,0)--(4,0)--(0,4)--cycle;
+ \draw[markcol,very thick](4,0)--(0,4) node[pos=0.5,above right,font=\tiny]{$x_1{+}x_2{=}4$};
+ \fill[fgtext](3,2)circle(2pt) node[right,font=\tiny]{$(3,2)$};
+ \draw[loescol,thin](3,2)circle(0.707); \draw[loescol,thin](3,2)circle(1.5); \draw[loescol,thin](3,2)circle(2.2);
+ \fill[red!80!white](2.5,1.5)circle(2.6pt) node[below left,font=\tiny,red!85!white]{Opt};
+\end{tikzpicture}\end{center}
+
+\uebung{4.1 --- Höhenlinien I}{mittel}
+$\min f(x,y)=(x-4)^2+(y-1)^2$ unter $x+y\le4$, $x,y\ge0$. Zeichne ein paar Höhenkreise und die Restriktion
+und bestimme das Optimum grafisch.
+\sysI{6}{5}
+
+\uebung{4.2 --- Höhenlinien II}{schwer}
+$\min f(x,y)=(x-2)^2+(y-2)^2$ unter $x+y\ge6$, $x,y\ge0$. Zeichne Höhenkreise und die Gerade $x+y=6$ und
+bestimme das Optimum (Achtung: zulässig ist \emph{oberhalb} der Geraden).
+\sysI{7}{7}
+
+% ============================================================
+% G5 — Simplex-Suchverlauf grafisch
+% ============================================================
+\thema{5}{Simplex-Suchverlauf (grafisch)}
+\obref{Openbook S.\,1 --- „Simplex --- Ablauf (geometrisch)`` (Start an einer Ecke, entlang Kante mit größter Verbesserung, Stopp bei keiner Verbesserung); ergänzend „Eckpunkte rechnerisch finden``.}
+\bsp
+$\max z=2x_1+3x_2$ über dem Bereich $x_1\le4$, $x_2\le5$, $x_1+x_2\le7$, $x_1,x_2\ge0$.
+\loesweg Der Simplex startet in $(0,0)$ und läuft entlang der Kanten in Richtung wachsendem $z$.
+Da $x_2$ den größeren Zielkoeffizienten hat, zuerst nach $(0,5)$, dann nach $(2,5)$ --- dort Optimum, $z=19$.
+\begin{center}\begin{tikzpicture}[scale=0.7]
+ \draw[gridcol,very thin,step=1](0,0) grid (7,6);
+ \draw[->,fgtext](0,0)--(7.5,0) node[right]{$x_1$};
+ \draw[->,fgtext](0,0)--(0,6.5) node[above]{$x_2$};
+ \foreach \i in {1,...,7}{\node[fgtext,below,font=\tiny] at (\i,0){\i};}
+ \foreach \j in {1,...,6}{\node[fgtext,left,font=\tiny] at (0,\j){\j};}
+ \fill[accent,opacity=0.16](0,0)--(4,0)--(4,3)--(2,5)--(0,5)--cycle;
+ \draw[markcol,very thick](2,5)--(4,3) node[pos=0.5,above right,font=\tiny]{$x_1{+}x_2{=}7$};
+ \draw[markcol,very thick](4,0)--(4,3); \draw[markcol,very thick](0,5)--(2,5);
+ \foreach \p in {(0,0),(4,0),(4,3),(2,5),(0,5)}{\fill[fgtext]\p circle(1.8pt);}
+ \draw[red!80!white,very thick,->](0,0)--(0,5); \draw[red!80!white,very thick,->](0,5)--(2,5);
+ \fill[red!80!white](2,5)circle(2.6pt) node[above right,font=\tiny,red!85!white]{Opt $(2,5)$};
+\end{tikzpicture}\end{center}
+
+\uebung{5.1 --- Pfad I}{mittel}
+Gleicher Bereich ($x_1\le4$, $x_2\le5$, $x_1+x_2\le7$) mit $\max z=3x_1+x_2$. Zeichne den zulässigen
+Bereich und den Simplex-Pfad von $(0,0)$ zum Optimum.
+\sysI{7}{6}
+
+\uebung{5.2 --- Pfad II}{mittel}
+Gleicher Bereich mit $\max z=x_1+5x_2$. Zeichne den Simplex-Pfad und das Optimum.
+\sysI{7}{6}
+
+% ============================================================
+% G6 — Nelder-Mead grafisch
+% ============================================================
+\thema{6}{Nelder-Mead (grafisch)}
+\obref{Openbook S.\,1 --- „Nelder-Mead (Downhill-Simplex)`` (Schwerpunkt, Reflexion, Expansion/Kontraktion, Schrumpfung).}
+\bsp
+$f(x,y)=x^2+y^2$. Simplex $B=(1,1),\ G=(2,2),\ W=(3,1)$. Zeichne Simplex, Schwerpunkt $M$ und Reflexion $R$.
+\loesweg $M=\tfrac12(B+G)=(1{,}5;1{,}5)$ (Mitte der zwei besten Punkte); Reflexion $R=2M-W=(0,2)$.
+Da $f(R)=4$ zwischen $f(B)$ und $f(G)$ liegt, wird $W$ durch $R$ ersetzt.
+\begin{center}\begin{tikzpicture}[scale=0.85]
+ \draw[gridcol,very thin,step=1](0,0) grid (4,4);
+ \draw[->,fgtext](0,0)--(4.4,0) node[right]{$x$};
+ \draw[->,fgtext](0,0)--(0,4.4) node[above]{$y$};
+ \foreach \i in {1,...,4}{\node[fgtext,below,font=\tiny] at (\i,0){\i};}
+ \foreach \j in {1,...,4}{\node[fgtext,left,font=\tiny] at (0,\j){\j};}
+ \draw[accent,very thick](1,1)--(2,2)--(3,1)--cycle;
+ \fill[accent](1,1)circle(2pt) node[below,font=\tiny]{$B$};
+ \fill[accent](2,2)circle(2pt) node[above,font=\tiny]{$G$};
+ \fill[accent](3,1)circle(2pt) node[below,font=\tiny]{$W$};
+ \fill[loescol](1.5,1.5)circle(2pt) node[right,font=\tiny]{$M$};
+ \draw[markcol,dashed,->](3,1)--(0,2);
+ \fill[red!80!white](0,2)circle(2.6pt) node[left,font=\tiny,red!85!white]{$R$};
+\end{tikzpicture}\end{center}
+
+\uebung{6.1 --- Reflexion/Expansion}{schwer}
+$f(x,y)=x^2+2y^2$. Simplex $P_1=(2,0),\ P_2=(0,2),\ P_3=(2,2)$. Zeichne Simplex, Schwerpunkt $M$ (der zwei
+besten Punkte), Reflexion $R$ und Expansion $E$.
+\begin{center}\begin{tikzpicture}[scale=0.78]
+ \draw[gridcol,very thin,step=1](-2,-2) grid (3,3);
+ \draw[->,fgtext](-2.3,0)--(3.4,0) node[right]{$x$};
+ \draw[->,fgtext](0,-2.3)--(0,3.4) node[above]{$y$};
+ \foreach \i in {-2,-1,1,2,3}{\node[fgtext,below,font=\tiny] at (\i,-0.05){\i};}
+ \foreach \j in {-2,-1,1,2,3}{\node[fgtext,left,font=\tiny] at (-0.05,\j){\j};}
+\end{tikzpicture}\end{center}
+
+\uebung{6.2 --- Reflexion/Kontraktion}{schwer}
+$f(x,y)=x^2+y^2$. Simplex $P_1=(0,1),\ P_2=(1,0),\ P_3=(2,2)$. Zeichne Simplex, Schwerpunkt $M$, Reflexion
+$R$ und Kontraktion $C$.
+\begin{center}\begin{tikzpicture}[scale=0.78]
+ \draw[gridcol,very thin,step=1](-2,-2) grid (3,3);
+ \draw[->,fgtext](-2.3,0)--(3.4,0) node[right]{$x$};
+ \draw[->,fgtext](0,-2.3)--(0,3.4) node[above]{$y$};
+ \foreach \i in {-2,-1,1,2,3}{\node[fgtext,below,font=\tiny] at (\i,-0.05){\i};}
+ \foreach \j in {-2,-1,1,2,3}{\node[fgtext,left,font=\tiny] at (-0.05,\j){\j};}
+\end{tikzpicture}\end{center}
+
+% ============================================================
+% G7 — Dominanz & Pareto-Front
+% ============================================================
+\thema{7}{Dominanz \& Pareto-Front zeichnen}
+\obref{Openbook S.\,2 --- „Mehrzieloptimierung`` (Dominanz, Pareto-Front) und „Non-Dominated-Sorting-Rang``.}
+\bsp
+Punkte (beide Ziele \textbf{minimieren}): $P_1(2,6),P_2(3,4),P_3(5,3),P_4(4,5),P_5(6,2)$.
+\loesweg Punkte einzeichnen; $P_4$ wird von $P_2$ dominiert (liegt rechts-oberhalb). Die Pareto-optimalen
+Punkte $P_1,P_2,P_3,P_5$ mit einer Treppenlinie verbinden.
+\begin{center}\begin{tikzpicture}[scale=0.7]
+ \draw[gridcol,very thin,step=1](0,0) grid (7,7);
+ \draw[->,fgtext](0,0)--(7.5,0) node[right]{$f_1$};
+ \draw[->,fgtext](0,0)--(0,7.5) node[above]{$f_2$};
+ \foreach \i in {1,...,7}{\node[fgtext,below,font=\tiny] at (\i,0){\i};}
+ \foreach \j in {1,...,7}{\node[fgtext,left,font=\tiny] at (0,\j){\j};}
+ \draw[loescol,very thick] (2,6)--(3,6)--(3,4)--(5,4)--(5,3)--(6,3)--(6,2);
+ \foreach \p/\n in {2/6/1,3/4/2,5/3/3,6/2/5}{}
+ \fill[red!80!white](2,6)circle(2.4pt) node[above right,font=\tiny]{$P_1$};
+ \fill[red!80!white](3,4)circle(2.4pt) node[above right,font=\tiny]{$P_2$};
+ \fill[red!80!white](5,3)circle(2.4pt) node[above right,font=\tiny]{$P_3$};
+ \fill[red!80!white](6,2)circle(2.4pt) node[above right,font=\tiny]{$P_5$};
+ \fill[gridcol!50!fgtext](4,5)circle(2.4pt) node[above right,font=\tiny]{$P_4$ (dom.)};
+\end{tikzpicture}\end{center}
+
+\uebung{7.1 --- Pareto-Front I}{mittel}
+Punkte (minimieren): $P_1(1,5),P_2(2,3),P_3(4,2),P_4(3,4),P_5(5,1),P_6(2,6)$. Trage sie ein, markiere die
+dominierten Punkte und zeichne die Pareto-Front.
+\sysF{6}{7}
+
+\uebung{7.2 --- Pareto-Front II}{mittel}
+Punkte (minimieren): $P_1(1,7),P_2(2,4),P_3(3,5),P_4(5,2),P_5(6,3),P_6(4,6)$. Markiere die Pareto-Menge
+und verbinde sie.
+\sysF{7}{8}
+
+% ============================================================
+% G8 — Hypervolumen grafisch
+% ============================================================
+\thema{8}{Hypervolumen (grafisch)}
+\obref{Openbook S.\,2 --- „Hypervolumen`` (Fläche/Volumen der dominierten Front gegenüber dem Referenzpunkt).}
+\bsp
+Front (minimieren) $P_1(2,8),P_2(4,5),P_3(7,3)$, Referenzpunkt $\vec r=(10,10)$.
+\loesweg Das Hypervolumen ist die von der Front gegenüber $\vec r$ dominierte (schraffierte) Treppenfläche.
+$HV=(4{-}2)(10{-}8)+(7{-}4)(10{-}5)+(10{-}7)(10{-}3)=4+15+21=40$.
+\begin{center}\begin{tikzpicture}[scale=0.52]
+ \draw[gridcol,very thin,step=1](0,0) grid (10,10);
+ \draw[->,fgtext](0,0)--(10.6,0) node[right]{$f_1$};
+ \draw[->,fgtext](0,0)--(0,10.6) node[above]{$f_2$};
+ \foreach \i in {2,4,6,8,10}{\node[fgtext,below,font=\tiny] at (\i,0){\i};}
+ \foreach \j in {2,4,6,8,10}{\node[fgtext,left,font=\tiny] at (0,\j){\j};}
+ \fill[accent,opacity=0.22] (2,8)--(10,8)--(10,10)--(2,10)--cycle;
+ \fill[accent,opacity=0.22] (4,5)--(10,5)--(10,8)--(4,8)--cycle;
+ \fill[accent,opacity=0.22] (7,3)--(10,3)--(10,5)--(7,5)--cycle;
+ \fill[red!80!white](2,8)circle(2.6pt) node[above right,font=\tiny]{$P_1$};
+ \fill[red!80!white](4,5)circle(2.6pt) node[above right,font=\tiny]{$P_2$};
+ \fill[red!80!white](7,3)circle(2.6pt) node[above right,font=\tiny]{$P_3$};
+ \fill[markcol](10,10)circle(2.6pt) node[above right,font=\tiny,markcol]{$r$};
+\end{tikzpicture}\end{center}
+
+\uebung{8.1 --- Hypervolumen I}{mittel}
+Front (minimieren) $(1,6),(3,4),(5,2)$, Referenz $\vec r=(8,8)$. Zeichne die Punkte und schraffiere die
+Hypervolumen-Fläche.
+\sysF{8}{8}
+
+\uebung{8.2 --- Hypervolumen II}{mittel}
+Front (minimieren) $(2,7),(3,5),(6,2)$, Referenz $\vec r=(8,8)$. Zeichne die Punkte und die
+Hypervolumen-Fläche.
+\sysF{8}{8}
+
+% ============================================================
+% G9 — Non-Dominated-Sorting (Rang-Schichten)
+% ============================================================
+\thema{9}{Non-Dominated-Sorting --- Rang-Schichten zeichnen}
+\obref{Openbook S.\,2 --- „Non-Dominated-Sorting-Rang`` (Rang 1 = nicht dominiert; entfernen, Rest erneut $\to$ Rang 2, \ldots).}
+\bsp
+Punkte (minimieren): $P_1(1,4),P_2(2,2),P_3(3,1),P_4(2,5),P_5(4,3),P_6(5,2)$. Zeichne die Rang-Schichten.
+\loesweg \textbf{Rang 1} = nicht dominierte Punkte $\{P_1,P_2,P_3\}$ (untere Treppe). Diese entfernen; vom
+Rest sind $\{P_4,P_5,P_6\}$ nicht dominiert $=$ \textbf{Rang 2}.
+\begin{center}\begin{tikzpicture}[scale=0.7]
+ \draw[gridcol,very thin,step=1](0,0) grid (6,6);
+ \draw[->,fgtext](0,0)--(6.5,0) node[right]{$f_1$};\draw[->,fgtext](0,0)--(0,6.5) node[above]{$f_2$};
+ \foreach \i in {1,...,6}{\node[fgtext,below,font=\tiny] at (\i,0){\i};}
+ \foreach \j in {1,...,6}{\node[fgtext,left,font=\tiny] at (0,\j){\j};}
+ \draw[loescol,very thick](1,4)--(2,4)--(2,2)--(3,2)--(3,1);
+ \draw[markcol,very thick](2,5)--(4,5)--(4,3)--(5,3)--(5,2);
+ \foreach \p/\n in {1/4/1,2/2/2,3/1/3}{\fill[loescol](\p)circle(2.2pt);}
+ \node[loescol,font=\tiny,above right] at (1,4){$P_1$};\node[loescol,font=\tiny,above right] at (2,2){$P_2$};\node[loescol,font=\tiny,above right] at (3,1){$P_3$};
+ \fill[markcol](2,5)circle(2.2pt) node[above right,font=\tiny]{$P_4$};
+ \fill[markcol](4,3)circle(2.2pt) node[above right,font=\tiny]{$P_5$};
+ \fill[markcol](5,2)circle(2.2pt) node[above right,font=\tiny]{$P_6$};
+ \node[loescol,font=\tiny] at (1.4,3){Rang 1};\node[markcol,font=\tiny] at (3.2,4.6){Rang 2};
+\end{tikzpicture}\end{center}
+
+\uebung{9.1 --- Rang-Schichten I}{mittel}
+Punkte (minimieren): $P_1(1,1),P_2(2,3),P_3(3,2),P_4(4,4),P_5(2,2)$. Zeichne die Punkte und \emph{alle}
+Rang-Schichten (mit Beschriftung Rang 1, 2, \ldots).
+\sysF{5}{5}
+
+\uebung{9.2 --- Rang-Schichten II}{schwer}
+Punkte (minimieren): $P_1(1,5),P_2(2,2),P_3(4,1),P_4(3,3),P_5(5,4),P_6(2,6)$. Zeichne alle Rang-Schichten.
+\sysF{6}{7}
+
+% ============================================================
+% G10 — Crowding Distance grafisch
+% ============================================================
+\thema{10}{Crowding Distance (grafisch)}
+\obref{Openbook S.\,2 --- „Crowding Distance`` (Randpunkte $=\infty$; innen: Seitenlängen des von den Nachbarn aufgespannten Rechtecks, über die Ziele summiert).}
+\bsp
+Front (minimieren) $A(1,7),B(2,5),C(3,4),D(5,3),E(7,1)$. Zeichne für den inneren Punkt $C$ das von seinen
+Nachbarn $B,D$ aufgespannte Rechteck.
+\loesweg Die Crowding Distance eines inneren Punktes ist die Summe der (normierten) Seitenlängen des
+Rechtecks, das seine beiden \emph{Nachbarn} aufspannen. Randpunkte $A,E$ erhalten $\infty$.
+\begin{center}\begin{tikzpicture}[scale=0.62]
+ \draw[gridcol,very thin,step=1](0,0) grid (8,8);
+ \draw[->,fgtext](0,0)--(8.5,0) node[right]{$f_1$};\draw[->,fgtext](0,0)--(0,8.5) node[above]{$f_2$};
+ \foreach \i in {1,...,8}{\node[fgtext,below,font=\tiny] at (\i,0){\i};}
+ \foreach \j in {1,...,8}{\node[fgtext,left,font=\tiny] at (0,\j){\j};}
+ \draw[gridcol,thick](1,7)--(2,5)--(3,4)--(5,3)--(7,1);
+ \draw[markcol,very thick](2,3) rectangle (5,5);
+ \foreach \x/\y/\n in {1/7/A,2/5/B,3/4/C,5/3/D,7/1/E}{\fill[red!80!white](\x,\y)circle(2.2pt) node[above right,font=\tiny]{$\n$};}
+ \node[markcol,font=\tiny] at (4,2.5){Box(B,D) um C};
+\end{tikzpicture}\end{center}
+
+\uebung{10.1 --- Crowding I}{mittel}
+Front (minimieren) $F(1,9),G(3,6),H(4,4),I(6,3),J(9,1)$. Zeichne die Front und für $H$ das von $G,I$
+aufgespannte Rechteck; markiere die Randpunkte mit $\infty$.
+\sysF{10}{10}
+
+\uebung{10.2 --- Crowding II}{mittel}
+Front (minimieren) $A(1,8),B(2,5),C(4,3),D(6,2),E(8,1)$. Zeichne für $C$ das Nachbar-Rechteck und markiere
+die Randpunkte.
+\sysF{9}{9}
+
+% ============================================================
+% G11 — DIRECT grafisch
+% ============================================================
+\thema{11}{DIRECT (grafisch)}
+\obref{Openbook S.\,1 --- „DIRECT (DIviding RECTangles)`` (Intervall dritteln, Mitten auswerten; im $(d,f)$-Diagramm die untere-rechte Hülle = potentiell optimale Rechtecke).}
+\bsp
+$f(x)=(x-0{,}3)^2$ auf $[0,1]$: erste Drittelung, Mitten auswerten.
+\loesweg Mitten $\tfrac16,\tfrac12,\tfrac56$ mit $f\approx0{,}018;\,0{,}04;\,0{,}284$. Bei gleicher Größe ist
+das Intervall mit kleinstem $f$ potentiell optimal: $[0,\tfrac13]$.
+\begin{center}\begin{tikzpicture}[scale=0.95]
+ \draw[fgtext,thick](0,0)--(6,0);
+ \foreach \x/\l in {0/0,2/{\frac13},4/{\frac23},6/1}{\draw[fgtext](\x,0.12)--(\x,-0.12) node[below,font=\tiny]{$\l$};}
+ \fill[loescol](1,0)circle(2pt) node[above,font=\tiny]{$0{,}018$};
+ \fill[markcol](3,0)circle(2pt) node[above,font=\tiny]{$0{,}04$};
+ \fill[markcol](5,0)circle(2pt) node[above,font=\tiny]{$0{,}284$};
+ \draw[loescol,thick](0,-0.35)--(2,-0.35) node[midway,below,font=\tiny]{p.\,o.};
+\end{tikzpicture}\end{center}
+
+\uebung{11.1 --- Intervall-Drittelung}{mittel}
+$f(x)=(x-0{,}7)^2$ auf $[0,1]$: zeichne die erste Drittelung auf der Zahlengeraden, trage die drei
+Mittenwerte ein und markiere das potentiell optimale (als Nächstes zu teilende) Intervall.
+\begin{center}\begin{tikzpicture}[scale=0.95]
+ \draw[fgtext,thick](0,0)--(6,0);
+ \foreach \x/\l in {0/0,2/{\frac13},4/{\frac23},6/1}{\draw[fgtext](\x,0.12)--(\x,-0.12) node[below,font=\tiny]{$\l$};}
+\end{tikzpicture}\end{center}
+
+\uebung{11.2 --- Potentiell optimale Rechtecke}{schwer}
+Im $(d,f)$-Diagramm (Größe $d$, Wert $f$) liegen die Rechtecke $\text{Nr.1}(1,6),\text{Nr.2}(1,4),
+\text{Nr.3}(3,5),\text{Nr.4}(3,3),\text{Nr.5}(9,4)$. Trage sie ein und bestimme grafisch die potentiell
+optimalen (untere-rechte Hülle).
+\begin{center}\begin{tikzpicture}[scale=0.6]
+ \draw[gridcol,very thin,step=1](0,0) grid (10,7);
+ \draw[->,fgtext](0,0)--(10.5,0) node[right]{$d$};\draw[->,fgtext](0,0)--(0,7.5) node[above]{$f$};
+ \foreach \i in {1,...,10}{\node[fgtext,below,font=\tiny] at (\i,0){\i};}
+ \foreach \j in {1,...,7}{\node[fgtext,left,font=\tiny] at (0,\j){\j};}
+\end{tikzpicture}\end{center}
+
+% ============================================================
+% G12 — Gradientenabstieg-Pfad in Höhenlinien
+% ============================================================
+\thema{12}{Gradientenabstieg-Pfad (in Höhenlinien)}
+\obref{Openbook S.\,1 --- „Gradientenverfahren`` ($\vec x_{k+1}=\vec x_k-\eta\,\nabla f$); Schritt steht senkrecht auf den Höhenlinien.}
+\bsp
+$f(x,y)=x^2+2y^2$, Start $(2,1)$, $\eta=0{,}1$. Zeichne den ersten Schritt in die Höhenlinien (Ellipsen).
+\loesweg $\nabla f(2,1)=(4,4)$, $\vec x_1=(2,1)-0{,}1(4,4)=(1{,}6;0{,}6)$ --- Schritt entgegen dem Gradienten,
+senkrecht zur Höhenlinie.
+\begin{center}\begin{tikzpicture}[scale=1.05]
+ \draw[gridcol,very thin,step=0.5](0,0) grid (3,2.5);
+ \draw[->,fgtext](0,0)--(3.2,0) node[right]{$x$};\draw[->,fgtext](0,0)--(0,2.7) node[above]{$y$};
+ \foreach \i in {1,2,3}{\node[fgtext,below,font=\tiny] at (\i,0){\i};}
+ \foreach \j in {1,2}{\node[fgtext,left,font=\tiny] at (0,\j){\j};}
+ \draw[loescol,thin](0,0) ellipse (1.22 and 0.87);
+ \draw[loescol,thin](0,0) ellipse (1.73 and 1.22);
+ \draw[loescol,thin](0,0) ellipse (2.45 and 1.73);
+ \fill[fgtext](2,1)circle(1.6pt) node[above right,font=\tiny]{$x_0$};
+ \draw[markcol,very thick,->](2,1)--(1.6,0.6);
+ \fill[red!80!white](1.6,0.6)circle(1.8pt) node[below left,font=\tiny,red!85!white]{$x_1$};
+\end{tikzpicture}\end{center}
+
+\uebung{12.1 --- Pfad in Kreisen}{mittel}
+$f(x,y)=x^2+y^2$, Start $(3,3)$, $\eta=0{,}1$. Zeichne Höhenkreise und die ersten \textbf{zwei} Schritte
+($\vec x_1,\vec x_2$).
+\begin{center}\begin{tikzpicture}[scale=0.65]
+ \draw[gridcol,very thin,step=1](0,0) grid (4,4);
+ \draw[->,fgtext](0,0)--(4.4,0) node[right]{$x$};\draw[->,fgtext](0,0)--(0,4.4) node[above]{$y$};
+ \foreach \i in {1,...,4}{\node[fgtext,below,font=\tiny] at (\i,0){\i};}
+ \foreach \j in {1,...,4}{\node[fgtext,left,font=\tiny] at (0,\j){\j};}
+\end{tikzpicture}\end{center}
+
+\uebung{12.2 --- Pfad in Ellipsen}{schwer}
+$f(x,y)=x^2+4y^2$, Start $(2,1)$, $\eta=0{,}1$. Berechne $\vec x_1$ und zeichne den Schritt in die Höhenlinien.
+\begin{center}\begin{tikzpicture}[scale=0.9]
+ \draw[gridcol,very thin,step=0.5](0,0) grid (3,2);
+ \draw[->,fgtext](0,0)--(3.2,0) node[right]{$x$};\draw[->,fgtext](0,0)--(0,2.2) node[above]{$y$};
+ \foreach \i in {1,2,3}{\node[fgtext,below,font=\tiny] at (\i,0){\i};}
+ \foreach \j in {1,2}{\node[fgtext,left,font=\tiny] at (0,\j){\j};}
+\end{tikzpicture}\end{center}
+
+\end{document}

@@ -1,0 +1,859 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage[margin=2cm]{geometry}
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{accent}{HTML}{6CB6FF}
+\definecolor{loescol}{HTML}{7FD18C}
+\pagecolor{bgdark}
+\color{fgtext}
+\arrayrulecolor{fgtext}
+\setlength{\parindent}{0pt}
+\newcommand{\karo}[1]{\par\noindent\begin{tikzpicture}\draw[step=5mm,gridcol,very thin](0,0) grid (\linewidth,#1);\end{tikzpicture}\par\vspace{2mm}}
+\newcommand{\titel}[1]{\begin{center}{\LARGE\color{accent}\textbf{Optimierungsverfahren}}\\[3pt]{\large #1}\end{center}\vspace{1mm}\noindent\textbf{Name:}\ \underline{\hspace{6cm}}\hfill\textbf{Datum:}\ \underline{\hspace{4cm}}\\[3pt]{\color{gridcol}\rule{\linewidth}{0.4pt}}\vspace{2mm}}
+\newcommand{\thema}[2]{\clearpage{\large\color{accent}\textbf{Thema #1:\ #2}}\par\vspace{1mm}{\color{gridcol}\rule{\linewidth}{0.4pt}}\par\vspace{2mm}}
+\newcommand{\bsp}{\par\vspace{1mm}\noindent{\color{loescol}\large\textbf{Musterbeispiel --- so rechnet man es}}\par\vspace{0.5mm}}
+\newcommand{\loesweg}{\par\vspace{0.5mm}\noindent{\color{loescol}\textbf{Lösungsweg:}}\ }
+\newcommand{\uebung}[2]{\clearpage\noindent{\large\color{accent}\textbf{Aufgabe #1}}\hfill{\color{gridcol}\normalsize #2}\par\vspace{1mm}}
+
+\begin{document}
+\titel{Großer Lern-Übungszettel --- Blatt 06: \textbf{Der komplette Stoff}}
+
+\noindent Dieser Zettel deckt \textbf{alle} prüfungsrelevanten Themen der Optimierung ab. Zu \emph{jedem}
+Thema gibt es:
+\begin{itemize}[nosep,leftmargin=1.4em]
+  \item ein \textbf{Musterbeispiel mit ausführlicher Erklärung} (so wird gerechnet), und
+  \item \textbf{zwei Übungsaufgaben} zum selbst Rechnen (Karo-Platz darunter, Lösungen im Lösungs-PDF).
+\end{itemize}
+\vspace{1mm}
+{\color{gridcol}\rule{\linewidth}{0.4pt}}
+
+% ============================================================
+% THEMA 1 — Modellierung
+% ============================================================
+\thema{1}{Modellierung eines Optimierungsproblems}
+\bsp
+Eine Firma stellt zwei Produkte $A$ und $B$ her. Pro Einheit beträgt der Gewinn $3$ (für $A$) bzw.\ $5$
+(für $B$). Eine Einheit $A$ benötigt $1$\,h Maschinenzeit, $B$ benötigt $2$\,h; insgesamt stehen $40$\,h
+zur Verfügung. Außerdem braucht $A$ $3$\,kg, $B$ $1$\,kg Material; vorhanden sind $60$\,kg.
+Stelle das Optimierungsproblem auf.
+\loesweg
+\textbf{(1) Variablen:} $x_1=$ Stückzahl von $A$, $x_2=$ Stückzahl von $B$, beide $\ge 0$.
+\textbf{(2) Zielfunktion} (Gewinn maximieren):
+\[
+\max\; z = 3x_1 + 5x_2 .
+\]
+\textbf{(3) Restriktionen} (jede Ressource $\le$ Vorrat):
+\[
+\underbrace{x_1 + 2x_2 \le 40}_{\text{Maschinenzeit}},\qquad
+\underbrace{3x_1 + x_2 \le 60}_{\text{Material}},\qquad x_1,x_2\ge 0 .
+\]
+\emph{Merke:} immer (a) Entscheidungsvariablen benennen, (b) Ziel als $\min$/$\max$, (c) jede Ressource/Bedingung
+als Ungleichung, (d) Nichtnegativität nicht vergessen.
+
+\uebung{1.1 --- Mischungsproblem}{leicht}
+Ein Landwirt mischt zwei Futtersorten $F_1$ ($0{,}30$\,€/kg) und $F_2$ ($0{,}50$\,€/kg). Pro kg liefert
+$F_1$ $1$ Einheit Protein und $3$ Einheiten Vitamin, $F_2$ liefert $2$ Einheiten Protein und $1$ Einheit
+Vitamin. Die Mischung soll \textbf{mindestens} $8$ Einheiten Protein und $6$ Einheiten Vitamin enthalten.
+Modelliere das Problem (Kosten minimieren).
+\karo{8cm}
+
+\uebung{1.2 --- Nichtlineares Modell}{mittel}
+Aus Karton soll eine \textbf{oben offene} Schachtel mit Kantenlängen $x,y,z>0$ gefertigt werden. Es steht
+Material für eine Gesamt-Oberfläche von $12$ (Boden $+$ 4 Seitenwände) zur Verfügung. Modelliere das Problem
+so, dass das \textbf{Volumen maximiert} wird. (Hinweis: Oberfläche $=xy+2xz+2yz$.)
+\karo{8cm}
+
+% ============================================================
+% THEMA 2 — Konvexität
+% ============================================================
+\thema{2}{Konvexität von Funktionen und Mengen}
+\bsp
+Ist $f(x)=x^2-4x+3$ konvex? Ist die Menge $M=\{(x,y):x^2+y^2\le 4\}$ konvex?
+\loesweg
+\textbf{Funktion:} Eine $C^2$-Funktion einer Variablen ist konvex $\Leftrightarrow f''(x)\ge 0$ für alle $x$.
+Hier $f'(x)=2x-4$, $f''(x)=2>0\ \Rightarrow$ \textbf{konvex} (sogar streng).
+\par
+\textbf{Mehrdim.:} $f$ konvex $\Leftrightarrow$ Hesse-Matrix $\mathbf H$ überall positiv semidefinit (alle Eigenwerte
+$\ge 0$ bzw.\ alle führenden Hauptminoren $\ge 0$).
+\par
+\textbf{Menge:} $M$ konvex $\Leftrightarrow$ für je zwei Punkte $\vec a,\vec b\in M$ liegt die ganze Verbindungs\-strecke
+in $M$. Eine Kreisscheibe (Norm-Kugel) erfüllt das $\Rightarrow$ $M$ ist \textbf{konvex}.
+
+\uebung{2.1 --- Funktion zweier Variablen}{mittel}
+Untersuche $f(x,y)=x^2+2y^2-xy$ auf Konvexität (Hesse-Matrix aufstellen, Definitheit über führende
+Hauptminoren oder Eigenwerte bestimmen).
+\karo{8cm}
+
+\uebung{2.2 --- Zwei Kurzfragen}{leicht--mittel}
+\begin{enumerate}[label=(\alph*),nosep]
+  \item Ist $g(x,y)=x^2-y^2$ konvex, konkav oder keines von beidem? Begründe über die Hesse-Matrix.
+  \item Ist $h(x)=x^3$ auf ganz $\mathbb R$ konvex? Begründe.
+\end{enumerate}
+\karo{8cm}
+
+% ============================================================
+% THEMA 3 — Analytische Optima (1D)
+% ============================================================
+\thema{3}{Analytische Optima --- eine Variable}
+\bsp
+Bestimme die lokalen Extrema von $f(x)=x^3-6x^2+9x+1$.
+\loesweg
+\textbf{(1) Notwendige Bedingung} $f'(x)=0$:
+\[
+f'(x)=3x^2-12x+9=3(x-1)(x-3)=0 \;\Rightarrow\; x=1,\ x=3 .
+\]
+\textbf{(2) Hinreichende Bedingung} über $f''(x)=6x-12$:
+\[
+f''(1)=-6<0 \Rightarrow \text{Maximum},\quad f(1)=1-6+9+1=5;\qquad
+f''(3)=6>0 \Rightarrow \text{Minimum},\quad f(3)=1 .
+\]
+\emph{Ergebnis:} lokales Maximum $(1,5)$, lokales Minimum $(3,1)$.
+
+\uebung{3.1 --- Polynom 4.\ Grades}{mittel}
+Bestimme alle lokalen Extrema von $f(x)=x^4-8x^2+5$ und gib an, welches das globale Minimum ist.
+\karo{8cm}
+
+\uebung{3.2 --- Mit e-Funktion}{mittel}
+Bestimme das Minimum von $f(x)=e^{x}-3x$. (Funktionswert auf 3 Nachkommastellen angeben.)
+\karo{8cm}
+
+% ============================================================
+% THEMA 4 — Analytische Optima (2D)
+% ============================================================
+\thema{4}{Analytische Optima --- zwei Variablen (Hesse)}
+\bsp
+Bestimme das Optimum von $f(x,y)=x^2+xy+y^2-3x$.
+\loesweg
+\textbf{(1) Gradient $=\vec 0$:}
+\[
+\nabla f=\begin{pmatrix}2x+y-3\\ x+2y\end{pmatrix}\overset{!}{=}\vec 0 .
+\]
+Aus der 2.\ Gleichung $x=-2y$, eingesetzt: $2(-2y)+y-3=0\Rightarrow -3y=3\Rightarrow y=-1,\ x=2$.
+\par\textbf{(2) Hesse-Matrix:}
+$\mathbf H=\begin{pmatrix}2&1\\1&2\end{pmatrix}$, Hauptminoren $2>0$, $\det=3>0\Rightarrow$ positiv definit
+$\Rightarrow$ \textbf{Minimum}. $f(2,-1)=4-2+1-6=-3$.
+
+\uebung{4.1 --- Mit Sattelpunkt}{schwer}
+Bestimme die stationären Punkte von $f(x,y)=x^3+y^3-3xy$ und klassifiziere sie (Hesse-Matrix).
+\karo{8.5cm}
+
+\uebung{4.2 --- Klassifikation}{mittel}
+Bestimme den stationären Punkt von $f(x,y)=x^2-4xy+y^2$ und gib über die Hesse-Matrix an, ob es sich um
+Minimum, Maximum oder Sattelpunkt handelt.
+\karo{7cm}
+
+% ============================================================
+% THEMA 5 — Grafische LP + Slack
+% ============================================================
+\thema{5}{Lineare Optimierung --- grafisch \& Slackvariablen}
+\bsp
+$\max z=3x_1+2x_2$ unter $x_1+x_2\le 4$, $x_1+3x_2\le 6$, $x_1,x_2\ge 0$.
+\loesweg
+\textbf{(1) Zulässige Ecken} (Schnittpunkte der Restriktionsgeraden \& Achsen):
+$(0,0),(4,0),(0,2)$ und Schnitt $x_1+x_2=4,\ x_1+3x_2=6$: Subtraktion $\Rightarrow 2x_2=2\Rightarrow x_2=1,x_1=3$,
+also $(3,1)$.
+\par\textbf{(2) Zielwert in jeder Ecke:} $(4,0)\!:12$, $(3,1)\!:11$, $(0,2)\!:4$ $\Rightarrow$ Optimum $(4,0)$, $z=12$.
+\par\textbf{(3) Slackvariablen} $s_i=$ rechte Seite $-$ linke Seite im Optimum:
+$s_1=4-(4+0)=0$ (Restriktion 1 aktiv), $s_2=6-(4+0)=2$ (Restriktion 2 hat $2$ Reserve).
+
+\uebung{5.1 --- Grafisch lösen}{mittel}
+$\max z=x_1+x_2$ unter $2x_1+x_2\le 10$, $x_1+3x_2\le 15$, $x_1,x_2\ge 0$. Bestimme das Optimum (Ecken
+vergleichen) und die Werte der Slackvariablen im Optimum.
+\karo{9cm}
+
+\uebung{5.2 --- Bruch-Optimum}{mittel}
+$\max z=4x_1+3x_2$ unter $2x_1+x_2\le 8$, $x_1+2x_2\le 8$, $x_1,x_2\ge 0$. Bestimme das Optimum und die
+Slackvariablen.
+\karo{9cm}
+
+% ============================================================
+% THEMA 6 — Standardform
+% ============================================================
+\thema{6}{Lineare Optimierung --- Standardform}
+\bsp
+Bringe in Standardform ($\min$, nur Gleichungen, alle Variablen $\ge 0$):
+$\max z=2x_1+3x_2$ unter $x_1+x_2\le 4$, $x_1-x_2\ge 1$, $x_1\ge 0$, $x_2$ \emph{frei}.
+\loesweg
+\textbf{(1)} $\max z \Leftrightarrow \min(-z)=\min(-2x_1-3x_2)$.\quad
+\textbf{(2)} $\le$ mit \emph{Slack} $s_1\ge0$, $\ge$ mit \emph{Surplus} $s_2\ge0$.\quad
+\textbf{(3)} freie Variable splitten: $x_2=x_2^+-x_2^-$ mit $x_2^+,x_2^-\ge 0$.
+\[
+\min\; -2x_1-3x_2^++3x_2^-\quad\text{u.\,d.\,N.}
+\]
+\[
+x_1+x_2^+-x_2^-+s_1=4,\qquad x_1-x_2^++x_2^--s_2=1,\qquad x_1,x_2^+,x_2^-,s_1,s_2\ge 0 .
+\]
+
+\uebung{6.1 --- Standardform I}{leicht}
+Bringe in Standardform: $\max z=5x_1+4x_2$ unter $6x_1+4x_2\le 24$, $x_1+2x_2\le 6$, $x_1,x_2\ge 0$.
+\karo{7cm}
+
+\uebung{6.2 --- Standardform II}{mittel}
+Bringe in Standardform: $\min z=3x_1+x_2$ unter $x_1+x_2\ge 3$, $2x_1+x_2\le 8$, $x_1$ \emph{frei}, $x_2\ge 0$.
+\karo{8cm}
+
+% ============================================================
+% THEMA 7 — Ganzzahlige Optimierung
+% ============================================================
+\thema{7}{Ganzzahlige Optimierung (grafisch)}
+\bsp
+$\max z=x_1+x_2$ unter $3x_1+2x_2\le 12$, $x_1+2x_2\le 6$, $x_1,x_2\in\mathbb Z_{\ge 0}$.
+\loesweg
+\textbf{(1) Kontinuierliches Optimum:} Schnitt $3x_1+2x_2=12$, $x_1+2x_2=6\Rightarrow 2x_1=6\Rightarrow x_1=3,\ x_2=1{,}5$,
+$z=4{,}5$.
+\par\textbf{(2) Ganzzahlig:} runde/prüfe Nachbarn. $(3,1)$: $11\le12,\ 5\le6$ zulässig, $z=4$. $(2,2)$: $10\le12,\ 6\le6$
+zulässig, $z=4$. Ein zulässiger ganzzahliger Punkt mit $z=5$ existiert nicht.
+\par\textbf{Ergebnis:} $\vec x^*_{\mathbb Z}=(3,1)$ bzw.\ $(2,2)$, $z=4$ ($<4{,}5$: das kont.\ Optimum ist obere Schranke).
+
+\uebung{7.1 --- Ganzzahlig I}{mittel}
+$\max z=4x_1+5x_2$ unter $x_1+4x_2\le 10$, $3x_1+2x_2\le 12$, $x_1,x_2\in\mathbb Z_{\ge0}$. Bestimme das
+kontinuierliche und das ganzzahlige Optimum.
+\karo{9cm}
+
+\uebung{7.2 --- Ganzzahlig II}{mittel}
+$\max z=5x_1+4x_2$ unter $6x_1+4x_2\le 24$, $x_1+2x_2\le 6$, $x_1,x_2\in\mathbb Z_{\ge0}$. Bestimme das
+kontinuierliche und das ganzzahlige Optimum.
+\karo{9cm}
+
+% ============================================================
+% THEMA 8 — Transport: Nordwesteckenregel
+% ============================================================
+\thema{8}{Transportproblem --- Nordwesteckenregel}
+\bsp
+Angebot $a=(20,30,25)$, Nachfrage $b=(10,25,40)$, Kostenmatrix
+$C=\begin{pmatrix}8&6&10\\9&12&7\\3&5&4\end{pmatrix}$. Bestimme eine Startlösung mit der Nordwesteckenregel und
+ihre Kosten.
+\loesweg
+Starte oben links, belege jede Zelle maximal, gehe dann nach rechts/unten (Kosten werden \emph{ignoriert}):
+\[
+\begin{array}{l}
+x_{11}=\min(20,10)=10\ (\text{Nachfr.\,1 fertig, Ang.\,1}\to10)\\
+x_{12}=\min(10,25)=10\ (\text{Ang.\,1 fertig, Nachfr.\,2}\to15)\\
+x_{22}=\min(30,15)=15\ (\text{Nachfr.\,2 fertig, Ang.\,2}\to15)\\
+x_{23}=\min(15,40)=15\ (\text{Ang.\,2 fertig, Nachfr.\,3}\to25)\\
+x_{33}=\min(25,25)=25
+\end{array}
+\quad
+X=\begin{pmatrix}10&10&0\\0&15&15\\0&0&25\end{pmatrix}
+\]
+Basiszellen $=5=m+n-1$ \checkmark. Kosten $=10\cdot8+10\cdot6+15\cdot12+15\cdot7+25\cdot4=80+60+180+105+100=\boxed{525}$.
+
+\uebung{8.1 --- NWE (2$\times$3)}{leicht}
+Angebot $(30,30)$, Nachfrage $(20,25,15)$, $C=\begin{pmatrix}3&5&7\\6&4&2\end{pmatrix}$. Bestimme die
+NWE-Startlösung und ihre Kosten.
+\karo{7.5cm}
+
+\uebung{8.2 --- NWE (2$\times$3)}{leicht}
+Angebot $(40,30)$, Nachfrage $(25,30,15)$, $C=\begin{pmatrix}7&3&12\\2&5&6\end{pmatrix}$. Bestimme die
+NWE-Startlösung und ihre Kosten.
+\karo{7.5cm}
+
+% ============================================================
+% THEMA 9 — Transport: Matrix-Minimum
+% ============================================================
+\thema{9}{Transportproblem --- Matrix-Minimum-Methode}
+\bsp
+Gleiche Daten wie Thema 8: $a=(20,30,25)$, $b=(10,25,40)$, $C=\begin{pmatrix}8&6&10\\9&12&7\\3&5&4\end{pmatrix}$.
+\loesweg
+Wähle stets die noch freie Zelle mit den \emph{kleinsten} Kosten und belege sie maximal:
+\[
+\begin{array}{ll}
+c_{31}=3: & x_{31}=\min(25,10)=10\ \Rightarrow \text{Spalte 1 fertig, Ang.\,3}\to15\\
+c_{33}=4: & x_{33}=\min(15,40)=15\ \Rightarrow \text{Ang.\,3 fertig, Nachfr.\,3}\to25\\
+c_{12}=6: & x_{12}=\min(20,25)=20\ \Rightarrow \text{Ang.\,1 fertig, Nachfr.\,2}\to5\\
+c_{23}=7: & x_{23}=\min(30,25)=25\ \Rightarrow \text{Nachfr.\,3 fertig, Ang.\,2}\to5\\
+c_{22}=12: & x_{22}=\min(5,5)=5
+\end{array}
+\quad
+X=\begin{pmatrix}0&20&0\\0&5&25\\10&0&15\end{pmatrix}
+\]
+Kosten $=10\cdot3+15\cdot4+20\cdot6+25\cdot7+5\cdot12=30+60+120+175+60=\boxed{445}$ (besser als NWE $525$).
+
+\uebung{9.1 --- MMM I}{mittel}
+Angebot $(20,30)$, Nachfrage $(10,25,15)$, $C=\begin{pmatrix}4&6&8\\5&3&7\end{pmatrix}$. Bestimme die
+Startlösung per Matrix-Minimum-Methode und die Kosten.
+\karo{8cm}
+
+\uebung{9.2 --- MMM II}{mittel}
+Angebot $(50,40)$, Nachfrage $(30,50,10)$, $C=\begin{pmatrix}4&6&8\\5&3&7\end{pmatrix}$. Bestimme die
+Startlösung per Matrix-Minimum-Methode und die Kosten.
+\karo{8cm}
+
+% ============================================================
+% THEMA 10 — Transport: Vogel
+% ============================================================
+\thema{10}{Transportproblem --- Vogelsche Approximation (VAM)}
+\bsp
+Gleiche Daten wie Thema 8: $a=(20,30,25)$, $b=(10,25,40)$, $C=\begin{pmatrix}8&6&10\\9&12&7\\3&5&4\end{pmatrix}$.
+\loesweg
+Penalty $=$ Differenz der zwei kleinsten Kosten je Zeile/Spalte; größte Penalty wählen, dort günstigste Zelle
+maximal belegen.
+\[
+\begin{array}{l}
+\textbf{S1:}\ \text{Pen Z}=(2,2,1),\ \text{Pen S}=(5,1,3).\ \text{Max}=5\,(\text{Sp.\,1}),\ c_{31}=3:\ x_{31}=\min(25,10)=10.\\
+\textbf{S2:}\ \text{Pen Z}=(4,5),\ \text{Pen S}=(1,3)\ [\text{Sp.\,2,3}].\ \text{Max}=5\,(\text{Z.\,2}),\ c_{23}=7:\ x_{23}=\min(30,40)=30.\\
+\textbf{S3:}\ \text{Pen Z}=(4,-),\ \text{Pen S}=(1,6)\ [\text{Sp.\,2,3}].\ \text{Max}=6\,(\text{Sp.\,3}),\ c_{33}=4:\ x_{33}=\min(15,10)=10.\\
+\textbf{S4:}\ \text{Rest Spalte 2 (Nachfr.\,25):}\ x_{12}=\min(20,25)=20,\ x_{32}=5.
+\end{array}
+\]
+\[
+X=\begin{pmatrix}0&20&0\\0&0&30\\10&5&10\end{pmatrix},\quad
+\text{Kosten}=10\cdot3+30\cdot7+10\cdot4+20\cdot6+5\cdot5=30+210+40+120+25=\boxed{425}.
+\]
+Vergleich: NWE $525$, MMM $445$, \textbf{VAM $425$}.
+
+\uebung{10.1 --- VAM I}{mittel}
+Angebot $(30,30)$, Nachfrage $(20,25,15)$, $C=\begin{pmatrix}3&5&7\\6&4&2\end{pmatrix}$. Bestimme die
+Startlösung mit der Vogelschen Approximationsmethode und die Kosten.
+\karo{9cm}
+
+\uebung{10.2 --- VAM II}{schwer}
+Angebot $(40,30)$, Nachfrage $(25,30,15)$, $C=\begin{pmatrix}7&3&12\\2&5&6\end{pmatrix}$. Bestimme die
+VAM-Startlösung und die Kosten. Vergleiche mit der NWE-Lösung aus Aufgabe 8.2.
+\karo{9cm}
+
+% ============================================================
+% THEMA 11 — Transport: Optimalitätsprüfung (MODI)
+% ============================================================
+\thema{11}{Transportproblem --- Optimalität prüfen (MODI/Stepping-Stone)}
+\bsp
+Angebot $(50,40)$, Nachfrage $(30,50,10)$, $C=\begin{pmatrix}4&6&8\\5&3&7\end{pmatrix}$. Prüfe die
+NWE-Startlösung auf Optimalität und verbessere sie ggf.
+\loesweg
+\textbf{NWE-Start:} $x_{11}=30,x_{12}=20,x_{22}=30,x_{23}=10$. Kosten $=30\cdot4+20\cdot6+30\cdot3+10\cdot7=400$.
+\par\textbf{MODI:} setze $u_1=0$, dann $u_i+v_j=c_{ij}$ für Basiszellen:
+$v_1=4,\ v_2=6,\ u_2=c_{22}-v_2=3-6=-3,\ v_3=c_{23}-u_2=7+3=10$.
+\par Reduzierte Kosten $d_{ij}=c_{ij}-(u_i+v_j)$ der Nichtbasiszellen:
+\[
+d_{13}=8-(0+10)=-2<0,\qquad d_{21}=5-(-3+4)=4\ge0 .
+\]
+$d_{13}<0\Rightarrow$ \textbf{nicht optimal}. Zelle $(1,3)$ aufnehmen, Zyklus $(1,3)^+\!\to(2,3)^-\!\to(2,2)^+\!\to(1,2)^-$;
+$\theta=\min(x_{23},x_{12})=\min(10,20)=10$.
+\par Neu: $x_{13}=10,x_{23}=0,x_{22}=40,x_{12}=10$. Kosten $=400-10\cdot2=380$.
+\par Erneuter MODI-Test: alle $d_{ij}\ge0$ $\Rightarrow$ \textbf{optimal}, Gesamtkosten $\boxed{380}$.
+
+\uebung{11.1 --- Optimal?}{mittel}
+Angebot $(30,30)$, Nachfrage $(20,25,15)$, $C=\begin{pmatrix}3&5&7\\6&4&2\end{pmatrix}$. Bestimme die
+NWE-Startlösung und prüfe per MODI, ob sie bereits optimal ist.
+\karo{9.5cm}
+
+\uebung{11.2 --- Eine Verbesserung}{schwer}
+Angebot $(40,30)$, Nachfrage $(25,30,15)$, $C=\begin{pmatrix}7&3&12\\2&5&6\end{pmatrix}$. Bestimme die
+NWE-Startlösung, prüfe per MODI und führe (falls nötig) genau einen Verbesserungsschritt durch.
+\karo{9.5cm}
+
+% ============================================================
+% THEMA 12 — Gradientenabstieg
+% ============================================================
+\thema{12}{Nichtlinear --- Gradientenabstieg}
+\bsp
+$f(x,y)=x^2+2y^2$, Startpunkt $\vec x_0=(2,1)$, Schrittweite $\lambda=0{,}1$. Führe einen Schritt aus.
+\loesweg
+$\nabla f=\begin{pmatrix}2x\\4y\end{pmatrix}\Rightarrow \nabla f(2,1)=\begin{pmatrix}4\\4\end{pmatrix}$.
+\[
+\vec x_1=\vec x_0-\lambda\nabla f(\vec x_0)=\begin{pmatrix}2\\1\end{pmatrix}-0{,}1\begin{pmatrix}4\\4\end{pmatrix}
+=\begin{pmatrix}1{,}6\\0{,}6\end{pmatrix}.
+\]
+$f(\vec x_0)=6\ \to\ f(\vec x_1)=1{,}6^2+2\cdot0{,}6^2=2{,}56+0{,}72=3{,}28$ (Abnahme \checkmark).
+
+\uebung{12.1 --- Ein Schritt 2D}{leicht}
+$f(x,y)=x^2+y^2+xy$, Start $(1,1)$, $\lambda=0{,}1$. Berechne $\vec x_1$ und $f(\vec x_1)$.
+\karo{7cm}
+
+\uebung{12.2 --- Zwei Schritte 1D}{mittel}
+$f(x)=(x-2)^2$, Start $x_0=0$, $\lambda=0{,}25$. Führe \textbf{zwei} Schritte aus und gib $x_1,x_2$ an.
+\karo{7cm}
+
+% ============================================================
+% THEMA 13 — Newton-Verfahren
+% ============================================================
+\thema{13}{Nichtlinear --- Newton-Verfahren}
+\bsp
+Minimiere $f(x)=x^3-2x+2$ mit dem Newton-Verfahren ab $x_0=1$ (ein Schritt).
+\loesweg
+Newton zur Optimierung: $x_{k+1}=x_k-\dfrac{f'(x_k)}{f''(x_k)}$ mit $f'(x)=3x^2-2$, $f''(x)=6x$.
+\[
+x_1=1-\frac{f'(1)}{f''(1)}=1-\frac{3-2}{6}=1-\tfrac16\approx 0{,}8333 .
+\]
+(Konvergiert gegen $x^*=\sqrt{2/3}\approx0{,}8165$, das Minimum.) Mehrdim.: $\vec x_{k+1}=\vec x_k-\mathbf H^{-1}\nabla f$.
+
+\uebung{13.1 --- Zwei Schritte 1D}{mittel}
+$f(x)=x^3-6x^2+9x$. Führe ab $x_0=0$ \textbf{zwei} Newton-Schritte aus. Gegen welchen stationären Punkt
+konvergiert das Verfahren?
+\karo{8cm}
+
+\uebung{13.2 --- Newton in 2D}{schwer}
+$f(x,y)=x^2+xy+y^2$, Start $\vec x_0=(1,1)$. Führe einen Newton-Schritt
+$\vec x_1=\vec x_0-\mathbf H^{-1}\nabla f(\vec x_0)$ aus. Was fällt auf?
+\karo{8.5cm}
+
+% ============================================================
+% THEMA 14 — KKT
+% ============================================================
+\thema{14}{Nichtlinear --- KKT-Bedingungen}
+\bsp
+$\min f(x,y)=(x-2)^2+(y-1)^2$ unter $g(x,y)=x+y-1\le 0$.
+\loesweg
+\textbf{KKT:} $\nabla f+\mu\nabla g=\vec 0$, $\ \mu\ge0$, $\ \mu\,g=0$, $\ g\le0$.
+$\nabla f=(2(x-2),2(y-1))$, $\nabla g=(1,1)$:
+\[
+2(x-2)+\mu=0,\qquad 2(y-1)+\mu=0\ \Rightarrow\ x-2=y-1\ \Rightarrow\ x=y+1 .
+\]
+\textbf{Fall $\mu=0$:} $x=2,y=1\Rightarrow g=2>0$ unzulässig.
+\textbf{Fall $g=0$:} $x+y=1$ und $x=y+1\Rightarrow 2y=0\Rightarrow y=0,x=1$; $\mu=-2(x-2)=2\ge0$ \checkmark.
+\par\emph{Ergebnis:} $\vec x^*=(1,0)$, $\mu=2$, $f=2$.
+
+\uebung{14.1 --- KKT mit $\ge$-Restriktion}{mittel}
+$\min f(x,y)=x^2+y^2$ unter $x+y\ge 4$. Stelle die KKT-Bedingungen auf und löse sie vollständig.
+\karo{9cm}
+
+\uebung{14.2 --- KKT mit Kreis}{schwer}
+$\min f(x,y)=(x-1)^2+(y-2)^2$ unter $x^2+y^2\le 1$. Bestimme den KKT-Punkt, den Multiplikator $\mu$ und
+$f$ im Optimum.
+\karo{9.5cm}
+
+% ============================================================
+% THEMA 15 — Grafische nichtlineare Optimierung
+% ============================================================
+\thema{15}{Nichtlinear --- grafische Optimierung}
+\bsp
+$\min f(x,y)=(x-3)^2+(y-2)^2$ unter $x+y\le 4$, $x,y\ge0$.
+\loesweg
+$f$ misst den quadrierten Abstand zum Punkt $(3,2)$; die Höhenlinien sind \emph{Kreise} um $(3,2)$. Das
+unbeschränkte Minimum $(3,2)$ verletzt $x+y\le4$ ($3+2=5$). Gesucht ist also der \emph{nächstgelegene
+zulässige Punkt} = Lotfußpunkt von $(3,2)$ auf die Gerade $x+y=4$:
+\[
+\vec x^*=(3,2)-\frac{(3+2)-4}{2}(1,1)=(3,2)-\tfrac12(1,1)=(2{,}5,\,1{,}5),\quad f=0{,}25+0{,}25=0{,}5 .
+\]
+(Optimum dort, wo ein Höhenkreis die Restriktionsgerade gerade berührt.)
+
+\uebung{15.1 --- Produkt maximieren}{mittel}
+$\max f(x,y)=x\,y$ unter $x+y=10$, $x,y\ge0$. Bestimme das Optimum grafisch/analytisch (Höhenlinien sind
+Hyperbeln).
+\karo{7.5cm}
+
+\uebung{15.2 --- Abstand zu einer Kreisscheibe}{schwer}
+$\min f(x,y)=x^2+y^2$ unter $(x-2)^2+(y-2)^2\le 1$. Bestimme den optimalen Punkt und $f$ (Höhenlinien sind
+Kreise um den Ursprung).
+\karo{8.5cm}
+
+% ============================================================
+% THEMA 16 — Nelder-Mead
+% ============================================================
+\thema{16}{Gradientenfrei --- Nelder-Mead (Simplex)}
+\bsp
+$f(x,y)=x^2+y^2$. Simplex $B=(1,1),\ G=(2,2),\ W=(3,1)$. Führe eine Iteration aus.
+\loesweg
+\textbf{(1) Sortieren} nach $f$: $f(B)=2\le f(G)=8\le f(W)=10$ ($B$ best, $G$ zweitschlecht., $W$ schlecht.).
+\par\textbf{(2) Schwerpunkt} $M$ aller Punkte \emph{außer} $W$: $M=\tfrac12(B+G)=(1{,}5,\,1{,}5)$.
+\par\textbf{(3) Reflexion} $R=M+(M-W)=2M-W=(3,3)-(3,1)=(0,2)$, $f(R)=4$.
+\par\textbf{(4) Entscheidung:} Regel ist
+\begin{itemize}[nosep,leftmargin=1.4em]
+  \item $f(R)<f(B)$: Expansion versuchen;
+  \item $f(B)\le f(R)<f(G)$: $R$ \emph{annehmen};
+  \item $f(R)\ge f(G)$: Kontraktion; bringt auch das nichts: Schrumpfung.
+\end{itemize}
+Hier $f(B)=2\le f(R)=4<f(G)=8\Rightarrow$ \textbf{$R$ annehmen}; $W$ wird durch $(0,2)$ ersetzt.
+\par\textbf{Folgeschritt} (neuer Simplex $\{(1,1),(0,2),(2,2)\}$, neuer Worst $=(2,2)$): $M=\tfrac12((1,1)+(0,2))=(0{,}5,1{,}5)$,
+$R'=2M-(2,2)=(-1,1)$, $f(R')=2$; wegen $f(B)\le f(R')<f(G)$ erneut annehmen.
+
+\uebung{16.1 --- Expansion}{mittel}
+$f(x,y)=x^2+2y^2$. Simplex $P_1=(2,0),\ P_2=(0,2),\ P_3=(2,2)$. Führe eine Iteration (Reflexion und ggf.\
+Expansion) durch.
+\karo{8.5cm}
+
+\uebung{16.2 --- Kontraktion}{schwer}
+$f(x,y)=x^2+y^2$. Simplex $P_1=(0,1),\ P_2=(1,0),\ P_3=(2,2)$. Führe eine Iteration durch (was passiert,
+wenn die Reflexion schlechter als der zweitschlechteste Punkt ist?).
+\karo{8.5cm}
+
+% ============================================================
+% THEMA 17 — DIRECT
+% ============================================================
+\thema{17}{Gradientenfrei --- DIRECT}
+\bsp
+Minimiere $f(x)=(x-0{,}3)^2$ auf $[0,1]$ mit DIRECT (eine Unterteilung).
+\loesweg
+DIRECT wertet stets die \emph{Mitte} eines Intervalls aus und drittelt das/die \emph{potentiell optimalen}
+Intervalle. Start: Mitte $0{,}5$, $f=0{,}04$, Länge $1$. Dritteln in $[0,\tfrac13],[\tfrac13,\tfrac23],[\tfrac23,1]$
+mit Mitten $\tfrac16,\tfrac12,\tfrac56$:
+\[
+f(\tfrac16)=(0{,}1\overline{6}-0{,}3)^2\approx0{,}0178,\quad f(\tfrac12)=0{,}04,\quad f(\tfrac56)\approx0{,}284 .
+\]
+Alle drei Intervalle sind gleich groß $\Rightarrow$ potentiell optimal ist das mit dem \emph{kleinsten} $f$,
+also $[0,\tfrac13]$ (Mitte $\tfrac16$). Dieses wird als Nächstes gedrittelt.
+
+\uebung{17.1 --- DIRECT 1D}{mittel}
+Minimiere $f(x)=(x-0{,}7)^2$ auf $[0,1]$: führe die erste Unterteilung durch, berechne die drei Mittenwerte
+und gib das als Nächstes zu unterteilende Intervall an.
+\karo{7.5cm}
+
+\uebung{17.2 --- Potentiell optimale Rechtecke}{schwer}
+In der $(d,f)$-Darstellung (Größe $d$, Funktionswert $f$ der Mitte) liegen die Rechtecke
+\[
+\text{Nr.1}(1,6),\ \text{Nr.2}(1,4),\ \text{Nr.3}(3,5),\ \text{Nr.4}(3,3),\ \text{Nr.5}(9,4).
+\]
+Welche Rechtecke sind \emph{potentiell optimal}? Begründe (je Größe nur das beste, dann untere-rechte Hülle).
+\karo{8cm}
+
+% ============================================================
+% THEMA 18 — (1+1)-ES
+% ============================================================
+\thema{18}{Metaheuristiken --- $(1+1)$-ES mit 1/5-Erfolgsregel}
+\bsp
+$f(x)=x^2$, Start $x=8$, $\sigma=4$. Regel: Erfolgsrate $s=\frac{\#\text{Erfolge}}{\text{Iterationen}}$;
+$s>\tfrac15\Rightarrow\sigma\cdot2$, $s<\tfrac15\Rightarrow\sigma/2$, $s=\tfrac15\Rightarrow$ unverändert. Mutation
+$x^{\text{neu}}=x+\sigma\cdot z$, akzeptiert nur bei Verbesserung. $z$-Folge: $1,\,-3,\,-0{,}5,\,0{,}5,\,-0{,}1$.
+\loesweg
+\[
+\renewcommand{\arraystretch}{1.25}
+\begin{array}{c|c|c|c|c|c}
+\text{It} & x^{\text{neu}}=x+\sigma z & f^{\text{neu}} & \text{Erg.} & s & \sigma_{\text{neu}}\\\hline
+1 & 8+4(1)=12 & 144>64 & \text{Miss} & 0/1=0 & 4/2=2\\
+2 & 8+2(-3)=2 & 4<64 & \text{Erfolg} & 1/2=0{,}5 & 2\cdot2=4\\
+3 & 2+4(-0{,}5)=0 & 0<4 & \text{Erfolg} & 2/3\approx0{,}67 & 8\\
+4 & 0+8(0{,}5)=4 & 16>0 & \text{Miss} & 2/4=0{,}5 & 16\\
+5 & 0+16(-0{,}1)=-1{,}6 & 2{,}56>0 & \text{Miss} & 2/5=0{,}4 & 32\\
+\end{array}
+\]
+Bester Punkt: $x=0$, $f=0$. (Nach Miss in It 1 wird $\sigma$ halbiert, danach mehrfach verdoppelt.)
+
+\uebung{18.1 --- ES 1D}{mittel}
+$f(x)=x^2$, Start $x=10$, $\sigma=2$, $z$-Folge $-2,\,-1,\,0{,}5,\,-0{,}1,\,0{,}1$. Führe 5 Iterationen aus
+(Tabelle wie oben) und gib den besten Punkt sowie das finale $\sigma$ an.
+\karo{9cm}
+
+\uebung{18.2 --- ES 2D}{schwer}
+$f(x_1,x_2)=x_1^2+x_2^2$, Start $(3,3)$, $\vec\sigma=(1,1)$. $z$-Folge (jeweils $(z_1,z_2)$):
+$(-1,-2),(-0{,}5,0),(0{,}5,0{,}5),(-0{,}1,-0{,}1),(0{,}1,-0{,}1)$. Führe 5 Iterationen aus.
+\karo{9.5cm}
+
+% ============================================================
+% THEMA 19 — Simulated Annealing
+% ============================================================
+\thema{19}{Metaheuristiken --- Simulated Annealing}
+\bsp
+Eine Verschlechterung um $\Delta f=2$ wird bei Temperatur $T=4$ vorgeschlagen; Zufallszahl $u=0{,}5$.
+Akzeptiert?
+\loesweg
+Akzeptanzwahrscheinlichkeit (Metropolis): $p=\exp(-\Delta f/T)=\exp(-2/4)=\exp(-0{,}5)\approx0{,}607$.
+Akzeptiere, falls $u<p$. Hier $u=0{,}5<0{,}607\Rightarrow$ \textbf{akzeptiert}.
+\par\emph{Idee:} hohe $T\Rightarrow$ Verschlechterungen oft akzeptiert (globale Exploration); $T$ sinkt über den
+Abkühlungsplan $\Rightarrow$ Verfahren wird gierig (lokale Feinsuche).
+
+\uebung{19.1 --- Annahme prüfen}{leicht}
+$\Delta f=3$, $T=2$, $u=0{,}4$. Berechne $p$ und entscheide, ob die schlechtere Lösung akzeptiert wird.
+\karo{6cm}
+
+\uebung{19.2 --- Einfluss der Temperatur}{mittel}
+Eine Verschlechterung $\Delta f=1$ soll akzeptiert werden. Berechne $p$ für $T=4$ und für $T=0{,}5$ und
+erkläre, was das über den Abkühlungsplan aussagt.
+\karo{7cm}
+
+% ============================================================
+% THEMA 20 — PSO
+% ============================================================
+\thema{20}{Metaheuristiken --- Particle Swarm Optimization (PSO)}
+\bsp
+Geschwindigkeits-Update $v'=w\,v+c_1 r_1 (p_{\text{best}}-x)+c_2 r_2 (g_{\text{best}}-x)$, dann $x'=x+v'$.
+Gegeben $x=2,\ v=1,\ p_{\text{best}}=1,\ g_{\text{best}}=0,\ w=0{,}5,\ c_1=c_2=1,\ r_1=r_2=1$.
+\loesweg
+\[
+v'=0{,}5\cdot1+1\cdot1\cdot(1-2)+1\cdot1\cdot(0-2)=0{,}5-1-2=-2{,}5,\qquad x'=2+(-2{,}5)=-0{,}5 .
+\]
+Drei Anteile: \emph{Trägheit} $w v$, \emph{kognitiv} (Richtung eigener bester Pos.), \emph{sozial}
+(Richtung global bester Pos.).
+
+\uebung{20.1 --- Ein Update 1D}{mittel}
+$x=4,\ v=-1,\ p_{\text{best}}=3,\ g_{\text{best}}=1,\ w=0{,}7,\ c_1=c_2=1{,}5,\ r_1=0{,}5,\ r_2=0{,}4$.
+Berechne $v'$ und $x'$.
+\karo{7cm}
+
+\uebung{20.2 --- Ein Update 2D}{mittel}
+$\vec x=(2,2),\ \vec v=(0,0),\ \vec p_{\text{best}}=(1,1),\ \vec g_{\text{best}}=(0,0),\ w=0{,}5,\ c_1=c_2=1,\
+r_1=r_2=1$. Berechne $\vec v'$ und $\vec x'$ und benenne die drei Geschwindigkeitsanteile.
+\karo{7.5cm}
+
+% ============================================================
+% THEMA 21 — ACO
+% ============================================================
+\thema{21}{Metaheuristiken --- Ant Colony Optimization (ACO)}
+\bsp
+Drei Kanten haben Pheromon $\tau=(1,3,2)$ und Sichtbarkeit $\eta=(4,2,1)$; Parameter $\alpha=\beta=1$.
+Mit welcher Wahrscheinlichkeit wird jede Kante gewählt?
+\loesweg
+Gewicht $w_i=\tau_i^\alpha\cdot\eta_i^\beta$: $w_1=1\cdot4=4,\ w_2=3\cdot2=6,\ w_3=2\cdot1=2$, Summe $=12$.
+\[
+p_i=\frac{w_i}{\sum w}\ \Rightarrow\ p=\Big(\tfrac{4}{12},\tfrac{6}{12},\tfrac{2}{12}\Big)=\Big(\tfrac13,\tfrac12,\tfrac16\Big).
+\]
+
+\uebung{21.1 --- Pheromon-Update}{mittel}
+Für drei Kanten gelte $\tau=(4,2,6)$, Verdunstungsrate $\rho=0{,}2$ und neu abgelegtes Pheromon
+$\Delta\tau=(1,0,2)$. Berechne $\tau'=(1-\rho)\tau+\Delta\tau$.
+\karo{6.5cm}
+
+\uebung{21.2 --- Wahlwahrscheinlichkeit}{mittel}
+Drei Kanten mit $\tau=(2,2,1)$, $\eta=(1,3,3)$, $\alpha=\beta=1$. Berechne die Auswahlwahrscheinlichkeiten.
+\karo{6.5cm}
+
+% ============================================================
+% THEMA 22 — EA-Operatoren
+% ============================================================
+\thema{22}{Metaheuristiken --- EA-Operatoren (binär)}
+\bsp
+Elter $x=(1,0,1,1,0,1)$. (a) Bitflip-Mutation an Position 3. (b) Single-Point-Crossover von
+$x_1=(1,1,0,0)$ und $x_2=(0,0,1,1)$ mit Schnitt nach Position 2.
+\loesweg
+\textbf{(a) Bitflip:} an Position 3 steht eine $1$; kippen $\Rightarrow 0$: $x^*=(1,0,\mathbf{0},1,0,1)$.
+\par\textbf{(b) Crossover} (erste 2 Bits von $x_1$, Rest von $x_2$): $x_3=(1,1\,|\,1,1)=(1,1,1,1)$.
+
+\uebung{22.1 --- Crossover + Mutation}{leicht}
+$x_1=(1,0,1,1,0,1,0,1)$, $x_2=(0,1,0,0,1,0,1,0)$. (a) Single-Point-Crossover mit Schnitt nach Position 5
+(Nachkomme $=$ vordere 5 Bits von $x_1$, Rest von $x_2$). (b) Bitflip von $x_1$ an Position 4.
+\karo{6.5cm}
+
+\uebung{22.2 --- Zweipunkt-Crossover}{mittel}
+$x_1=(1,1,1,1,1,1)$, $x_2=(0,0,0,0,0,0)$. Führe einen \textbf{Zweipunkt}-Crossover mit Schnitten nach
+Position 2 und nach Position 4 durch (Nachkomme übernimmt den Mittelteil von $x_2$, Außenteile von $x_1$).
+\karo{6.5cm}
+
+% ============================================================
+% THEMA 23 — Dominanz & Pareto-Menge
+% ============================================================
+\thema{23}{Mehrziel --- Dominanz \& Pareto-Menge}
+\bsp
+Punkte im Zielraum (beide Ziele \textbf{minimieren}):
+$P_1=(2,6),P_2=(3,4),P_3=(5,3),P_4=(4,5),P_5=(6,2)$. Bestimme die Pareto-Menge.
+\loesweg
+$\vec a$ \emph{dominiert} $\vec b$, wenn $\vec a$ in keinem Ziel schlechter und in mindestens einem besser ist.
+\par$P_2=(3,4)$ dominiert $P_4=(4,5)$ ($3<4$ und $4<5$). Sonst dominiert kein Punkt einen anderen.
+\par\emph{Pareto-optimal} (von keinem dominiert): $\boxed{\{P_1,P_2,P_3,P_5\}}$; $P_4$ ist dominiert.
+
+\uebung{23.1 --- Pareto-Menge 2D}{mittel}
+$P_1=(1,5),P_2=(2,3),P_3=(4,2),P_4=(3,4),P_5=(5,1),P_6=(2,6)$ (beide minimieren). Bestimme alle
+dominierten Punkte und die Pareto-Menge.
+\karo{7.5cm}
+
+\uebung{23.2 --- Drei Ziele}{mittel}
+$P_1=(1,2,3),P_2=(2,1,2),P_3=(3,2,1),P_4=(2,2,2),P_5=(1,1,1)$ (alle minimieren). Bestimme die Pareto-Menge.
+\karo{7cm}
+
+% ============================================================
+% THEMA 24 — Non-Dominated Sorting
+% ============================================================
+\thema{24}{Mehrziel --- Non-Dominated-Sorting (Ränge)}
+\bsp
+$P_1=(1,2,3),P_2=(2,1,2),P_3=(3,2,1),P_4=(2,2,2),P_5=(3,3,3),P_6=(1,3,1)$ (alle minimieren). Bestimme die
+Ränge.
+\loesweg
+\textbf{Rang 1} = nicht dominierte Punkte: $P_4$ wird von $P_2$ dominiert ($2,1,2\le2,2,2$), $P_5$ von vielen.
+$P_1,P_2,P_3,P_6$ werden von keinem dominiert $\Rightarrow$ Rang 1 $=\{P_1,P_2,P_3,P_6\}$.
+\par Diese entfernen; unter $\{P_4,P_5\}$ ist $P_4$ nicht dominiert $\Rightarrow$ \textbf{Rang 2} $=\{P_4\}$.
+\par Übrig $P_5\Rightarrow$ \textbf{Rang 3} $=\{P_5\}$.
+
+\uebung{24.1 --- Ränge 2D (I)}{mittel}
+$P_1=(1,4),P_2=(2,2),P_3=(3,1),P_4=(2,5),P_5=(4,3),P_6=(5,2)$ (minimieren). Bestimme alle Ränge.
+\karo{8cm}
+
+\uebung{24.2 --- Ränge 2D (II)}{mittel}
+$P_1=(1,1),P_2=(2,3),P_3=(3,2),P_4=(4,4),P_5=(2,2)$ (minimieren). Bestimme alle Ränge.
+\karo{8cm}
+
+% ============================================================
+% THEMA 25 — Crowding Distance + NSGA-II
+% ============================================================
+\thema{25}{Mehrziel --- Crowding Distance \& NSGA-II-Auswahl}
+\bsp
+Nichtdominierte Front (minimieren): $A=(1,7),B=(2,5),C=(3,4),D=(5,3),E=(7,1)$. Berechne die Crowding
+Distance und wähle 4 Punkte aus.
+\loesweg
+Randpunkte erhalten $\infty$: $A,E$. Spannweiten $f_1{:}\,7-1=6$, $f_2{:}\,7-1=6$. Für innere Punkte
+$CD=\sum_{\text{Ziel}}\frac{\text{Nachbar}_{\text{rechts}}-\text{Nachbar}_{\text{links}}}{\text{Spannweite}}$
+(nach $f_1$ sortiert):
+\[
+CD(B)=\tfrac{3-1}{6}+\tfrac{7-4}{6}=\tfrac{5}{6}\approx0{,}83,\quad
+CD(C)=\tfrac{5-2}{6}+\tfrac{5-3}{6}=\tfrac{5}{6}\approx0{,}83,\quad
+CD(D)=\tfrac{7-3}{6}+\tfrac{4-1}{6}=\tfrac{7}{6}\approx1{,}17 .
+\]
+\textbf{Auswahl} (4 Punkte): zuerst Ränder $A,E$ ($\infty$), dann größte $CD$: $D$, dann $B$ (oder $C$).
+$\Rightarrow\{A,E,D,B\}$.
+
+\uebung{25.1 --- Crowding Distance}{schwer}
+Front (minimieren): $F=(1,9),G=(3,6),H=(4,4),I=(6,3),J=(9,1)$. Berechne die Crowding Distance aller Punkte
+und wähle 4 aus.
+\karo{9cm}
+
+\uebung{25.2 --- NSGA-II-Auswahl}{mittel}
+Eine Population: $a$ (Rang 1, $CD=\infty$), $b$ (Rang 1, $CD=0{,}5$), $c$ (Rang 1, $CD=1{,}2$),
+$d$ (Rang 2, $CD=\infty$), $e$ (Rang 1, $CD=0{,}8$), $f$ (Rang 2, $CD=1{,}0$). Es sollen \textbf{3}
+Individuen überleben. Welche werden ausgewählt? Begründe.
+\karo{7cm}
+
+% ============================================================
+% THEMA 26 — Hypervolumen + HVC
+% ============================================================
+\thema{26}{Mehrziel --- Hypervolumen \& HV-Beitrag}
+\bsp
+Front (minimieren): $P_1=(2,8),P_2=(4,5),P_3=(7,3)$, Referenzpunkt $\vec r=(10,10)$. Berechne das
+Hypervolumen und die HV-Beiträge.
+\loesweg
+Nach $f_1$ sortieren, Treppenflächen $\sum (f_{1,\text{next}}-f_{1,i})\,(r_2-f_{2,i})$:
+\[
+P_1{:}(4-2)(10-8)=4,\quad P_2{:}(7-4)(10-5)=15,\quad P_3{:}(10-7)(10-3)=21\ \Rightarrow\ HV=40 .
+\]
+$HVC(P_i)=HV-HV(\text{ohne }P_i)$:
+\[
+HVC(P_1)=40-36=4,\quad HVC(P_2)=40-31=9,\quad HVC(P_3)=40-34=6 .
+\]
+
+\uebung{26.1 --- HV \& HVC (I)}{schwer}
+Front (minimieren): $(1,6),(3,4),(5,2)$, Referenz $\vec r=(8,8)$. Berechne $HV$ und alle HV-Beiträge.
+\karo{9cm}
+
+\uebung{26.2 --- HV \& HVC (II)}{schwer}
+Front (minimieren): $(2,7),(3,5),(6,2)$, Referenz $\vec r=(8,8)$. Berechne $HV$ und alle HV-Beiträge.
+\karo{9cm}
+
+% ============================================================
+% THEMA 27 — Simplex-Tableau
+% ============================================================
+\thema{27}{Lineare Optimierung --- Simplex-Tableau}
+\bsp
+$\max z=3x_1+2x_2$ unter $x_1+x_2\le 4$, $x_1+3x_2\le 6$, $x_1,x_2\ge0$ (vgl.\ Thema 5, jetzt rechnerisch).
+\loesweg
+\textbf{(1) Standardform} mit Slacks: $x_1+x_2+s_1=4$, $x_1+3x_2+s_2=6$. Start-Basis $(s_1,s_2)$,
+$z$-Zeile $z-3x_1-2x_2=0$.
+\[
+\begin{array}{c|cccc|c}
+ & x_1 & x_2 & s_1 & s_2 & b\\\hline
+s_1 & 1 & 1 & 1 & 0 & 4\\
+s_2 & 1 & 3 & 0 & 1 & 6\\\hline
+z & -3 & -2 & 0 & 0 & 0
+\end{array}
+\]
+\textbf{(2) Pivot:} negativster $z$-Eintrag $-3\Rightarrow x_1$ kommt in die Basis. Quotiententest
+$\tfrac{4}{1}=4,\ \tfrac{6}{1}=6\Rightarrow$ kleinster $=4\Rightarrow s_1$ verlässt; Pivotelement $1$.
+Zeilenumformungen (Pivotzeile bleibt, andere eliminieren):
+\[
+\begin{array}{c|cccc|c}
+ & x_1 & x_2 & s_1 & s_2 & b\\\hline
+x_1 & 1 & 1 & 1 & 0 & 4\\
+s_2 & 0 & 2 & -1 & 1 & 2\\\hline
+z & 0 & 1 & 3 & 0 & 12
+\end{array}
+\]
+\textbf{(3)} $z$-Zeile $\ge0\Rightarrow$ \textbf{optimal}: $x_1=4,\ x_2=0,\ z=12$ (identisch zum grafischen Ergebnis).
+
+\uebung{27.1 --- Ein Pivot}{mittel}
+$\max z=3x_1+x_2$ unter $x_1+x_2\le 4$, $2x_1+x_2\le 6$, $x_1,x_2\ge0$. Löse mit dem Simplex-Tableau
+(Standardform, Pivot mit Quotiententest) und gib das Optimum an.
+\karo{9.5cm}
+
+\uebung{27.2 --- Zwei Pivots}{schwer}
+$\max z=2x_1+3x_2$ unter $x_1+x_2\le 4$, $x_1+2x_2\le 6$, $x_1,x_2\ge0$. Löse mit dem Simplex-Tableau
+(zwei Pivotschritte nötig).
+\karo{10cm}
+
+% ============================================================
+% THEMA 28 — Quadratische Optimierung
+% ============================================================
+\thema{28}{Quadratische Optimierung (QO)}
+\bsp
+Ist $\min f(x,y)=x^2+2y^2+xy-4x$ unter $x+y\le 2$, $x,y\ge0$ ein QO-Problem? Ist es konvex?
+\loesweg
+Ein \textbf{QO-Problem} hat eine \emph{quadratische} Zielfunktion und \emph{lineare} Nebenbedingungen,
+also Form $\min\tfrac12\vec x^\top \mathbf Q\vec x+\vec c^\top\vec x$ u.\,d.\,N.\ $\mathbf A\vec x\le \vec b$.
+\par Hier: $f$ ist quadratisch mit $\mathbf Q=\begin{pmatrix}2&1\\1&4\end{pmatrix}$ (denn
+$\tfrac12\vec x^\top\mathbf Q\vec x=x^2+2y^2+xy$) und $\vec c=(-4,0)$; alle Nebenbedingungen sind linear
+$\Rightarrow$ \textbf{ja, QO-Problem}. $\mathbf Q$: Hauptminoren $2>0,\ \det=7>0\Rightarrow$ positiv definit
+$\Rightarrow$ \textbf{konvexes} QO-Problem (jedes lokale Optimum ist global).
+
+\uebung{28.1 --- QO oder nicht?}{mittel}
+Ist $\min f(x,y)=x^2+y^2$ unter $x^2+y^2\le 1$, $x+y\ge 1$ ein QO-Problem? Begründe (welche Bedingung
+verletzt die QO-Definition?).
+\karo{6.5cm}
+
+\uebung{28.2 --- In Matrixform bringen}{mittel}
+Schreibe $f(x,y)=2x^2+3y^2-xy+x-2y$ in der Form $\tfrac12\vec x^\top\mathbf Q\vec x+\vec c^\top\vec x$
+(also $\mathbf Q$ und $\vec c$ angeben) und prüfe $\mathbf Q$ auf Definitheit (Konvexität).
+\karo{7.5cm}
+
+% ============================================================
+% THEMA 29 — SMBO / Surrogat-Modelle
+% ============================================================
+\thema{29}{Surrogat-Modell-basierte Optimierung (SMBO)}
+\bsp
+Wozu dient SMBO und wie läuft eine Iteration ab?
+\loesweg
+SMBO wird für \textbf{teure} Zielfunktionen (lange Simulation, Experiment) eingesetzt: Statt das echte $f$
+oft auszuwerten, baut man ein \emph{billiges Surrogat-Modell} (z.\,B.\ Gauß-Prozess/Kriging, Polynom) aus
+den bisherigen Auswertungen. \textbf{Iteration:}
+(1) Surrogat an die Datenpunkte anpassen;
+(2) den als Nächstes auszuwertenden Punkt über das Modell bestimmen (z.\,B.\ \emph{Minimum des Surrogats}
+bzw.\ eine Acquisition-Funktion, die auch Unsicherheit berücksichtigt);
+(3) dort das \emph{echte} (teure) $f$ auswerten und den neuen Punkt aufnehmen;
+(4) wiederholen, bis das Budget erschöpft ist. So nähert man sich mit wenigen echten Auswertungen dem Optimum.
+
+\uebung{29.1 --- Nächster Auswertungspunkt}{mittel}
+Ein Surrogat-Modell hat sein Minimum bei $x\approx 1{,}2$; das wahre (unbekannte) Minimum liegt bei
+$x\approx 0{,}5$. (a) Wo wertet SMBO als Nächstes das \emph{echte} $f$ aus? (b) Was passiert mit dem Modell
+und seinem Minimum nach dieser Auswertung?
+\karo{6.5cm}
+
+\uebung{29.2 --- Wann SMBO?}{leicht}
+Nenne zwei Eigenschaften eines Problems, bei denen SMBO besonders sinnvoll ist, und erkläre, welche Rolle
+das Surrogat-Modell dabei spielt.
+\karo{6cm}
+
+% ============================================================
+% THEMA 30 — Verfahrensüberblick & CMA-ES
+% ============================================================
+\thema{30}{Verfahrensüberblick \& CMA-ES (Einordnung)}
+\bsp
+Ordne die Verfahren nach den Eigenschaften \emph{global?}, \emph{gradientenbasiert?},
+\emph{deterministisch?}, \emph{\#Ziele} ein und erkläre, wodurch sich CMA-ES von der $(1+1)$-ES unterscheidet.
+\loesweg
+\[
+\renewcommand{\arraystretch}{1.2}
+\begin{array}{l|c|c|c|c}
+\text{Verfahren} & \text{global} & \text{gradientenbasiert} & \text{deterministisch} & \text{\#Ziele}\\\hline
+\text{Stat.\ Punkte/Hesse} & \checkmark & \checkmark & \checkmark & 1\\
+\text{Gradientenabstieg} & \times & \checkmark & \checkmark & 1\\
+\text{Simplex (LP)} & \times & \checkmark & \checkmark & 1\\
+\text{KKT} & \checkmark & \checkmark & \checkmark & 1\\
+\text{Nelder-Mead} & \times & \times & \checkmark & 1\\
+\text{DIRECT} & \checkmark & \times & \checkmark & 1\\
+(1{+}1)\text{-ES} & \times & \times & \times & 1\\
+\text{NSGA-II} & \checkmark & \times & \times & >1
+\end{array}
+\]
+\textbf{CMA-ES vs.\ $(1+1)$-ES:} Beide sind stochastische Evolutionsstrategien. CMA-ES arbeitet mit einer
+\emph{Population} und passt die \emph{komplette Kovarianzmatrix} der Mutationsverteilung selbstadaptiv an
+(Schrittweite \emph{und} Richtungen), wodurch es deutlich \emph{globaler} und robuster ist; die $(1+1)$-ES
+hat nur ein Elter/Kind und steuert allein die Schrittweite $\sigma$ über die 1/5-Erfolgsregel.
+
+\uebung{30.1 --- Verfahren zuordnen}{mittel}
+Ordne ein (global? / gradientenbasiert? / deterministisch? / \#Ziele): \emph{Simulated Annealing},
+\emph{PSO}, \emph{Newton-Verfahren}, \emph{SMS-EMOA}.
+\karo{7.5cm}
+
+\uebung{30.2 --- Verfahren auswählen}{mittel}
+Begründe kurz, welches Verfahren du jeweils wählst:
+\begin{enumerate}[label=(\alph*),nosep]
+  \item eine \emph{teure} Black-Box-Funktion mit nur wenigen erlaubten Auswertungen;
+  \item ein \emph{lineares} Problem mit linearen Nebenbedingungen;
+  \item ein Problem mit \emph{zwei} konkurrierenden Zielen.
+\end{enumerate}
+\karo{7cm}
+
+\end{document}

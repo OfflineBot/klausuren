@@ -1,0 +1,144 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage[margin=2cm]{geometry}
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{accent}{HTML}{6CB6FF}
+\pagecolor{bgdark}
+\color{fgtext}
+\arrayrulecolor{fgtext}
+\setlength{\parindent}{0pt}
+\newcommand{\karo}[1]{\par\noindent\begin{tikzpicture}\draw[step=5mm,gridcol,very thin](0,0) grid (\linewidth,#1);\end{tikzpicture}\par\vspace{2mm}}
+\newcommand{\aufgabe}[2]{\vspace{3mm}\par\noindent{\large\color{accent}\textbf{Aufgabe #1}}\hfill{\color{gridcol}\normalsize (#2 Punkte)}\par\vspace{1mm}}
+
+\begin{document}
+\begin{center}
+  {\LARGE\color{accent}\textbf{Optimierungsverfahren}}\\[3pt]
+  {\large Probeklausur 04 --- \textbf{Lineare Optimierung} (Vollabdeckung)}\\[2pt]
+  {\small Deckt den kompletten Block \emph{Lineare Optimierung} ab: grafische Lösung \& Slackvariablen,
+  Eckpunkte / Simplex (geometrisch), Standardform, Simplex-Tableau, ganzzahlige Optimierung.}
+\end{center}
+\vspace{2mm}
+\noindent\textbf{Name:}\ \underline{\hspace{6cm}}\hfill\textbf{Datum:}\ \underline{\hspace{4cm}}\\[4pt]
+\noindent\textbf{Gesamtpunkte:}\ 31 \hfill \textbf{Bearbeitungszeit:}\ ca.\ 45 Minuten \hfill \textbf{Hilfsmittel:}\ Open-Book, Taschenrechner\\[3pt]
+{\color{gridcol}\rule{\linewidth}{0.4pt}}
+\par\vspace{1mm}
+\noindent{\small Begründen Sie Ihre Antworten kurz. Mathematik in sauberer Notation.}
+\par\vspace{2mm}
+\noindent\renewcommand{\arraystretch}{1.2}
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+Aufgabe & 1 & 2 & 3 & 4 & 5 & $\Sigma$\\\hline
+Punkte & 6 & 6 & 6 & 8 & 5 & 31\\\hline
+erreicht & & & & & & \\\hline
+\end{tabular}
+\end{center}
+
+% ===== 1 =====
+\clearpage
+\aufgabe{1 --- Grafische Lösung \& Slackvariablen}{6}
+Gegeben sei das lineare Optimierungsproblem
+\[
+\max_{\vec x}\ f(\vec x)=3x_1+2x_2 \quad\text{u.d.N.}\quad
+\underbrace{x_1+x_2\le 4}_{g_1},\ \ \underbrace{x_1+3x_2\le 6}_{g_2},\ \ x_1,x_2\ge 0.
+\]
+\begin{center}
+\begin{tikzpicture}[scale=0.9]
+  \fill[white,opacity=0.06] (0,0)--(4,0)--(3,1)--(0,2)--cycle;
+  \draw[gridcol,very thin,step=1] (0,0) grid (6,5);
+  \draw[->,fgtext] (0,0)--(6.4,0) node[right]{$x_1$};
+  \draw[->,fgtext] (0,0)--(0,5.4) node[above]{$x_2$};
+  \foreach \i in {1,2,3,4,5,6}{\node[fgtext,below] at (\i,0){\small\i};}
+  \foreach \j in {1,2,3,4,5}{\node[fgtext,left] at (0,\j){\small\j};}
+  \draw[accent,very thick] (4,0)--(0,4) node[above right,pos=0.12]{\small$g_1{:}\,x_1{+}x_2{=}4$};
+  \draw[accent,very thick] (6,0)--(0,2) node[above right,pos=0.55]{\small$g_2{:}\,x_1{+}3x_2{=}6$};
+\end{tikzpicture}
+\end{center}
+\begin{enumerate}[label=(\alph*),nosep,leftmargin=1.8em]
+  \item (4\,P) Bestimmen Sie die optimale Ecke $\vec x^{\,*}$ und den optimalen Wert $f(\vec x^{\,*})$.
+  \item (2\,P) Welche Werte nehmen die Slackvariablen $s_1,s_2$ im Optimum an? Welche Nebenbedingung ist aktiv?
+\end{enumerate}
+\karo{7cm}
+
+% ===== 2 =====
+\clearpage
+\aufgabe{2 --- Eckpunkte \& Simplex-Suchverlauf (geometrisch)}{6}
+Gegeben sei das lineare Optimierungsproblem
+\[
+\max_{\vec x}\ f(\vec x)=x_1+2x_2 \quad\text{u.d.N.}\quad
+x_1\le 4,\ \ x_2\le 3,\ \ x_1+x_2\le 6,\ \ x_1,x_2\ge 0.
+\]
+\begin{center}
+\begin{tikzpicture}[scale=0.8]
+  \fill[white,opacity=0.06] (0,0)--(4,0)--(4,2)--(3,3)--(0,3)--cycle;
+  \draw[gridcol,very thin,step=1] (0,0) grid (7,5);
+  \draw[->,fgtext] (0,0)--(7.4,0) node[right]{$x_1$};
+  \draw[->,fgtext] (0,0)--(0,5.4) node[above]{$x_2$};
+  \foreach \i in {1,2,3,4,5,6,7}{\node[fgtext,below] at (\i,0){\small\i};}
+  \foreach \j in {1,2,3,4,5}{\node[fgtext,left] at (0,\j){\small\j};}
+  \draw[accent,very thick] (4,0)--(4,5) node[above]{\small$x_1{=}4$};
+  \draw[accent,very thick] (0,3)--(7,3) node[right]{\small$x_2{=}3$};
+  \draw[accent,very thick] (6,0)--(0,6) node[above right,pos=0.2]{\small$x_1{+}x_2{=}6$};
+\end{tikzpicture}
+\end{center}
+\begin{enumerate}[label=(\alph*),nosep,leftmargin=1.8em]
+  \item (3\,P) Bestimmen Sie rechnerisch \emph{alle} Eckpunkte des zulässigen Bereichs (auch über
+        Schnittpunkte der Geraden) und werten Sie $f$ in jeder Ecke aus.
+  \item (3\,P) Beschreiben Sie den Suchverlauf des Simplex-Verfahrens mit Start in $(0,0)$
+        (entlang der Kante größter Verbesserung) und geben Sie $\vec x^{\,*}$ und $f(\vec x^{\,*})$ an.
+\end{enumerate}
+\karo{6.5cm}
+
+% ===== 3 =====
+\clearpage
+\aufgabe{3 --- Standardform der Linearen Optimierung}{6}
+Überführen Sie das folgende Problem in die \textbf{Standardform} (nur Minimierung, nur
+Gleichungs-Nebenbedingungen, alle Variablen $\ge 0$, rechte Seiten $\ge 0$):
+\[
+\max_{\vec x}\ 2x_1+3x_2 \quad\text{u.d.N.}\quad
+x_1+x_2\le 5,\ \ x_1-x_2\ge 1,\ \ x_1\ \text{frei},\ \ x_2\ge 0.
+\]
+Geben Sie alle nötigen Umformungen explizit an (Slack-/Surplus-Variablen, Aufspaltung der
+freien Variablen, $\max\!\to\!\min$).
+\karo{9cm}
+
+% ===== 4 =====
+\clearpage
+\aufgabe{4 --- Simplex (Tableau-Verfahren)}{8}
+Lösen Sie das folgende Problem mit dem \textbf{Simplex-Tableau} (Schlupfvariablen $s_1,s_2$):
+\[
+\max_{\vec x}\ f=3x_1+2x_2 \quad\text{u.d.N.}\quad
+x_1+x_2\le 4,\ \ x_1+3x_2\le 6,\ \ x_1,x_2\ge 0.
+\]
+Geben Sie für jede Iteration Pivotspalte, Quotiententest, Pivotzeile und das aktualisierte
+Tableau an. Nennen Sie am Ende $\vec x^{\,*}$ und $f^{*}$. (Vergleich mit Aufgabe~1 möglich.)
+\karo{11cm}
+
+% ===== 5 =====
+\clearpage
+\aufgabe{5 --- Ganzzahlige Optimierung}{5}
+Gegeben sei
+\[
+\max_{\vec x}\ f=x_1+x_2 \quad\text{u.d.N.}\quad
+2x_1+x_2\le 8,\ \ x_1+2x_2\le 8,\ \ x_1,x_2\ge 0,\ \ x_1,x_2\in\mathbb Z.
+\]
+\begin{enumerate}[label=(\alph*),nosep,leftmargin=1.8em]
+  \item (2\,P) Bestimmen Sie die \emph{kontinuierliche} optimale Lösung und $f$.
+  \item (3\,P) Bestimmen Sie die \emph{ganzzahlige} optimale Lösung. Liefert einfaches Abrunden der
+        kontinuierlichen Lösung bereits das ganzzahlige Optimum?
+\end{enumerate}
+\karo{7cm}
+
+\vfill
+\begin{center}{\color{gridcol}\small--- Ende Probeklausur 04 (Lineare Optimierung, 31 Punkte) ---}\end{center}
+\end{document}

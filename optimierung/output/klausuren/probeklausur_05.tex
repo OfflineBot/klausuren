@@ -1,0 +1,392 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage[margin=2cm]{geometry}
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{accent}{HTML}{6CB6FF}
+\pagecolor{bgdark}
+\color{fgtext}
+\arrayrulecolor{fgtext}
+\setlength{\parindent}{0pt}
+\newcommand{\karo}[1]{\par\noindent\begin{tikzpicture}\draw[step=5mm,gridcol,very thin](0,0) grid (\linewidth,#1);\end{tikzpicture}\par\vspace{2mm}}
+\newcommand{\aufgabe}[2]{\vspace{3mm}\par\noindent{\large\color{accent}\textbf{Aufgabe #1}}\hfill{\color{gridcol}\normalsize (#2 Punkte)}\par\vspace{1mm}}
+\newcommand{\teil}[1]{\vspace{2mm}\par\noindent{\Large\color{accent}\textbf{#1}}\par{\color{gridcol}\rule{\linewidth}{0.8pt}}\par\vspace{1mm}}
+
+\begin{document}
+\begin{center}
+  {\LARGE\color{accent}\textbf{Optimierungsverfahren}}\\[3pt]
+  {\large Probeklausur 05 (XL) --- \textbf{Vollabdeckung}: alle Rechenaufgaben}\\[2pt]
+  {\small Deckt den \emph{kompletten} klausurrelevanten Stoff in einer Klausur ab ---
+  Grundlagen, Lineare \& Transport, Nichtlinear, Gradientenfrei, Metaheuristiken, Mehrziel.}
+\end{center}
+\vspace{2mm}
+\noindent\textbf{Name:}\ \underline{\hspace{6cm}}\hfill\textbf{Datum:}\ \underline{\hspace{4cm}}\\[4pt]
+\noindent\textbf{Gesamtpunkte:}\ 174 \hfill \textbf{Bearbeitungszeit:}\ ca.\ 180 Minuten (XL) \hfill \textbf{Hilfsmittel:}\ Open-Book, Taschenrechner\\[3pt]
+{\color{gridcol}\rule{\linewidth}{0.4pt}}
+\par\vspace{1mm}
+\noindent{\small\textbf{Hinweis:} Übungs-Vollabdeckungsklausur. Die echte Klausur umfasst 50\,P in 60\,min;
+hier wird bewusst \emph{jeder} Aufgabentyp einmal geprüft, damit keine Lücke offen bleibt. Begründen Sie kurz.}
+\par\vspace{2mm}
+\noindent\renewcommand{\arraystretch}{1.2}
+\begin{center}\footnotesize
+\begin{tabular}{|c|*{14}{c|}}
+\hline
+Aufg. & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14\\\hline
+Pkt. & 6 & 6 & 5 & 7 & 6 & 6 & 8 & 5 & 20 & 5 & 7 & 8 & 5 & 6\\\hline
+\end{tabular}\\[2pt]
+\begin{tabular}{|c|*{14}{c|}}
+\hline
+Aufg. & 15 & 16 & 17 & 18 & 19 & 20 & 21 & 22 & 23 & 24 & 25 & 26 & 27 & 28\\\hline
+Pkt. & 6 & 7 & 4 & 5 & 3 & 5 & 4 & 5 & 5 & 6 & 7 & 5 & 5 & 7\\\hline
+\end{tabular}\\[2pt]
+{\footnotesize Summe $=174$ Punkte}
+\end{center}
+
+% ===================== TEIL A: GRUNDLAGEN =====================
+\clearpage
+\teil{Teil A --- Grundlagen}
+\aufgabe{1 --- Modellierung}{6}
+Eine Werkstatt fertigt zwei Produkte: Standardstühle ($x_1$) und Designstühle ($x_2$).
+Pro Standardstuhl beträgt der Gewinn 40\,Euro, pro Designstuhl 120\,Euro. Täglich stehen
+100\,kg Holz und 90\,Arbeitsstunden zur Verfügung. Ein Standardstuhl benötigt 2\,kg Holz und 3\,h,
+ein Designstuhl 4\,kg Holz und 2\,h.
+\begin{enumerate}[label=(\alph*),nosep,leftmargin=1.8em]
+  \item (4\,P) Definieren Sie die Entscheidungsvariablen und stellen Sie das vollständige
+        Optimierungsproblem auf (Zielfunktion, Nebenbedingungen, Nichtnegativität).
+  \item (2\,P) Handelt es sich um ein lineares Optimierungsproblem? Begründen Sie.
+\end{enumerate}
+\karo{13cm}
+
+\clearpage
+\aufgabe{2 --- Konvexität (Funktion und Menge)}{6}
+\begin{enumerate}[label=(\alph*),nosep,leftmargin=1.8em]
+  \item (2\,P) Ist $f(x)=x^4$ konvex? Begründen Sie über die zweite Ableitung.
+  \item (2\,P) Ist $f(x_1,x_2)=x_1^2+3x_2^2$ konvex? Begründen Sie über die Hesse-Matrix.
+  \item (2\,P) Ist die Menge $M=\{\vec x\in\mathbb R^2 : x_1^2+x_2^2\le 4\}$ konvex? Und die Menge
+        $N=\{\vec x : x_1^2+x_2^2\ge 4\}$? Begründen Sie kurz.
+\end{enumerate}
+\karo{13cm}
+
+\clearpage
+\aufgabe{3 --- Analytische Optima (eine Variable)}{5}
+Gegeben sei $f(x)=x^3-6x^2+9x+1$. Bestimmen Sie alle stationären Punkte, klassifizieren Sie
+diese mit dem $f''$-Test als Minimum/Maximum und geben Sie die zugehörigen Funktionswerte an.
+\karo{14cm}
+
+\clearpage
+\aufgabe{4 --- Analytische Optima (zwei Variablen, Hesse)}{7}
+Gegeben sei $f(x_1,x_2)=x_1^2+x_1x_2+x_2^2-3x_1$.
+\begin{enumerate}[label=(\alph*),nosep,leftmargin=1.8em]
+  \item (3\,P) Bestimmen Sie den stationären Punkt über $\nabla f=\vec 0$ (Gleichungssystem lösen).
+  \item (3\,P) Stellen Sie die Hesse-Matrix auf und klassifizieren Sie den Punkt über die Definitheit.
+  \item (1\,P) Geben Sie den optimalen Funktionswert an.
+\end{enumerate}
+\karo{12cm}
+
+% ===================== TEIL B: LINEARE OPTIMIERUNG =====================
+\clearpage
+\teil{Teil B --- Lineare Optimierung}
+\aufgabe{5 --- Grafische Lösung \& Slackvariablen}{6}
+\[
+\max_{\vec x}\ f(\vec x)=3x_1+2x_2 \quad\text{u.d.N.}\quad
+\underbrace{x_1+x_2\le 4}_{g_1},\ \ \underbrace{x_1+3x_2\le 6}_{g_2},\ \ x_1,x_2\ge 0.
+\]
+\begin{center}
+\begin{tikzpicture}[scale=0.85]
+  \fill[white,opacity=0.06] (0,0)--(4,0)--(3,1)--(0,2)--cycle;
+  \draw[gridcol,very thin,step=1] (0,0) grid (6,5);
+  \draw[->,fgtext] (0,0)--(6.4,0) node[right]{$x_1$};
+  \draw[->,fgtext] (0,0)--(0,5.4) node[above]{$x_2$};
+  \foreach \i in {1,2,3,4,5,6}{\node[fgtext,below] at (\i,0){\small\i};}
+  \foreach \j in {1,2,3,4,5}{\node[fgtext,left] at (0,\j){\small\j};}
+  \draw[accent,very thick] (4,0)--(0,4) node[above right,pos=0.12]{\small$g_1{:}\,x_1{+}x_2{=}4$};
+  \draw[accent,very thick] (6,0)--(0,2) node[below left,pos=0.35]{\small$g_2{:}\,x_1{+}3x_2{=}6$};
+\end{tikzpicture}
+\end{center}
+\begin{enumerate}[label=(\alph*),nosep,leftmargin=1.8em]
+  \item (4\,P) Bestimmen Sie die optimale Ecke $\vec x^{\,*}$ und $f(\vec x^{\,*})$.
+  \item (2\,P) Welche Werte nehmen die Slackvariablen $s_1,s_2$ im Optimum an? Welche NB ist aktiv?
+\end{enumerate}
+\karo{8cm}
+
+\clearpage
+\aufgabe{6 --- Standardform der Linearen Optimierung}{6}
+Überführen Sie in die \textbf{Standardform} (nur Minimierung, nur Gleichungs-NB, alle Variablen
+$\ge 0$, rechte Seiten $\ge 0$):
+\[
+\max_{\vec x}\ 2x_1+3x_2 \quad\text{u.d.N.}\quad
+x_1+x_2\le 5,\ \ x_1-x_2\ge 1,\ \ x_1\ \text{frei},\ \ x_2\ge 0.
+\]
+Geben Sie alle Umformungen explizit an (Slack-/Surplus-Variablen, Aufspaltung freier Variablen, $\max\!\to\!\min$).
+\karo{13cm}
+
+\clearpage
+\aufgabe{7 --- Simplex (Tableau-Verfahren)}{8}
+Lösen Sie mit dem \textbf{Simplex-Tableau} (Schlupfvariablen $s_1,s_2$):
+\[
+\max_{\vec x}\ f=3x_1+2x_2 \quad\text{u.d.N.}\quad
+x_1+x_2\le 4,\ \ x_1+3x_2\le 6,\ \ x_1,x_2\ge 0.
+\]
+Geben Sie pro Iteration Pivotspalte, Quotiententest, Pivotzeile und das aktualisierte Tableau an.
+Nennen Sie $\vec x^{\,*}$ und $f^{*}$.
+\karo{13cm}
+
+\clearpage
+\aufgabe{8 --- Ganzzahlige Optimierung}{5}
+\[
+\max_{\vec x}\ f=x_1+x_2 \quad\text{u.d.N.}\quad
+2x_1+x_2\le 8,\ \ x_1+2x_2\le 8,\ \ x_1,x_2\ge 0,\ \ x_1,x_2\in\mathbb Z.
+\]
+\begin{enumerate}[label=(\alph*),nosep,leftmargin=1.8em]
+  \item (2\,P) Bestimmen Sie die kontinuierliche optimale Lösung und $f$.
+  \item (3\,P) Bestimmen Sie die ganzzahlige optimale Lösung. Liefert Abrunden das Optimum?
+\end{enumerate}
+\karo{11cm}
+
+% ===================== TEIL C: TRANSPORT =====================
+\clearpage
+\teil{Teil C --- Transportprobleme}
+\aufgabe{9 --- Transportproblem (NWER, MMM, VAM, MODI)}{20}
+Drei Werke liefern an drei Läden. Angebote $a=(20,30,25)$, Nachfragen $b=(15,30,30)$
+(balanciert, $\sum a=\sum b=75$). Kosten $c_{ij}$:
+\begin{center}\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{c|ccc|c}
+$c_{ij}$ & $D_1$ & $D_2$ & $D_3$ & Angebot\\\hline
+$S_1$ & 3 & 5 & 7 & 20\\
+$S_2$ & 6 & 4 & 3 & 30\\
+$S_3$ & 4 & 2 & 5 & 25\\\hline
+Nachfrage & 15 & 30 & 30 &\\
+\end{tabular}
+\end{center}
+\begin{enumerate}[label=(\alph*),nosep,leftmargin=1.8em]
+  \item (5\,P) Startlösung mit der \textbf{Nordwesteckenregel} (NWER) + Gesamtkosten.
+  \item (5\,P) Startlösung mit der \textbf{Matrix-Minimum-Methode} (MMM) + Gesamtkosten.
+  \item (5\,P) Startlösung mit der \textbf{Vogelschen Approximationsmethode} (VAM) + Gesamtkosten.
+  \item (5\,P) Prüfen Sie die \textbf{NWER}-Lösung aus (a) mit \textbf{MODI} (Potentiale $u_i,v_j$,
+        reduzierte Kosten) auf Optimalität. Falls nicht optimal: eintretende Zelle,
+        Stepping-Stone-Zyklus und verbesserte Gesamtkosten nach einem Schritt.
+\end{enumerate}
+\karo{13cm}
+\clearpage
+\karo{16cm}
+
+% ===================== TEIL D: NICHTLINEAR =====================
+\clearpage
+\teil{Teil D --- Nichtlineare Optimierung}
+\aufgabe{10 --- Gradientenabstieg}{5}
+$f(x_1,x_2)=x_1^2+2x_2^2$, Startpunkt $\vec x_0=(1,1)$, Lernrate $\eta=0{,}1$.
+Führen Sie \textbf{zwei} Schritte $\vec x_{k+1}=\vec x_k-\eta\nabla f(\vec x_k)$ durch und geben Sie
+jeweils $f$ an.
+\karo{12cm}
+
+\clearpage
+\aufgabe{11 --- Newton-Verfahren (1D und 2D)}{7}
+\begin{enumerate}[label=(\alph*),nosep,leftmargin=1.8em]
+  \item (3\,P) \textbf{1D:} $f(x)=x^3-6x^2+9x$, ein Newton-Schritt $x_{k+1}=x_k-\dfrac{f'(x_k)}{f''(x_k)}$
+        mit $x_0=4$.
+  \item (4\,P) \textbf{2D:} $f(x_1,x_2)=x_1^2+x_1x_2+x_2^2-3x_1$, ein Newton-Schritt
+        $\vec x_{k+1}=\vec x_k-H^{-1}\nabla f(\vec x_k)$ mit $\vec x_0=(0,0)$ (inkl.\
+        $2\times2$-Inverse). Was fällt auf?
+\end{enumerate}
+\karo{13cm}
+
+\clearpage
+\aufgabe{12 --- KKT-Bedingungen aufstellen und lösen}{8}
+\[
+\min_{\vec x}\ f(\vec x)=(x_1-2)^2+(x_2-2)^2 \quad\text{u.d.N.}\quad g(\vec x)=x_1+x_2-2\le 0 .
+\]
+\begin{enumerate}[label=(\alph*),nosep,leftmargin=1.8em]
+  \item (4\,P) Lagrange-Funktion und alle vier KKT-Bedingungen aufstellen.
+  \item (4\,P) Lösen mit Fallunterscheidung ($\mu=0$ vs.\ $g=0$), Vorzeichen prüfen, $\vec x^{\,*}$ und $f^{*}$ angeben.
+\end{enumerate}
+\karo{13cm}
+
+\clearpage
+\aufgabe{13 --- Grafische nichtlineare Optimierung}{5}
+Minimiert werden soll $f(\vec x)=(x_1-3)^2+(x_2-3)^2$ (kreisförmige Isolinien um $(3,3)$, blau
+gestrichelt) im zulässigen Bereich $x_1+x_2\le 4,\ x_1,x_2\ge 0$ (grau). Bestimmen Sie grafisch
+$\vec x^{\,*}$ und $f(\vec x^{\,*})$.
+\begin{center}
+\begin{tikzpicture}[scale=0.85]
+  \fill[white,opacity=0.06] (0,0)--(4,0)--(0,4)--cycle;
+  \draw[gridcol,very thin,step=1] (0,0) grid (5,5);
+  \draw[->,fgtext] (0,0)--(5.4,0) node[right]{$x_1$};
+  \draw[->,fgtext] (0,0)--(0,5.4) node[above]{$x_2$};
+  \foreach \i in {1,2,3,4,5}{\node[fgtext,below] at (\i,0){\small\i}; \node[fgtext,left] at (0,\i){\small\i};}
+  \draw[accent,very thick] (4,0)--(0,4) node[above right,pos=0.1]{\small$x_1{+}x_2{=}4$};
+  \fill[red!80!white] (3,3) circle(2.4pt) node[above right,fgtext]{\small$(3,3)$};
+  \draw[blue!60!white,dashed] (3,3) circle(1.0);
+  \draw[blue!60!white,dashed] (3,3) circle(1.414);
+  \draw[blue!60!white,dashed] (3,3) circle(2.0);
+\end{tikzpicture}
+\end{center}
+\karo{8cm}
+
+% ===================== TEIL E: GRADIENTENFREI =====================
+\clearpage
+\teil{Teil E --- Gradientenfreie Verfahren}
+\aufgabe{14 --- Nelder-Mead}{6}
+Für $f(x_1,x_2)=x_1^2+x_2^2$ ist der sortierte Simplex gegeben ($x_0$ bester, $x_2$ schlechtester),
+$\alpha=1$:
+\[
+x_0=(1,1),\ f=2;\qquad x_1=(3,1),\ f=10;\qquad x_2=(2,3),\ f=13.
+\]
+Berechnen Sie Schwerpunkt $x_c$ (ohne $x_2$) und Reflexionspunkt $x_r$. Bestimmen Sie über $f(x_r)$,
+welcher Schritt als nächstes folgt.
+\karo{12cm}
+
+\clearpage
+\aufgabe{15 --- DIRECT: potentiell optimale Rechtecke}{6}
+DIRECT-Durchlauf (Minimierung), fünf Rechtecke mit Größe $d_i$ und Mittelpunktswert $f(c_i)$.
+Bestimmen Sie die \textbf{potentiell optimalen} Rechtecke (untere-rechte konvexe Hülle) und begründen Sie.
+\begin{center}\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{c|ccccc}
+Nr.\ $i$ & 1 & 2 & 3 & 4 & 5\\\hline
+$d_i$ & 1 & 1 & 3 & 3 & 6\\
+$f(c_i)$ & 6 & 9 & 4 & 7 & 2\\
+\end{tabular}
+\end{center}
+\begin{center}
+\begin{tikzpicture}[scale=0.7]
+  \draw[gridcol,very thin,step=1] (0,0) grid (7,10);
+  \draw[->,fgtext] (0,0)--(7.4,0) node[right]{$d$};
+  \draw[->,fgtext] (0,0)--(0,10.4) node[above]{$f(c)$};
+  \foreach \i in {1,2,3,4,5,6}{\node[fgtext,below] at (\i,0){\small\i};}
+  \foreach \j in {2,4,6,8,10}{\node[fgtext,left] at (0,\j){\small\j};}
+  \foreach \n/\x/\y in {1/1/6,2/1/9,3/3/4,4/3/7,5/6/2}{
+    \fill[accent](\x,\y) circle(2.6pt); \node[fgtext,above right] at (\x,\y){\small \n};}
+\end{tikzpicture}
+\end{center}
+\karo{7cm}
+
+\clearpage
+\aufgabe{16 --- Quadratische (QO) und Sequentielle Quadratische Optimierung (SQO)}{7}
+\begin{enumerate}[label=(\alph*),nosep,leftmargin=1.8em]
+  \item (4\,P) Schreiben Sie $f(x_1,x_2)=x_1^2+x_1x_2+2x_2^2-x_1$ als
+        $\tfrac12\vec x^{\!\top}Q\vec x+\vec c^{\!\top}\vec x$. Geben Sie $Q,\vec c$ an, prüfen Sie
+        $Q$ auf positive Definitheit und bestimmen Sie das Minimum.
+  \item (3\,P) Erläutern Sie das Grundprinzip der SQO: Was wird je Iteration gelöst, und wie hängt
+        es mit der QO zusammen?
+\end{enumerate}
+\karo{12cm}
+
+\clearpage
+\aufgabe{17 --- SMBO / Surrogatmodell}{4}
+Eine sehr teure Zielfunktion soll minimiert werden. Beschreiben Sie die vier Schritte der
+SMBO-Schleife. Warum ein Surrogat, und was geschieht damit nach jeder echten Auswertung?
+\karo{14cm}
+
+% ===================== TEIL F: METAHEURISTIKEN =====================
+\clearpage
+\teil{Teil F --- Metaheuristiken}
+\aufgabe{18 --- $(1+1)$-Evolutionsstrategie (1/5-Erfolgsregel)}{5}
+Minimierung. Speicherlänge $g=10$, Multiplikator $a=1{,}2$, $\sigma=0{,}5$. Aktuelle Qualität
+$f(x)=0{,}50$, mutierte $f(x^{\text{next}})=0{,}48$. Inkl.\ dieses Schritts liegen 3 Erfolge im Fenster.
+\begin{enumerate}[label=(\alph*),nosep,leftmargin=1.8em]
+  \item (2\,P) War der Schritt ein Erfolg? Wird $x$ übernommen?
+  \item (3\,P) Berechnen Sie die Erfolgsrate $s$ und die neue Schrittweite $\sigma$.
+\end{enumerate}
+\karo{11cm}
+
+\clearpage
+\aufgabe{19 --- CMA-ES (Konzept)}{3}
+Was unterscheidet die CMA-ES von der einfachen $(1+1)$-ES? Was wird fortlaufend angepasst und
+welchen Vorteil bringt das?
+\karo{14cm}
+
+\clearpage
+\aufgabe{20 --- Simulated Annealing}{5}
+\begin{enumerate}[label=(\alph*),nosep,leftmargin=1.8em]
+  \item (3\,P) Minimierung: Nachbar um $\Delta f=3$ schlechter, $T=5$. Akzeptanzwahrscheinlichkeit
+        $p=\exp(-\Delta f/T)$? Wird sie bei $u=0{,}5$ angenommen?
+  \item (2\,P) Rolle der Temperatur $T$ zu Beginn und am Ende?
+\end{enumerate}
+\karo{12cm}
+
+\clearpage
+\aufgabe{21 --- Particle Swarm Optimization (PSO)}{4}
+Geschwindigkeits-Update $v\leftarrow w\,v+c_1 r_1(p-x)+c_2 r_2(g-x)$, dann $x\leftarrow x+v$.
+Gegeben (1D): $x=2$, $v=1$, $p=0$, $g=-1$, $w=0{,}5$, $c_1=c_2=1$, $r_1=r_2=1$.
+\begin{enumerate}[label=(\alph*),nosep,leftmargin=1.8em]
+  \item (1\,P) Benennen Sie die drei Komponenten (Trägheit, kognitiv, sozial).
+  \item (3\,P) Berechnen Sie neue Geschwindigkeit $v$ und Position $x$.
+\end{enumerate}
+\karo{11cm}
+
+\clearpage
+\aufgabe{22 --- Ant Colony Optimization (ACO)}{5}
+Auswahl zwischen Kanten $A,B$ mit $p_e\propto \tau_e^{\alpha}\eta_e^{\beta}$. Gegeben
+$\tau_A=2,\eta_A=1$ und $\tau_B=1,\eta_B=4$, $\alpha=\beta=1$.
+\begin{enumerate}[label=(\alph*),nosep,leftmargin=1.8em]
+  \item (3\,P) Berechnen Sie $p_A,p_B$.
+  \item (2\,P) Aktualisieren Sie $\tau_A$ mit Verdunstung $\rho=0{,}5$ und Zuwachs $\Delta\tau_A=1$
+        gemäß $\tau\leftarrow(1-\rho)\tau+\Delta\tau$.
+\end{enumerate}
+\karo{11cm}
+
+\clearpage
+\aufgabe{23 --- Evolutionäre Operatoren (binär)}{5}
+Eltern $x_1=(1,1,0,0,1,1,0,0)$, $x_2=(0,0,1,1,0,0,1,1)$.
+\begin{enumerate}[label=(\alph*),nosep,leftmargin=1.8em]
+  \item (1\,P) Bitflip-Mutation von $x_1$ an Position 3.
+  \item (2\,P) 1-Punkt-Crossover (Schnitt nach Position 4).
+  \item (2\,P) 2-Punkt-Crossover (Schnitte nach Position 2 und 6).
+\end{enumerate}
+\karo{12cm}
+
+% ===================== TEIL G: MEHRZIEL =====================
+\clearpage
+\teil{Teil G --- Mehrzieloptimierung}
+\aufgabe{24 --- Dominanz \& Pareto-Menge}{6}
+Punkte im Zielraum (beide Ziele \emph{minimieren}):
+$A=(2,6),\ B=(3,4),\ C=(5,3),\ D=(4,7),\ E=(6,2)$.
+\begin{enumerate}[label=(\alph*),nosep,leftmargin=1.8em]
+  \item (2\,P) Geben Sie alle Dominanzbeziehungen an.
+  \item (4\,P) Bestimmen Sie die Pareto-optimale Menge (Pareto-Front).
+\end{enumerate}
+\karo{12cm}
+
+\clearpage
+\aufgabe{25 --- Non-Dominated-Sorting-Rang}{7}
+Punkte (beide Ziele \emph{minimieren}):
+$P_1=(1,4),\ P_2=(2,2),\ P_3=(4,1),\ P_4=(2,5),\ P_5=(3,3),\ P_6=(5,4)$.
+Bestimmen Sie für jeden Punkt den Non-Dominated-Sorting-Rang (schichtweise).
+\karo{13cm}
+
+\clearpage
+\aufgabe{26 --- Crowding Distance}{5}
+Front (beide Ziele \emph{minimieren}): $A=(1,5),\ B=(2,4),\ C=(3,2),\ D=(5,1)$.
+\begin{enumerate}[label=(\alph*),nosep,leftmargin=1.8em]
+  \item (4\,P) Berechnen Sie die Crowding Distance jedes Punktes (Normierung über $f_{\max}-f_{\min}$
+        pro Ziel, Randpunkte $=\infty$).
+  \item (1\,P) Welche zwei Punkte würde ein EA zuerst auswählen?
+\end{enumerate}
+\karo{12cm}
+
+\clearpage
+\aufgabe{27 --- NSGA-II vs.\ SMS-EMOA}{5}
+Beschreiben Sie den Ablauf des NSGA-II (Selektion per Rang, bei Gleichstand Crowding Distance)
+und den zentralen Unterschied zum SMS-EMOA (Sekundärkriterium).
+\karo{14cm}
+
+\clearpage
+\aufgabe{28 --- Hypervolumen \& Hypervolumen-Beitrag}{7}
+Front (beide Ziele \emph{minimieren}): $P_1=(1,4),\ P_2=(2,2),\ P_3=(4,1)$, Referenzpunkt $r=(5,5)$.
+\begin{enumerate}[label=(\alph*),nosep,leftmargin=1.8em]
+  \item (4\,P) Berechnen Sie das Hypervolumen.
+  \item (3\,P) Berechnen Sie den Hypervolumen-Beitrag (HVC) jedes Punktes.
+\end{enumerate}
+\karo{12cm}
+
+\vfill
+\begin{center}{\color{gridcol}\small--- Ende Probeklausur 05 (Vollabdeckung, 174 Punkte) ---}\end{center}
+\end{document}

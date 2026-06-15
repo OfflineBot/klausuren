@@ -1,0 +1,352 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{geometry}
+\geometry{margin=2.3cm}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{titlesec}
+\usepackage{hyperref}
+
+%================= Dark-Mode Grundfarben (Catppuccin Mocha) =================
+\definecolor{base}{HTML}{1E1E2E}
+\definecolor{fg}{HTML}{CDD6F4}
+\definecolor{panel}{HTML}{313244}
+\definecolor{accent}{HTML}{89B4FA}   % Überschriften / V
+\definecolor{mauve}{HTML}{CBA6F7}    % Sigma
+\definecolor{good}{HTML}{A6E3A1}     % U / Beispiel
+\definecolor{teal}{HTML}{94E2D5}     % "schon bekannt" / Merke
+\definecolor{peach}{HTML}{FAB387}
+\definecolor{yellow}{HTML}{F9E2AF}   % Pivot / Teiler
+\definecolor{bad}{HTML}{F38BA8}      % Ziel / Fehler
+\definecolor{rulecol}{HTML}{45475A}
+
+%================= Bedeutungsfarben: je ein L-Eintrag = eine Farbe =========
+\definecolor{cE11}{HTML}{F38BA8} % rot
+\definecolor{cE21}{HTML}{FAB387} % orange
+\definecolor{cE31}{HTML}{F9E2AF} % gelb
+\definecolor{cE22}{HTML}{A6E3A1} % grün
+\definecolor{cE32}{HTML}{89DCEB} % himmelblau
+\definecolor{cE33}{HTML}{B4BEFE} % lavendel
+\pagecolor{base}
+
+\hypersetup{colorlinks=true, linkcolor=accent, urlcolor=accent}
+
+\newenvironment{psmallmatrix}{\left(\begin{smallmatrix}}{\end{smallmatrix}\right)}
+\newcommand{\transp}{^{\mathsf{T}}}
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\rang}{\operatorname{rang}}
+\newcommand{\ok}{\textcolor{good}{\ensuremath{\checkmark}}}
+
+% --- Cholesky: jeder Eintrag in seiner Farbe (in Mathemodus nutzbar) ---
+\newcommand{\Ea}{\textcolor{cE11}{\ell_{11}}}
+\newcommand{\Eb}{\textcolor{cE21}{\ell_{21}}}
+\newcommand{\Ec}{\textcolor{cE31}{\ell_{31}}}
+\newcommand{\Ed}{\textcolor{cE22}{\ell_{22}}}
+\newcommand{\Ee}{\textcolor{cE32}{\ell_{32}}}
+\newcommand{\Ef}{\textcolor{cE33}{\ell_{33}}}
+% Ergebniswerte in derselben Farbe wie ihr Eintrag
+\newcommand{\Va}[1]{\textcolor{cE11}{#1}}
+\newcommand{\Vb}[1]{\textcolor{cE21}{#1}}
+\newcommand{\Vc}[1]{\textcolor{cE31}{#1}}
+\newcommand{\Vd}[1]{\textcolor{cE22}{#1}}
+\newcommand{\Ve}[1]{\textcolor{cE32}{#1}}
+\newcommand{\Vf}[1]{\textcolor{cE33}{#1}}
+
+% --- Rollenfarben für die allgemeine Formel ---
+\newcommand{\Ziel}[1]{\textcolor{bad}{#1}}     % gesucht / neu
+\newcommand{\Piv}[1]{\textcolor{yellow}{#1}}   % Pivot der Spalte (Teiler)
+\newcommand{\Bek}[1]{\textcolor{teal}{#1}}     % schon berechnet
+
+% --- SVD/Pseudoinverse: durchgängige Farben für die drei Faktoren ---
+\newcommand{\Uc}[1]{\textcolor{good}{#1}}      % U
+\newcommand{\Sc}[1]{\textcolor{mauve}{#1}}     % Sigma
+\newcommand{\Vm}[1]{\textcolor{accent}{#1}}    % V
+\newcommand{\Lam}[1]{\textcolor{peach}{#1}}    % Eigenwert lambda
+
+%================= Farbige Boxen =================
+\tcbset{
+  basestyle/.style={
+    enhanced, breakable, colback=panel, coltext=fg,
+    coltitle=base, fonttitle=\bfseries, arc=3pt, boxrule=1pt,
+    left=7pt, right=7pt, top=5pt, bottom=5pt, before skip=8pt, after skip=8pt
+  }
+}
+\newtcolorbox{defbox}[1][Definition]{basestyle, colframe=accent, colbacktitle=accent, title={#1}}
+\newtcolorbox{formelbox}[1][Die Formel]{basestyle, colframe=mauve, colbacktitle=mauve, title={#1}}
+\newtcolorbox{bspbox}[1][Beispiel]{basestyle, colframe=good, colbacktitle=good, title={#1}}
+\newtcolorbox{merkebox}[1][Merke]{basestyle, colframe=teal, colbacktitle=teal, title={#1}}
+\newtcolorbox{fehlerbox}[1][Typischer Fehler]{basestyle, colframe=bad, colbacktitle=bad, title={#1}}
+
+\titleformat{\section}{\color{accent}\normalfont\Large\bfseries}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\color{mauve}\normalfont\large\bfseries}{\thesubsection}{0.6em}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\color{fg}\small Lernzettel -- Cholesky \& SVD}
+\rhead{\color{fg}\small FLA \& Analytische Geometrie}
+\cfoot{\color{fg}\thepage}
+\renewcommand{\headrule}{{\color{rulecol}\hrule height 0.4pt}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.45em}
+
+\begin{document}
+\color{fg}
+
+\begin{center}
+  {\color{accent}\LARGE\bfseries Zerlegungen mit Farben verstehen}\\[0.3em]
+  {\large Cholesky, SVD \& Pseudoinverse}\\[0.2em]
+  {\small Jede Größe hat eine \emph{feste Farbe} -- so siehst du in jeder Formel, woher jeder Wert kommt.}
+\end{center}
+
+\vspace{0.3em}{\color{rulecol}\hrule}\vspace{0.5em}
+
+\textbf{So liest du die Farben:}
+In der \textbf{Cholesky} bekommt \emph{jeder} Eintrag von $L$ eine eigene Farbe
+($\Ea,\Eb,\Ec,\Ed,\Ee,\Ef$). Taucht ein Eintrag später wieder auf, hat er dieselbe Farbe --
+du erkennst sofort, welchen \emph{schon berechneten} Wert du einsetzt.
+In der \textbf{SVD/Pseudoinverse} sind die drei Faktoren durchgehend
+\Uc{$U$ (grün)}, \Sc{$\Sigma$ (lila)}, \Vm{$V$ (blau)}.
+
+\tableofcontents
+\vspace{0.3em}{\color{rulecol}\hrule}
+
+% ==================================================================
+\section{Cholesky-Zerlegung \texorpdfstring{$A=LL\transp$}{A=LL^T}}
+
+\textbf{Intuition.} Cholesky ist die \emph{Wurzel einer Matrix}: so wie $9 = 3\cdot 3$, schreibst du
+eine symmetrische, positiv definite Matrix als $A = L\,L\transp$ mit einer \textbf{unteren
+Dreiecksmatrix} $L$. $L$ ist die „Quadratwurzel“ von $A$.
+
+\begin{defbox}[Voraussetzung -- wann geht das überhaupt?]
+$A=LL\transp$ (reelles $L$, positive Diagonale) existiert \textbf{genau dann}, wenn $A$
+\textbf{symmetrisch} und \textbf{positiv definit} ist. Kommt unter einer Wurzel eine Zahl $\le 0$
+heraus, ist $A$ \emph{nicht} positiv definit -- Cholesky ist also gleichzeitig ein PD-Test.
+\end{defbox}
+
+\subsection{Die Idee hinter der Formel}
+
+Schreibe $A=LL\transp$ komponentenweise: $a_{ij}$ ist das Skalarprodukt von Zeile $i$ und Zeile
+$j$ von $L$. Weil $L$ unten dreieckig ist, bricht die Summe bei $\min(i,j)$ ab. Für $i\ge j$:
+\[
+a_{ij} \;=\; \underbrace{\Bek{\sum_{k=1}^{j-1}\ell_{ik}\,\ell_{jk}}}_{\text{schon berechnet}}
+\;+\; \Ziel{\ell_{ij}}\,\Piv{\ell_{jj}}.
+\]
+Nur der \Ziel{letzte Term} enthält den \Ziel{gesuchten} Eintrag; der Rest steht schon fest, wenn du
+\textbf{spaltenweise von links} arbeitest. Auflösen nach $\Ziel{\ell_{ij}}$ ergibt die zwei Formeln:
+
+\begin{formelbox}[Die zwei Cholesky-Formeln -- nach Rolle eingefärbt]
+\begin{center}\small
+\Ziel{$\blacksquare$ gesucht (neu)}\quad
+\Piv{$\blacksquare$ Pivot der Spalte (Teiler)}\quad
+\Bek{$\blacksquare$ schon berechnet}
+\end{center}
+\textbf{Diagonale} ($i=j$, der Teiler wird zur Wurzel):
+\[
+\Ziel{\ell_{jj}} \;=\; \sqrt{\,a_{jj} - \Bek{\sum_{k=1}^{j-1}\ell_{jk}^{\,2}}\,}
+\]
+\textbf{Unter der Diagonale} ($i>j$, durch den Pivot teilen):
+\[
+\Ziel{\ell_{ij}} \;=\; \frac{1}{\Piv{\ell_{jj}}}\left(a_{ij} - \Bek{\sum_{k=1}^{j-1}\ell_{ik}\,\ell_{jk}}\right)
+\]
+In Worten: \Ziel{neuer Eintrag} $=$ (Soll-Eintrag $a_{ij}$ $-$ \Bek{schon gebaute Anteile}) geteilt
+durch den \Piv{Pivot $\ell_{jj}$}. Auf der Diagonale gibt es keinen Pivot zum Teilen -- dort steht
+stattdessen die Wurzel.
+\end{formelbox}
+
+\subsection{Beispiel -- jeder Eintrag in seiner Farbe}
+
+Wir bestimmen $L$ für $A=\begin{psmallmatrix}9&3&6\\3&5&4\\6&4&14\end{psmallmatrix}$. Jeder gesuchte
+Eintrag hat seine \textbf{eigene Farbe}; sobald er später wieder vorkommt, behält er sie:
+\[
+L=\begin{pmatrix} \Ea & 0 & 0\\[2pt] \Eb & \Ed & 0\\[2pt] \Ec & \Ee & \Ef \end{pmatrix}
+\;=\;\begin{pmatrix} \Va{3} & 0 & 0\\[2pt] \Vb{1} & \Vd{2} & 0\\[2pt] \Vc{2} & \Ve{1} & \Vf{3} \end{pmatrix}.
+\]
+
+\begin{bspbox}[Spalte 1: zuerst der Pivot oben, dann darunter]
+\begin{align*}
+a_{11}=9 &= \Ea^2 && \Rightarrow\; \Ea=\sqrt{9}=\Va{3}\\
+a_{21}=3 &= \Eb\cdot\Piv{\Ea} = \Eb\cdot \Va{3} && \Rightarrow\; \Eb=\frac{3}{\Va{3}}=\Vb{1}\\
+a_{31}=6 &= \Ec\cdot\Piv{\Ea} = \Ec\cdot \Va{3} && \Rightarrow\; \Ec=\frac{6}{\Va{3}}=\Vc{2}
+\end{align*}
+Beachte: in den unteren beiden Zeilen wird $\Ea=\Va{3}$ (rot) \emph{wiederverwendet} -- es ist der
+Pivot der ersten Spalte.
+\end{bspbox}
+
+\begin{bspbox}[Spalte 2: Pivot zuerst, dann der Eintrag darunter]
+\begin{align*}
+a_{22}=5 &= \Eb^2+\Ed^2 = \Vb{1}^2 + \Ed^2 && \Rightarrow\; \Ed=\sqrt{5-\Vb{1}}=\Vd{2}\\
+a_{32}=4 &= \Bek{\Ec\,\Eb} + \Ee\cdot\Piv{\Ed}
+          = \Bek{\Vc{2}\cdot\Vb{1}} + \Ee\cdot\Vd{2}
+          && \Rightarrow\; \Ee=\frac{4-\Bek{\Vc{2}\cdot\Vb{1}}}{\Piv{\Vd{2}}}=\frac{4-2}{2}=\Ve{1}
+\end{align*}
+Hier siehst du den Sinn der Farben: $\Ee$ (himmelblau) braucht die schon bekannten
+$\Bek{\Ec\,\Eb}$ (Produkt der beiden Werte links daneben) und teilt durch den frischen Pivot
+$\Piv{\Ed}$ (grün).
+\end{bspbox}
+
+\begin{bspbox}[Spalte 3: nur noch der Diagonaleintrag]
+\begin{align*}
+a_{33}=14 &= \Ec^2+\Ee^2+\Ef^2 = \Vc{2}^2+\Ve{1}^2+\Ef^2
+          && \Rightarrow\; \Ef=\sqrt{14-\Vc{2}^2-\Ve{1}^2}=\sqrt{14-4-1}=\Vf{3}
+\end{align*}
+\textbf{Probe:} $LL\transp=\begin{psmallmatrix}9&3&6\\3&5&4\\6&4&14\end{psmallmatrix}=A$. \ok\;
+Keine Wurzel war negativ $\Rightarrow$ $A$ ist positiv definit.
+\end{bspbox}
+
+\begin{merkebox}[Damit ein LGS lösen]
+Mit $A=LL\transp$ löst du $Ax=b$ in zwei Dreiecksschritten:
+$\underbrace{Ly=b}_{\text{vorwärts}}$, dann $\underbrace{L\transp x=y}_{\text{rückwärts}}$ --
+wie LU, nur mit \emph{einem} Dreieck.
+\end{merkebox}
+
+\begin{fehlerbox}
+\begin{itemize}[noitemsep, leftmargin=1.2em]
+  \item \textbf{Durch $a_{jj}$ statt durch $\Piv{\ell_{jj}}$ teilen.} Im Nenner steht immer der
+        \emph{gelbe} Pivot (die Wurzel), nie der ursprüngliche Matrixeintrag.
+  \item \textbf{Reihenfolge verdrehen.} $\Ee$ braucht $\Piv{\Ed}$ -- erst den Pivot oben in Spalte 2
+        rechnen, dann den Eintrag darunter. Immer spaltenweise von links.
+  \item \textbf{Bekannte Anteile vergessen.} Der \Bek{teal-Term} $\sum_{k<j}$ ist Pflicht -- bei
+        $\Ee$ fehlt sonst $\Bek{\Ec\,\Eb}$.
+\end{itemize}
+\end{fehlerbox}
+
+% ==================================================================
+\section{Singulärwertzerlegung (SVD) \texorpdfstring{$A=U\Sigma V\transp$}{A=USV^T}}
+
+\textbf{Intuition.} Jede Abbildung $x\mapsto Ax$ ist: \Vm{drehen} ($V\transp$), dann \Sc{strecken}
+($\Sigma$ mit Faktoren $\sigma_i\ge0$), dann \Uc{drehen} ($U$). Genau das ist
+\[
+A=\Uc{U}\,\Sc{\Sigma}\,\Vm{V\transp}.
+\]
+Die Farben bleiben im ganzen Abschnitt gleich: \Uc{$U$ grün}, \Sc{$\Sigma$ lila}, \Vm{$V$ blau}.
+
+\begin{defbox}[Bausteine]
+Für $A\in\mathbb{R}^{m\times n}$:
+\Vm{$V$} ($n\times n$, orthogonal) -- rechte Singulärvektoren;\;
+\Sc{$\Sigma$} ($m\times n$) -- Singulärwerte $\sigma_1\ge\sigma_2\ge\dots\ge0$;\;
+\Uc{$U$} ($m\times m$, orthogonal) -- linke Singulärvektoren.
+\end{defbox}
+
+\subsection{Woher die Teile kommen (mit Begründung)}
+
+Der Schlüssel ist $A\transp A$. Setzt man $A=\Uc{U}\Sc{\Sigma}\Vm{V\transp}$ ein, kürzt sich
+\Uc{$U$} wegen $\Uc{U\transp U}=I$ heraus:
+\[
+A\transp A = \Vm{V}\,\Sc{\Sigma\transp}\underbrace{\Uc{U\transp U}}_{=I}\Sc{\Sigma}\,\Vm{V\transp}
+           = \Vm{V}\,\Sc{(\Sigma\transp\Sigma)}\,\Vm{V\transp}.
+\]
+Das ist die \textbf{Diagonalisierung} von $A\transp A$: \Vm{$V$} sind die Eigenvektoren,
+$\Lam{\lambda_i}=\Sc{\sigma_i^2}$ die Eigenwerte. \emph{$A\transp A$ quadriert die Singulärwerte.}
+
+\begin{formelbox}[SVD-Rezept]
+\begin{enumerate}[leftmargin=1.7em]
+  \item $A\transp A$ bilden. Eigenwerte $\Lam{\lambda_i}$ und \emph{normierte} Eigenvektoren
+        $\to$ Spalten von \Vm{$V$}.
+  \item $\Sc{\sigma_i}=\sqrt{\Lam{\lambda_i}}$, absteigend $\to$ Diagonale von \Sc{$\Sigma$}.
+  \item $\Uc{u_i}=\dfrac{1}{\Sc{\sigma_i}}A\,\Vm{v_i}$ (nur für $\Sc{\sigma_i}\neq0$) $\to$ Spalten von \Uc{$U$}.
+\end{enumerate}
+Warum Schritt 3? Aus $A=\Uc{U}\Sc{\Sigma}\Vm{V\transp}$ folgt $A\Vm{v_i}=\Sc{\sigma_i}\Uc{u_i}$,
+also $\Uc{u_i}=\frac{1}{\Sc{\sigma_i}}A\Vm{v_i}$. \Uc{$U$} ergibt sich \emph{direkt} aus $A$,
+\Vm{$v_i$} und \Sc{$\sigma_i$}.
+\end{formelbox}
+
+\begin{bspbox}[Volle SVD von A = (1,2;2,1)]
+\textbf{Schritt 1 -- $A\transp A$ \& Eigenwerte.}
+\[
+A\transp A=\begin{psmallmatrix}1&2\\2&1\end{psmallmatrix}\begin{psmallmatrix}1&2\\2&1\end{psmallmatrix}
+=\begin{pmatrix}5&4\\4&5\end{pmatrix},\qquad \Lam{\lambda}=\Lam{9},\ \Lam{1}.
+\]
+\textbf{Schritt 2 -- Singulärwerte.}\quad
+$\Sc{\sigma_1}=\sqrt{\Lam{9}}=\Sc{3}$,\; $\Sc{\sigma_2}=\sqrt{\Lam{1}}=\Sc{1}$.
+
+\textbf{Schritt 3 -- \Vm{$V$} (normierte Eigenvektoren von $A\transp A$).}\;
+$\Lam{9}\!\to\!(1,1)\transp$, $\Lam{1}\!\to\!(1,-1)\transp$:
+\[
+\Vm{V}=\tfrac{1}{\sqrt2}\begin{pmatrix}1&1\\1&-1\end{pmatrix}.
+\]
+\textbf{Schritt 4 -- \Uc{$U$} über $\Uc{u_i}=\tfrac{1}{\Sc{\sigma_i}}A\Vm{v_i}$.}
+\[
+\Uc{u_1}=\tfrac{1}{\Sc{3}}A\,\tfrac{1}{\sqrt2}\begin{psmallmatrix}1\\1\end{psmallmatrix}=\tfrac{1}{\sqrt2}\begin{psmallmatrix}1\\1\end{psmallmatrix},\quad
+\Uc{u_2}=\tfrac{1}{\Sc{1}}A\,\tfrac{1}{\sqrt2}\begin{psmallmatrix}1\\-1\end{psmallmatrix}=\tfrac{1}{\sqrt2}\begin{psmallmatrix}-1\\1\end{psmallmatrix}.
+\]
+\[
+\Uc{U}=\tfrac{1}{\sqrt2}\begin{pmatrix}1&-1\\1&1\end{pmatrix},\qquad
+\Sc{\Sigma}=\begin{pmatrix}3&0\\0&1\end{pmatrix}.
+\qquad A=\Uc{U}\Sc{\Sigma}\Vm{V\transp}.\ \ok
+\]
+\end{bspbox}
+
+\begin{merkebox}[Wozu die SVD?]
+$\rang(A)=\#\{\Sc{\sigma_i}\neq0\}$; beste \textbf{Rang-$k$-Näherung}
+$A_k=\sum_{i\le k}\Sc{\sigma_i}\,\Uc{u_i}\,\Vm{v_i}\transp$ (Kompression, PCA). Im Beispiel:
+$A_1=\Sc{3}\cdot\Uc{u_1}\Vm{v_1}\transp=\tfrac32\begin{psmallmatrix}1&1\\1&1\end{psmallmatrix}$.
+\end{merkebox}
+
+\begin{fehlerbox}
+\begin{itemize}[noitemsep, leftmargin=1.2em]
+  \item \Sc{$\Sigma$} hat das Format von $A$ ($m\times n$), nicht zwingend quadratisch.
+  \item \Vm{$V$} enthält die \emph{Eigenvektoren} von $A\transp A$ (normiert!), nicht die Eigenwerte.
+  \item $\Sc{\sigma_i}=\sqrt{\Lam{\lambda_i}}$, \emph{nicht} $\Sc{\sigma_i}=\Lam{\lambda_i}$.
+\end{itemize}
+\end{fehlerbox}
+
+% ==================================================================
+\section{Pseudoinverse \texorpdfstring{$A^{+}$}{A+}}
+
+\textbf{Intuition.} $A^{+}$ ist der bestmögliche Ersatz für eine Inverse, wenn $A$ nicht
+quadratisch / nicht voll Rang ist: $x=A^{+}b$ löst $Ax=b$ „so gut es geht“ (kleinster Fehler bzw.\
+kleinste Norm). Sie entsteht direkt aus der SVD -- gleiche Farben wie oben.
+
+\begin{formelbox}[Pseudoinverse aus der SVD]
+\[
+A^{+}=\Vm{V}\,\Sc{\Sigma^{+}}\,\Uc{U\transp}
+\]
+\Sc{$\Sigma^{+}$} baust du aus \Sc{$\Sigma$} in zwei Schritten:
+\textbf{(1)} jeden \Sc{$\sigma_i\neq0$} durch seinen \textbf{Kehrwert} $\Sc{1/\sigma_i}$ ersetzen
+(Nullen bleiben Null), \textbf{(2)} transponieren (Format $n\times m$).
+
+\emph{Warum?} \Vm{$V$} und \Uc{$U$} sind Drehungen ($\Uc{U^{-1}}=\Uc{U\transp}$,
+$\Vm{V^{-1}}=\Vm{V\transp}$) -- verlustfrei. Nur das \Sc{Strecken} muss rückgängig gemacht werden,
+und „rückwärts strecken“ heißt „mit $\Sc{1/\sigma_i}$ strecken“. Ist $A$ invertierbar, ist
+$A^{+}=A^{-1}$.
+\end{formelbox}
+
+\begin{bspbox}[Beispiel 1: der schnelle Diagonalfall]
+\[
+A=\begin{pmatrix}4&0\\0&0\\0&3\end{pmatrix},\quad
+A\transp A=\begin{pmatrix}16&0\\0&9\end{pmatrix}\Rightarrow \Sc{\sigma_1}=\Sc{4},\ \Sc{\sigma_2}=\Sc{3}.
+\]
+$\Sc{\Sigma^{+}}$ direkt ablesen: \Sc{Kehrwerte} der Diagonale, dann transponieren:
+\[
+A^{+}=\begin{pmatrix}\Sc{\tfrac14}&0&0\\[2pt]0&0&\Sc{\tfrac13}\end{pmatrix}.
+\qquad\text{Probe: } A^{+}A=\begin{psmallmatrix}1&0\\0&1\end{psmallmatrix}=I_2.\ \ok
+\]
+\end{bspbox}
+
+\begin{bspbox}[Beispiel 2: aus der vollen SVD von oben]
+Mit \Vm{$V$}, \Uc{$U$} aus Abschnitt 2 und $\Sc{\Sigma^{+}}=\Sc{\diag(\tfrac13,1)}$:
+\[
+A^{+}=\Vm{V}\,\Sc{\Sigma^{+}}\,\Uc{U\transp}
+=\Vm{\tfrac{1}{\sqrt2}\begin{psmallmatrix}1&1\\1&-1\end{psmallmatrix}}
+ \Sc{\begin{psmallmatrix}\frac13&0\\0&1\end{psmallmatrix}}
+ \Uc{\tfrac{1}{\sqrt2}\begin{psmallmatrix}1&1\\-1&1\end{psmallmatrix}}
+=\begin{pmatrix}-\tfrac13&\tfrac23\\[3pt]\tfrac23&-\tfrac13\end{pmatrix}.
+\]
+Da $A$ invertierbar ist, ist das zugleich $A^{-1}$ -- Kontrolle: $A\,A^{+}=I_2$. \ok
+\end{bspbox}
+
+\begin{merkebox}[Brücke zur Ausgleichsrechnung]
+Bei vollem Spaltenrang ist $A^{+}=(A\transp A)^{-1}A\transp$ -- genau die Lösung der
+\textbf{Normalengleichung} $A\transp A\,x=A\transp b$ (lineare Regression). Pseudoinverse und
+„beste Gerade durch Punkte“ sind dieselbe Idee.
+\end{merkebox}
+
+\end{document}

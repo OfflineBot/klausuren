@@ -1,0 +1,133 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage[table]{xcolor}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage{geometry}
+\geometry{margin=2cm}
+
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{accent}{HTML}{89B4FA}
+\definecolor{accent2}{HTML}{F38BA8}
+\definecolor{gridcol}{HTML}{4A4A4A}
+
+\pagecolor{bgdark}
+\color{fgtext}
+\arrayrulecolor{fgtext}
+\setlength{\parindent}{0pt}
+
+\newcommand{\karo}[1]{\par\nobreak\vspace{0.3em}\noindent
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcol, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par}
+
+% Teil-Überschrift: #1 Buchstabe, #2 Titel, #3 Ziel/Fehler
+\newcommand{\teil}[3]{\filbreak\medskip
+  {\large\bfseries\color{accent} Teil #1\quad #2}\par
+  {\footnotesize\color{accent2} Ziel: #3}\par
+  \vspace{0.2em}\noindent\textcolor{gridcol}{\rule{\linewidth}{0.6pt}}\par\vspace{0.5em}}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries\color{accent} Drill-Blatt 15 -- Klausur-Schwachstellen Analysis II}\\[0.3em]
+  {\normalsize Gezielte Wiederholung zu den Fehlern aus Probeklausur 01}
+\end{center}
+\vspace{0.4em}
+\noindent\textcolor{gridcol}{\rule{\linewidth}{1pt}}\par\vspace{0.5em}
+\noindent\textit{Rechne jede Aufgabe \textbf{ohne} Hilfsmittel und ohne nachzuschauen. Lösungen
+separat (\texttt{aufgabe\_15\_loesung.pdf}). Pro Teil findest du den Fehlertyp, der trainiert wird.}
+
+% ============ A ============
+\teil{A}{Ableitungen -- Produkt-/Ketten-/Quotientenregel}{Ableitung von $\sin x\cos x$ ist $\cos^2x-\sin^2x$ (\textbf{minus}!), nicht $\cos^2x+\sin^2x$.}
+Differenziere:\quad
+(1)\ $\sin(x)\cos(x)$\quad
+(2)\ $x\sin(x)$\quad
+(3)\ $\cos^2(x)$\quad
+(4)\ $e^{2x}\sin(x)$\quad
+(5)\ $\sin(3x)$\quad
+(6)\ $x^2\cos(x)$
+\karo{5cm}
+
+% ============ B ============
+\teil{B}{Grad $\to$ Bogenmaß + Standardwerte}{Umrechnung ist $\times\frac{\pi}{180}$ (nicht $/360$); $\sin/\cos$ der Standardwinkel auswendig.}
+Rechne ins Bogenmaß um und gib $\sin$ und $\cos$ an:\quad
+(1)\ $90^\circ$\quad (2)\ $120^\circ$\quad (3)\ $135^\circ$\quad (4)\ $210^\circ$\quad (5)\ $300^\circ$
+\karo{4.5cm}
+
+% ============ C ============
+\teil{C}{Integrieren -- Potenzregel mit negativen/gebrochenen Exponenten}{$\int x^{-2}\,dx=-x^{-1}$ -- durch den \textbf{neuen} Exponenten teilen.}
+Berechne:\quad
+(1)\ $\int x^{-2}\,dx$\quad
+(2)\ $\int x^{-3}\,dx$\quad
+(3)\ $\int \frac{3}{x^2}\,dx$\quad
+(4)\ $\int_1^2 \frac{1}{x^2}\,dx$\quad
+(5)\ $\int\!\left(\frac{1}{x^2}+\frac{1}{x}\right)dx$\quad
+(6)\ $\int \sqrt{x}\,dx$
+\karo{5cm}
+
+% ============ D ============
+\teil{D}{Partielle Integration}{$\int u\,v' = uv - \int u'\,v$ -- richtige Wahl von $u$ und $v'$.}
+Berechne:\quad
+(1)\ $\int x\,e^{x}\,dx$\quad
+(2)\ $\int \ln(x)\,dx$\quad
+(3)\ $\int x\cos(x)\,dx$\quad
+(4)\ $\int x\,e^{2x}\,dx$
+\karo{5.5cm}
+
+% ============ E ============
+\teil{E}{DGL klassifizieren \& lösen -- linear vs. getrennt}{$y'=x y^2$ ist \textbf{nichtlinear} (getrennt), nicht linear!}
+\textbf{Klassifiziere} (linear/nichtlinear, homogen/inhomogen, getrennt):\quad
+(1)\ $y'=xy^2$\quad (2)\ $y'=3y$\quad (3)\ $y'=\frac{2}{x}y$\quad (4)\ $y'=2y+x$\quad (5)\ $y'=y\cos x$\quad (6)\ $y'=\frac{x}{y}$\\[0.4em]
+\textbf{Löse das AWP:}\quad
+(7)\ $y'=2y,\ y(0)=5$\quad
+(8)\ $y'=xy^2,\ y(0)=1$\quad
+(9)\ $y'=\frac{2}{x}y,\ y(1)=4$\quad
+(10)\ $y'=-y,\ y(0)=3$
+\karo{7cm}
+
+% ============ F ============
+\teil{F}{e-Funktions-Gesetze (vereinfachen)}{$e^a\cdot e^b=e^{a+b}$ (\textbf{nicht} $e^a+e^b$); $\int e^{ku}\,du=\frac1k e^{ku}$.}
+Vereinfache bzw. berechne:\quad
+(1)\ $e^{2x}\cdot e^{x}$\quad
+(2)\ $e^{3u}\cdot e^{-u}$\quad
+(3)\ $e^{-2\ln x}$\quad
+(4)\ $e^{\ln x}$\quad
+(5)\ $\int e^{3u}\,du$\quad
+(6)\ $e^{a}\cdot e^{b}=\;?$
+\karo{4.5cm}
+
+% ============ G ============
+\teil{G}{Gradient -- Betrag, Richtung, Richtungsableitung}{$\lVert\nabla f\rVert$ = höchste Steigung; Richtung $=\frac{\nabla f}{\lVert\nabla f\rVert}$; $D_{\hat v}f=\nabla f\cdot\hat v$.}
+(1)\ $f=x^2+y^2$, $P=(3,4)$: $\nabla f(P)$, $\lVert\nabla f\rVert$, Richtung steilster Anstieg.\\
+(2)\ $f=xy$, $P=(2,3)$: $\nabla f(P)$ und $\lVert\nabla f\rVert$.\\
+(3)\ Richtungsableitung von $f=x^2+y^2$ in $P=(3,4)$ in Richtung $\vec v=(4,3)$.\\
+(4)\ $f=x^2 y$, $P=(1,2)$: $\nabla f(P)$.
+\karo{6cm}
+
+% ============ H ============
+\teil{H}{Totales Differenzial}{$df=f_x\,dx+f_y\,dy$.}
+(1)\ $f=x^2 y$\quad (2)\ $f=xy^2$ (auch in $(3,2)$ auswerten)\quad (3)\ $f=x^2+y^2$
+\karo{4cm}
+
+% ============ I ============
+\teil{I}{Stückweise Funktion -- stetig \& differenzierbar}{Stetig: Funktionswerte gleich. Diff'bar: \emph{auch} die Ableitungen gleich.}
+Bestimme $a,b$ so, dass $f$ an der Nahtstelle stetig und differenzierbar ist:\\
+(1)\ $f=\begin{cases}x^2 & x\le 1\\ ax+b & x>1\end{cases}$\quad
+(2)\ $f=\begin{cases}x^2+1 & x\le 2\\ ax+b & x>2\end{cases}$\quad
+(3)\ $f=\begin{cases}x^3 & x\le 1\\ ax+b & x>1\end{cases}$
+\karo{5.5cm}
+
+% ============ J ============
+\teil{J}{Extremstelle -- notwendige Bedingung}{Notwendig $=\nabla f=\vec0$ lösen (Hesse/Definitheit ist erst \emph{hinreichend}).}
+Bestimme die Stellen mit $\nabla f=\vec0$:\quad
+(1)\ $f=x^2+y^2-4x-6y$\quad
+(2)\ $f=x^2+y^2-xy-3x$\quad
+(3)\ $f=x^2+2y^2-2x+4y$
+\karo{5cm}
+
+\end{document}
