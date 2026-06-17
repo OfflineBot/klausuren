@@ -1,0 +1,435 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{tikz}
+\usepackage{needspace}
+\usepackage{geometry}
+\geometry{a4paper,margin=2.2cm}
+
+% ----- Dark Mode (Pflicht) -----
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{accent}{HTML}{89B4FA}
+\definecolor{accent2}{HTML}{F9E2AF}
+\definecolor{muted}{HTML}{A6ADC8}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{rulecol}{HTML}{6A6A6A}
+\pagecolor{bgdark}
+\color{fgtext}
+
+\setlength{\arrayrulewidth}{0.3pt}
+\arrayrulecolor{rulecol}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+
+% ----- Karo-Raster zum Ausfüllen -----
+\newcommand{\karo}[1]{\par\noindent
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcol, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par}
+
+% ----- Laufende Kopfzeile -----
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{\footnotesize\color{muted}\textsc{Numerische Methoden} $\cdot$ Pr\"ufung 03 Probeklausur}
+\fancyhead[R]{\footnotesize\color{muted}Matr.-Nr.\ \textcolor{rulecol}{\rule{2.4cm}{0.3pt}}\quad \thepage}
+
+% ----- Aufgabenkopf -----
+\newcommand{\aufg}[3]{%
+  \par\vspace{2pt}
+  \noindent\textcolor{rulecol}{\rule{\linewidth}{0.3pt}}\\[3pt]
+  {\large\bfseries\color{accent} Aufgabe #1\ \ \textcolor{fgtext}{\normalsize\mdseries #2}}\hfill
+  {\bfseries\color{accent2}#3 Punkte}\\[1pt]
+  \noindent\textcolor{rulecol}{\rule{\linewidth}{0.3pt}}
+  \par\vspace{6pt}
+}
+\newcommand{\tp}[1]{\hfill{\small\color{muted}\textit{#1 Punkte}}}
+
+\begin{document}
+
+% =====================================================================
+% DECKBLATT
+% =====================================================================
+\thispagestyle{fancy}
+
+{\small\color{muted}\textsc{DHBW Ravensburg} \\ Duale Hochschule Baden-W\"urttemberg}
+
+\vspace{10pt}
+{\fontsize{34}{38}\selectfont\bfseries\color{accent} Pr\"ufung}\\[2pt]
+{\itshape\color{fgtext} Numerische Methoden $\cdot$ Pr\"ufung 03 Probeklausur}
+
+\vspace{10pt}
+\noindent\textcolor{rulecol}{\rule{\linewidth}{0.4pt}}
+\vspace{4pt}
+
+\renewcommand{\arraystretch}{1.32}
+\noindent\begin{tabular}{@{}p{4.2cm}p{11cm}@{}}
+\textsc{\color{muted}Studiengang}     & W4DSKI\_108 Data Science und K\"unstliche Intelligenz\\
+\textsc{\color{muted}Jahrgang}        & RV-WDS125 / RV-WDS225\\
+\textsc{\color{muted}Modul}           & Fortgeschrittene Lineare Algebra und Analysis\\
+\textsc{\color{muted}Veranstaltung}   & Numerische Methoden\\
+\textsc{\color{muted}Pr\"ufer}        & Prof.\ Dr.-Ing.\ Mark Schutera\\
+\textsc{\color{muted}Datum}           & \rule{4cm}{0.3pt}\\
+\textsc{\color{muted}Bearbeitungszeit}& 90 Minuten\\
+\textsc{\color{muted}Max.\ Punktzahl} & 80 Punkte\\
+\textsc{\color{muted}Hilfsmittel}     & kein Taschenrechner. Open book; alle gedruckten oder
+                                        handschriftlichen Unterlagen, die auf Papier mitgebracht werden.\\
+\end{tabular}
+
+\vspace{6pt}
+\noindent\textcolor{rulecol}{\rule{\linewidth}{0.4pt}}
+
+\vspace{10pt}
+{\small\color{muted}\textsc{Anweisungen}}\par
+\vspace{2pt}
+{\small
+Schreiben Sie Ihre L\"osungen und L\"osungswege leserlich in die vorgesehenen Bereiche.
+Ordnen Sie jede L\"osung deutlich der zugeh\"origen Aufgabe zu. \textbf{Begr\"unden Sie Ihre
+Antworten kurz: eine reine Zahl ohne Rechenweg gibt keine volle Punktzahl.} Br\"uche d\"urfen
+als L\"osung stehen bleiben; Ableitungen d\"urfen analytisch gebildet werden, sofern nicht
+ausdr\"ucklich anders verlangt. Lesen Sie die Aufgabenstellung sorgf\"altig, bevor Sie mit der
+Bearbeitung beginnen. Viel Erfolg!}
+
+\vspace{8pt}
+{\small\color{muted}\textsc{Themenabdeckung.} Diese Probeklausur deckt ausschlie\ss lich den Stoff der
+Vorlesungsnotizen \glqq Numerical Methods\grqq{} ab (Kapitel 1--7): Grundlagen \& Gleitkomma,
+Fehleranalyse, Newton/Sekante, globale Optimierung, numerische Integration, Modelltraining.}
+
+\vspace{12pt}
+{\small\color{muted}\textsc{Durch Pr\"ufer auszuf\"ullen}}\par
+\vspace{3pt}
+\renewcommand{\arraystretch}{1.4}
+\noindent\begin{tabular}{|l|c|c|c|c|c|c|c|}
+\hline
+\color{muted}Aufgabe & 1 & 2 & 3 & 4 & 5 & 6 & $\Sigma$\\
+\hline
+\color{muted}Maximal & 18 & 10 & 14 & 14 & 14 & 10 & 80\\
+\hline
+\color{muted}Erreicht & & & & & & & \\
+\hline
+\end{tabular}
+
+% =====================================================================
+% AUFGABE 1 -- Kapitel 1-2
+% =====================================================================
+\clearpage
+\aufg{1}{Gleitkomma, Festkomma, Diskretisierung \& Brute Force}{18}
+
+\textbf{(a)} Sie entwerfen ein Gleitkommasystem (floating-point system) mit $1$ Vorzeichenbit
+und $4$ weiteren Bits, die Sie frei auf Mantisse (mantissa) und Exponent (exponent) verteilen.
+\tp{5}
+
+\smallskip
+Diskutieren Sie den Trade-off: Welche Eigenschaft des Systems verbessert sich, wenn Sie ein Bit
+der \emph{Mantisse} zuweisen, welche, wenn Sie es dem \emph{Exponenten} geben? Argumentieren Sie
+\"uber Aufl\"osung (resolution) und Wertebereich (dynamic range).
+
+\smallskip
+Fixieren wir die Aufteilung auf $2$ Mantissenbits und $2$ Exponentenbits mit Bias $1$.
+Bestimmen Sie das Maschinenepsilon $\varepsilon_{\mathrm{mach}}$ und berechnen Sie in diesem
+System
+\[
+   \frac{1}{\bigl(1+\tfrac{1}{10}\bigr)-1}.
+\]
+Geben Sie den Nenner nach Rundung sowie das Endergebnis an, vergleichen Sie mit dem
+mathematischen Wert und erkl\"aren Sie, warum hier die Ausl\"oschung (catastrophic cancellation)
+das Resultat zerst\"ort.
+
+\karo{7.5cm}
+
+\clearpage
+\textbf{(b)} Ein \emph{Festkommasystem} (fixed-point) verwende $8$ Bit, davon $4$ Vorkomma- und
+$4$ Nachkommabits (Skalierungsfaktor $2^{-4}$).
+\tp{4}
+
+\smallskip
+Geben Sie die Aufl\"osung (kleinste darstellbare Differenz) und die gr\"o\ss te darstellbare
+(vorzeichenlose) Zahl an. Stellen Sie $5{,}25$ in diesem System dar (als ganzzahliger Speicherwert
+und bin\"ar). Vergleichen Sie Festkomma und Gleitkomma: Wie unterscheiden sich die Abst\"ande
+benachbarter darstellbarer Zahlen \"uber den Wertebereich?
+
+\karo{6.5cm}
+
+\clearpage
+\textbf{(c)} Wir diskretisieren das Intervall $[0,3]$ mit $N=6$ gleich gro\ss en Teilintervallen.
+\tp{4}
+
+\smallskip
+Berechnen Sie die Schrittweite $h=\frac{b-a}{N}$ und geben Sie alle Gitterpunkte $x_i$ an.
+Ordnen Sie anschlie\ss end die folgenden drei Fehlerquellen jeweils einem Fehlertyp zu
+(\emph{Modellfehler}, \emph{Abschneidefehler}, \emph{Rundungsfehler}) und begr\"unden Sie kurz:
+\begin{enumerate}\setlength{\itemsep}{1pt}
+\item[(i)]   Die Sigmoid-Funktion $\sigma(x)=\tfrac{1}{1+e^{-x}}$ wird durch ihre Taylor-Reihe
+             nach dem quadratischen Glied ersetzt.
+\item[(ii)]  Ein Bremsweg wird ohne Ber\"ucksichtigung des Reifenprofils modelliert.
+\item[(iii)] Das Ergebnis $\tfrac{10}{3}$ wird als $3{,}333$ gespeichert.
+\end{enumerate}
+
+\karo{6cm}
+
+\clearpage
+\textbf{(d)} Wir suchen die L\"osung des linearen Systems
+\[
+  \begin{pmatrix} 1 & 2 \\ 3 & 1 \end{pmatrix}
+  \begin{pmatrix} w \\ b \end{pmatrix}
+  =
+  \begin{pmatrix} 4 \\ 5 \end{pmatrix}
+\]
+mit einer Gitter-Suche (grid search) \"uber $w,b\in\{0,1,2\}$.
+\tp{5}
+
+\smallskip
+W\"ahlen Sie ein Fehlerma\ss\ (error) und begr\"unden Sie Ihre Wahl kurz. Bestimmen Sie damit
+$w^\ast$ und $b^\ast$. Vergleichen Sie das Ergebnis mit der exakten L\"osung. Erkl\"art die
+Gitter-Suche das System exakt? Wie k\"onnten Sie die Methode verbessern -- und ist es
+grunds\"atzlich m\"oglich, so eine exakte L\"osung zu finden?
+
+\smallskip
+{\small\color{muted}\textsc{Hinweis.} Die exakte L\"osung lautet $w^\star=6/5$ und $b^\star=7/5$.}
+
+\karo{8cm}
+
+% =====================================================================
+% AUFGABE 2 -- Kapitel 3
+% =====================================================================
+\clearpage
+\aufg{2}{Fehleranalyse: die vier Eigenschaften}{10}
+
+Wir suchen das Minimum der Funktion $g(x)=(x-2)^2$ auf $[0,4]$ mit st\"uckweise konstanter
+gitterbasierter Diskretisierung bei zwei Schrittweiten $h_1=1$ und $h_2=\tfrac12$. Die
+diskretisierte Funktion $\hat g$ wird am \emph{n\"achstgelegenen} Gitterpunkt ausgewertet. Die
+Eingabe sei durch einen Messfehler um $\tilde x=x\pm\tfrac12$ gest\"ort.
+
+\begin{center}
+\begin{tikzpicture}[scale=0.85]
+  \draw[->,rulecol] (-0.3,0) -- (4.6,0) node[right]{\small$x$};
+  \draw[->,rulecol] (0,-0.3) -- (0,4.6) node[above]{\small$g(x)$};
+  \foreach \x in {1,2,3,4} \draw[rulecol] (\x,-0.08) -- (\x,0.08) node[below=2pt]{\scriptsize$\x$};
+  \foreach \y in {2,4} \draw[rulecol] (-0.08,\y) -- (0.08,\y) node[left=2pt]{\scriptsize$\y$};
+  \draw[accent,thick,domain=0:4,samples=80,smooth] plot (\x,{(\x-2)*(\x-2)});
+\end{tikzpicture}
+\end{center}
+
+Analysieren Sie nacheinander die vier Eigenschaften der Fehleranalyse. \emph{Notation:} $g$ exakt,
+$\hat g$ Verfahren, $\tilde x$ gest\"orte Eingabe.
+\tp{10}
+
+\smallskip
+\emph{(i) Kondition (conditioning):} Quantifizieren Sie die Kondition $\kappa=|g(x)-g(\tilde x)|$
+des Problems an mindestens \emph{zwei} Stellen Ihrer Wahl im Intervall und zeigen Sie so den
+Unterschied zwischen gut und schlecht konditioniertem Bereich.
+
+\smallskip
+\emph{(ii) Stabilit\"at (stability):} Berechnen Sie die Stabilit\"at
+$s=\frac{|\hat g(\tilde x)-\hat g(x)|}{|\tilde x-x|}$ der diskretisierten Funktion an einem
+Referenzpunkt Ihrer Wahl. Welche Schrittweite f\"uhrt zur stabileren Auswertung? Begr\"unden Sie.
+
+\smallskip
+\emph{(iii) Konsistenz (consistency):} Quantifizieren Sie den Konsistenzfehler
+$c=|\hat g(x)-g(x)|$ f\"ur $h_1$ und $h_2$ an einer Stelle, die nicht auf dem groben Gitter liegt.
+Welche Schrittweite ist konsistenter?
+
+\smallskip
+\emph{(iv) Konvergenz (convergence):} Verbinden Sie Stabilit\"at und Konsistenz. F\"uhrt eine
+kleinere Schrittweite bei numerischen Verfahren \emph{zwingend} zu einer besseren Approximation?
+Begr\"unden Sie kurz.
+
+\karo{8.5cm}
+
+% =====================================================================
+% AUFGABE 3 -- Kapitel 4
+% =====================================================================
+\clearpage
+\aufg{3}{Newton-, Taylor- \& Sekantenverfahren}{14}
+
+\textbf{(a)} Wir suchen eine Nullstelle (root) von $f(x)=x^2-2$ (also $\sqrt 2$).
+\tp{8}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.85]
+  \draw[->,rulecol] (-0.3,0) -- (2.8,0) node[right]{\small$x$};
+  \draw[->,rulecol] (0,-2.4) -- (0,3.0) node[above]{\small$f(x)$};
+  \foreach \x in {1,2} \draw[rulecol] (\x,-0.08) -- (\x,0.08) node[below=2pt]{\scriptsize$\x$};
+  \foreach \y in {-2,2} \draw[rulecol] (-0.08,\y) -- (0.08,\y) node[left=2pt]{\scriptsize$\y$};
+  \draw[accent,thick,domain=-0.2:2.45,samples=80,smooth] plot (\x,{(\x)*(\x)-2});
+  \draw[accent2,thick] (2,2) circle (2.5pt);
+  \node[accent2] at (2.35,2.4) {\scriptsize$x_0$};
+\end{tikzpicture}
+\end{center}
+
+\textbf{Leiten Sie} das Newton-Verfahren $x_{n+1}=x_n-\frac{f(x_n)}{f'(x_n)}$ \emph{aus der
+Taylor-Entwicklung erster Ordnung} von $f$ um $x_n$ her. F\"uhren Sie dann mit $x_0=2$ zwei
+Iterationen durch ($x_1,x_2$ d\"urfen als Bruch angegeben werden) und nennen Sie das
+Konvergenzkriterium f\"ur das Newton-Verfahren. Was bedeutet \emph{quadratische Konvergenz}
+praktisch?
+
+\karo{8.5cm}
+
+\clearpage
+\textbf{(b)} Nehmen Sie nun an, $f$ sei nicht in geschlossener Form gegeben, sondern nur durch
+Funktionsauswertungen zug\"anglich.
+\tp{6}
+
+\smallskip
+Geben Sie eine numerische Approximation (Vorw\"artsdifferenz) f\"ur $f'(x_0)$ an und beziffern Sie
+die \emph{Ordnung} des Approximationsfehlers. Leiten Sie daraus das \emph{Sekantenverfahren} ab und
+geben Sie seine Iterationsformel an. Welchen Versagensmodus der Newton-Nullstellensuche umgehen Sie
+damit -- und welchen \emph{nicht}? F\"uhren Sie schlie\ss lich \emph{einen} Sekanten-Schritt mit
+$x_0=2,\,x_1=1{,}5$ f\"ur $f(x)=x^2-2$ aus.
+
+\karo{8.5cm}
+
+% =====================================================================
+% AUFGABE 4 -- Kapitel 5
+% =====================================================================
+\clearpage
+\aufg{4}{Globale Optimierung}{14}
+
+\textbf{(a)} Erkl\"aren Sie kurz den Unterschied zwischen einem \emph{lokalen} und einem
+\emph{globalen} Minimum. Warum kann eine lokale Methode (z.\,B.\ Newton) auf einer multimodalen
+Landschaft wie den \emph{Shekel-Foxholes}
+$f(x)=-\sum_i \frac{c_i}{(x-a_i)^2+r_i}$ das globale Minimum verfehlen? Was bedeutet
+\emph{Konvexit\"at} f\"ur dieses Problem?
+\tp{4}
+
+\karo{5cm}
+
+\clearpage
+\textbf{(b)} F\"ur die Funktion $g(x)=x^3-3x$ f\"uhren Sie \emph{einen} Schritt des
+Newton-Verfahrens \emph{f\"ur Optima}
+\[
+   x_{n+1}=x_n-\frac{g'(x_n)}{\lvert g''(x_n)\rvert}
+\]
+mit Startwert $x_0=2$ durch. Klassifizieren Sie das angesteuerte Extremum mit dem
+Test der zweiten Ableitung. Wozu dient der Betrag $\lvert g''\rvert$ im Nenner?
+\tp{5}
+
+\karo{7cm}
+
+\clearpage
+\textbf{(c)} Bei \emph{zuf\"alligen Neustarts} (random restarts) treffe ein einzelner Start mit
+Wahrscheinlichkeit $p=\tfrac12$ das Becken (basin) des globalen Minimums.
+\tp{3}
+
+\smallskip
+Berechnen Sie die Erfolgswahrscheinlichkeit $P=1-(1-p)^K$ f\"ur $K=3$ Neustarts und bestimmen
+Sie das kleinste $K$ mit $P>0{,}9$.
+
+\karo{5cm}
+
+\clearpage
+\textbf{(d)} Wir wechseln zur Minimumsuche auf einer \emph{rauen} Verlustlandschaft mit einem
+hochfrequenten St\"orterm,
+\[
+   f(x)=(x-1)^2+\tfrac12\sin(4\pi x),\qquad x\in[0,2].
+\]
+Erkl\"aren Sie kurz, warum der hochfrequente Sinus-Term f\"ur lokale Optimierer problematisch ist.
+Nennen Sie neben der globalen Optimierung einen weiteren Ansatz, um diese Problematik zu umgehen,
+und w\"ahlen Sie eine daf\"ur geeignete Schrittweite $h$.
+\tp{2}
+
+\karo{5cm}
+
+% =====================================================================
+% AUFGABE 5 -- Kapitel 6
+% =====================================================================
+\clearpage
+\aufg{5}{Numerische Integration \& Interpolation}{14}
+
+\textbf{(a)} Geben Sie f\"ur ein Intervall $[a,b]$ mit $h=b-a$ und Mittelpunkt $m=\tfrac{a+b}{2}$
+die Formeln der Quadraturregeln \emph{Rechteck} (links/rechts), \emph{Mittelpunkt}, \emph{Trapez}
+und \emph{Simpson} an. Ordnen Sie sie nach steigender Genauigkeit und nennen Sie die jeweilige
+akkumulierte Fehlerordnung. Warum ist der Mittelpunkt das \glqq beste Rechteck\grqq?
+\tp{4}
+
+\karo{6cm}
+
+\clearpage
+\textbf{(b)} Wir betrachten $I=\int_0^2 (x^2+1)\,dx$ mit St\"utzwerten $f(0)=1$, $f(1)=2$,
+$f(2)=5$.
+\tp{5}
+
+\smallskip
+Berechnen Sie den exakten Wert von $I$. Approximieren Sie $I$ anschlie\ss end mit der
+\emph{Trapezregel} ($h=1$, zwei Teilintervalle) und der \emph{Simpson-Regel} ($h=1$). Vergleichen
+Sie beide mit dem exakten Wert und erkl\"aren Sie, warum die Simpson-Regel hier exakt ist, die
+Trapezregel aber nicht.
+
+\karo{7.5cm}
+
+\clearpage
+\textbf{(c)} Bestimmen Sie das \emph{Lagrange}-Interpolationspolynom $p(x)$ durch die Punkte
+$(0,1),(1,2),(2,5)$, vereinfachen Sie es und werten Sie $p(\tfrac12)$ aus.
+\tp{3}
+
+\smallskip
+Was besagt das \emph{Runge-Ph\"anomen}, und welche Konsequenz hat es f\"ur die Wahl des
+Polynomgrades bei der Quadratur (\glqq stop at Simpson\grqq)?
+
+\karo{6.5cm}
+
+\clearpage
+\textbf{(d)} Erkl\"aren Sie die \emph{Monte-Carlo}-Integration mit dem Sch\"atzer
+\[
+   \hat I=\lvert\Omega\rvert\,\frac1N\sum_{i=1}^N f(X_i),\qquad
+   \mathrm{SE}=\frac{\lvert\Omega\rvert\,\sigma_f}{\sqrt N}.
+\]
+Um welchen Faktor muss $N$ wachsen, um den Standardfehler zu \emph{halbieren}? Warum ist
+Monte-Carlo im Hochdimensionalen vorteilhaft gegen\"uber gitterbasierter Quadratur
+(Fluch der Dimensionen)? Inwiefern ist die Mittelpunktsregel ein Spezialfall von Monte-Carlo?
+\tp{2}
+
+\karo{6cm}
+
+% =====================================================================
+% AUFGABE 6 -- Kapitel 7
+% =====================================================================
+\clearpage
+\aufg{6}{Modelltraining aus ersten Prinzipien}{10}
+
+Wir trainieren ein lineares Regressionsmodell $\hat y(x)=w x+b$ mit dem mittleren quadratischen
+Fehler $L(w,b)=\tfrac1n\sum_{i=1}^n (w x_i+b-y_i)^2$ per Gradientenabstieg. Der Datensatz der
+Zielwerte sei $y=(2,\,4,\,6)$.
+
+\smallskip
+\textbf{(a)} Wir initialisieren mit $w=0$ und $b=\bar y$ (Mittelwert der Zielwerte). Zeigen Sie,
+dass der erste Loss-Wert gerade die \emph{Varianz} der Zielwerte ist, und berechnen Sie ihn
+konkret. Was w\"urde ein gedruckter erster Loss von $\approx 100$ statt des erwarteten Werts
+bedeuten, was ein Wert von $\approx 0$?
+\tp{4}
+
+\karo{6cm}
+
+\clearpage
+\textbf{(b)} Eine Standardempfehlung ist, den Loss auf einer \emph{kleinen} Teilmenge mit einem
+\emph{\"uberparametrisierten} Modell auf nahezu null zu treiben (overfit sanity check). Erkl\"aren
+Sie, warum ein \emph{Scheitern} dieses Tests auf einen Fehler in Modell/Loss/Datenpipeline
+hindeutet -- und \emph{nicht} im Optimierer. Welcher allgemeinen numerischen Praxis entspricht das?
+\tp{3}
+
+\karo{5.5cm}
+
+\clearpage
+\textbf{(c)} Ordnen Sie jede der folgenden Trainingspraktiken der zugrunde liegenden
+\emph{numerischen Methode} aus der Vorlesung zu und begr\"unden Sie kurz:
+\tp{3}
+\begin{enumerate}\setlength{\itemsep}{1pt}
+\item[(i)]   Mini-Batch-SGD (Gradient aus einer zuf\"alligen Teilmenge der Daten).
+\item[(ii)]  Training mit mehreren zuf\"alligen Seeds, bester Lauf gewinnt.
+\item[(iii)] Quantisierung des Modells f\"ur die Inferenz (niedrigere Bit-Pr\"azision).
+\end{enumerate}
+Geben Sie f\"ur (i) zus\"atzlich an, wie der Sch\"atzfehler des Gradienten mit der Batch-Gr\"o\ss e
+$B$ skaliert.
+
+\karo{6cm}
+
+\end{document}

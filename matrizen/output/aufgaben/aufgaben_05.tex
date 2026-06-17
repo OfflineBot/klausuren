@@ -1,0 +1,330 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}
+\geometry{margin=2.0cm}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{titlesec}
+
+%================= Dark-Mode Farben (Catppuccin Mocha) =================
+\definecolor{base}{HTML}{1E1E2E}
+\definecolor{fg}{HTML}{CDD6F4}
+\definecolor{accent}{HTML}{89B4FA}
+\definecolor{accent2}{HTML}{F5C2E7}
+\definecolor{green}{HTML}{A6E3A1}
+\definecolor{gridcolor}{HTML}{45475A}
+\definecolor{boxbg}{HTML}{313244}
+
+\pagecolor{base}
+
+\newcommand{\transp}{^{\mathsf{T}}}
+\newcommand{\inv}{^{-1}}
+\newcommand{\pinv}{^{+}}
+\newcommand{\diag}{\operatorname{diag}}
+
+\newcommand{\schwierig}[1]{\hfill\textnormal{\color{accent2}\itshape (#1)}}
+
+% Karierte Antwortfläche -- #1 = Höhe (z. B. 8cm).
+\newcommand{\karo}[1]{\par\vspace{0.3cm}\noindent
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcolor, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par\vspace{0.3cm}}
+
+% Beispiel-Box: vorgerechnetes Beispiel auf farbigem Panel
+\newcommand{\beispiel}[1]{\par\medskip\noindent
+  \begin{tikzpicture}
+    \node[fill=boxbg, rounded corners, inner sep=8pt, text width=\dimexpr\linewidth-18pt\relax,
+          align=left] {\color{green}\large\bfseries $\blacktriangleright$ Durchgerechnetes Beispiel\par
+          \vspace{2pt}\color{fg}\normalsize #1};
+  \end{tikzpicture}\par\medskip}
+
+\titleformat{\section}{\color{accent}\normalfont\Large\bfseries}{}{0pt}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\color{fg}\small SVD, Cholesky \& Pseudoinverse}
+\rhead{\color{fg}\small FLA \& Analytische Geometrie}
+\cfoot{\color{fg}\thepage}
+\renewcommand{\headrule}{{\color{gridcolor}\hrule height 0.4pt}}
+
+\setlength{\parindent}{0pt}
+
+\begin{document}
+\color{fg}
+
+\thispagestyle{fancy}
+
+\begin{center}
+  {\color{accent}\LARGE\bfseries Übungsaufgaben: SVD, Cholesky \& Pseudoinverse}\\[0.4em]
+  {\large Fortgeschrittene Lineare Algebra und Analytische Geometrie}\\[0.3em]
+  {\color{gridcolor}\rule{\linewidth}{0.4pt}}
+\end{center}
+
+\vspace{0.4em}
+
+Übungsaufgaben \emph{ausschließlich} zu den drei Themen \textbf{Cholesky-Zerlegung},
+\textbf{Singulärwertzerlegung (SVD)} und \textbf{Pseudoinverse (Moore--Penrose)} -- jeweils
+$3$ Aufgaben. Vor jedem Themenblock steht ein \textbf{vollständig durchgerechnetes Beispiel}
+(grüner Kasten), an dem das Verfahren Schritt für Schritt vorgemacht wird. Danach kommen die
+Aufgaben zum selber Rechnen. Lösungen in \texttt{results/aufgaben/loesungen\_05.pdf}.
+
+\medskip
+\textbf{Kurzformeln zum Nachschlagen:}
+\begin{itemize}[leftmargin=1.4em, itemsep=2pt]
+  \item \textbf{Cholesky} ($A=LL\transp$, nur symm.\ \& positiv definit):
+        $\ell_{jj}=\sqrt{a_{jj}-\sum_{k<j}\ell_{jk}^2}$,\quad
+        $\ell_{ij}=\big(a_{ij}-\sum_{k<j}\ell_{ik}\ell_{jk}\big)/\ell_{jj}$.
+  \item \textbf{SVD} ($A=U\Sigma V\transp$): $V=$ EV von $A\transp A$;\ \ $\sigma_i=\sqrt{\lambda_i}$;\ \
+        $\vec u_i=\tfrac{1}{\sigma_i}A\vec v_i$;\ \ $\operatorname{Rang}=\#\{\sigma_i>0\}$.
+  \item \textbf{Pseudoinverse} $A\pinv$: aus SVD $A\pinv=V\Sigma\pinv U\transp$;\ \ voller Spaltenrang
+        $A\pinv=(A\transp A)\inv A\transp$;\ \ voller Zeilenrang $A\pinv=A\transp(AA\transp)\inv$.
+\end{itemize}
+
+% ================================================================
+% ============================  TEIL A: CHOLESKY  ================
+% ================================================================
+\clearpage
+\section*{Teil A \;--\; Cholesky-Zerlegung}
+
+\beispiel{%
+Bestimme die Cholesky-Zerlegung $A=LL\transp$ von
+$A=\begin{pmatrix} 4 & 2 & 2\\ 2 & 5 & 3\\ 2 & 3 & 6\end{pmatrix}$
+(symmetrisch). Reihenfolge: $\ell_{11},\ell_{21},\ell_{31},\ell_{22},\ell_{32},\ell_{33}$.
+\par\smallskip
+\textbf{Spalte 1:}\quad
+$\ell_{11}=\sqrt{a_{11}}=\sqrt{4}=2$,\quad
+$\ell_{21}=\dfrac{a_{21}}{\ell_{11}}=\dfrac{2}{2}=1$,\quad
+$\ell_{31}=\dfrac{a_{31}}{\ell_{11}}=\dfrac{2}{2}=1$.
+\par\smallskip
+\textbf{Spalte 2:}\quad
+$\ell_{22}=\sqrt{a_{22}-\ell_{21}^2}=\sqrt{5-1}=2$,\quad
+$\ell_{32}=\dfrac{a_{32}-\ell_{31}\ell_{21}}{\ell_{22}}=\dfrac{3-1\cdot1}{2}=1$.
+\par\smallskip
+\textbf{Spalte 3:}\quad
+$\ell_{33}=\sqrt{a_{33}-\ell_{31}^2-\ell_{32}^2}=\sqrt{6-1-1}=2$.
+\par\smallskip
+\textbf{Ergebnis:}\quad
+$L=\begin{pmatrix} 2 & 0 & 0\\ 1 & 2 & 0\\ 1 & 1 & 2\end{pmatrix}$.
+\ \emph{Probe} $LL\transp$: Zeile$_3\cdot$Zeile$_3=1+1+4=6=a_{33}$\,\checkmark, alle Einträge stimmen.
+Alle $\ell_{jj}>0$ $\Rightarrow$ $A$ ist tatsächlich \textbf{positiv definit}.}
+
+\medskip
+\textbf{Wichtig:} Im Nenner steht immer $\ell_{jj}$, \emph{nicht} $a_{jj}$. Wird ein Radikand
+$a_{jj}-\sum\ell_{jk}^2\le 0$, so ist $A$ \emph{nicht} positiv definit und es gibt keine
+Cholesky-Zerlegung.
+
+% --------------------------------------------------------------
+\clearpage
+\section*{Aufgabe 1 \;--\; Cholesky $2\times2$ \schwierig{leicht}}
+
+Gegeben sei $A=\begin{pmatrix} 9 & 3\\ 3 & 5\end{pmatrix}$.
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie die Cholesky-Zerlegung $A=LL\transp$.
+  \item Begründen Sie mit Ihrem Ergebnis, dass $A$ positiv definit ist.
+  \item Machen Sie die Probe $LL\transp=A$.
+\end{enumerate}
+
+\karo{9cm}
+
+% --------------------------------------------------------------
+\clearpage
+\section*{Aufgabe 2 \;--\; Cholesky $3\times3$ \schwierig{mittel}}
+
+Gegeben sei die symmetrische Matrix
+\[
+A=\begin{pmatrix} 1 & 1 & 1\\ 1 & 5 & 5\\ 1 & 5 & 14\end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie $L$ mit $A=LL\transp$ (Reihenfolge $\ell_{11},\ell_{21},\ell_{31},\ell_{22},\ell_{32},\ell_{33}$).
+  \item Machen Sie die Probe.
+\end{enumerate}
+
+\karo{11cm}
+
+% --------------------------------------------------------------
+\clearpage
+\section*{Aufgabe 3 \;--\; LGS lösen \& Definitheit testen \schwierig{mittel--schwer}}
+
+\begin{enumerate}[label=\alph*)]
+  \item Lösen Sie das Gleichungssystem $A\vec x=\vec b$ mit
+        \[
+        A=\begin{pmatrix} 4 & 2\\ 2 & 10\end{pmatrix},\qquad
+        \vec b=\begin{pmatrix} 6\\ 12\end{pmatrix},
+        \]
+        \textbf{mit Hilfe der Cholesky-Zerlegung}: erst $A=LL\transp$, dann $L\vec y=\vec b$
+        (vorwärts) und $L\transp\vec x=\vec y$ (rückwärts).
+  \item Prüfen Sie, ob $B=\begin{pmatrix} 2 & 3\\ 3 & 2\end{pmatrix}$ positiv definit ist, indem
+        Sie versuchen, eine Cholesky-Zerlegung zu berechnen. Was beobachten Sie?
+\end{enumerate}
+
+\karo{11cm}
+
+% ================================================================
+% ==============================  TEIL B: SVD  ===================
+% ================================================================
+\clearpage
+\section*{Teil B \;--\; Singulärwertzerlegung (SVD)}
+
+\beispiel{%
+Bestimme die volle SVD $A=U\Sigma V\transp$ von
+$A=\begin{pmatrix} 2 & 2\\ -1 & 1\end{pmatrix}$.
+\par\smallskip
+\textbf{1. $A\transp A$ und ihre Eigenwerte:}\quad
+$A\transp A=\begin{pmatrix} 2 & -1\\ 2 & 1\end{pmatrix}\!\begin{pmatrix} 2 & 2\\ -1 & 1\end{pmatrix}
+=\begin{pmatrix} 5 & 3\\ 3 & 5\end{pmatrix}$.\;
+$\det(A\transp A-\lambda E)=0$: $\lambda=5\pm3\Rightarrow\lambda_1=8,\ \lambda_2=2$.
+\par\smallskip
+\textbf{2. Singulärwerte:}\quad $\sigma_1=\sqrt{8}=2\sqrt2$,\ \ $\sigma_2=\sqrt2$\ (absteigend).
+\par\smallskip
+\textbf{3. Rechte Singulärvektoren $V$ (normierte EV von $A\transp A$):}\quad
+$\lambda_1{=}8:\ \vec v_1=\tfrac{1}{\sqrt2}(1,1)\transp$;\quad
+$\lambda_2{=}2:\ \vec v_2=\tfrac{1}{\sqrt2}(1,-1)\transp$.
+\par\smallskip
+\textbf{4. Linke Singulärvektoren} $\vec u_i=\tfrac1{\sigma_i}A\vec v_i$:\quad
+$\vec u_1=\tfrac{1}{2\sqrt2}\!\begin{pmatrix}2&2\\-1&1\end{pmatrix}\!\tfrac{1}{\sqrt2}\!\begin{pmatrix}1\\1\end{pmatrix}
+=\tfrac{1}{4}\begin{pmatrix}4\\0\end{pmatrix}=\begin{pmatrix}1\\0\end{pmatrix}$,\quad
+$\vec u_2=\tfrac{1}{\sqrt2}\!\begin{pmatrix}2&2\\-1&1\end{pmatrix}\!\tfrac{1}{\sqrt2}\!\begin{pmatrix}1\\-1\end{pmatrix}
+=\tfrac{1}{2}\begin{pmatrix}0\\-2\end{pmatrix}=\begin{pmatrix}0\\-1\end{pmatrix}$.
+\par\smallskip
+\textbf{Ergebnis:}\quad
+$U=\begin{pmatrix} 1 & 0\\ 0 & -1\end{pmatrix},\ \
+\Sigma=\begin{pmatrix} 2\sqrt2 & 0\\ 0 & \sqrt2\end{pmatrix},\ \
+V=\begin{pmatrix} \tfrac{1}{\sqrt2} & \tfrac{1}{\sqrt2}\\[2pt] \tfrac{1}{\sqrt2} & -\tfrac{1}{\sqrt2}\end{pmatrix}.$
+\ Rang $=\#\{\sigma_i>0\}=2$.}
+
+\medskip
+\textbf{Merke:} $A\transp A$ \emph{quadriert} die Werte, deshalb $\sigma_i=\sqrt{\lambda_i}$.
+$U,V$ sind orthogonal ($U\transp U=V\transp V=E$); $\Sigma$ ist gleich groß wie $A$.
+
+% --------------------------------------------------------------
+\clearpage
+\section*{Aufgabe 4 \;--\; Singulärwerte \& Rang \schwierig{leicht}}
+
+Gegeben sei $A=\begin{pmatrix} 3 & 0\\ 4 & 0\end{pmatrix}$.
+\begin{enumerate}[label=\alph*)]
+  \item Berechnen Sie $A\transp A$ und daraus die Singulärwerte $\sigma_1\ge\sigma_2$.
+  \item Welchen Rang hat $A$?
+  \item Bestimmen Sie eine volle SVD $A=U\Sigma V\transp$ (ergänzen Sie $U$ zu einer
+        Orthonormalbasis).
+\end{enumerate}
+
+\karo{10cm}
+
+% --------------------------------------------------------------
+\clearpage
+\section*{Aufgabe 5 \;--\; Volle SVD einer $2\times2$-Matrix \schwierig{mittel}}
+
+Bestimmen Sie die volle Singulärwertzerlegung $A=U\Sigma V\transp$ von
+\[
+A=\begin{pmatrix} 1 & 2\\ 2 & 1\end{pmatrix}.
+\]
+Geben Sie $U,\Sigma,V$ explizit an und machen Sie an einem Vektor die Probe, dass
+$A\vec v_1=\sigma_1\vec u_1$ gilt.
+
+\karo{12cm}
+
+% --------------------------------------------------------------
+\clearpage
+\section*{Aufgabe 6 \;--\; SVD einer $3\times2$-Matrix \& Rang-1-Näherung \schwierig{schwer}}
+
+Gegeben sei die Matrix
+\[
+A=\begin{pmatrix} 1 & 1\\ 1 & 0\\ 0 & 1\end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie die (reduzierte) SVD: Singulärwerte $\sigma_1,\sigma_2$, die Matrix $V$
+        sowie die linken Singulärvektoren $\vec u_1,\vec u_2$. Welchen Rang hat $A$?
+  \item Geben Sie die \textbf{beste Rang-1-Näherung} $A_1=\sigma_1\,\vec u_1\vec v_1\transp$ an
+        (Eckart--Young).
+\end{enumerate}
+
+\karo{12cm}
+
+% ================================================================
+% ========================  TEIL C: PSEUDOINVERSE  ===============
+% ================================================================
+\clearpage
+\section*{Teil C \;--\; Pseudoinverse (Moore--Penrose)}
+
+\beispiel{%
+Bestimme die Pseudoinverse von
+$A=\begin{pmatrix} 1 & 1\\ 1 & 2\\ 1 & 3\end{pmatrix}$
+und löse damit das Ausgleichsproblem $A\vec x\approx\vec b$ mit $\vec b=(1,2,2)\transp$.
+\par\smallskip
+$A$ hat \textbf{vollen Spaltenrang} ($2$ unabh.\ Spalten) $\Rightarrow$ Linksformel
+$A\pinv=(A\transp A)\inv A\transp$.
+\par\smallskip
+\textbf{1.}\ $A\transp A=\begin{pmatrix} 1&1&1\\ 1&2&3\end{pmatrix}\!\begin{pmatrix} 1&1\\ 1&2\\ 1&3\end{pmatrix}
+=\begin{pmatrix} 3 & 6\\ 6 & 14\end{pmatrix}$,\quad
+$\det=42-36=6$,\quad
+$(A\transp A)\inv=\dfrac{1}{6}\begin{pmatrix} 14 & -6\\ -6 & 3\end{pmatrix}$.
+\par\smallskip
+\textbf{2.}\ $A\pinv=(A\transp A)\inv A\transp
+=\dfrac16\begin{pmatrix} 14 & -6\\ -6 & 3\end{pmatrix}\!\begin{pmatrix} 1&1&1\\ 1&2&3\end{pmatrix}
+=\dfrac16\begin{pmatrix} 8 & 2 & -4\\ -3 & 0 & 3\end{pmatrix}$.
+\par\smallskip
+\emph{Probe} $A\pinv A=\tfrac16\!\begin{pmatrix} 8&2&-4\\ -3&0&3\end{pmatrix}\!\begin{pmatrix} 1&1\\ 1&2\\ 1&3\end{pmatrix}
+=\tfrac16\!\begin{pmatrix} 6&0\\ 0&6\end{pmatrix}=E$\,\checkmark.
+\par\smallskip
+\textbf{3.\ Ausgleichslösung:}\quad
+$\vec x=A\pinv\vec b=\tfrac16\!\begin{pmatrix} 8&2&-4\\ -3&0&3\end{pmatrix}\!\begin{pmatrix} 1\\ 2\\ 2\end{pmatrix}
+=\tfrac16\begin{pmatrix} 4\\ 3\end{pmatrix}=\begin{pmatrix} 2/3\\ 1/2\end{pmatrix}$.
+\ Das ist die Gerade mit kleinstem Fehler $\|A\vec x-\vec b\|$.}
+
+\medskip
+\textbf{Merke:} voller \emph{Spalten}rang $\to$ $A\pinv=(A\transp A)\inv A\transp$ (es gilt $A\pinv A=E$);
+voller \emph{Zeilen}rang $\to$ $A\pinv=A\transp(AA\transp)\inv$ (es gilt $AA\pinv=E$). Quadratisch \&
+invertierbar $\Rightarrow$ $A\pinv=A\inv$.
+
+% --------------------------------------------------------------
+\clearpage
+\section*{Aufgabe 7 \;--\; Pseudoinverse eines Spaltenvektors \schwierig{leicht}}
+
+Gegeben sei $A=\begin{pmatrix} 1\\ 1\\ 1\end{pmatrix}$ (also $3\times1$).
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie $A\pinv$ mit der Formel $A\pinv=(A\transp A)\inv A\transp$.
+  \item Berechnen Sie $\vec x=A\pinv\vec b$ für $\vec b=(2,4,6)\transp$. Welche bekannte Größe
+        kommt dabei heraus?
+\end{enumerate}
+
+\karo{9cm}
+
+% --------------------------------------------------------------
+\clearpage
+\section*{Aufgabe 8 \;--\; Voller Spaltenrang \schwierig{mittel}}
+
+Gegeben sei
+\[
+A=\begin{pmatrix} 1 & 0\\ 1 & 1\\ 1 & 2\end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie $A\pinv=(A\transp A)\inv A\transp$.
+  \item Machen Sie die Probe $A\pinv A=E$.
+  \item Lösen Sie das Ausgleichsproblem $A\vec x\approx\vec b$ für $\vec b=(1,1,3)\transp$.
+\end{enumerate}
+
+\karo{12cm}
+
+% --------------------------------------------------------------
+\clearpage
+\section*{Aufgabe 9 \;--\; Voller Zeilenrang \& Minimal-Norm-Lösung \schwierig{schwer}}
+
+Gegeben sei das unterbestimmte System mit
+\[
+A=\begin{pmatrix} 1 & 0 & 1\\ 0 & 1 & 1\end{pmatrix},\qquad
+\vec b=\begin{pmatrix} 1\\ 2\end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item $A$ hat vollen Zeilenrang. Bestimmen Sie $A\pinv=A\transp(AA\transp)\inv$.
+  \item Berechnen Sie die Lösung kleinster Norm $\vec x=A\pinv\vec b$ und prüfen Sie $A\vec x=\vec b$.
+\end{enumerate}
+
+\karo{12cm}
+
+\end{document}

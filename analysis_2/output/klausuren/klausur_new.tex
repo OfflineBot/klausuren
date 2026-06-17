@@ -1,0 +1,234 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage[table]{xcolor}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage{geometry}
+\usepackage{array}
+\geometry{margin=2cm}
+
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{accent}{HTML}{89B4FA}
+\definecolor{accent2}{HTML}{F38BA8}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{panel}{HTML}{2A2A2A}
+
+\pagecolor{bgdark}
+\color{fgtext}
+\arrayrulecolor{fgtext}
+\setlength{\parindent}{0pt}
+
+\newcommand{\karo}[1]{\par\nobreak\vspace{0.4em}\noindent
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcol, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par}
+
+\newcommand{\sub}{\filbreak\medskip}
+
+\newcommand{\aufgabe}[3]{\clearpage
+  {\large\bfseries\color{accent} Aufgabe #1\quad #2}\hfill{\bfseries\color{fgtext} #3 Punkte}\par
+  \vspace{0.3em}\noindent\textcolor{gridcol}{\rule{\linewidth}{0.8pt}}\par\vspace{0.8em}}
+
+\begin{document}
+
+% ================= KOPF =================
+\begin{center}
+  {\LARGE\bfseries\color{accent} Klausursimulation -- Analysis II}\\[0.3em]
+  {\normalsize Prof. Dr. Daniel Blochinger \quad$\cdot$\quad DHBW Ravensburg}
+\end{center}
+\vspace{0.6em}
+\noindent\textcolor{gridcol}{\rule{\linewidth}{1pt}}\par\vspace{0.8em}
+
+\renewcommand{\arraystretch}{1.8}
+\noindent
+\begin{tabular}{@{}p{2.2cm}p{5.3cm}@{\quad}p{3.6cm}p{4.5cm}@{}}
+\textbf{Name:} & \textcolor{gridcol}{\hrulefill} & \textbf{Matrikel-Nr.:} & \textcolor{gridcol}{\hrulefill}\\
+\textbf{Datum:} & \textcolor{gridcol}{\hrulefill} & \textbf{Bearbeitungszeit:} & 150 Minuten\\
+\end{tabular}
+\renewcommand{\arraystretch}{1.0}
+
+\vspace{0.6em}
+\noindent\textbf{Gesamtpunktzahl:} 92 Punkte\\[0.4em]
+\noindent\textbf{Zugelassene Hilfsmittel:} Stifte, Lineale \& Geodreiecke sowie gedruckte und
+handgeschriebene Unterlagen (Skripte, Mathebücher, selbst erstellte Formelsammlungen usw.).\\[0.2em]
+\noindent\textbf{Nicht zulässig:} Taschenrechner und sämtliche computerartigen und/oder
+internetfähigen Geräte (Laptops, Tablets, E-Book-Reader, Smartphones, Smartwatches usw.).
+
+\vspace{1.0em}
+
+\renewcommand{\arraystretch}{1.6}
+\noindent
+\begin{tabular}{|>{\bfseries}l|c|c|c|c|c||c|}
+\hline
+Aufgabe & 1 & 2 & 3 & 4 & 5 & $\Sigma$\\\hline
+Thema & Diff.rechnung & Vektoranalysis & DGL & Integralr. & Trigonometrie & \\\hline
+erreicht & von 16 & von 24 & von 18 & von 20 & von 14 & von 92\\\hline
+\end{tabular}
+\renewcommand{\arraystretch}{1.0}
+
+\vspace{1.0em}
+\noindent\textit{Hinweis: Begründen Sie Ihre Rechenwege nachvollziehbar. Zwischenschritte werden
+bewertet (Folgefehler werden berücksichtigt).}
+
+% ================= AUFGABE 1 =================
+\aufgabe{1}{Differenzialrechnung}{16}
+
+\sub\textbf{a)} Bestimmen Sie die erste Ableitung der folgenden Funktionen.\hfill\textbf{[5 Punkte]}\\[0.3em]
+(i)\ $f(x) = x^2 e^{-x}$\qquad (ii)\ $g(x) = \sin(x^2)$\qquad
+(iii)\ $h(x) = \dfrac{\ln x}{x}$\qquad (iv)\ $k(x) = (x^2+1)\cos(x)$\qquad (v)\ $\ell(x)=\sin(x)\cos(x)$
+\karo{5cm}
+
+\sub\textbf{b)} Gegeben sei die Funktion
+\[
+  f(x) = \begin{cases} a\,x^2 + b\,x & \text{für } x \le 1,\\[2pt] 3x - 2 & \text{für } x > 1.\end{cases}
+\]
+Bestimmen Sie $a,b\in\mathbb{R}$ so, dass $f$ an der Stelle $x=1$ stetig \emph{und} differenzierbar
+ist.\hfill\textbf{[4 Punkte]}
+\karo{5cm}
+
+\sub\textbf{c)} Bestimmen Sie alle lokalen Extremstellen von $f(x) = x^3 - 3x$ (notwendige
+\emph{und} hinreichende Bedingung) und geben Sie Art und Funktionswert an.\hfill\textbf{[4 Punkte]}
+\karo{5.5cm}
+
+\sub\textbf{d)} Gegeben sei
+\[
+  f(x)=\begin{cases} x^2 + a & \text{für } x \le 2,\\[2pt] b\,x & \text{für } x > 2.\end{cases}
+\]
+Bestimmen Sie $a,b\in\mathbb{R}$ so, dass $f$ an der Stelle $x=2$ stetig \emph{und} differenzierbar
+ist.\hfill\textbf{[3 Punkte]}
+\karo{5cm}
+
+% ================= AUFGABE 2 =================
+\aufgabe{2}{Vektoranalysis}{24}
+
+\sub\textbf{a)} Gegeben sei das Skalarfeld $f(x,y)=x^2+y^2$ sowie der Punkt $P=(4,3)$.\hfill\textbf{[6 Punkte]}
+\begin{itemize}\setlength\itemsep{0pt}
+  \item[(i)] Berechnen Sie $\operatorname{grad} f$ und werten Sie ihn in $P$ aus.
+  \item[(ii)] Geben Sie den Betrag der höchsten Steigung in $P$, die Richtung des steilsten
+        Anstiegs \emph{und} die Richtung des steilsten Abfalls an.
+  \item[(iii)] Berechnen Sie die Richtungsableitung von $f$ in $P$ in Richtung $\vec v=(3,4)$
+        (auf Länge $1$ normieren).
+\end{itemize}
+\karo{6.5cm}
+
+\sub\textbf{b)} Bestimmen Sie das totale Differenzial $df$ von $f(x,y)=x^2 y^2$ und schätzen Sie
+damit $f(1{,}1\,;\,2{,}1)$ näherungsweise ab (ausgehend von $(x,y)=(1,2)$).\hfill\textbf{[3 Punkte]}
+\karo{4.5cm}
+
+\sub\textbf{c)} Berechnen Sie für $\vec v=(2,\,-3,\,6)$ die Normen $\lVert\vec v\rVert_1$,
+$\lVert\vec v\rVert_2$ und $\lVert\vec v\rVert_\infty$.\hfill\textbf{[2 Punkte]}
+\karo{3.5cm}
+
+\sub\textbf{d)} An welchen Stellen erfüllt $f(x,y)=2x^2+y^2-8x+2y$ die \emph{notwendige} Bedingung
+für eine Extremstelle?\hfill\textbf{[3 Punkte]}
+\karo{4.5cm}
+
+\sub\textbf{e)} Gegeben seien die Vektorfelder
+\[
+  \vec f(x,y)=\begin{pmatrix} x^2 y \\[2pt] x y^2 \end{pmatrix},
+  \qquad
+  \vec g(x,y,z)=\begin{pmatrix} y z \\[2pt] x z \\[2pt] x y \end{pmatrix}.
+\]
+Berechnen Sie $\operatorname{div}\vec f$, $\operatorname{rot}\vec f$ und $\operatorname{rot}\vec g$.
+Geben Sie für $\vec f$ die Bedingungen für Quellen- bzw. Wirbelfreiheit an und interpretieren Sie
+das Ergebnis für $\vec g$.\hfill\textbf{[4 Punkte]}
+\karo{7cm}
+
+\sub\textbf{f)} Gegeben sei das Skalarfeld $f(x,y)=x^2 y$ und der Punkt $P=(1,2)$. Berechnen Sie
+$\operatorname{grad} f(P)$ und die Richtungsableitung von $f$ in $P$ in Richtung $\vec v=(3,4)$
+(auf Länge $1$ normieren).\hfill\textbf{[4 Punkte]}
+\karo{5.5cm}
+
+\sub\textbf{g)} Bestimmen Sie das totale Differenzial $df$ von $f(x,y)=x^3 y$.\hfill\textbf{[2 Punkte]}
+\karo{3.5cm}
+
+% ================= AUFGABE 3 =================
+\aufgabe{3}{Gewöhnliche Differenzialgleichungen}{18}
+
+\sub\textbf{a)} Klassifizieren Sie (linear/nichtlinear, homogen/inhomogen bzw. getrennte
+Veränderliche). \emph{Nicht} lösen.\hfill\textbf{[2 Punkte]}\\[0.3em]
+(i)\ $y' = e^{x} y^2$\qquad (ii)\ $y' = y + x$\qquad (iii)\ $y' = -2y$\qquad (iv)\ $y' = \tfrac1x y$
+\karo{3.5cm}
+
+\sub Lösen Sie die folgenden Anfangswertprobleme.
+\vspace{0.2em}
+
+\sub\textbf{b)}\quad $y' = -2y, \qquad y(0) = 5$\hfill\textbf{[2,5 Punkte]}
+\karo{4cm}
+
+\sub\textbf{c)}\quad $y' = e^{x} y^2, \qquad y(0) = 1$\hfill\textbf{[3 Punkte]}
+\karo{5cm}
+
+\sub\textbf{d)}\quad $y' = y + x, \qquad y(0) = 0$ \quad\textit{(Tipp: partielle Integration in der
+Lösungsformel)}\hfill\textbf{[4 Punkte]}
+\karo{6.5cm}
+
+\sub\textbf{e)} \emph{Anwendung:} Eine Bakterienkultur wächst gemäß $y'(t)=0{,}5\,y(t)$ mit
+$y(0)=200$. Bestimmen Sie $y(t)$ und die Verdopplungszeit.\hfill\textbf{[2,5 Punkte]}
+\karo{4.5cm}
+
+\sub\textbf{f)}\quad $y' = 2y + e^{2x}, \qquad y(0) = 0$\hfill\textbf{[4 Punkte]}
+\karo{6cm}
+
+% ================= AUFGABE 4 =================
+\aufgabe{4}{Integralrechnung}{20}
+
+Berechnen Sie die folgenden Integrale.
+\vspace{0.2em}
+
+\sub\textbf{a)}\quad $\displaystyle \int_0^1 x^2\, e^{x^3}\, dx$ \quad(Substitution)\hfill\textbf{[3 Punkte]}
+\karo{4cm}
+
+\sub\textbf{b)}\quad $\displaystyle \int x^2\, e^{x}\, dx$ \quad(partielle Integration)\hfill\textbf{[3,5 Punkte]}
+\karo{5cm}
+
+\sub\textbf{c)}\quad $\displaystyle \int_1^2 \left(\frac{1}{x^2} + \frac{2}{x}\right) dx$\hfill\textbf{[2,5 Punkte]}
+\karo{4cm}
+
+\sub\textbf{d)}\quad $\displaystyle \int \bigl(\cos^3 x + \sin^2 x\,\cos x\bigr)\, dx$\hfill\textbf{[3 Punkte]}
+\karo{4.5cm}
+
+\sub\textbf{e)}\quad $\displaystyle \int_0^1 \int_0^2 x\,y\; dx\, dy$\hfill\textbf{[3 Punkte]}
+\karo{4.5cm}
+
+\sub\textbf{f)}\quad $\displaystyle \int_1^3 \left(\frac{2}{x^2} - \frac{1}{x}\right) dx$\hfill\textbf{[2,5 Punkte]}
+\karo{4cm}
+
+\sub\textbf{g)}\quad $\displaystyle \int x\,\sin(x)\, dx$ \quad(partielle Integration)\hfill\textbf{[2,5 Punkte]}
+\karo{4cm}
+
+% ================= AUFGABE 5 =================
+\aufgabe{5}{Trigonometrie}{14}
+
+\sub\textbf{a)} Rechnen Sie $225^\circ$ ins Bogenmaß um und bestimmen Sie $\sin$ und $\cos$ dieses
+Winkels.\hfill\textbf{[2 Punkte]}
+\karo{3.5cm}
+
+\sub\textbf{b)} Eine Schwingung wird durch $s(t)=4\sin(6\pi t)$ beschrieben. Bestimmen Sie
+Amplitude, Kreisfrequenz $\omega$, Frequenz $f$ und Periodendauer $T$.\hfill\textbf{[2,5 Punkte]}
+\karo{3.5cm}
+
+\sub\textbf{c)} Differenzieren Sie:\hfill\textbf{[3 Punkte]}\\
+(i)\ $u(x)=\sin(x)\cos(x)$\qquad (ii)\ $v(x)=\arctan(2x)$\qquad (iii)\ $w(x)=\sin^2(x)$
+\karo{4cm}
+
+\sub\textbf{d)} Bestimmen Sie die exakten Werte von $\arcsin\!\left(\tfrac{\sqrt3}{2}\right)$,
+$\arccos\!\left(\tfrac12\right)$ und $\arctan(1)$.\hfill\textbf{[2 Punkte]}
+\karo{3.5cm}
+
+\sub\textbf{e)} Gegeben sei $\sin(x)=\tfrac35$ mit $x$ im ersten Quadranten. Bestimmen Sie $\cos(x)$
+(nutzen Sie $\sin^2 x+\cos^2 x=1$).\hfill\textbf{[1,5 Punkte]}
+\karo{3cm}
+
+\sub\textbf{f)} Rechnen Sie $150^\circ$ ins Bogenmaß um und bestimmen Sie $\sin$ und $\cos$ dieses
+Winkels.\hfill\textbf{[2 Punkte]}
+\karo{3.5cm}
+
+\sub\textbf{g)} Differenzieren Sie $u(x)=\cos^2(x)$.\hfill\textbf{[1 Punkt]}
+\karo{2.8cm}
+
+\end{document}

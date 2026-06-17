@@ -1,0 +1,285 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage[a4paper,top=1.0cm,bottom=1.2cm,left=0.8cm,right=0.8cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{color}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+
+% ---------- Farben ----------
+\definecolor{head}{rgb}{0.06,0.20,0.45}   % Hauptueberschrift (Navy)
+\definecolor{sub}{rgb}{0.15,0.42,0.70}    % Unterueberschrift (Blau)
+\definecolor{grau}{rgb}{0.45,0.45,0.45}   % Hinweise
+\definecolor{ablcol}{rgb}{0.55,0.30,0.05} % Ablauf (Braun)
+
+% ---------- Layout / Abstaende ----------
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.4pt}
+\setlength{\columnsep}{16pt}
+\setlength{\columnseprule}{0.3pt}
+\setlength{\abovedisplayskip}{1.3pt}
+\setlength{\belowdisplayskip}{1.3pt}
+\setlength{\abovedisplayshortskip}{0.5pt}
+\setlength{\belowdisplayshortskip}{0.5pt}
+\renewcommand{\baselinestretch}{0.90}
+
+% ---------- Ueberschriften ----------
+\newcommand{\Sec}[1]{\par\vspace{1.4pt}{\color{head}\normalsize\bfseries #1}\nopagebreak\par\vspace{-1pt}{\color{head}\rule{\linewidth}{0.9pt}}\par\nopagebreak\vspace{0.6pt}}
+\newcommand{\Sub}[1]{\par\vspace{1.0pt}{\color{sub}\bfseries #1}\nopagebreak\par\vspace{0.2pt}}
+\newcommand{\hint}[1]{{\color{grau}\itshape #1}}
+\newcommand{\abl}{\textbf{\footnotesize\color{ablcol}Ablauf:}\ }
+\newcommand{\idee}[1]{{\color{grau}#1}\par}
+
+% ---------- kompakte Aufzaehlung ----------
+\newenvironment{tl}{\begin{list}{\textbullet}{%
+  \setlength{\leftmargin}{1.1em}\setlength{\labelsep}{0.45em}%
+  \setlength{\itemsep}{0pt}\setlength{\parsep}{0pt}\setlength{\topsep}{1pt}%
+  \setlength{\partopsep}{0pt}}}{\end{list}}
+
+% ---------- Kopf-/Fusszeile ----------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\fancyfoot[L]{\footnotesize\color{grau}Numerische Methoden — Open-Book-Blueprint (plus)}
+\fancyfoot[R]{\footnotesize\color{grau}Seite \thepage}
+
+\begin{document}
+\footnotesize
+
+\begin{center}
+{\color{head}\Large\bfseries Numerische Methoden — Blueprint}\\[1pt]
+{\color{grau}\footnotesize Jede Methode: \textbf{Idee/Wofür} (grau) \,·\, \textbf{Formel} \,·\, \textbf{\color{ablcol}Ablauf} (Schritt für Schritt). Voller Stoff der Vorlesungsnotizen \glqq Numerical Methods\grqq{} (Kap.~1--7) --- nichts darüber hinaus.}
+\end{center}
+\vspace{2pt}
+
+\begin{multicols}{2}
+
+% ============================================================
+\Sec{1 — Grundlagen \& Fehlerarten}
+\idee{Numerik löst, was analytisch nicht (praktikabel) geht — approximativ. Preis: überall Fehler, die man kennen muss.}
+\hint{Transzendente Funktionen (z.\,B.\ Sigmoid $\sigma(x)=\tfrac{1}{1+e^{-x}}$, $\sin$) haben keine geschlossene Lösung $\Rightarrow$ numerisch nötig.}
+
+\Sub{Approximationsfehler}
+\[ \text{Fehler}=\big|\,\text{exakter Wert}-\text{Näherungswert}\,\big| \]
+
+\Sub{Fehlerarten — nach Ursache}
+\begin{tl}
+\item \textbf{Modellfehler:} Realität vereinfacht.
+\item \textbf{Abbruchfehler:} Verfahren abgeschnitten (Reihe/Gitter).
+\item \textbf{Rundungsfehler:} Maschine speichert ungenau.
+\end{tl}
+\hint{Faustfrage: geht's um eine \emph{Zahl} (Rundung) oder einen \emph{Vorgang} (Abbruch)?}
+
+% ============================================================
+\Sec{2 — Diskretisierung \& Grid Search}
+\idee{Suchraum in ein Gitter zerlegen, \emph{alle} Kandidaten durchprobieren, den mit dem besten \textbf{Zielwert} behalten. Zwei Einsätze: (a) Extremum einer Funktion, (b) ein (Gleichungs-)System lösen.}
+
+\Sub{Stützstellen}
+\[ x_i=a+i\,h,\quad h=\frac{b-a}{N},\quad i=0,\dots,N \]
+
+\Sub{Zielmaß — \emph{was} wird minimiert?}
+\begin{tl}
+\item \textbf{(a) Extremum:} direkt $f(x_i)$; kleinsten/größten Wert nehmen.
+\item \textbf{(b) System $A\vec w=\vec c$:} \emph{Residuum} $E(\vec w)=\sum_j|(\text{Zeile}_j\!\cdot\!\vec w)-c_j|$ (Fehlermaß \textbf{wählen \& begründen!}); $\vec w$ mit kleinstem $E$.
+\end{tl}
+\hint{Das Zielmaß braucht \emph{nicht} die wahre Lösung — $E$ misst nur, wie gut die Gleichungen erfüllt sind. \textbf{Nicht} mit dem Approximationsfehler verwechseln!}
+
+\Sub{Ablauf}
+\abl 1) Gitter aufstellen (alle $x_i$ bzw.\ alle $\vec w$). \ 2) Zielmaß überall auswerten. \ 3) Kandidat mit bestem Zielwert wählen.
+
+\Sub{Genauigkeit prüfen \hint{(separater Schritt!)}}
+Approximationsfehler $=|\text{exakt}-\text{numerisch}|$ — nur möglich, \emph{wenn} die exakte Lösung bekannt ist (Vergleich, nicht Zielmaß!).
+\hint{Grobes Gitter $\Rightarrow$ Resultat kann irreführend sein (z.\,B.\ Optimum bei $w{=}0$: dann hängt nichts mehr von $w$ ab — \glqq macht wenig Sinn\grqq). \textbf{Exakt nur, wenn die Lösung zufällig auf einem Gitterpunkt liegt}; feineres $h$ verbessert, garantiert Exaktheit aber nie.}
+
+\Sub{Komplexität}
+\[ \mathcal{O}(N^{d}) \]
+\hint{$d$ Dimensionen — Fluch der Dimensionalität; darum später Newton statt Brute Force.}
+
+% ============================================================
+\Sec{3 — Gleitkomma (IEEE 754)}
+\idee{Wie der Rechner reelle Zahlen mit endlich vielen Bits speichert — Quelle der Rundungsfehler.}
+
+\Sub{Darstellung}
+\[ x=(-1)^{s}\cdot m\cdot 2^{e} \]
+$s$ Vorzeichen, $m$ Mantisse, $e$ Exponent. single $1{+}8{+}23$, double $1{+}11{+}52$ Bit.
+
+\Sub{Exponent mit Bias}
+\[ e=E-\text{Bias}\ \text{(lesen)},\quad E=e+\text{Bias}\ \text{(speichern)} \]
+\hint{single: Bias $127$, $E\in[0,255]$. Toy-System: Bias frei vorgegeben (z.\,B.\ $1$).}
+
+\Sub{Zahl $\to$ IEEE-Form}
+\abl 1) Zahl binär schreiben. \ 2) normalisieren $1.m\times 2^{e}$. \ 3) $E=e+\text{Bias}$, binär. \ 4) $s$, $E$, $m$ zusammensetzen.
+\[ 10_{10}=1010_{2}=1.010\times2^{3} \]
+\[ E=130=10000010_{2} \]
+
+\Sub{Maschinengenauigkeit}
+\[ \varepsilon_{\text{mach}}=2^{-t}\quad(t=\text{Mantissenbits}) \]
+$2^{t}$ Werte je Zweierpotenz-Intervall; absolute Lücke $\approx\varepsilon_{\text{mach}}|x|$; relative Präzision $\approx2^{-t}$.
+\hint{single $\approx1.19\!\cdot\!10^{-7}$, double $\approx2.22\!\cdot\!10^{-16}$. \textbf{Bit-Trade-off:} $+$Mantisse $\to$ feinere \emph{Auflösung} ($\varepsilon_{\text{mach}}\!\downarrow$); $+$Exponent $\to$ größerer \emph{Wertebereich}.}
+
+\Sub{Eigenes System entwerfen \hint{(Klausur 1a)}}
+\abl 1) Bits auf Mantisse/Exp.\ aufteilen $+$ \emph{Trade-off begründen}. \ 2) $\varepsilon_{\text{mach}}=2^{-t}$. \ 3) darstellbare Werte $(-1)^s m\,2^{e}$, $e=E-$Bias. \ 4) Ausdruck \emph{schrittweise} runden $\Rightarrow$ Auslöschung (§4).
+
+\Sub{Wertebereich \& Festkomma}
+Überlauf (zu groß) / Unterlauf (zu klein). \textbf{Festkomma:} Wert\,$\cdot$\,Skalierung $S$ als Integer speichern, beim Lesen $/S$; kleinste Lücke $1/S$, max.\ Rundungsfehler $\tfrac{1}{2S}$ (konstant, $|x|$-unabhängig).
+\hint{Gleitkomma $=$ konstante \emph{relative} Lücke (Dynamik); Festkomma $=$ konstante \emph{absolute} Lücke (Kontrolle).}
+
+% ============================================================
+\Sec{4 — Auslöschung}
+\idee{Subtraktion fast gleicher Zahlen $\Rightarrow$ führende Ziffern weg $\Rightarrow$ großer \emph{relativer} Fehler.}
+
+\Sub{Vorgehen}
+\abl 1) beide Zahlen auf gespeicherte Stellenzahl runden. \ 2) subtrahieren. \ 3) mit wahrer Differenz vergleichen.
+\hint{Folge: weniger signifikante Stellen als die Eingaben vortäuschen (Pseudo-Genauigkeit).}
+\hint{Klausur-Typ $\dfrac{1}{(1+\varepsilon)-1}$: rundet $1+\varepsilon$ schon auf $1$, wird der Nenner $0$ statt $\varepsilon$ $\Rightarrow$ Ergebnis explodiert (math.\ wäre es $1/\varepsilon$). Genau hier zerstört Auslöschung das Resultat.}
+
+% ============================================================
+\Sec{5 — Fehleranalyse}
+\idee{Wie gut ist ein Verfahren? Vier Eigenschaften messen Empfindlichkeit \& Genauigkeit. \textbf{Kondition} $=$ Eigenschaft des \emph{Problems}; \textbf{Stabilität/Konsistenz/Konvergenz} $=$ Eigenschaft des \emph{Verfahrens}.}
+Symbole: $\kappa$ Konditionierung, $s$ Stabilität, $c$ Konsistenz \hint{(Konvergenz hat keins)}. $f$ exakt, $\hat f$ Verfahren, $\tilde x=x\pm\delta$ gestört.
+\hint{Diskretisierte $\hat f$: Punkt erst auf den \emph{nächsten Gitterpunkt} runden (snappen), dann auswerten.}
+\abl \textbf{je Schrittweite der Reihe nach:} 1) Kondition an $\ge2$ Stellen (flach vs.\ steil). \ 2) Stabilität $s$ je $h$ (welche $h$ stabiler?). \ 3) Konsistenz $c$ je $h$ (welche konsistenter?). \ 4) Konvergenz $=$ Stab.$+$Kons.; Fazit: \glqq kleineres $h$ nicht zwingend besser\grqq. \hint{gröberes $h$ meist stabiler, feineres $h$ konsistenter.}
+
+\Sub{Konditionierung \hint{(Problem)}}
+\[ \kappa=\big|f(x)-f(\tilde x)\big| \]
+Empfindlichkeit des \emph{Problems}. Klein $=$ gut. \hint{$\kappa\approx|f'(x)|\,\delta$ — je steiler, desto schlechter.}
+
+\Sub{Stabilität \hint{(Verfahren)}}
+\[ s=\frac{|\hat f(\tilde x)-\hat f(x)|}{|\tilde x-x|} \]
+Verstärkungsfaktor des \emph{Verfahrens}. $s\approx1$: linear.
+
+\Sub{Konsistenz}
+\[ c=\big|\hat f(x)-f(x)\big| \]
+$c=$ \textbf{Konsistenzfehler}: Abstand Verfahren$\leftrightarrow$Wahrheit bei \emph{exaktem} Input. \hint{Kein fester Wert — man rechnet die Differenz am Punkt aus, \emph{das} ist $c$ (\glqq$\le c$\grqq{} $=$ obere Schranke). Kleineres $h\Rightarrow$ kleineres $c$.}
+
+\Sub{Konvergenz}
+$\hat f(\tilde x)\to f(x)$ für $h\to0$, und
+\[ \text{Konvergenz}=\text{Stabilität}+\text{Konsistenz} \]
+\hint{Kleineres $h$ verbessert die Konsistenz, kann aber die Stabilität verschlechtern $\Rightarrow$ \emph{nicht} zwingend bessere Approximation. Grenzwert $\ne f(x)$: systematischer \emph{Bias} des Verfahrens.}
+
+% ============================================================
+\Sec{6 — Newton-Raphson}
+\idee{Nullstelle $f(x^{*})=0$, wenn $f'$ bekannt. Tangente legen, ihre Nullstelle nehmen.}
+\[ x_{n+1}=x_{n}-\frac{f(x_{n})}{f'(x_{n})} \]
+\abl 1) $f(x_n)$ und $f'(x_n)$ \emph{getrennt} ausrechnen. \ 2) einsetzen $\to x_{n+1}$. \ 3) mit $x_{n+1}$ wiederholen bis $|f(x_n)|<\varepsilon$.\\
+\textbf{Fehlermodus:} $f'(x_n)\approx0$ (Division durch null, falsche Nullstelle, Oszillation). Quadratische Konvergenz: korrekte Stellen verdoppeln sich.
+
+% ============================================================
+\Sec{7 — Taylor \& Konvergenz}
+\[ f(x)=\sum_{k=0}^{\infty}\frac{f^{(k)}(x_n)}{k!}(x-x_n)^{k} \]
+\[ =f(x_n)+f'(x_n)(x-x_n)+\tfrac{f''(x_n)}{2}(x-x_n)^2+\dots \]
+\abl 1) $f,f',f''$ \emph{bei $x_n$} auswerten (gibt Zahlen!). \ 2) einsetzen — $x$ bleibt \emph{Variable}, $(x-x_n)$ \emph{nicht} 0. \ 3) Ergebnis ist Polynom in $x$; erst danach Zahl einsetzen.
+\hint{Newton $=$ 1.\ Ordnung (Tangente).}
+
+\Sub{Quadratische Konvergenz}
+\[ |e_{n+1}|\le C\,|e_n|^2,\quad C=\Big|\tfrac{f''(\xi)}{2f'(x^{*})}\Big| \]
+\hint{$10^{-1}\!\to\!10^{-2}\!\to\!10^{-4}\!\to\!10^{-8}$.}
+
+% ============================================================
+\Sec{8 — Sekantenverfahren}
+\idee{Wie Newton, aber $f'$ unbekannt — durch Sekantensteigung ersetzt.}
+\[ x_{n+1}=x_n-f(x_n)\cdot\frac{x_n-x_{n-1}}{f(x_n)-f(x_{n-1})} \]
+\abl 1) \emph{zwei} Startwerte $x_0,x_1$. \ 2) $f(x_0),f(x_1)$. \ 3) Formel $\to x_2$ ($x_n=$ neuester!). \ 4) ältesten verwerfen, wiederholen.
+
+\Sub{Numerische Ableitung (finite Differenz) \hint{(wenn $f'$ nicht verfügbar)}}
+\[ f'(x_0)\approx\frac{f(x_0+h)-f(x_0)}{h}\quad(\text{Fehler }\mathcal{O}(h)) \]
+\hint{zentral $\frac{f(x_0+h)-f(x_0-h)}{2h}$, $\mathcal{O}(h^2)$. Genau das ersetzt $f'$ in Newton $\to$ Sekante; umgeht den Versagensmodus \glqq $f'$ unbekannt/teuer\grqq.}
+
+% ============================================================
+\Sec{9 — Newton für Optimierung}
+\idee{Extremum $=$ Nullstelle von $f'$.}
+\[ x_{n+1}=x_n-\frac{f'(x_n)}{f''(x_n)} \]
+\abl 1) $f',f''$ bilden. \ 2) Update iterieren (Newton auf $f'$). \ 3) mit $f''$-Test klassifizieren.\\
+\textbf{2.-Ableitungs-Test:} $f''{>}0$ Min, $f''{<}0$ Max, $f''{=}0$ unklar.\\
+\textbf{$|f''|$-Trick:} Nenner $|f''|$ $\Rightarrow$ Schritt immer bergab.
+\Sub{Gradientenabstieg}
+\[ x_{n+1}=x_n-\eta\,f'(x_n) \]
+$\eta$ Lernrate. \hint{SGD: Gradient auf zufälligem Mini-Batch (Monte-Carlo-Schätzung).}
+
+% ============================================================
+\Sec{10 — Globale Optimierung}
+\idee{Lokale Verfahren bleiben im nächsten Tal hängen — Strategien, um das \emph{globale} Minimum zu finden.}
+\[ \text{lokal: }\ x^{*}=\arg\min_{x\in N(x_0)}f(x) \]
+\[ \text{global: }\ x^{*}=\arg\min_{x\in\Omega}f(x) \]
+\hint{Konvex ($f''\ge0\,\forall x$): lokal $=$ global. Test\-funktion (kontroll.\ Multimodalität): Shekel's Foxholes $f(x)=-\sum_i\frac{c_i}{(x-a_i)^2+r_i}$ — viele lokale Minima, ein globales.}
+
+\Sub{Random Restarts}
+\[ P=1-(1-p)^{K},\qquad K=\frac{\ln(1-P)}{\ln(1-p)} \]
+\abl nach $K$ lösen: 1) $(1-p)^{K}=1-P$. \ 2) $\ln$ beidseitig. \ 3) $K=\ln(1-P)/\ln(1-p)$. \hint{rechts $1-P$, nicht $P$!}
+
+\Sub{Basin Hopping}
+Lokale Optimierung $+$ zufällige Sprünge $\delta\sim D$ vom Minimum aus (kein voller Neustart).
+
+\Sub{Simulated Annealing}
+Verschlechterung $\Delta f$ akzeptiert mit
+\[ P_{\text{akz}}=\exp(-\Delta f/T),\quad T\downarrow \text{ über Zeit} \]
+
+\Sub{Stochastik}
+Rauschen / Mini-Batch glättet die Landschaft, hilft aus lokalen Minima.
+
+\Sub{Glätten durch Integration \hint{(gegen hochfrequente Mini-Minima)}}
+Hochfrequenter Stör-Term (z.\,B.\ $+\tfrac12\sin(2\pi x)$) stoppt lokale Optimierer im nächsten Mikro-Tal. Ansatz neben globaler Opt.: \textbf{Fenster-Mittel} $\tfrac1h\!\int_{x-h/2}^{x+h/2}\!f$. \hint{$h\approx$ \emph{Periode} der Störung wählen ($\sin(2\pi x)$: Periode $1\Rightarrow h\approx1$), dann mittelt sie sich heraus.}
+
+% ============================================================
+\Sec{11 — Numerische Integration}
+\idee{$I=\int_a^b f\,dx$ durch einfache Formen ($h$ Teilbreite, $m=\tfrac{a+b}{2}$).}
+
+\Sub{Einfache Regeln (1 Intervall, $h{=}b{-}a$)}
+\[ \text{Rechteck (links/rechts): }h\,f(a)\ \ \text{bzw.}\ \ h\,f(b) \]
+\[ \text{Mittelpunkt \emph{(bestes Rechteck)}: }h\,f(m) \]
+\[ \text{Trapez: }\tfrac{h}{2}[f(a)+f(b)] \]
+\[ \text{Simpson: }\tfrac{h}{6}[f(a)+4f(m)+f(b)] \]
+\hint{Steigende Genauigkeit: Rechteck (konstante Höhe) $\to$ Trapez (Gerade) $\to$ Simpson (Parabel durch 3 Punkte). Mittelpunkt schlägt Links/Rechts, weil er die Krümmung mittelt.}
+
+\Sub{Zusammengesetzt ($n$ Teilintervalle)}
+\[ \text{Trapez: }\tfrac{h}{2}\Big[f_0+2\!\sum_{i=1}^{n-1}\!f_i+f_n\Big] \]
+\[ \text{Simpson: }\tfrac{h}{3}\Big[f_0+4\!\!\sum_{\text{ungerade}}\!\!f_i+2\!\!\sum_{\text{gerade}}\!\!f_i+f_n\Big] \]
+\abl 1) $h$ und Stützstellen. \ 2) alle $f_i$. \ 3) mit Gewichten in die Formel.\\
+Fehler (akkum.): Links/Rechts $\mathcal{O}(h)$, Mittelpunkt/Trapez $\mathcal{O}(h^2)$, Simpson $\mathcal{O}(h^4)$. Simpson exakt bis Grad 3.
+
+\Sub{Lagrange-Interpolation}
+\[ L_j(x)=\!\!\prod_{\substack{m=0\\ m\neq j}}^{n}\!\!\frac{x-x_m}{x_j-x_m},\quad p(x)=\sum_j y_j L_j(x) \]
+\abl 1) jedes $L_j$ (Schalter: $1$ am eigenen Knoten, $0$ sonst). \ 2) $\times\,y_j$, summieren. \ 3) ausmultiplizieren, Probe $p(x_k)=y_k$.
+\hint{Hoher Polynomgrad oszilliert an den Rändern (Runge-Phänomen) — daher \emph{nicht} den Grad erhöhen, sondern zusammengesetzte Regeln niedrigen Grades (\glqq stop at Simpson\grqq).}
+
+% ============================================================
+\Sec{12 — Monte-Carlo-Integration}
+\idee{Integral $=$ Volumen $\times$ Mittelwert — durch Zufallspunkte schätzen statt Gitter; dimensionsunabhängig.}
+\[ I=\int_\Omega f\,dx=|\Omega|\cdot\mathbb{E}_{X\sim U(\Omega)}[f(X)] \]
+\[ \hat I=\frac{|\Omega|}{N}\sum_{i=1}^{N}f(X_i) \]
+\abl 1) $N$ Zufallspunkte $X_i$ in $\Omega$. \ 2) $f(X_i)$ alle, \emph{summieren}. \ 3) $\times\,|\Omega|/N$.\\
+$\sigma_f^2=\tfrac{1}{N-1}\sum(f(X_i)-\bar f)^2$, \ Standardfehler $\mathrm{SE}=\tfrac{|\Omega|\sigma_f}{\sqrt N}$.
+\hint{$\mathcal{O}(1/\sqrt N)$, dimensionsunabhängig; $N\times4\Rightarrow$ Fehler halbiert. Mittelpunktregel $=$ Monte-Carlo mit $N{=}1$ (Sample am Mittelpunkt).}
+
+% ============================================================
+\Sec{13 — Modelltraining (Synthese)}
+\idee{Jede Standard-Trainingspraxis ist eine der bekannten numerischen Methoden im ML-Gewand. (Notizen Kap.~7; Klausurstil „welche Methode steckt dahinter?“)}
+
+\Sub{Modell \& Loss}
+\[ \hat y(x)=wx+b,\qquad L(w,b)=\tfrac1n\textstyle\sum_{i=1}^{n}(wx_i+b-y_i)^2 \]
+
+\Sub{Loss bei Initialisierung \hint{(Handprobe)}}
+Mit $w{=}0,\ b{=}\bar y$ sagt das Modell überall $\bar y$ voraus:
+\[ L(0,\bar y)=\tfrac1n\textstyle\sum_i (y_i-\bar y)^2=\mathrm{Var}(y) \]
+\hint{Klassifikator (uniform, $K$ Klassen): Cross-Entropy $=\ln K$. Gedruckt $\approx n\!\cdot\!\mathrm{Var}$: summiert statt gemittelt; $\approx0$: falsche Normalisierung.}
+
+\Sub{Overfit-Sanity-Check}
+\abl 1) kleine Teilmenge + (über)mächtiges Modell. \ 2) Loss muss $\to0$. \ 3) klappt nicht $\Rightarrow$ Bug in \emph{Pipeline} (Modell/Loss/Daten), nicht im Optimierer.
+\hint{$=$ Solver an Problem mit bekannter exakter Lösung testen.}
+
+\Sub{Die fünf Korrespondenzen}
+\begin{tl}
+\item Overfit-Test $\leftrightarrow$ Solver an bekannter Lösung (Newton, Kap.~6).
+\item Initial-Loss $\leftrightarrow$ Randwert-/Handprobe.
+\item Mini-Batch-SGD $\leftrightarrow$ Monte-Carlo des Gradienten, $\mathrm{SE}\propto1/\sqrt B$ (Kap.~12).
+\item Mehrere Random Seeds $\leftrightarrow$ Random Restarts, nicht-konvex (Kap.~10).
+\item Quantisierung (Inferenz) $\leftrightarrow$ Präzisionswahl Gleitkomma (Kap.~3); Inferenz verträgt weniger Präzision als Training.
+\end{tl}
+
+\end{multicols}
+\end{document}

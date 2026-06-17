@@ -1,0 +1,439 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{geometry}
+\geometry{a4paper,margin=2.2cm}
+\usepackage[colorlinks=true]{hyperref}
+
+% psmallmatrix selbst definieren (mathtools fehlt)
+\newenvironment{psmallmatrix}{\left(\begin{smallmatrix}}{\end{smallmatrix}\right)}
+
+% ----- Dark Mode -----
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{panel}{HTML}{2A2A2A}
+\definecolor{accent}{HTML}{89B4FA}
+\definecolor{green}{HTML}{A6E3A1}
+\definecolor{yellow}{HTML}{F9E2AF}
+\definecolor{red}{HTML}{F38BA8}
+\definecolor{muted}{HTML}{A6ADC8}
+\definecolor{rulecol}{HTML}{6A6A6A}
+\pagecolor{bgdark}
+\color{fgtext}
+\hypersetup{linkcolor=accent,urlcolor=accent}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+
+\titleformat{\section}{\Large\bfseries\color{accent}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\large\bfseries\color{yellow}}{\thesubsection}{0.6em}{}
+
+\newtcolorbox{formel}[1][Definition / Formel]{
+  enhanced,breakable,colback=panel,colframe=accent,coltext=fgtext,
+  fonttitle=\bfseries\color{bgdark},colbacktitle=accent,title={#1},
+  boxrule=0.6pt,arc=2pt,left=6pt,right=6pt,top=4pt,bottom=4pt}
+\newtcolorbox{beispiel}[1][Beispiel]{
+  enhanced,breakable,colback=panel,colframe=green,coltext=fgtext,
+  fonttitle=\bfseries\color{bgdark},colbacktitle=green,title={#1},
+  boxrule=0.6pt,arc=2pt,left=6pt,right=6pt,top=4pt,bottom=4pt}
+\newtcolorbox{merke}[1][Merke]{
+  enhanced,breakable,colback=panel,colframe=yellow,coltext=fgtext,
+  fonttitle=\bfseries\color{bgdark},colbacktitle=yellow,title={#1},
+  boxrule=0.6pt,arc=2pt,left=6pt,right=6pt,top=4pt,bottom=4pt}
+\newtcolorbox{achtung}[1][Häufiger Fehler -- so ist es richtig]{
+  enhanced,breakable,colback=panel,colframe=red,coltext=fgtext,
+  fonttitle=\bfseries\color{bgdark},colbacktitle=red,title={#1},
+  boxrule=0.6pt,arc=2pt,left=6pt,right=6pt,top=4pt,bottom=4pt}
+
+\newcommand{\f}[1]{\textcolor{green}{#1}}
+
+\begin{document}
+
+\begin{center}
+{\Huge\bfseries\color{accent} Numerische Methoden}\\[4pt]
+{\large\color{fgtext} Kompaktes Lernskript -- alle Themen erklärt}\\[2pt]
+{\small\color{muted} Theorie + durchgerechnete Mini-Beispiele \;·\; nach Themen gegliedert}
+\end{center}
+
+\vspace{6pt}
+\noindent\textcolor{rulecol}{\rule{\linewidth}{0.4pt}}
+
+{\color{accent}\tableofcontents}
+\noindent\textcolor{rulecol}{\rule{\linewidth}{0.4pt}}
+
+% =====================================================================
+\section{Grundlagen \& Zahldarstellung}
+
+\subsection{Warum Numerik? Diskretisierung}
+Viele Probleme haben \emph{keine} geschlossene Lösung (z.\,B.\ $\int e^{-x^2}dx$, $x=\cos x$) oder
+sind zu teuer analytisch. Numerik approximiert sie mit endlich vielen Rechenschritten. Dazu wird ein
+kontinuierliches Problem \textbf{diskretisiert}: das Intervall $[a,b]$ in $N$ Stücke geteilt.
+
+\begin{formel}[Diskretisierung]
+Schrittweite $h=\dfrac{b-a}{N}$, Gitterpunkte $x_i=a+i\,h$ für $i=0,\dots,N$ (das sind $N{+}1$ Punkte).
+\end{formel}
+
+\begin{beispiel}
+$[0,3]$, $N=6$: $h=\tfrac{3-0}{6}=\f{0{,}5}$, Gitterpunkte $\f{0;\,0{,}5;\,1;\,1{,}5;\,2;\,2{,}5;\,3}$
+(sieben Stück).
+\end{beispiel}
+
+\subsection{Gleitkomma (floating point)}
+\begin{formel}[Gleitkommazahl]
+$x=(-1)^s\,m\,2^{e}$ mit Vorzeichenbit $s$, \textbf{Mantisse} $m$ (Genauigkeit) und \textbf{Exponent}
+$e$ (Größenordnung). \emph{Normalisiert}: $m=1{.}b_1b_2\dots$ mit \emph{implizitem} führenden $1$-Bit.
+Der \textbf{Bias} verschiebt den Exponenten, damit auch negative $e$ ohne eigenes Vorzeichen passen.
+\end{formel}
+
+\begin{formel}[Maschinenepsilon]
+$\varepsilon_{\mathrm{mach}}=2^{-t}$ bei $t$ gespeicherten Nachkomma-Mantissenbits $=$ Abstand von
+$1$ zur nächstgrößeren darstellbaren Zahl $=$ kleinste \emph{relative} Auflösung.
+\end{formel}
+
+\begin{merke}[Der Trade-off Auflösung $\leftrightarrow$ Wertebereich]
+Bei fester Bitzahl gilt:
+\begin{itemize}[leftmargin=1.4em,nosep]
+\item \textbf{Ein Bit mehr Mantisse} $\Rightarrow$ kleineres $\varepsilon_{\mathrm{mach}}$ $\Rightarrow$
+      \emph{feinere Auflösung} (resolution). Die Zahlen werden \emph{nicht} größer, nur genauer.
+\item \textbf{Ein Bit mehr Exponent} $\Rightarrow$ \emph{größerer Wertebereich} (dynamic range):
+      betragsmäßig größte \emph{und} kleinste Zahl wachsen. Die Genauigkeit wird \emph{nicht} feiner.
+\end{itemize}
+Kurz: Mantisse $=$ \emph{wie genau}, Exponent $=$ \emph{wie weit}.
+\end{merke}
+
+\subsection{Festkomma (fixed point)}
+Feste Anzahl Vor- und Nachkommabits, Skalierungsfaktor $2^{-f}$ ($f=$ Nachkommabits).
+\begin{formel}[Festkomma]
+Auflösung $=2^{-f}$ (\emph{konstant}, überall gleich). Größte vorzeichenlose Zahl mit $k$ Bit gesamt:
+$\dfrac{2^{k}-1}{2^{f}}$. Speicherwert von $x$: $x\cdot 2^{f}$ (ganzzahlig), dann binär.
+\end{formel}
+\begin{beispiel}
+$8$ Bit, $4$ Vor-/$4$ Nachkomma ($f=4$): Auflösung $2^{-4}=\f{0{,}0625}$, größte Zahl
+$\tfrac{255}{16}=\f{15{,}9375}$. Darstellung $5{,}25$: $5{,}25\cdot16=84=\f{01010100_2}$
+(Probe $0101{,}0100=4+1+0{,}25$). \;
+Vergleich: \textbf{Festkomma} hat \emph{konstante absolute} Abstände; \textbf{Gleitkomma} hat
+\emph{konstante relative} Abstände (absoluter Abstand wächst mit der Größe von $x$).
+\end{beispiel}
+
+\subsection{Rundung, Auslöschung, Fehlerarten}
+\begin{formel}[Fehlermaße]
+Absoluter Fehler $|x-\tilde x|$; relativer Fehler $\dfrac{|x-\tilde x|}{|x|}$ (skaleninvariant, „gültige
+Stellen``). Relativ ist meist aussagekräftiger -- außer nahe $x=0$.
+\end{formel}
+
+\begin{merke}[Auslöschung (catastrophic cancellation)]
+Subtrahiert man zwei \emph{fast gleiche} Zahlen, heben sich die führenden Stellen weg; der kleine Rest
+ist oft schon weggerundet $\Rightarrow$ der \emph{relative} Fehler explodiert. Gegenmittel: umformen,
+sodass nicht subtrahiert wird, z.\,B.\ $\sqrt{x+1}-\sqrt x=\dfrac{1}{\sqrt{x+1}+\sqrt x}$.
+\end{merke}
+
+\begin{beispiel}[Auslöschung im Mini-System]
+System mit $2$ Mantissenbits: $\varepsilon=2^{-2}=0{,}25$, darstellbar $1{,}00;1{,}25;1{,}5;1{,}75$.
+$1+0{,}1=1{,}1\to$ rundet auf $1{,}0$ (denn $|1{,}1-1|=0{,}1<|1{,}1-1{,}25|=0{,}15$).
+Dann $\frac{1}{(1+0{,}1)-1}=\frac{1}{1-1}=\frac10\to\f{\infty}$, mathematisch wäre es $\f{10}$ --
+die Information $0{,}1$ ging beim Runden verloren.
+\end{beispiel}
+
+\begin{formel}[Die drei Fehlerarten]
+\textbf{Modellfehler} (Realität vereinfacht, z.\,B.\ Reibung weggelassen) \;·\;
+\textbf{Abschneide-/Diskretisierungsfehler} (Grenzprozess abgebrochen: Reihe nach $k$ Gliedern,
+Ableitung $\to$ Differenzenquotient) \;·\;
+\textbf{Rundungsfehler} (endliche Stellenzahl, z.\,B.\ $\tfrac13\to0{,}333$).
+\end{formel}
+
+\subsection{Brute Force: Grid Search}
+Probiere alle Kandidaten auf einem Gitter durch und nimm den mit kleinstem Fehler.
+\begin{formel}[Grid Search für $A\mathbf x=\mathbf c$]
+Fehlermaß $E(\mathbf x)=\|A\mathbf x-\mathbf c\|$ (z.\,B.\ Summe der Residuen-Beträge oder -Quadrate).
+Über das Gitter minimieren. \textbf{Wichtig:} das Residuum misst im \emph{Ausgaberaum} ($A\mathbf
+x$ vs.\ $\mathbf c$) -- nicht den Abstand der Parameter zur exakten Lösung.
+\end{formel}
+\begin{beispiel}
+$\begin{psmallmatrix}1&2\\3&1\end{psmallmatrix}\!\begin{psmallmatrix}w\\b\end{psmallmatrix}
+=\begin{psmallmatrix}4\\5\end{psmallmatrix}$, Gitter $w,b\in\{0,1,2\}$,
+$E=|w+2b-4|+|3w+b-5|$. Bestes Gitterpaar: $\f{(w,b)=(1,2)}$ mit $E=1$. Exakt ist
+$(\tfrac65,\tfrac75)$ -- also \emph{nicht} getroffen. Grid Search trifft exakt nur, wenn die Lösung
+zufällig auf dem Gitter liegt; Verbesserung: feineres Gitter / um den Sieger verfeinern.
+\end{beispiel}
+
+% =====================================================================
+\section{Fehleranalyse: die vier Eigenschaften}
+Schreibweise: $f=$ wahres Problem, $\hat f=$ Algorithmus, $\tilde x=$ gestörte Eingabe.
+
+\begin{formel}[Die vier Begriffe]
+\begin{tabular}{@{}ll@{}}
+\textbf{Kondition} & $\kappa=|f(x)-f(\tilde x)|$ -- Empfindlichkeit des \emph{Problems} auf Eingabestörung.\\
+\textbf{Stabilität} & $s=\dfrac{|\hat f(\tilde x)-\hat f(x)|}{|\tilde x-x|}$ -- verstärkt der \emph{Algorithmus} Störungen?\\
+\textbf{Konsistenz} & $c=|\hat f(x)-f(x)|$ -- wie gut nähert der Algorithmus bei exakter Eingabe?\\
+\textbf{Konvergenz} & $|\hat f(\tilde x)-f(x)|\to 0$ -- nähert sich das Resultat dem wahren Wert?\\
+\end{tabular}
+\end{formel}
+
+\begin{merke}[Faustregeln]
+$\kappa\approx|f'(x)|\cdot\delta$: \emph{flach} (kleine Steigung) $=$ \textbf{gut} konditioniert,
+\emph{steil} $=$ \textbf{schlecht} konditioniert. \;
+Kondition gehört zum \emph{Problem}, Stabilität zum \emph{Verfahren}: ein stabiler Algorithmus kann ein
+schlecht konditioniertes Problem \emph{nicht} retten. \;
+\textbf{Konvergenz $\approx$ Konsistenz $+$ Stabilität.}
+\end{merke}
+
+\begin{beispiel}[$g(x)=(x-2)^2$, Störung $\delta=\tfrac12$, Gitter $h_1{=}1$, $h_2{=}\tfrac12$]
+\textbf{Kondition:} nahe Minimum $x{=}2$: $\kappa=|g(2)-g(2{,}5)|=|0-0{,}25|=\f{0{,}25}$ (gut);
+am Rand $x{=}0$: $\kappa=|g(0)-g(0{,}5)|=|4-2{,}25|=\f{1{,}75}$ (schlecht).\\
+\textbf{Konsistenz} an $x{=}2{,}7$ ($g(2{,}7)=0{,}49$): $h_1$: $2{,}7\to3$, $c_1=|g(3)-0{,}49|=\f{0{,}51}$;
+$h_2$: $2{,}7\to2{,}5$, $c_2=|g(2{,}5)-0{,}49|=\f{0{,}24}$ $\Rightarrow$ \emph{feineres $h_2$ konsistenter}.\\
+\textbf{Stabilität:} feineres Gitter $\Rightarrow$ Störung springt eher auf einen \emph{anderen}
+Gitterpunkt $\Rightarrow$ tendenziell \emph{weniger} stabil (referenzpunktabhängig).
+\end{beispiel}
+
+\begin{merke}[Führt kleineres $h$ immer zu besserer Näherung?]
+\textbf{Nein.} Kleineres $h$ verbessert die \emph{Konsistenz}, kann aber \emph{Stabilität}
+verschlechtern, und ab einem Punkt dominiert der \emph{Rundungsfehler} (bzw.\ das Eingangsrauschen).
+Es gibt ein \emph{optimales} $h$.
+\end{merke}
+
+% =====================================================================
+\section{Nullstellen: Newton- \& Sekantenverfahren}
+
+\subsection{Newton-Verfahren -- Herleitung}
+\begin{formel}[Herleitung aus Taylor 1.\ Ordnung]
+$f(x)\approx f(x_n)+f'(x_n)(x-x_n)$. Diese Tangente $=0$ setzen und nach $x$ lösen:
+\[ 0=f(x_n)+f'(x_n)(x_{n+1}-x_n)\;\Rightarrow\; \boxed{\,x_{n+1}=x_n-\dfrac{f(x_n)}{f'(x_n)}\,}. \]
+Newton iteriert also die \emph{Tangenten-Nullstelle}.
+\end{formel}
+
+\begin{formel}[Konvergenz]
+\textbf{Kriterium:} $x_0$ nah genug an einer \emph{einfachen} Wurzel $x^\star$, $f\in C^2$,
+$f'(x^\star)\neq0$. Dann \textbf{quadratische Konvergenz}: $|e_{n+1}|\le C\,|e_n|^2$ -- praktisch
+\emph{verdoppelt} sich die Zahl korrekter Stellen pro Schritt.
+\end{formel}
+
+\begin{beispiel}[$f(x)=x^2-2$ ($\sqrt2$), $x_0=2$, $f'=2x$]
+\[ x_1=2-\frac{4-2}{2\cdot2}=2-\tfrac12=\f{\tfrac32},\qquad
+   x_2=\tfrac32-\frac{(3/2)^2-2}{2\cdot\frac32}=\tfrac32-\frac{1/4}{3}=\tfrac32-\tfrac1{12}=\f{\tfrac{17}{12}}\approx1{,}4167. \]
+\end{beispiel}
+
+\begin{achtung}[Beim 2.\ Schritt den Nenner an der \emph{neuen} Stelle bilden]
+$x_2$ braucht $f'(x_1)=f'(\tfrac32)=2\cdot\tfrac32=3$ (nicht $f'(x_0)$!). Also Nenner $\f{3}$,
+nicht etwa $4{,}5$. Allgemein: in jeder Iteration $f(x_n)$ \emph{und} $f'(x_n)$ am \emph{aktuellen}
+$x_n$ auswerten.
+\end{achtung}
+
+\begin{formel}[Versagensmodi von Newton]
+$f'(x_n)=0$ (Division durch $0$, waagrechte Tangente) \;·\; schlechter Startwert $\to$ Divergenz / falsche
+Wurzel \;·\; \emph{Zyklus} (Iteration pendelt). Mehrfache Wurzel $\Rightarrow$ nur lineare Konvergenz.
+\end{formel}
+
+\subsection{Numerische Ableitung \& Sekantenverfahren}
+\begin{formel}[Vorwärtsdifferenz \& Sekante]
+$f'(x_0)\approx\dfrac{f(x_0+h)-f(x_0)}{h}$, Fehler $\mathcal O(h)$ (Taylor-Restterm $\tfrac h2 f''(\xi)$).
+Ersetzt man $f'$ durch den Differenzenquotienten der \emph{letzten zwei} Punkte:
+\[ \boxed{\,x_{n+1}=x_n-f(x_n)\,\dfrac{x_n-x_{n-1}}{f(x_n)-f(x_{n-1})}\,}\quad\text{(Sekante).} \]
+Ordnung $\approx1{,}618$ (superlinear). Vorteil: \emph{ableitungsfrei}; Nachteil: braucht zwei
+Startwerte, Nenner kann $\approx0$ werden.
+\end{formel}
+
+\begin{beispiel}[Ein Sekantenschritt, $f=x^2-2$, $x_0=2$, $x_1=1{,}5$]
+$f(2)=2$, $f(1{,}5)=0{,}25$:
+\[ x_2=1{,}5-0{,}25\cdot\frac{1{,}5-2}{0{,}25-2}=1{,}5-0{,}25\cdot\tfrac{2}{7}=1{,}5-\tfrac1{14}=\f{\tfrac{10}{7}}\approx1{,}4286. \]
+\end{beispiel}
+
+% =====================================================================
+\section{Globale Optimierung}
+
+\begin{formel}[Lokal vs.\ global, Konvexität]
+\textbf{Lokales} Minimum: kleinster Wert in einer \emph{Umgebung}; \textbf{globales}: kleinster Wert auf
+der \emph{ganzen} Domäne. Lokale Verfahren (Gradientenabstieg, Newton) laufen ins \emph{nächste} Tal und
+verfehlen das globale (multimodale „Foxholes``). Ist $f$ \textbf{konvex} ($f''\ge0$), so ist
+\emph{jedes} lokale Minimum global -- dann genügen lokale Verfahren.
+\end{formel}
+
+\begin{formel}[Newton fürs Optimum]
+Optimum $\Leftrightarrow f'(x)=0$. Newton auf $f'$:
+$x_{n+1}=x_n-\dfrac{f'(x_n)}{|f''(x_n)|}$. Der \textbf{Betrag} $|f''|$ erzwingt einen Schritt
+\emph{immer bergab} (Richtung Minimum), auch in konkaven Bereichen. Klassifikation: $f''>0\Rightarrow$
+Minimum, $f''<0\Rightarrow$ Maximum.
+\end{formel}
+
+\begin{beispiel}[$g=x^3-3x$, $x_0=2$]
+$g'=3x^2-3$, $g''=6x$: $x_1=2-\frac{g'(2)}{|g''(2)|}=2-\frac{9}{12}=\f{\tfrac54}=1{,}25$.
+$g''(\tfrac54)=7{,}5>0\Rightarrow$ \f{lokales Minimum}.
+\end{beispiel}
+
+\begin{formel}[Strategien gegen lokale Minima]
+\textbf{Random Restarts:} viele zufällige Starts, bester gewinnt; Erfolg
+$P=1-(1-p)^K$. \;
+\textbf{Simulated Annealing:} akzeptiere Verschlechterung mit $e^{-\Delta E/T}$, kühle $T$ langsam ab
+(erst Exploration, dann Exploitation). \;
+\textbf{Basin Hopping:} zufälliger Sprung $+$ lokale Minimierung. \;
+\textbf{Glättung:} hochfrequenten Störterm wegmitteln.
+\end{formel}
+
+\begin{beispiel}[Random Restarts \& Glättung]
+$p=\tfrac12$: $P(K{=}3)=1-(\tfrac12)^3=\f{\tfrac78}=0{,}875$; kleinstes $K$ mit $P>0{,}9$:
+$(\tfrac12)^K<0{,}1\Leftrightarrow 2^K>10\Rightarrow \f{K=4}$.\\
+Rauer Term $\tfrac12\sin(4\pi x)$: Periode $=\tfrac{2\pi}{4\pi}=\f{\tfrac12}$. Wähle das Glättungs-/
+Schrittfenster $h\approx\tfrac12$, damit sich der Sinus über eine ganze Periode herausmittelt.
+\end{beispiel}
+
+\begin{formel}[Gradientenabstieg]
+$x_{n+1}=x_n-\eta\,f'(x_n)$. \textbf{Lernrate} $\eta$ zu groß $\Rightarrow$ Überschießen/Divergenz;
+zu klein $\Rightarrow$ sehr langsam.
+\end{formel}
+
+% =====================================================================
+\section{Integration \& Interpolation}
+
+\subsection{Newton-Cotes-Quadratur}
+Idee: Funktion durch ein Polynom über Stützstellen ersetzen und \emph{dieses} exakt integrieren.
+\begin{formel}[{Regeln auf $[a,b]$, $h=b-a$, $m=\tfrac{a+b}2$; Gewichte für ein Panel}]
+\[ \text{Rechteck: } h\,f(a)\ \text{bzw.}\ h\,f(b);\quad
+   \text{Mittelpunkt: } h\,f(m);\quad
+   \text{Trapez: } \tfrac h2\big[f(a)+f(b)\big]; \]
+\[ \text{Simpson: } \tfrac h6\big[f(a)+4f(m)+f(b)\big];\quad
+   \text{$3/8$: } \tfrac{3h}{8}\big[f_0+3f_1+3f_2+f_3\big];\quad
+   \text{Boole: } \tfrac{2h}{45}\big[7f_0+32f_1+12f_2+32f_3+7f_4\big]. \]
+\end{formel}
+
+\begin{formel}[Genauigkeit \& Exaktheitsgrad]
+Steigend: Rechteck $(\mathcal O(h),\ \text{Grad }0)$ $\to$ Mittelpunkt/Trapez $(\mathcal O(h^2),\
+\text{Grad }1)$ $\to$ Simpson $(\mathcal O(h^4),\ \text{Grad }3)$ $\to$ Boole $(\text{Grad }5)$.
+\textbf{Exaktheitsgrad} $=$ höchster Polynomgrad, der \emph{exakt} integriert wird.
+\end{formel}
+
+\begin{merke}[Warum „bestes Rechteck`` und warum Simpson so gut]
+\textbf{Mittelpunkt} ist das beste Rechteck: er wertet in der Mitte aus, Über- und Unterschätzung der
+Krümmung heben sich auf $\Rightarrow \mathcal O(h^2)$ statt $\mathcal O(h)$. \;
+\textbf{Simpson} ist durch Symmetrie sogar bis Grad $3$ exakt, obwohl er nur eine Parabel anlegt.
+\end{merke}
+
+\begin{achtung}[Zusammengesetzte Trapez-/Simpson-Gewichte richtig setzen]
+Bei zwei Teilintervallen ($h=1$, Punkte $f_0,f_1,f_2$):
+\[ \text{Trapez: } \tfrac h2\big[f_0+\mathbf{2}f_1+f_2\big]\quad\text{(der \emph{innere} Punkt zählt
+$2\times$, nicht $f_1+f_2$ zusammen!)} \]
+\[ \text{Simpson: } \tfrac h3\big[f_0+\mathbf{4}f_1+f_2\big]\quad\text{(genau \emph{ein} $4f_1$-Term --
+kein zusätzlicher Term).} \]
+\end{achtung}
+
+\begin{beispiel}[$I=\int_0^2(x^2+1)\,dx$, $f(0)=1,f(1)=2,f(2)=5$]
+Exakt: $\big[\tfrac{x^3}3+x\big]_0^2=\tfrac83+2=\f{\tfrac{14}{3}}\approx4{,}667$.\\
+Trapez: $\tfrac12[1+2\cdot2+5]=\tfrac12\cdot10=\f{5}$ (Fehler $\tfrac13$).\\
+Simpson: $\tfrac13[1+4\cdot2+5]=\tfrac{14}{3}=\f{4{,}667}$ (Fehler $\f{0}$).\\
+Warum exakt? $x^2+1$ hat Grad $2\le3=$ Exaktheitsgrad von Simpson; Trapez (Grad $1$) erfasst die
+Krümmung nicht.
+\end{beispiel}
+
+\subsection{Lagrange-Interpolation}
+\begin{formel}[Lagrange-Polynom]
+Durch $n{+}1$ Punkte $(x_i,y_i)$ gibt es \emph{genau ein} Polynom vom Grad $\le n$:
+\[ p(x)=\sum_{i} y_i\,L_i(x),\qquad L_i(x)=\prod_{j\neq i}\frac{x-x_j}{x_i-x_j}. \]
+$L_i$ ist $1$ an $x_i$ und $0$ an allen anderen Knoten.
+\end{formel}
+
+\begin{beispiel}[Punkte $(0,1),(1,2),(2,5)$]
+$L_0=\tfrac{(x-1)(x-2)}{2}$, $L_1=-x(x-2)$, $L_2=\tfrac{x(x-1)}{2}$.
+\[ p=1\!\cdot\!L_0+2L_1+5L_2=\tfrac{(x-1)(x-2)}2-2x(x-2)+\tfrac{5x(x-1)}2=\f{x^2+1}. \]
+Probe: $p(0)=1,p(1)=2,p(2)=5$ \checkmark; \; $p(\tfrac12)=\tfrac14+1=\f{\tfrac54}$.
+\end{beispiel}
+
+\begin{merke}[Runge-Phänomen -- „stop at Simpson``]
+Interpolation \emph{hohen} Grades auf gleichmäßigen Knoten oszilliert stark am Rand (großer Fehler).
+Konsequenz: für Quadratur \emph{nicht} den Grad erhöhen, sondern \emph{zusammengesetzte} Regeln
+niedrigen Grades nutzen (Trapez/Simpson stückweise). Glatte Alternative: \emph{Splines}.
+\end{merke}
+
+\subsection{Romberg \& Monte-Carlo}
+\begin{formel}[Romberg]
+Trapezwerte für $h, h/2,\dots$ und Richardson-Extrapolation eliminiert den $O(h^2)$-Term:
+$R=\dfrac{4\,T(h/2)-T(h)}{3}$.
+\end{formel}
+\begin{formel}[Monte-Carlo-Integration]
+$\hat I=|\Omega|\,\dfrac1N\sum_{i=1}^N f(X_i)$, Standardfehler $\mathrm{SE}=\dfrac{|\Omega|\,\sigma_f}{\sqrt N}$.
+Da $\mathrm{SE}\propto N^{-1/2}$: SE \emph{halbieren} $\Rightarrow N\times4$; \emph{zehnteln} $\Rightarrow N\times100$.
+\end{formel}
+\begin{merke}[Fluch der Dimensionen]
+Ein Gitter mit $n$ Punkten pro Achse braucht in $d$ Dimensionen $n^{d}$ Punkte (exponentiell). Der
+MC-Fehler $\mathcal O(1/\sqrt N)$ ist \emph{dimensionsunabhängig} $\Rightarrow$ MC gewinnt bei großem
+$d$. Die \emph{Mittelpunktsregel} ist übrigens MC mit $N=1$ (ein Sample in der Mitte).
+\end{merke}
+
+% =====================================================================
+\section{Modelltraining aus ersten Prinzipien}
+Lineare Regression $\hat y(x)=wx+b$, Verlust $L(w,b)=\tfrac1n\sum_i (wx_i+b-y_i)^2$ (mittlerer
+quadratischer Fehler, \textbf{MSE}), minimiert per Gradientenabstieg.
+
+\begin{formel}[MSE \& Varianz]
+\textbf{MSE} $=$ Mittel der \emph{quadrierten} Residuen $\tfrac1n\sum(\hat y_i-y_i)^2$.
+\textbf{Varianz} $\mathrm{Var}(y)=\tfrac1n\sum (y_i-\bar y)^2$ (Mittel der quadrierten Abweichungen vom
+Mittelwert).
+\end{formel}
+
+\begin{achtung}[Varianz -- die Abweichungen \emph{quadrieren}!]
+Für $y=(2,4,6)$: $\bar y=4$. Die Abweichungen $(-2,0,2)$ \emph{summieren} sich zu $0$ -- das ist
+\textbf{nicht} die Varianz. Richtig: $\mathrm{Var}=\tfrac13\big[(-2)^2+0^2+2^2\big]=\tfrac13\cdot8=\f{\tfrac83}\approx2{,}67$.
+\end{achtung}
+
+\begin{beispiel}[Erster Loss $=$ Varianz]
+Init $w=0,\ b=\bar y$: das Modell sagt überall $\bar y$ voraus, also
+$L=\tfrac1n\sum(\bar y-y_i)^2=\mathrm{Var}(y)=\f{\tfrac83}$. Der erste Loss \emph{ist} die Varianz der
+Zielwerte. \;
+Ein gedruckter Loss $\approx100$ statt $\tfrac83$: $b$ falsch initialisiert oder \emph{summiert}
+statt gemittelt ($\approx n\cdot\mathrm{Var}$). Ein Loss $\approx0$ beim Init: ein Bug (sollte nicht $0$
+sein).
+\end{beispiel}
+
+\begin{formel}[Overfit-Sanity-Check]
+Ein \emph{überparametrisiertes} Modell kann den Loss auf einer \emph{kleinen} Teilmenge leicht auf $0$
+treiben (es gibt unendlich viele Null-Loss-Lösungen). Gelingt das \textbf{nicht}, liegt es \emph{nicht}
+am Optimierer, sondern an einem \textbf{Bug in Modell / Loss / Datenpipeline}. Das ist das numerische
+Prinzip: \emph{einen Solver an einem Problem mit bekannter Lösung testen}.
+\end{formel}
+
+\begin{merke}[Trainingspraktiken $\leftrightarrow$ numerische Methode]
+\begin{itemize}[leftmargin=1.4em,nosep]
+\item \textbf{Mini-Batch-SGD} $\leftrightarrow$ \emph{Monte-Carlo}: Gradient als Mittel über eine
+      zufällige Stichprobe; Schätzfehler $\propto 1/\sqrt{B}$ (Batch-Größe $B$).
+\item \textbf{Mehrere Seeds, bester gewinnt} $\leftrightarrow$ \emph{Random Restarts}.
+\item \textbf{Quantisierung (niedrige Bit-Präzision)} $\leftrightarrow$ \emph{Präzisionswahl} im
+      Gleitkomma (kleinstes Format, dessen Bereich \& Genauigkeit reichen; Inferenz verträgt weniger
+      Präzision als Training).
+\end{itemize}
+\end{merke}
+
+% =====================================================================
+\section{Anhang: weitere Foliensatz-Themen (kompakt)}
+Nicht im Notizen-Scope von Prüfung 03, aber Teil des vollen Foliensatzes:
+
+\begin{formel}[Differenzialgleichungen (Euler \& Runge-Kutta)]
+\textbf{Expliziter Euler:} $y_{n+1}=y_n+h\,f(t_n,y_n)$ (Ordnung $1$). \;
+\textbf{Impliziter Euler:} $y_{n+1}=y_n+h\,f(t_{n+1},y_{n+1})$ (stabiler, für steife Probleme). \;
+\textbf{RK4:} $y_{n+1}=y_n+\tfrac h6(k_1+2k_2+2k_3+k_4)$ (Ordnung $4$). \;
+\textbf{Butcher-Tableau} kodiert Knoten $c_i$, Gewichte $b_i$, Matrix $a_{ij}$; explizit $\Leftrightarrow$
+$A$ streng untere Dreiecksmatrix. \textbf{Steifheit}: stark verschiedene Zeitskalen erzwingen bei
+expliziten Verfahren winzige $h$.
+\end{formel}
+
+\begin{formel}[Fourier \& FFT]
+$F(\omega)=\int f(t)e^{-i\omega t}dt$ (Zeit $\to$ Frequenz), Rücktrafo
+$f(t)=\tfrac1{2\pi}\int F(\omega)e^{i\omega t}d\omega$. Mit $\cos(\omega t)=\tfrac12(e^{i\omega t}+e^{-i\omega t})$
+erzeugt jeder Kosinus zwei Peaks bei $\pm\omega$ (\emph{Interferenz} $=$ Überlagerung). \textbf{DFT}
+$X_k=\sum_n x_n e^{-i2\pi kn/N}$ ($O(N^2)$), \textbf{FFT} $O(N\log N)$. \textbf{Nyquist} $=f_s/2$;
+darüber \emph{Aliasing}.
+\end{formel}
+
+\vfill
+\begin{center}\small\color{muted}
+Lege beim Üben Wert auf: Trapez-/Simpson-Gewichte, Newton 2.\ Iteration (Nenner an neuer Stelle),
+Konsistenz vs.\ Stabilität, Varianz $=$ quadrierte Abweichungen, Lagrange-Basispolynome.
+\end{center}
+
+\end{document}

@@ -1,0 +1,220 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage[table]{xcolor}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage[most]{tcolorbox}
+\usepackage{geometry}
+\geometry{margin=2cm}
+
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{accent}{HTML}{89B4FA}
+\definecolor{accent2}{HTML}{F38BA8}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{panel}{HTML}{2A2A2A}
+
+\pagecolor{bgdark}
+\color{fgtext}
+\arrayrulecolor{fgtext}
+\setlength{\parindent}{0pt}
+
+% mathtools fehlt -> psmallmatrix selbst definieren
+\newenvironment{psmallmatrix}{\left(\begin{smallmatrix}}{\end{smallmatrix}\right)}
+
+\newcommand{\karo}[1]{\par\nobreak\vspace{0.3em}\noindent
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcol, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par}
+
+\newtcolorbox{howto}[1]{enhanced, breakable, colback=panel, colframe=accent,
+  coltitle=bgdark, colbacktitle=accent, fonttitle=\bfseries, coltext=fgtext,
+  title={#1}, boxrule=0.6pt, arc=2pt, left=4pt, right=4pt, top=3pt, bottom=3pt}
+
+\newcommand{\fehler}[1]{\par\smallskip{\color{accent2}\textbf{Dein typischer Fehler:} }#1}
+\newcommand{\thema}[1]{\filbreak\bigskip{\large\bfseries\color{accent} #1}\par\nobreak\smallskip}
+\newcommand{\aufg}{\par\smallskip\textbf{Aufgaben:}\ }
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries\color{accent} Finales Review-Blatt -- Analysis II}\\[0.3em]
+  {\normalsize Gezielt auf deine Fehler aus der Klausursimulation -- das letzte Blatt vor der Klausur}
+\end{center}
+\vspace{0.3em}
+\noindent\textcolor{gridcol}{\rule{\linewidth}{1pt}}\par\vspace{0.3em}
+\noindent\textit{Jeder Abschnitt: kurze Anleitung + dein typischer Fehler + Übungen. Rechne alles
+\textbf{bis zur Zahl} zu Ende. Lösungen: \texttt{aufgabe\_16\_loesung.pdf}.}
+
+% ===================== 1 =====================
+\thema{1. Extremstellen -- notwendige vs.\ hinreichende Bedingung}
+\begin{howto}{So geht's}
+\textbf{Notwendige} Bedingung: $\operatorname{grad} f = \vec0$, d.\,h.
+$f_x=0$ \emph{und} $f_y=0$ \textbf{nach $(x,y)$ auflösen} $\Rightarrow$ Kandidat(en).\\
+\textbf{Hinreichende} Bedingung (erst danach, nur wenn gefragt): Hesse-Matrix
+$H=\begin{psmallmatrix} f_{xx} & f_{xy}\\ f_{yx} & f_{yy}\end{psmallmatrix}$,
+Definitheit prüfen $\Rightarrow$ Min/Max/Sattel.
+\fehler{Du springst sofort zur Hesse-Matrix (``alle $>0\Rightarrow$ Tiefpunkt''), \emph{ohne}
+$\nabla f=0$ zu lösen. Bei ``notwendige Bedingung'' ist nur $\nabla f=0$ gefragt -- \textbf{die Stelle ausrechnen!}}
+\end{howto}
+\aufg Bestimme die Stellen mit $\nabla f=\vec0$:\quad
+(a)\ $f=x^2+y^2-6x+4y$\quad (b)\ $f=x^2+y^2-xy-3y$\quad
+(c)\ $f=x^2+y^2-4x$ (zusätzlich Art \& Funktionswert).
+\karo{5cm}
+
+% ===================== 2 =====================
+\thema{2. Gradient -- Richtungsableitung bis zur Zahl}
+\begin{howto}{So geht's}
+$\operatorname{grad} f=(f_x,f_y)$, dann \textbf{$P$ einsetzen} (Zahlen!).\\
+Höchste Steigung $=\lVert\nabla f(P)\rVert$;\quad Richtung steilster Anstieg
+$=\dfrac{\nabla f(P)}{\lVert\nabla f(P)\rVert}$ (\textbf{normieren!}); Abfall $=$ minus davon.\\
+Richtungsableitung: $D_{\hat v}f(P)=\nabla f(P)\cdot\hat v$ mit $\hat v=\dfrac{\vec v}{\lVert\vec v\rVert}$.
+\fehler{Du stellst $\nabla f\cdot\frac{\vec v}{5}$ auf, setzt aber $P$ \emph{nicht} ein und rechnest
+nicht bis zur Zahl. (Und: $x^2$ an $(1,2)$ ist $1$, nicht $0$.)}
+\end{howto}
+\aufg
+(a)\ $f=x^2+y^2$, $P=(1,2)$, $\vec v=(3,4)$: $\nabla f(P)$, $\lVert\nabla f\rVert$, $D_{\hat v}f(P)$.\quad
+(b)\ $f=x^2y$, $P=(1,2)$, $\vec v=(4,3)$: $D_{\hat v}f(P)$.
+\karo{5cm}
+
+% ===================== 3 =====================
+\thema{3. Totales Differenzial ($+$ Näherung)}
+\begin{howto}{So geht's}
+$df = f_x\,dx + f_y\,dy$ -- die $dx,dy$ \textbf{gehören dazu}.\\
+Näherung: $\Delta f \approx f_x(P)\,\Delta x + f_y(P)\,\Delta y$, dann
+$f(P+\Delta)\approx f(P)+\Delta f$.
+\fehler{Du schreibst nur ``$2xy^2+2x^2y$'' \emph{ohne} $dx,dy$ -- und die Näherung lässt du ganz weg.}
+\end{howto}
+\aufg
+(a)\ $f=x^2y$: $df$, dann $f(2{,}1;1{,}1)$ ausgehend von $(2,1)$ schätzen.\quad
+(b)\ $f=xy^2$: $df$.
+\karo{4.5cm}
+
+% ===================== 4 =====================
+\thema{4. Rotation in $\mathbb{R}^3$ + Quellen-/Wirbelfreiheit-Bedingungen}
+\begin{howto}{So geht's}
+$\operatorname{rot}\vec g=\begin{psmallmatrix}
+\partial_y g_3-\partial_z g_2\\ \partial_z g_1-\partial_x g_3\\ \partial_x g_2-\partial_y g_1
+\end{psmallmatrix}$ -- Schema sauber durchgehen.\\
+\textbf{Quellenfrei:} $\operatorname{div}\vec f=0$ \textbf{nach $x,y$ auflösen} (Bedingung angeben).\quad
+\textbf{Wirbelfrei:} $\operatorname{rot}\vec f=0$ auflösen.
+\fehler{Bei $\operatorname{rot}\vec g$ Terme verwechselt (z.\,B. $\partial_z(yz)=y$, nicht $0$). Und bei
+Quellen-/Wirbelfreiheit nur ``$=0$'' geschrieben, statt die \emph{Bedingung} (z.\,B. $x=0\lor y=0$) auszurechnen.}
+\end{howto}
+\aufg
+(a)\ $\operatorname{rot}\vec g$ für $\vec g=(yz,\,xz,\,xy)$.\quad
+(b)\ $\operatorname{rot}\vec g$ für $\vec g=(xy,\,yz,\,xz)$.\quad
+(c)\ $\vec f=(x^2y,\,xy^2)$: $\operatorname{div}\vec f$, $\operatorname{rot}\vec f$ und je die Bedingung
+für Quellen- bzw.\ Wirbelfreiheit.
+\karo{5.5cm}
+
+% ===================== 5 =====================
+\thema{5. DGL klassifizieren -- linear vs.\ nichtlinear}
+\begin{howto}{So geht's}
+\textbf{Linear} $=$ $y$ und $y'$ nur in 1.\ Potenz, kein $y^2$, kein $1/y$, kein $\sin(y)$, kein $y\cdot y'$.
+\emph{Dass $x$ vorkommt, macht es nicht nichtlinear!}\\
+$y'=a(x)y$ (homogen) \quad vs.\quad $y'=a(x)y+b(x)$ (inhomogen, $b\neq0$).\\
+Getrennte Veränderliche: $y'=f(x)\,g(y)$.
+\fehler{Du stufst $y'=y+x$ und $y'=\tfrac1x y$ als ``nichtlinear'' ein -- die sind \textbf{linear} (linear in $y$;
+das $x$ ist nur Störterm/Koeffizient).}
+\end{howto}
+\aufg Klassifiziere (linear/nichtlinear, homogen/inhomogen bzw.\ getrennt):\quad
+(a)\ $y'=y+x$\quad (b)\ $y'=\tfrac1x y$\quad (c)\ $y'=xy^2$\quad (d)\ $y'=3y$\quad
+(e)\ $y'=y\cos x$\quad (f)\ $y'=\tfrac{x}{y}$\quad (g)\ $y'=2y+e^x$.
+\karo{4cm}
+
+% ===================== 6 =====================
+\thema{6. Getrennte Veränderliche -- Konstante \& Anfangswert}
+\begin{howto}{So geht's}
+Trennen $\to$ beide Seiten integrieren ($+C$ \textbf{nicht vergessen}!) $\to$ Anfangswert einsetzen
+$\to C$ bestimmen $\to$ nach $y$ auflösen. Merke: $\int y^{-2}\,dy=-\tfrac1y$.
+\fehler{Du lässt das $+C$ weg und setzt den Anfangswert nicht ein $\Rightarrow$ falsches Ergebnis
+(plus Vorzeichenrutscher).}
+\end{howto}
+\aufg Löse das AWP:\quad
+(a)\ $y'=xy^2,\ y(0)=1$\quad (b)\ $y'=e^xy^2,\ y(0)=1$\quad (c)\ $y'=2xy,\ y(0)=3$.
+\karo{5.5cm}
+
+% ===================== 7 =====================
+\thema{7. Inhomogene lineare DGL -- erkennen \& Lösungsformel zu Ende}
+\begin{howto}{So geht's}
+Form $y'=a(x)y+b(x)$ mit $b\neq0$ $\Rightarrow$ \textbf{inhomogen} $\Rightarrow$ \textbf{nicht trennen!}
+Lösungsformel:
+\[
+  y(x)=e^{A(x)}\Bigl(y_0+\int_{x_0}^{x} b(u)\,e^{-A(u)}\,du\Bigr),\qquad A(x)=\int a(x)\,dx.
+\]
+Das Integral mit e-Gesetzen ($e^{cu}e^{du}=e^{(c+d)u}$) oder partieller Integration lösen.
+\fehler{Bei $y'=2y+e^{2x}$ hast du \emph{getrennt} (geht nicht!). Und $\int u\,e^{-u}du$ als ``$u\,e^{-u}$''
+abgekürzt statt partielle Integration.}
+\end{howto}
+\aufg Löse das AWP:\quad
+(a)\ $y'=2y+e^{2x},\ y(0)=0$\quad (b)\ $y'=y+x,\ y(0)=0$\quad (c)\ $y'=-y+e^{x},\ y(0)=0$.
+\karo{6.5cm}
+
+% ===================== 8 =====================
+\thema{8. Anwendung -- Halbwertszeit / Verdopplungszeit (zu Ende!)}
+\begin{howto}{So geht's}
+$y'=k\,y\ \Rightarrow\ y=y_0\,e^{kt}$. Dann die \textbf{Zeit ausrechnen}:\\
+Verdopplung: $2y_0=y_0e^{kt}\Rightarrow t=\dfrac{\ln 2}{k}$;\quad
+Halbwertszeit: $\tfrac12 y_0=y_0e^{kt}\Rightarrow t=\dfrac{\ln 2}{|k|}$.
+\fehler{Du schreibst nur $y(t)$ hin und rechnest die gefragte Zeit gar nicht aus.}
+\end{howto}
+\aufg
+(a)\ $N'=-0{,}1N,\ N(0)=50$: $N(t)$ und Halbwertszeit.\quad
+(b)\ $y'=0{,}5y,\ y(0)=200$: $y(t)$ und Verdopplungszeit.
+\karo{4.5cm}
+
+% ===================== 9 =====================
+\thema{9. Bestimmtes Integral -- beide Grenzen einsetzen}
+\begin{howto}{So geht's}
+$\displaystyle\int_a^b f = \bigl[F(x)\bigr]_a^b = F(b)-F(a)$. \textbf{Beide} Grenzen, nicht nur die obere!
+Bei Substitution die Grenzen mit umrechnen.
+\fehler{Bei $\int_0^1 x^2e^{x^3}dx$ hattest du $\tfrac13 e^1=\tfrac{e}{3}$ -- die untere Grenze $e^0=1$
+vergessen. Richtig: $\tfrac13(e-1)$.}
+\end{howto}
+\aufg
+(a)\ $\displaystyle\int_0^1 x^2 e^{x^3}\,dx$\quad
+(b)\ $\displaystyle\int_1^2 \frac{1}{x^2}\,dx$\quad
+(c)\ $\displaystyle\int_0^{\pi/2}\cos x\,dx$.
+\karo{4.5cm}
+
+% ===================== 10 =====================
+\thema{10. Partielle Integration -- Variable nicht aus dem Integral ziehen}
+\begin{howto}{So geht's}
+$\int u\,v' = u\,v-\int u'\,v$. Steht danach \emph{wieder} ein Produkt (z.\,B. $\int 2x\,e^x$),
+\textbf{nochmal} partielle Integration. $2x$ ist \emph{keine} Konstante -- darf \textbf{nicht} vors Integral!
+\fehler{$\int 2x\,e^x\,dx$ hast du als ``$2x\int e^x$'' gerechnet (Variable rausgezogen). Falsch.}
+\end{howto}
+\aufg
+(a)\ $\displaystyle\int x\,e^x\,dx$ \ (Aufwärmer)\quad
+(b)\ $\displaystyle\int x^2 e^x\,dx$ \ (zweimal partiell).
+\karo{5.5cm}
+
+% ===================== 11 =====================
+\thema{11. Trig-Integral -- gemeinsamen Faktor ausklammern}
+\begin{howto}{So geht's}
+Trick: gemeinsamen Faktor ausklammern, dann $\cos^2x+\sin^2x=1$ nutzen.\\
+Bsp.: $\int(\cos^3x+\sin^2x\cos x)\,dx=\int\cos x(\cos^2x+\sin^2x)\,dx=\int\cos x\,dx=\sin x$.
+\fehler{Du wusstest nicht, wie anfangen. $\Rightarrow$ Immer nach einem gemeinsamen Faktor suchen (hier $\cos x$).}
+\end{howto}
+\aufg
+(a)\ $\displaystyle\int(\cos^3x+\sin^2x\cos x)\,dx$\quad
+(b)\ $\displaystyle\int(\sin^3x+\cos^2x\sin x)\,dx$.
+\karo{4.5cm}
+
+% ===================== 12 =====================
+\thema{12. Schwingung -- $\omega,f,T$ (das $\pi$ nicht verschlucken)}
+\begin{howto}{So geht's}
+$s(t)=A\sin(\omega t)$:\quad Amplitude $A$;\quad Kreisfrequenz $\omega=$ Faktor vor $t$ (\textbf{mit $\pi$!});\quad
+Frequenz $f=\dfrac{\omega}{2\pi}$;\quad Periodendauer $T=\dfrac1f=\dfrac{2\pi}{\omega}$.
+\fehler{Bei $s(t)=4\sin(6\pi t)$ hattest du $\omega=6$ (statt $6\pi$) und $T=6$ (statt $\tfrac13$).}
+\end{howto}
+\aufg
+(a)\ $s(t)=4\sin(6\pi t)$: $A,\omega,f,T$.\quad
+(b)\ $s(t)=2\sin(\pi t)$: $A,\omega,f,T$.
+\karo{4cm}
+
+\end{document}

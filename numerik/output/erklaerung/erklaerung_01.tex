@@ -1,0 +1,469 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usepackage{geometry}
+\geometry{a4paper,margin=2.1cm}
+
+% ---------- Dark Mode ----------
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{panel}{HTML}{2A2A2A}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{accent}{HTML}{89B4FA}  % blau  -> Definition
+\definecolor{green}{HTML}{A6E3A1}    % grün  -> Intuition
+\definecolor{yellow}{HTML}{F9E2AF}   % gelb  -> Satz/Formel
+\definecolor{red}{HTML}{F38BA8}      % rot   -> Stolperfalle
+\definecolor{muted}{HTML}{A6ADC8}
+\definecolor{rulecol}{HTML}{6A6A6A}
+\pagecolor{bgdark}
+\color{fgtext}
+\renewcommand{\normalcolor}{\color{fgtext}}   % Überschriften/TOC hell
+
+\usepackage[colorlinks=true,linkcolor=accent,urlcolor=accent]{hyperref}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+
+% ---------- Section-Stil ----------
+\titleformat{\section}{\Large\bfseries\color{accent}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\large\bfseries\color{yellow}}{\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{10pt}{4pt}
+\titlespacing*{\subsection}{0pt}{7pt}{2pt}
+
+% ---------- Boxen ----------
+\newtcolorbox{defi}[1]{colback=panel,colframe=accent,coltext=fgtext,coltitle=bgdark,
+  colbacktitle=accent,fonttitle=\bfseries,title={#1},arc=2pt,boxrule=0.6pt,
+  left=4pt,right=4pt,top=2pt,bottom=2pt,before skip=4pt,after skip=4pt}
+\newtcolorbox{intu}[1]{colback=panel,colframe=green,coltext=fgtext,coltitle=bgdark,
+  colbacktitle=green,fonttitle=\bfseries,title={#1},arc=2pt,boxrule=0.6pt,
+  left=4pt,right=4pt,top=2pt,bottom=2pt,before skip=4pt,after skip=4pt}
+\newtcolorbox{satz}[1]{colback=panel,colframe=yellow,coltext=fgtext,coltitle=bgdark,
+  colbacktitle=yellow,fonttitle=\bfseries,title={#1},arc=2pt,boxrule=0.6pt,
+  left=4pt,right=4pt,top=2pt,bottom=2pt,before skip=4pt,after skip=4pt}
+\newtcolorbox{falle}[1]{colback=panel,colframe=red,coltext=fgtext,coltitle=bgdark,
+  colbacktitle=red,fonttitle=\bfseries,title={#1},arc=2pt,boxrule=0.6pt,
+  left=4pt,right=4pt,top=2pt,bottom=2pt,before skip=4pt,after skip=4pt}
+
+\newcommand{\K}{\textcolor{green}{\ding}}
+\setlist[itemize]{leftmargin=1.4em,itemsep=1pt,topsep=2pt}
+
+\begin{document}
+
+% ---------- Titel ----------
+\begin{center}
+{\Huge\bfseries\color{accent} Numerische Methoden}\\[4pt]
+{\large\color{fgtext} Theorie-Lernskript -- alle Themen kompakt erklärt}\\[3pt]
+{\small\color{muted} Grundlagen $\cdot$ Fehleranalyse $\cdot$ Nullstellen $\cdot$ Optimierung $\cdot$ DGL $\cdot$ Integration/Interpolation $\cdot$ Fourier $\cdot$ Modelltraining}
+\end{center}
+\vspace{2pt}
+\noindent\textcolor{rulecol}{\rule{\linewidth}{0.4pt}}
+
+{\small\color{muted} Legende der Boxen:\;
+\textcolor{accent}{$\blacksquare$}~Definition \quad
+\textcolor{green}{$\blacksquare$}~Intuition \quad
+\textcolor{yellow}{$\blacksquare$}~Satz/Formel \quad
+\textcolor{red}{$\blacksquare$}~Stolperfalle (richtige Form direkt gezeigt)}
+
+\vspace{4pt}
+{\color{muted}\hypersetup{linkcolor=accent}\tableofcontents}
+\vspace{6pt}
+\noindent\textcolor{rulecol}{\rule{\linewidth}{0.4pt}}
+
+% =====================================================================
+\section{Grundlagen \& Zahlendarstellung}
+
+\begin{intu}{Warum Numerik?}
+Viele Probleme haben \emph{keine} geschlossene Lösung (z.\,B.\ $\int e^{-x^2}dx$, $x=\cos x$,
+allgemeine Nullstellen ab Grad~5) oder sind analytisch zu aufwendig. \textbf{Numerik} liefert
+\emph{näherungsweise} Zahlenergebnisse mit endlich vielen Rechenschritten -- Preis: jedes Ergebnis
+hat einen \emph{Fehler}, den man verstehen und kontrollieren muss.
+\end{intu}
+
+\subsection{Diskretisierung \& Brute Force}
+Ein kontinuierliches Problem wird durch endlich viele Stützstellen ersetzt. Intervall $[a,b]$ in
+$N$ Teile: \textbf{Schrittweite} $h=\frac{b-a}{N}$, Gitterpunkte $x_i=a+i\,h$ ($i=0,\dots,N$, also
+$N{+}1$ Punkte). \emph{Grid Search / Brute Force}: alle Gitterpunkte durchprobieren und den besten
+nach einem \emph{Fehlermaß} wählen.
+
+\begin{satz}{Grid Search für $A\mathbf x=\mathbf c$}
+Fehlermaß = \textbf{Residuum} $E(\mathbf x)=\lVert A\mathbf x-\mathbf c\rVert$ (z.\,B.\ Summe der
+Beträge oder Quadrate). Über das Gitter minimieren. \emph{Trifft die exakte Lösung nur, wenn diese
+zufällig auf einem Gitterpunkt liegt} -- sonst bleibt ein Diskretisierungsfehler. Verbesserung:
+feineres Gitter oder lokale Verfeinerung um den besten Kandidaten.
+\end{satz}
+
+\subsection{Gleitkomma (floating point)}
+\begin{defi}{Gleitkommazahl}
+$x=(-1)^s\,m\cdot 2^{e}$ mit \textbf{Vorzeichen} $s$, \textbf{Mantisse} $m$ (signifikante Stellen),
+\textbf{Exponent} $e$ (Skalierung, gespeichert mit \emph{Bias}: $e=E-\text{Bias}$).
+\emph{Normalisiert}: $m=1{.}b_1b_2\dots b_t$ mit \emph{implizitem} führenden $1$-Bit (1 Gratis-Bit).
+\end{defi}
+
+\begin{satz}{Maschinenepsilon}
+$\varepsilon_{\mathrm{mach}}=2^{-t}$ ($t$ = Anzahl gespeicherter Mantissen-Nachkommabits) ist der
+Abstand von $1$ zur nächstgrößeren darstellbaren Zahl -- die \emph{kleinste relative Auflösung}.
+Relativer Rundungsfehler stets $\le \tfrac12\varepsilon_{\mathrm{mach}}$.
+\end{satz}
+
+\begin{intu}{Trade-off Mantisse $\leftrightarrow$ Exponent (bei fester Bitzahl)}
+\textbf{Mehr Mantissenbits} $\Rightarrow$ kleineres $\varepsilon$ $\Rightarrow$ feinere
+\emph{Auflösung} (resolution). \textbf{Mehr Exponentenbits} $\Rightarrow$ größerer
+\emph{Wertebereich} (dynamic range, größte/kleinste Beträge). Man tauscht also stets
+\emph{Präzision} gegen \emph{Reichweite}.
+\end{intu}
+
+\subsection{Festkomma (fixed point)}
+$f$ Nachkommabits, \textbf{Auflösung} $=2^{-f}$ (konstant). Speicherwert $=$ Zahl$\,\cdot 2^{f}$
+(ganzzahlig), größte vorzeichenlose Zahl mit $k$ Gesamtbits $=\frac{2^{k}-1}{2^{f}}$.
+
+\begin{falle}{Festkomma vs.\ Gleitkomma -- konstanter \emph{absoluter} vs.\ \emph{relativer} Abstand}
+Festkomma: Nachbarzahlen haben \emph{überall denselben} Abstand $2^{-f}$ (gleichmäßiges Raster).
+Gleitkomma: \emph{relativer} Abstand konstant ($\approx\varepsilon$), d.\,h.\ der \emph{absolute}
+Abstand wächst mit der Größenordnung von $x$ (eng bei kleinen, weit bei großen Zahlen).
+\end{falle}
+
+\subsection{Rundung, Auslöschung \& Fehlerarten}
+\begin{satz}{Auslöschung (catastrophic cancellation)}
+Subtrahiert man zwei \emph{fast gleiche} Zahlen, löschen sich die führenden Stellen weg; übrig
+bleiben wenige, schon verrauschte Stellen $\Rightarrow$ \emph{relativer} Fehler explodiert.
+Beispiel: $(1+\delta)-1$ verliert $\delta$ komplett, falls $\delta<\tfrac12\varepsilon$
+(dann Ergebnis $0$, Division dadurch $\to\infty$).
+\end{satz}
+
+\begin{intu}{Gegenmittel: umformen statt subtrahieren}
+$\sqrt{x+1}-\sqrt{x}=\dfrac{1}{\sqrt{x+1}+\sqrt{x}}$ -- rechts wird \emph{addiert}, keine
+Auslöschung mehr. Allgemein: kritische Differenzen algebraisch in Summen/Produkte umschreiben.
+\end{intu}
+
+\begin{defi}{Die drei Fehlerarten}
+\begin{itemize}
+\item \textbf{Modellfehler}: das Modell vereinfacht die Realität (z.\,B.\ Reibung/Luftwiderstand vernachlässigt).
+\item \textbf{Abschneide-/Diskretisierungsfehler}: ein Grenzprozess wird abgebrochen
+  (Reihe nach endlich vielen Gliedern; Ableitung $\to$ Differenzenquotient). Skaliert mit $h$.
+\item \textbf{Rundungsfehler}: endliche Stellenzahl der Maschine (z.\,B.\ $\tfrac{10}{3}\to 3{,}333$).
+\end{itemize}
+\textbf{Absoluter} Fehler $|x-\tilde x|$; \textbf{relativer} $\frac{|x-\tilde x|}{|x|}$
+(skaleninvariant, „gültige Stellen``; bei $x\approx0$ nur absolut sinnvoll).
+\end{defi}
+
+% =====================================================================
+\section{Fehleranalyse: die vier Eigenschaften}
+
+\begin{intu}{Hut \& Tilde}
+$f$ = wahres Problem, $\hat f$ = der \emph{Algorithmus} (gestörte Rechenvorschrift),
+$\tilde x$ = \emph{gestörte Eingabe}. Die vier Eigenschaften vergleichen diese vier Größen
+paarweise.
+\end{intu}
+
+\begin{defi}{Kondition, Stabilität, Konsistenz, Konvergenz}
+\begin{itemize}
+\item \textbf{Kondition} $\kappa=|f(x)-f(\tilde x)|$: wie stark reagiert das \emph{Problem} auf
+  Eingabestörung. Klein $=$ gut, groß $=$ schlecht konditioniert. \emph{Eigenschaft des Problems.}
+\item \textbf{Stabilität} $|\hat f(\tilde x)-\hat f(x)|\le s\,|\tilde x-x|$: wie stark verstärkt der
+  \emph{Algorithmus} Störungen. \emph{Eigenschaft des Verfahrens.}
+\item \textbf{Konsistenz} $|\hat f(x)-f(x)|\le c$: wie gut nähert der Algorithmus bei \emph{exakter}
+  Eingabe.
+\item \textbf{Konvergenz} $|\hat f(\tilde x)-f(x)|\to 0$: Gesamtfehler aus gestörter Eingabe.
+\end{itemize}
+\end{defi}
+
+\begin{satz}{Kernzusammenhang}
+\textbf{Konsistenz $+$ Stabilität $\Rightarrow$ Konvergenz.} Quantifizierung über $|f'(x)|$:
+$\kappa\approx|f'(x)|\,\delta x$ -- dort, wo $f$ \emph{flach} ist (kleine Steigung), gut
+konditioniert; wo $f$ \emph{steil} ist, schlecht.
+\end{satz}
+
+\begin{falle}{Zwei Verwechslungen, die Punkte kosten}
+1) \textbf{Kondition $\ne$ Stabilität}: Kondition gehört zum \emph{Problem}, Stabilität zum
+\emph{Algorithmus}. Ein stabiler Algorithmus kann ein \emph{schlecht konditioniertes} Problem
+\textbf{nicht} retten -- er erzeugt nur keine \emph{zusätzlichen} Fehler.\\
+2) \textbf{Kleineres $h$ ist \emph{nicht} automatisch besser}: feineres $h$ senkt den
+Konsistenz-/Diskretisierungsfehler, aber unterhalb eines optimalen $h$ \emph{dominiert der
+Rundungsfehler} (und Eingangsrauschen) -- der Gesamtfehler steigt wieder. Es gibt ein optimales $h$.
+\end{falle}
+
+% =====================================================================
+\section{Nullstellen: Newton- \& Sekantenverfahren}
+
+\begin{satz}{Newton-Verfahren -- Herleitung aus Taylor}
+Taylor 1.\ Ordnung: $f(x)\approx f(x_n)+f'(x_n)(x-x_n)$. Diese \emph{Tangente} $=0$ setzen und nach
+$x$ lösen:
+\[
+  \boxed{\,x_{n+1}=x_n-\frac{f(x_n)}{f'(x_n)}\,}
+\]
+Newton iteriert also die Nullstelle der Tangente.
+\end{satz}
+
+\begin{defi}{Konvergenz von Newton}
+\textbf{Quadratische Konvergenz} $|e_{n+1}|\le C|e_n|^2$ nahe einer \emph{einfachen} Wurzel
+$x^\star$: die Zahl korrekter Stellen \emph{verdoppelt} sich pro Schritt
+($10^{-1}\!\to\!10^{-2}\!\to\!10^{-4}\!\to\!10^{-8}$).
+\textbf{Konvergenzkriterium}: $x_0$ nah genug an einfacher Wurzel, $f\in C^2$, $f'(x^\star)\neq 0$.
+\end{defi}
+
+\begin{falle}{Newton-Versagensfälle}
+\begin{itemize}
+\item $f'(x_n)=0$: waagrechte Tangente $\Rightarrow$ \emph{Division durch $0$} (Verfahren bricht ab).
+\item Schlechter Startwert $\Rightarrow$ Divergenz oder Sprung ins falsche Becken.
+\item \emph{Zyklus}: Iteration pendelt periodisch und konvergiert nie.
+\end{itemize}
+\end{falle}
+
+\begin{satz}{Finite Differenz \& Sekantenverfahren}
+Ist $f'$ unbekannt/teuer: \textbf{Vorwärtsdifferenz}
+$f'(x_0)\approx\frac{f(x_0+h)-f(x_0)}{h}$, Fehler $\mathcal O(h)$ (Taylor-Restterm $\tfrac h2 f''$).
+Einsetzen $\to$ \textbf{Sekantenverfahren}
+\[
+  x_{n+1}=x_n-f(x_n)\,\frac{x_n-x_{n-1}}{f(x_n)-f(x_{n-1})}.
+\]
+\emph{Ableitungsfrei} (Ordnung $\approx1{,}618$). Vorteil: kein $f'$ nötig. Nachteil: langsamer als
+Newton, braucht zwei Startwerte, Nenner kann $\approx0$ werden.
+\end{satz}
+
+% =====================================================================
+\section{Optimierung}
+
+\begin{defi}{Lokal vs.\ global, Konvexität}
+\textbf{Lokales} Minimum: kleinster Wert in einer \emph{Umgebung}; \textbf{globales}: kleinster Wert
+auf der \emph{ganzen} Domäne. Lokale Verfahren folgen nur lokaler Information und laufen ins
+\emph{nächste} Tal -- bei \emph{multimodalen} Landschaften (viele Minima, z.\,B.\ Shekel-Foxholes)
+verfehlen sie das globale.
+\end{defi}
+
+\begin{intu}{Konvexität als Glücksfall}
+Ist $f$ \emph{konvex} ($f''\ge 0$ überall), gibt es nur \emph{ein} Minimum -- dann ist jedes lokale
+zugleich global, lokale Verfahren genügen. Schwierig wird es erst im \emph{nicht-konvexen} Fall.
+\end{intu}
+
+\begin{satz}{Newton fürs Optimum \& Gradientenabstieg}
+Optimum: $f'(x)=0$. Newton auf $f'$:
+\[
+  x_{n+1}=x_n-\frac{f'(x_n)}{|f''(x_n)|}.
+\]
+Der \emph{Betrag} $|f''|$ erzwingt einen Schritt \emph{immer bergab} (auch in konkaven Regionen
+$f''<0$, wo reines Newton bergauf zu einem Maximum liefe). Klassifikation via 2.\ Ableitung:
+$f''>0\Rightarrow$ Minimum, $f''<0\Rightarrow$ Maximum.\\
+\textbf{Gradientenabstieg}: $x_{n+1}=x_n-\eta f'(x_n)$. Lernrate $\eta$ zu \emph{groß}
+$\Rightarrow$ Überschießen/Oszillation/Divergenz; zu \emph{klein} $\Rightarrow$ sehr langsam.
+\end{satz}
+
+\begin{satz}{Globale Strategien}
+\begin{itemize}
+\item \textbf{Random Restarts}: viele zufällige Starts; Erfolgswahrscheinlichkeit nach $K$ Starts
+  $P=1-(1-p)^K$ ($p$ = Trefferchance pro Start).
+\item \textbf{Simulated Annealing}: akzeptiert Verschlechterung $\Delta E>0$ mit
+  $e^{-\Delta E/T}$. Hohe Temperatur $T$ = viel Exploration (verlässt lokale Minima), Abkühlen
+  $T\downarrow$ = Exploitation.
+\item \textbf{Basin Hopping}: zufälliger Sprung $+$ lokale Minimierung, springt zwischen „Becken``.
+\end{itemize}
+\end{satz}
+
+\begin{falle}{Raue Landschaft \& Glättung -- Wahl von $h$}
+Ein hochfrequenter Störterm wie $\tfrac12\sin(4\pi x)$ erzeugt viele Mikro-Minima; lokale
+Optimierer bleiben im ersten stecken. \textbf{Glätten} (Fenster-Mittel/Integration über eine
+Periode) bügelt die Oszillation aus. Wähle $h\approx$ \emph{Periode} des Störterms:
+$\sin(4\pi x)$ hat Periode $\frac{2\pi}{4\pi}=\tfrac12$ $\Rightarrow$ $h\approx\tfrac12$.
+\end{falle}
+
+% =====================================================================
+\section{Differenzialgleichungen (Anfangswertprobleme)}
+
+\begin{defi}{Euler-Verfahren}
+AWP $y'=f(t,y),\ y(t_0)=y_0$.
+\textbf{Explizit}: $y_{n+1}=y_n+h\,f(t_n,y_n)$ (direkt, billig).
+\textbf{Implizit}: $y_{n+1}=y_n+h\,f(t_{n+1},y_{n+1})$ (Gleichung lösen, teurer, viel stabiler).
+\end{defi}
+
+\begin{satz}{Runge-Kutta \& Butcher-Tableau}
+RK kombiniert mehrere Steigungs-Auswertungen. \textbf{RK4}:
+\[
+  y_{n+1}=y_n+\tfrac h6(k_1+2k_2+2k_3+k_4),
+\]
+\[
+  k_1=f(t_n,y_n),\;\; k_2=f(t_n{+}\tfrac h2,\,y_n{+}\tfrac h2 k_1),\;\;
+  k_3=f(t_n{+}\tfrac h2,\,y_n{+}\tfrac h2 k_2),\;\; k_4=f(t_n{+}h,\,y_n{+}h\,k_3).
+\]
+\textbf{Butcher-Tableau} $\begin{array}{c|c}c&A\\\hline&b^{\!\top}\end{array}$:
+Knoten $c_i$ (Zeitpunkte), Gewichte $b_i$ (Endmischung), Matrix $a_{ij}$ (Stufenkopplung).
+\emph{Explizit} $\Leftrightarrow$ $A$ streng untere Dreiecksmatrix. Ordnungsbedingungen u.\,a.\
+$\sum_i b_i=1$, $\sum_i b_i c_i=\tfrac12$.
+\end{satz}
+
+\begin{intu}{Ordnung, Stabilität, Steifheit}
+\textbf{Konvergenzordnung} $p$: globaler Fehler $\mathcal O(h^p)$ (Euler $p{=}1$, RK4 $p{=}4$). RK4
+ist bei gleichem $h$ \emph{drastisch} genauer (4 Auswertungen, dafür viel größere Schritte möglich).
+\textbf{Stabilität} (explizit Euler, $y'=-\lambda y$): stabil nur für $0<h<\tfrac{2}{\lambda}$.
+\textbf{Steifheit}: stark unterschiedliche Zeitskalen zwingen explizite Verfahren zu winzigen $h$
+$\Rightarrow$ implizite Verfahren nötig.
+\end{intu}
+
+% =====================================================================
+\section{Numerische Integration \& Interpolation}
+
+\begin{defi}{Newton-Cotes-Idee}
+Funktion durch ein Interpolationspolynom über äquidistante Stützstellen ersetzen und \emph{dieses}
+exakt integrieren. \textbf{Exaktheitsgrad} = höchster Polynomgrad, den die Regel noch exakt
+integriert.
+\end{defi}
+
+\begin{satz}{Die Quadraturregeln (auf $[a,b]$, $h=b-a$, $m=\tfrac{a+b}{2}$)}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}lll@{}}
+Regel & Formel & Exaktheit\\\hline
+Rechteck & $h\,f(a)$ bzw.\ $h\,f(b)$ & $0$\\
+Mittelpunkt & $h\,f(m)$ & $1$\\
+Trapez & $\tfrac h2[f(a)+f(b)]$ & $1$\\
+Simpson & $\tfrac h6[f(a)+4f(m)+f(b)]$ & $3$\\
+$3/8$ & $\tfrac{3h}{8}[f_0+3f_1+3f_2+f_3]$ & $3$\\
+Boole & $\tfrac{2h}{45}[7f_0+32f_1+12f_2+32f_3+7f_4]$ & $5$\\
+\end{tabular}\\[2pt]
+Der \textbf{Mittelpunkt} ist das beste Rechteck: er mittelt die Krümmung (Über-/Unterschätzung
+heben sich auf) $\to\mathcal O(h^2)$ statt $\mathcal O(h)$.
+\end{satz}
+
+\begin{falle}{Zusammengesetzte Gewichte -- nur die \emph{inneren} Punkte doppeln}
+Für $[0,2]$ mit Punkten $f_0,f_1,f_2$ ($h=1$):
+\[
+  \text{Trapez: } \tfrac h2\bigl[f_0+\mathbf{2}f_1+f_2\bigr],\qquad
+  \text{Simpson: } \tfrac h3\bigl[f_0+\mathbf{4}f_1+f_2\bigr].
+\]
+\textbf{Genau ein} mittlerer Term, mit Gewicht $2$ (Trapez) bzw.\ $4$ (Simpson) -- \emph{nicht}
+$f_1+f_2$ zusammenfassen und \emph{nicht} zusätzliche Terme erfinden. Merksatz Simpson:
+„$1,4,1$ geteilt durch $3$``.
+\end{falle}
+
+\begin{intu}{Warum Simpson Grad 3 exakt schafft}
+Simpson legt nur eine \emph{Parabel} (Grad 2) an, ist aber durch \emph{Symmetrie} exakt bis Grad
+\textbf{3}: der kubische Fehleranteil hebt sich über das symmetrische Intervall auf.
+\end{intu}
+
+\subsection{Interpolation}
+\begin{satz}{Lagrange-Polynom}
+Durch $n{+}1$ Punkte $(x_i,y_i)$ mit verschiedenen $x_i$ gibt es \emph{genau ein} Polynom vom Grad
+$\le n$:
+\[
+  p(x)=\sum_{i} y_i\,L_i(x),\qquad L_i(x)=\prod_{j\neq i}\frac{x-x_j}{x_i-x_j}.
+\]
+Jedes $L_i$ ist $1$ in $x_i$ und $0$ in allen anderen Knoten. (Alternativ: Newton-Schema der
+dividierten Differenzen -- selbes Polynom, leichter erweiterbar.)
+\end{satz}
+
+\begin{falle}{Runge-Phänomen $\Rightarrow$ „stop at Simpson``}
+Interpolation \emph{hohen Grades} auf gleichmäßigen Knoten oszilliert stark an den Rändern (Fehler
+wächst!). \textbf{Konsequenz}: \emph{nicht} den Polynomgrad erhöhen, sondern \textbf{zusammengesetzte
+Regeln niedrigen Grades} verwenden (viele kleine Trapez-/Simpson-Stücke), bzw.\
+\textbf{Spline}-Interpolation (stückweise niedriger Grad, glatt, stabil).
+\end{falle}
+
+\subsection{Romberg \& Monte-Carlo}
+\begin{satz}{Romberg = Richardson auf Trapez}
+Trapezwerte für $h,\tfrac h2,\dots$ berechnen und führende Fehlerterme extrapolieren:
+$R=\frac{4\,T(h/2)-T(h)}{3}$ (eliminiert den $\mathcal O(h^2)$-Term) $\to$ hohe Genauigkeit aus
+billigen Trapezwerten.
+\end{satz}
+
+\begin{satz}{Monte-Carlo-Integration}
+$\displaystyle \hat I=|\Omega|\,\tfrac1N\sum_{i=1}^N f(X_i)$, Standardfehler
+$\mathrm{SE}=\frac{|\Omega|\,\sigma_f}{\sqrt N}\propto N^{-1/2}$. \emph{SE halbieren} $\Rightarrow$
+$N\times4$; \emph{zehnteln} $\Rightarrow$ $N\times100$. Die Mittelpunktsregel ist MC mit $N=1$.
+\end{satz}
+
+\begin{intu}{Fluch der Dimensionen}
+Ein Gitter mit $n$ Punkten pro Achse braucht in $d$ Dimensionen $n^d$ Punkte (exponentiell). Der
+MC-Fehler $\propto1/\sqrt N$ ist \emph{dimensionsunabhängig} $\Rightarrow$ in hohen Dimensionen
+schlägt Monte-Carlo das Gitter.
+\end{intu}
+
+% =====================================================================
+\section{Fourier-Analyse \& FFT}
+
+\begin{defi}{Fourier-Transformation}
+$F(\omega)=\int_{-\infty}^{\infty} f(t)\,e^{-i\omega t}\,dt$ zerlegt ein Zeitsignal in seine
+\textbf{Frequenzanteile} ($|F(\omega)|$ = Stärke der Frequenz $\omega$). Rücktransformation
+$f(t)=\frac{1}{2\pi}\int F(\omega)e^{i\omega t}\,d\omega$ setzt das Signal wieder zusammen
+(beide invers zueinander).
+\end{defi}
+
+\begin{intu}{Euler-Formel \& Interferenz}
+$e^{i\omega t}=\cos(\omega t)+i\sin(\omega t)$, also
+$\cos(\omega t)=\tfrac12(e^{i\omega t}+e^{-i\omega t})$. Daher liefert ein reeller Kosinus
+\emph{zwei} Spektrallinien bei $\pm\omega$. \textbf{Interferenz}: ein Signal ist die \emph{Summe}
+mehrerer Schwingungen; $f(t)=A_1\cos(\omega_1 t)+A_2\cos(\omega_2 t)$ zeigt im Spektrum
+\textbf{4 Peaks} (bei $\pm\omega_1,\pm\omega_2$, Höhe $\tfrac{A_1}{2},\tfrac{A_2}{2}$).
+\end{intu}
+
+\begin{satz}{DFT \& FFT}
+\textbf{DFT} (endlich abgetastet): $X_k=\sum_{n=0}^{N-1}x_n\,e^{-i2\pi kn/N}$ -- $N$ diskrete
+Frequenz-Bins. Kosten direkt $\mathcal O(N^2)$. \textbf{FFT} spaltet rekursiv in gerade/ungerade
+Indizes $\Rightarrow$ $\mathcal O(N\log N)$ (bei $N{=}10^6$ der Unterschied zwischen Sekunden und
+Tagen).
+\end{satz}
+
+\begin{falle}{Spektrum lesen: Bin-Frequenz \& Nyquist}
+Bin $k$ entspricht Frequenz $f_k=k\cdot\frac{f_s}{N}$ ($f_s$ = Abtastrate). \textbf{Nyquist} =
+$\frac{f_s}{2}$ ist die höchste eindeutig darstellbare Frequenz. Frequenzen \emph{darüber}
+erscheinen fälschlich als niedrigere (\textbf{Aliasing}, Abtasttheorem verletzt). Peaks im
+Betragsspektrum $\Leftrightarrow$ periodische Komponenten.
+\end{falle}
+
+% =====================================================================
+\section{Modelltraining aus ersten Prinzipien}
+
+\begin{intu}{Lineare Regression als Optimierungsproblem}
+Modell $\hat y(x)=w x+b$. Trainiert wird durch Minimieren des Verlusts per Gradientenabstieg --
+also reine Numerik-Optimierung (Abschnitt 4) auf einer Verlustfunktion.
+\end{intu}
+
+\begin{defi}{Mittlerer quadratischer Fehler (MSE) -- mit Quadrat!}
+\[
+  L(w,b)=\frac1n\sum_{i=1}^n\bigl(\underbrace{w x_i+b}_{\hat y_i}-y_i\bigr)^2 .
+\]
+Die Abweichungen werden \textbf{quadriert} (sonst heben sich $+$/$-$ auf). Das Quadrat bestraft
+große Fehler stärker und macht $L$ glatt/konvex in $(w,b)$.
+\end{defi}
+
+\begin{falle}{Erster Loss $=$ Varianz der Zielwerte (Quadrat nicht vergessen!)}
+Init $w=0,\ b=\bar y$ sagt überall den Mittelwert voraus, also
+\[
+  L=\frac1n\sum_i(\bar y-y_i)^2=\mathrm{Var}(y).
+\]
+\textbf{Varianz = Mittel der \emph{quadrierten} Abweichungen}, \emph{nicht} der Abweichungen selbst
+(die ergeben immer $0$). Beispiel $y=(2,4,6)$, $\bar y=4$:
+\[
+  \mathrm{Var}=\tfrac13\bigl[(-2)^2+0^2+2^2\bigr]=\tfrac13(4+0+4)=\tfrac83\approx2{,}67.
+\]
+Ein gedruckter Init-Loss $\approx100$ statt $\tfrac83$ deutet auf einen Bug/falsche Initialisierung
+(oder Summe statt Mittel); $\approx0$ wäre ebenfalls verdächtig.
+\end{falle}
+
+\begin{satz}{Numerik-Brille auf ML-Praktiken}
+\begin{itemize}
+\item \textbf{Overfit-Sanity-Check}: ein überparametrisiertes Modell \emph{kann} eine kleine
+  Teilmenge trivial auf Loss~$0$bringen. Gelingt das \emph{nicht}, liegt der Fehler \emph{nicht} am
+  Optimierer, sondern in Modell/Loss/Datenpipeline -- analog: einen Solver an einem Problem mit
+  \emph{bekannter exakter Lösung} testen.
+\item \textbf{Mini-Batch-SGD} $\leftrightarrow$ \emph{Monte-Carlo}: der Gradient über eine zufällige
+  Teilmenge der Größe $B$ ist eine MC-Schätzung; Schätzfehler $\propto 1/\sqrt B$.
+\item \textbf{Mehrere Seeds, bester Lauf} $\leftrightarrow$ \emph{Random Restarts} (nicht-konvexe
+  Landschaft).
+\item \textbf{Quantisierung (niedrige Bit-Präzision)} $\leftrightarrow$ \emph{Präzisionswahl} im
+  Gleitkomma: kleinstes Format nehmen, dessen Bereich \& Auflösung genügen (Inferenz verträgt
+  weniger Präzision als Training).
+\end{itemize}
+\end{satz}
+
+\vspace{6pt}
+\noindent\textcolor{rulecol}{\rule{\linewidth}{0.4pt}}\\[2pt]
+{\small\color{muted} Ende des Lernskripts -- 8 Themenblöcke, von Zahlendarstellung bis Modelltraining.
+Die roten \textcolor{red}{Stolperfallen}-Boxen zeigen jeweils direkt die korrekte Form.}
+
+\end{document}

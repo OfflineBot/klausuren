@@ -1,0 +1,203 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[a4paper,top=0.8cm,bottom=0.9cm,left=0.7cm,right=0.7cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{color}
+\usepackage{multicol}
+
+% ---------- Farben (dunkles Rot, druck- & cremepapier-tauglich) ----------
+\definecolor{head}{rgb}{0.50,0.04,0.08}
+\definecolor{sub}{rgb}{0.62,0.07,0.10}
+\definecolor{grau}{rgb}{0.34,0.34,0.34}
+\definecolor{vgcol}{rgb}{0.62,0.07,0.10}
+
+% ---------- Layout (2 Spalten, 2 Seiten) ----------
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt}
+\setlength{\columnsep}{16pt}
+\setlength{\columnseprule}{0.3pt}
+\setlength{\abovedisplayskip}{3pt}
+\setlength{\belowdisplayskip}{3pt}
+\setlength{\abovedisplayshortskip}{1.5pt}
+\setlength{\belowdisplayshortskip}{1.5pt}
+\renewcommand{\baselinestretch}{1.12}
+\pagestyle{empty}
+% Inline-Formeln nicht mitten drin umbrechen (kein Bruch an =/Operatoren)
+\relpenalty=10000
+\binoppenalty=10000
+
+% ---------- Überschriften (Text + Linie) ----------
+\makeatletter
+% Überschriften bleiben mit dem folgenden Inhalt zusammen (kein verwaister Header)
+\newcommand{\Sec}[1]{%
+  \par\addvspace{4pt}%
+  \noindent{\color{head}\large\bfseries #1}\nobreak\\*[-1.5pt]%
+  {\color{head}\rule{\columnwidth}{0.9pt}}\par\nobreak\vskip1.5pt\nobreak\@afterheading}
+\newcommand{\Sub}[1]{%
+  \par\addvspace{2.5pt}%
+  \noindent{\color{sub}\bfseries #1}\par\nobreak\vskip0.4pt\nobreak\@afterheading}
+\makeatother
+% Ablauf-Block (nummeriertes Vorgehen)
+\newcommand{\ablauf}[1]{\par{\textbf{\small Ablauf:}}\,{\small #1}\par}
+% kurze Erklärung (grau kursiv)
+\newcommand{\erk}[1]{\par{\color{grau}\itshape\small #1}\par}
+\newcommand{\hint}[1]{{\color{grau}\itshape #1}}
+
+\newenvironment{tl}{\begin{list}{\textbullet}{%
+  \setlength{\leftmargin}{1.05em}\setlength{\labelsep}{0.4em}%
+  \setlength{\itemsep}{1pt}\setlength{\parsep}{0pt}\setlength{\topsep}{1pt}%
+  \setlength{\partopsep}{0pt}}}{\end{list}}
+
+\begin{document}
+\normalsize
+
+{\centering {\color{head}\Large\bfseries Analysis II}\par}
+\vspace{4pt}
+
+\begin{multicols}{2}
+
+% ===================== Ableitungen =====================
+\Sec{Ableitungen}
+\Sub{Stetigkeit / Differenzierbarkeit}
+Stetig bei $x_0$: $\lim_{x\to x_0^-}f=\lim_{x\to x_0^+}f=f(x_0)$. \;Differenzierbar $\Rightarrow$ stetig (nicht umgekehrt).
+\ablauf{Stückweise Funktion an Nahtstelle $x_0$: \;1)\,\textbf{stetig?} linken \& rechten Grenzwert und $f(x_0)$ ausrechnen $\to$ alle drei gleich? \;2)\,\textbf{diff'bar?} beide Teile ableiten, $f'_-(x_0)$ und $f'_+(x_0)$ einsetzen $\to$ gleich? (nur sinnvoll, wenn stetig)}
+\Sub{Ableitungsregeln}
+\erk{Summe einzeln; Produkt/Quotient nach Regel; Verschachtelung mit Kettenregel (äußere mal innere Ableitung).}
+\begin{tl}
+\item $(a\,x^{b})' = a\,b\,x^{b-1}$, \;$(a\ln x)'=\tfrac{a}{x}$, \;$(a\,e^{x})'=a\,e^{x}$
+\item Produkt: $(fg)'=f'g+fg'$
+\item Quotient: $\big(\tfrac fg\big)'=\tfrac{f'g-fg'}{g^2}$
+\item Kette: $\big(g(h(x))\big)'=h'(x)\,g'(h(x))$
+\item $(\sin)'=\cos$, \;$(\cos)'=-\sin$
+\item $(\tan x)'=\tfrac{1}{\cos^2 x}=1+\tan^2 x$
+\item $(\arcsin x)'=\tfrac{1}{\sqrt{1-x^2}}$, \;$(\arccos x)'=\tfrac{-1}{\sqrt{1-x^2}}$
+\item $(\arctan x)'=\tfrac{1}{1+x^2}$
+\item $(\sinh x)'=\cosh x$, \;$(\cosh x)'=\sinh x$
+\item $(\tanh x)'=\tfrac{1}{\cosh^2 x}$
+\item $(A\sin\omega t)'=A\omega\cos\omega t$, \;$(A\cos\omega t)'=-A\omega\sin\omega t$
+\end{tl}
+
+% ===================== Vektoranalysis =====================
+\Sec{Vektoranalysis}
+\Sub{Partielle Ableitung}
+\erk{Nach einer Variablen ableiten, alle anderen als Konstante behandeln.}
+\Sub{Gradient}
+$\nabla f=\big(\partial_{x_1}f,\dots,\partial_{x_n}f\big)^{\!\top}$
+\erk{Vektor aller partiellen Ableitungen; zeigt zum stärksten Anstieg, $|\nabla f|$ ist der Betrag.}
+\Sub{Totales Differential}
+$df=\partial_x f\,dx+\partial_y f\,dy$
+\Sub{Vektornormen}
+$\|\vec v\|_1=\textstyle\sum_i|v_i|$ \hint{(Beträge addieren)}, \;$\|\vec v\|_2=\sqrt{\textstyle\sum_i v_i^2}$ \hint{(Länge)}, \;$\|\vec v\|_\infty=\max_i|v_i|$ \hint{(größter Betrag)}
+\Sub{Richtungsableitung}
+$D_{\vec v}f=\nabla f\cdot\dfrac{\vec v}{|\vec v|}$, \;\;$|\vec v|=\sqrt{v_1^2+\dots+v_n^2}$
+\ablauf{1)\,$\nabla f$ bilden \;2)\,am Punkt einsetzen \;3)\,$\vec v$ normieren ($\vec e=\vec v/|\vec v|$) \;4)\,Skalarprodukt $\nabla f\cdot\vec e$}
+\Sub{Divergenz}
+$\operatorname{div}\vec f=\partial_x f_1+\partial_y f_2(+\partial_z f_3)$
+\erk{Skalar („Quellstärke``). Quellenfrei: $\operatorname{div}=0$.}
+\ablauf{$\operatorname{div}$ ausrechnen $\to$ $=0$ setzen $\to$ nach Stellen lösen (Quadrat $\Rightarrow\pm$Wurzel!)}
+\Sub{Rotation}
+$\operatorname{rot}_{2D}\vec f=\partial_x f_2-\partial_y f_1$ \hint{(Skalar)}
+\[ \operatorname{rot}_{3D}\vec f=\begin{pmatrix}\partial_y f_3-\partial_z f_2\\ \partial_z f_1-\partial_x f_3\\ \partial_x f_2-\partial_y f_1\end{pmatrix} \]
+\erk{Wirbelfrei: $\operatorname{rot}=0$ (gleiches Lösen nach Stellen, $\pm$ beachten).}
+\Sub{Kreuzprodukt}
+\[ \vec a\times\vec b=\begin{pmatrix}a_2b_3-a_3b_2\\ a_3b_1-a_1b_3\\ a_1b_2-a_2b_1\end{pmatrix} \]
+\Sub{Laplace \& Identitäten}
+$\Delta f=\operatorname{div}(\operatorname{grad}f)=\sum_i\partial_{x_i}^2 f$\par
+$\operatorname{rot}(\operatorname{grad}f)=\vec0$, \;\;$\operatorname{div}(\operatorname{rot}\vec f)=0$
+\Sub{Extremstelle (notwendige Bedingung)}
+$\nabla f=\vec0$ \hint{(liefert nur \emph{Kandidaten}-Stellen)}
+\ablauf{1)\,$\partial_x f=0$ und $\partial_y f=0$ \;2)\,eine Gl.\ nach einer Variablen umstellen \;3)\,in die andere einsetzen \;4)\,lösen, Wert zurück einsetzen}
+\erk{Achtung: gefragt ist meist nur die \textbf{notwendige} Bedingung $\nabla f=\vec0$ — \emph{nicht} die hinreichende (Hesse-Matrix). Genau lesen!}
+
+% ===================== DGL =====================
+\Sec{Differentialgleichungen (DGL)}
+\Sub{Schritt 0: Typ erkennen}
+\erk{Erst in die Form $y'=\dots$ bringen, dann an der rechten Seite einordnen:}
+\begin{tl}
+\item nur $\alpha\cdot y$ ($\alpha$ feste Zahl) $\Rightarrow$ \textbf{Typ 1} (homogen, konst.)
+\item $a(x)\cdot y$ ($a$ hängt von $x$ ab) $\Rightarrow$ \textbf{Typ 2} (homogen)
+\item $a(x)\,y+b(x)$ (Extra-Term \emph{ohne} $y$) $\Rightarrow$ \textbf{Typ 3} (inhomogen)
+\item $x$- und $y$-Teil multipliziert ($y^2$, $e^{y}$, $\tfrac1y$, \dots) $\Rightarrow$ \textbf{Typ 4} (getrennt / nichtlinear)
+\end{tl}
+\Sub{Typ 1\normalcolor\mdseries\ — homogen, konst.\ Koeff.\ \;$y'=\alpha y$}
+$y=c\,e^{\alpha x}$; \;mit AWP $y(x_0)=y_0$: \;$\boxed{y=y_0\,e^{\alpha(x-x_0)}}$
+\ablauf{1)\,$\alpha$ ablesen \;2)\,$y=y_0\,e^{\alpha(x-x_0)}$ hinschreiben \;3)\,$y_0,x_0$ aus Startwert einsetzen}
+\Sub{Halbwertszeit / Zerfall (Anwendung Typ 1)}
+$y'=\alpha y\Rightarrow y=y_0\,e^{\alpha t}$. \;Halbwertsbedingung: $y(t_{1/2})=\tfrac12 y_0$
+\ablauf{1)\,$y=y_0e^{\alpha t}$ aufstellen \;2)\,$\tfrac12 y_0=y_0e^{\alpha t_{1/2}}\Rightarrow e^{\alpha t_{1/2}}=\tfrac12$ \;3)\,$\ln$ ziehen: $\alpha\,t_{1/2}=\ln\tfrac12$ \;4)\,$\alpha=\dfrac{\ln(1/2)}{t_{1/2}}=\dfrac{-\ln2}{t_{1/2}}$ \;($\alpha<0$ = Zerfall)}
+\erk{Umgekehrt: bei gegebenem $\alpha$ ist $t_{1/2}=\tfrac{\ln2}{-\alpha}$. \;Oft auch als $y'=-\lambda y$ mit $\lambda=\tfrac{\ln2}{t_{1/2}}>0$, Lösung $y=m_0e^{-\lambda t}$.}
+\Sub{Typ 2\normalcolor\mdseries\ — homogen \;$y'=a(x)\,y$}
+$y=c\,e^{A(x)}$, \;$A=\int a(x)\,dx$ \hint{(kein $+c$ im Exponenten)}
+\ablauf{1)\,$a(x)$ ablesen \;2)\,$A=\int a\,dx$ \;3)\,$y=c\,e^{A}$ \;4)\,$c$ aus Startwert}
+\Sub{Typ 3\normalcolor\mdseries\ — inhomogen \;$y'=a(x)\,y+b(x)$}
+$y=e^{A}\big(y_0+\int_{x_0}^{x} b(u)\,e^{-A(u)}\,du\big)$, \;$A=\int a\,dx$
+\erk{$e^{A}$ und $e^{-A}$ sind Kehrwerte (bei $A=\ln x$: $e^{A}=x$, $e^{-A}=\tfrac1x$).}
+\ablauf{1)\,$a,b$ ablesen \;2)\,$A=\int a$ \;3)\,$e^{A},e^{-A}$ bilden \;4)\,$b(u)\,e^{-A(u)}$ vereinfachen/kürzen \;5)\,$\int$ von $x_0$ bis $x$ (Grenzen einsetzen!) \;6)\,$y=e^{A}(y_0+\dots)$ ausmultiplizieren}
+\Sub{Typ 4\normalcolor\mdseries\ — getrennte Veränderliche \;$\frac{dy}{dx}=f(x)\,g(y)$}
+$\displaystyle\int\frac{1}{g(y)}\,dy=\int f(x)\,dx$
+\erk{Links den \emph{Kehrwert} $\tfrac1{g(y)}$ nach $y$ integrieren (nicht $g(y)$!), rechts $f(x)$ nach $x$. Nur \emph{eine} Konstante $c$ (rechts) nötig.}
+\ablauf{1)\,trennen: $\tfrac{dy}{g(y)}=f(x)\,dx$ ($y$ nach links, $x$ nach rechts) \;2)\,beide Seiten integrieren \;3)\,nach $y$ auflösen \;4)\,$c$ aus Startwert}
+
+% ===================== Integralrechnung =====================
+\Sec{Integralrechnung}
+Bestimmtes Integral: $\int_a^b f\,dx=F(b)-F(a)$ \hint{(obere minus untere Grenze)}
+\Sub{Grundintegrale}
+\begin{tl}
+\item $\int a x^b dx=\tfrac{a}{b+1}x^{b+1}\,(b\!\neq\!-1)$, \;$\int\tfrac1x dx=\ln|x|$
+\item $\int e^x dx=e^x$, \;$\int f'e^{f}dx=e^{f}$, \;$\int\ln x\,dx=x\ln x-x$
+\item $\int\sin x\,dx=-\cos x$, \;$\int\cos x\,dx=\sin x$
+\end{tl}
+\Sub{Partielle Integration}
+$\int u\,v'\,dx=uv-\int u'\,v\,dx$
+\ablauf{1)\,$u$ (wird abgeleitet: Potenz/$\ln$) \& $v'$ (wird integriert: Rest) wählen \;2)\,$u'$, $v=\int v'$ \;3)\,$uv-\int u'v$ \;4)\,Restintegral lösen; bleibt Produkt $\Rightarrow$ nochmal}
+\Sub{Substitution}
+$\int f(g(x))\,g'(x)\,dx=\int f(u)\,du$
+\ablauf{1)\,$u=$ innere Funktion \;2)\,$du=u'\,dx\Rightarrow dx=\tfrac{du}{u'}$ \;3)\,alles durch $u$ ersetzen \& kürzen \;4)\,in $u$ integrieren \;5)\,$u$ zurücksetzen}
+\Sub{Trigonometrisches Integral}
+\ablauf{$\tan\!\to\!\tfrac{\sin}{\cos}$ schreiben $\to$ $\sin$ oder $\cos$ ausklammern $\to$ $\sin^2+\cos^2=1$ einsetzen $\to$ Restintegral lösen}
+\Sub{Doppelintegral (Integration über zwei Variablen)}
+$\int_{a_y}^{b_y}\!\int_{a_x}^{b_x} f(x,y)\,dx\,dy$
+\ablauf{1)\,inneres Integral nach $x$ ($y$ konstant, $\int c\,dx=cx$) \;2)\,$x$-Grenzen \;3)\,äußeres nach $y$ \;4)\,$y$-Grenzen}
+\erk{Sonderfall Produkt: $\int\!\!\int f_x(x)\,f_y(y)\,dx\,dy=\big(\int f_x\,dx\big)\big(\int f_y\,dy\big)$. \;Sonderfall Summe: Summanden einzeln integrieren.}
+
+% ===================== Trigonometrie =====================
+\columnbreak
+\Sec{Trigonometrie}
+Bogenmaß: volle Umdrehung $=2\pi$; \;$90^\circ=\tfrac\pi2$, $180^\circ=\pi$, $270^\circ=\tfrac{3\pi}{2}$\par
+$\sin t,\cos t:\mathbb R\to[-1,1]$, Periode $2\pi$, \;$\cos t=\sin(t+\tfrac\pi2)$\par
+$\sin^2 t+\cos^2 t=1$, \;$\tan t=\tfrac{\sin t}{\cos t}$, \;$1+\tan^2 t=\tfrac{1}{\cos^2 t}$\par
+$\cosh^2 t-\sinh^2 t=1$, \;$\tanh t=\tfrac{\sinh t}{\cosh t}$\par
+$\sec=\tfrac1{\cos}$, \;$\csc=\tfrac1{\sin}$, \;$\cot=\tfrac1{\tan}$\par
+Welle: $\lambda=\tfrac1f=\tfrac{2\pi}{\omega}$, \;$\omega=2\pi f$ \hint{($T=\tfrac1f=\tfrac{2\pi}{\omega}$ = Periode)}\par
+$\sin\!:0,1,0$ \;$\cos\!:1,0,-1$ \hint{$(0,\tfrac\pi2,\pi)$}
+\Sub{Grad $\leftrightarrow$ Bogenmaß}
+$\text{rad}=\text{Grad}\cdot\tfrac{\pi}{180}$ \hint{(durch $180$, \emph{nicht} $360$!)}, \;$\text{Grad}=\text{rad}\cdot\tfrac{180}{\pi}$
+\Sub{Identität zeigen}
+\ablauf{eine Seite mit $\sin^2+\cos^2=1$, $\tan=\tfrac{\sin}{\cos}$, $1+\tan^2=\tfrac1{\cos^2}$ umformen, bis die andere Seite dasteht}
+
+% ===================== Komplexe Zahlen =====================
+\Sec{Komplexe Zahlen}
+$i^2=-1$, \;$z=a+ib$, \;$\operatorname{Re}z=a$, \;$\operatorname{Im}z=b$, \;$\overline z=a-ib$\par
+$z_1\pm z_2=(a_1\pm a_2)+i(b_1\pm b_2)$ \hint{(komponentenweise, wie Vektoren)}\par
+$|z|=\sqrt{a^2+b^2}$ \hint{(beide Teile quadrieren!)}\par
+$z_1z_2=(a_1a_2-b_1b_2)+i(a_1b_2+a_2b_1)$\par
+$z^2=(a^2-b^2)+2ab\,i$\par
+$\dfrac{z_1}{z_2}=\dfrac{(a_1a_2+b_1b_2)+i(a_2b_1-a_1b_2)}{a_2^2+b_2^2}$
+\ablauf{Division: Bruch mit konjugiertem Nenner $\overline z=a-ib$ erweitern $\to$ ausmultiplizieren ($i^2=-1$) $\to$ Real-/Imaginärteil trennen}
+\Sub{Polarform}
+$z=r(\cos\varphi+i\sin\varphi)=r\,e^{i\varphi}$
+\ablauf{$r=|z|=\sqrt{a^2+b^2}$, \;$\varphi=\arctan\tfrac ba$; \;Potenz $z^x=r^x e^{i\varphi x}$}
+$e^{x+iy}=e^{x}(\cos y+i\sin y)$, \;$e^{i\pi}+1=0$
+
+% ===================== Fourier =====================
+\Sec{Fourier}
+\erk{Welle als komplexe Exponentialfunktion darstellen, dann transformieren.}
+$A(\cos\omega t+i\sin\omega t)=A\,e^{i\omega t}$\par
+Transformation: $F(\omega)=\int_{-\infty}^{\infty} f(t)\,e^{-i\omega t}\,dt$\par
+Rücktransformation: $f(t)=\tfrac{1}{2\pi}\int_{-\infty}^{\infty} F(\omega)\,e^{i\omega t}\,d\omega$\par
+\erk{Interferenz: gleichphasig $\to$ konstruktiv (verstärkt), gegenphasig $\to$ destruktiv (schwächt); Amplituden addieren sich.}
+
+\end{multicols}
+\end{document}

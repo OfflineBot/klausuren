@@ -1,0 +1,480 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
+\usepackage{geometry}
+\geometry{a4paper,margin=2.0cm}
+
+% ===== Kitty-Theme (serenity) =====
+\definecolor{bgdark}{HTML}{11121A}
+\definecolor{panel}{HTML}{1B1F2C}
+\definecolor{fgtext}{HTML}{D5DDE8}
+\definecolor{accent}{HTML}{91A8D0}
+\definecolor{accentlt}{HTML}{B3CEE5}
+\definecolor{green}{HTML}{B5D4A8}
+\definecolor{yellow}{HTML}{E8D49A}
+\definecolor{rose}{HTML}{D8909A}
+\definecolor{purple}{HTML}{B69ACE}
+\definecolor{cyan}{HTML}{8FBED1}
+\definecolor{muted}{HTML}{8F9BB3}
+\definecolor{rulecol}{HTML}{4A5B78}
+\pagecolor{bgdark}
+\color{fgtext}
+\renewcommand{\normalcolor}{\color{fgtext}}
+\usepackage[colorlinks=true,linkcolor=accentlt,urlcolor=accentlt]{hyperref}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+
+\titleformat{\section}{\Large\bfseries\color{accent}}{\thesection}{0.5em}{}
+\titleformat{\subsection}{\large\bfseries\color{cyan}}{\thesubsection}{0.5em}{}
+\titlespacing*{\section}{0pt}{12pt}{3pt}
+\titlespacing*{\subsection}{0pt}{7pt}{2pt}
+
+% Status-Chip
+\newcommand{\chip}[2]{{\setlength{\fboxsep}{2.5pt}\colorbox{#1}{\color{bgdark}\footnotesize\bfseries #2}}}
+\newcommand{\stark}{\chip{green}{stark}}
+\newcommand{\teils}{\chip{yellow}{teils}}
+\newcommand{\ueben}{\chip{rose}{üben!}}
+\newcommand{\offen}{\chip{muted}{ungetestet}}
+
+% genau EIN Kasten-Typ: durchgerechnetes Beispiel
+\newtcolorbox{rechnung}[1]{enhanced,breakable,colback=panel,coltext=fgtext,boxrule=0.5pt,
+  colframe=rulecol,coltitle=accentlt,colbacktitle=panel,fonttitle=\bfseries\small,
+  title={Durchgerechnet -- #1},arc=2pt,left=5pt,right=5pt,top=3pt,bottom=3pt,
+  before skip=5pt,after skip=6pt}
+
+% TikZ-Defaults
+\tikzset{ax/.style={rulecol,-{Stealth[length=4pt]}},
+         crv/.style={accent,very thick},
+         hl/.style={rose,very thick}}
+
+\setlist[itemize]{leftmargin=1.4em,itemsep=1pt,topsep=2pt}
+\setlist[enumerate]{leftmargin=1.7em,itemsep=1pt,topsep=2pt}
+
+\begin{document}
+
+\begin{center}
+{\Huge\bfseries\color{accent} Numerische Methoden}\\[3pt]
+{\large\color{fgtext} Komplettes Lernskript -- allgemein, mit Graphen, für jede Klausur}\\[3pt]
+{\small\color{muted} Erklärt \emph{was} es ist, \emph{wie} es geht und \emph{wann} man es nutzt -- pro Thema ein durchgerechnetes Beispiel.}
+\end{center}
+\vspace{2pt}
+\noindent\textcolor{rulecol}{\rule{\linewidth}{0.4pt}}
+
+{\small\color{muted}Dein Stand pro Thema (aus der letzten Probeklausur):\quad
+\stark\ = im Test gut \quad \teils\ = kleine Lücke \quad \ueben\ = war Lücke \quad
+\offen\ = noch nicht geprüft}
+
+{\color{muted}\tableofcontents}
+\noindent\textcolor{rulecol}{\rule{\linewidth}{0.4pt}}
+
+% =====================================================================
+\section{Zahlendarstellung \& Fehler}
+\stark
+
+\subsection{Warum überhaupt Fehler?}
+Ein Rechner hat \emph{endlich} viele Bits. Reelle Zahlen müssen also \emph{gerundet} werden, und
+viele Verfahren brechen einen Grenzprozess ab. Jedes numerische Ergebnis trägt deshalb einen Fehler.
+Man unterscheidet drei Quellen:
+\begin{itemize}
+\item \textbf{Modellfehler:} die Realität wird vereinfacht (z.\,B.\ Reibung ignoriert).
+\item \textbf{Abschneide-/Diskretisierungsfehler:} ein Grenzwert wird abgebrochen (Reihe, Ableitung
+  $\to$ Differenzenquotient). Skaliert mit der Schrittweite $h$.
+\item \textbf{Rundungsfehler:} endliche Stellenzahl der Maschine.
+\end{itemize}
+\textbf{Absoluter} Fehler $|x-\tilde x|$, \textbf{relativer} Fehler $\frac{|x-\tilde x|}{|x|}$
+(skaleninvariant -- „wie viele gültige Stellen``; bei $x\approx 0$ nur absolut sinnvoll).
+
+\subsection{Gleitkomma, Maschinenepsilon, Auslöschung}
+Eine Gleitkommazahl ist $x=(-1)^s\,m\cdot 2^{e}$: Vorzeichen $s$, \emph{Mantisse} $m$ (signifikante
+Stellen $\to$ \textbf{Auflösung}), \emph{Exponent} $e$ (Skalierung $\to$ \textbf{Wertebereich}).
+Normalisiert heißt $m=1{.}b_1b_2\dots$ mit implizitem führenden Bit. Die zentrale Kennzahl ist das
+\textbf{Maschinenepsilon} $\varepsilon=2^{-t}$ ($t$ = Mantissen-Nachkommabits): der Abstand von $1$
+zur nächsten darstellbaren Zahl.
+
+Wichtig ist das Bild der \emph{Abstände}: darstellbare Zahlen liegen nicht gleichmäßig, sondern
+werden mit jeder Zweierpotenz \emph{doppelt so weit} auseinander -- konstante \emph{relative},
+wachsende \emph{absolute} Auflösung:
+
+\begin{center}
+\begin{tikzpicture}[scale=1.15]
+  \draw[ax] (0.6,0) -- (8.7,0) node[right]{$x$};
+  \foreach \v in {1,2,4,8} \draw[rulecol](\v,-0.07)--(\v,0.07) node[below=2pt]{\scriptsize \v};
+  % [1,2): Abstand 0,25
+  \foreach \v in {1,1.25,1.5,1.75} \fill[green](\v,0) circle(1.3pt);
+  % [2,4): Abstand 0,5
+  \foreach \v in {2,2.5,3,3.5} \fill[yellow](\v,0) circle(1.3pt);
+  % [4,8): Abstand 1
+  \foreach \v in {4,5,6,7} \fill[rose](\v,0) circle(1.3pt);
+  \node[green]  at (1.375,0.42){\scriptsize Abst.\ $0{,}25$};
+  \node[yellow] at (2.75,0.42){\scriptsize Abst.\ $0{,}5$};
+  \node[rose]   at (5.5,0.42){\scriptsize Abst.\ $1$};
+\end{tikzpicture}\\[-2pt]
+{\footnotesize\color{muted}Gleich viele Zahlen pro „Oktave`` $[1,2),[2,4),[4,8)$ -- der absolute Abstand verdoppelt sich.}
+\end{center}
+
+\textbf{Auslöschung} (catastrophic cancellation): subtrahiert man zwei fast gleiche Zahlen, löschen
+sich die führenden Stellen weg, übrig bleibt Rauschen. Gegenmittel: \emph{umformen}, sodass addiert
+statt subtrahiert wird, z.\,B.\ $\sqrt{x+1}-\sqrt{x}=\frac{1}{\sqrt{x+1}+\sqrt{x}}$.
+Festkomma dagegen hat \emph{konstante absolute} Auflösung $2^{-f}$ (gleichmäßiges Raster), dafür
+kleinen Wertebereich.
+
+\begin{rechnung}{Maschinenepsilon \& warum eine Differenz „explodiert``}
+System mit $t=2$ Mantissenbits $\Rightarrow \varepsilon=2^{-2}=0{,}25$. Darstellbar ab $1$:
+$1{,}00;\,1{,}25;\,1{,}50;\,1{,}75$. Was ist $(1+0{,}1)-1$? Da $0{,}1$ kleiner als die halbe
+Auflösung $0{,}125$ ist, rundet $1{,}1\to1{,}0$. Also $(1+0{,}1)-1 = 1{,}0-1{,}0 = 0$ -- der ganze
+Beitrag $0{,}1$ ist weg. Eine anschließende Division $1/0$ liefert $\infty$. Lehre: kleine Zahlen
+\emph{zuerst} zusammenfassen, kritische Differenzen umformen.
+\end{rechnung}
+
+% =====================================================================
+\section{Fehleranalyse: die vier Eigenschaften}
+\teils
+
+\subsection{Die Begriffe (wer wird mit wem verglichen?)}
+Notation: $f$ = wahres Problem, $\hat f$ = Algorithmus, $\tilde x$ = gestörte Eingabe.
+\begin{itemize}
+\item \textbf{Kondition} $\kappa=|f(x)-f(\tilde x)|$: Empfindlichkeit des \emph{Problems} gegenüber
+  Eingabestörung. \emph{Gehört zum Problem.} Faustformel $\kappa\approx|f'(x)|\cdot\delta x$.
+\item \textbf{Stabilität} $|\hat f(\tilde x)-\hat f(x)|\le s\,|\tilde x-x|$: verstärkt der
+  \emph{Algorithmus} Störungen? \emph{Gehört zum Verfahren.}
+\item \textbf{Konsistenz} $c=|\hat f(x)-f(x)|$: wie gut nähert die Diskretisierung bei
+  \emph{exakter} Eingabe? Skaliert typischerweise mit $h$.
+\item \textbf{Konvergenz} $|\hat f(\tilde x)-f(x)|$: der \emph{Gesamtfehler}.
+\end{itemize}
+\textbf{Merksatz:} Konsistenz $+$ Stabilität $\Rightarrow$ Konvergenz.
+
+Die Kondition versteht man am besten geometrisch: an einer \emph{flachen} Stelle erzeugt eine
+Eingabestörung $\delta x$ nur eine kleine Ausgangsänderung (gut konditioniert), an einer
+\emph{steilen} Stelle eine große (schlecht konditioniert):
+
+\begin{center}
+\begin{tikzpicture}[scale=0.95]
+  \draw[ax](0,0)--(3.1,0) node[right]{$x$};
+  \draw[ax](0,0)--(0,3.4) node[above]{$f(x)$};
+  \draw[crv,domain=0:2.65,samples=80,smooth] plot(\x,{0.45*\x*\x});
+  % flach [0.4,0.9]: f = 0.072 .. 0.3645
+  \draw[green,line width=1.2pt](0.4,0)--(0.9,0);
+  \draw[green,dashed](0.4,0)--(0.4,{0.45*0.16})--(0,{0.45*0.16});
+  \draw[green,dashed](0.9,0)--(0.9,{0.45*0.81})--(0,{0.45*0.81});
+  \draw[{Stealth[length=4pt]}-{Stealth[length=4pt]},green](0.12,{0.45*0.16})--(0.12,{0.45*0.81});
+  \node[green,right] at (0.15,{0.45*0.5}){\scriptsize $\Delta f$ klein};
+  \node[green,below] at (0.65,-0.02){\scriptsize $\delta x$};
+  % steil [2.0,2.5]: f = 1.8 .. 2.8125
+  \draw[rose,line width=1.2pt](2.0,0)--(2.5,0);
+  \draw[rose,dashed](2.0,0)--(2.0,{0.45*4})--(0,{0.45*4});
+  \draw[rose,dashed](2.5,0)--(2.5,{0.45*6.25})--(0,{0.45*6.25});
+  \draw[{Stealth[length=4pt]}-{Stealth[length=4pt]},rose](0.12,{0.45*4})--(0.12,{0.45*6.25});
+  \node[rose,right] at (0.15,{0.45*5.1}){\scriptsize $\Delta f$ groß};
+  \node[rose,below] at (2.25,-0.02){\scriptsize $\delta x$};
+\end{tikzpicture}\\[-2pt]
+{\footnotesize\color{muted}Gleiches $\delta x$: flach $\to$ kleines $\Delta f$ (gut konditioniert), steil $\to$ großes $\Delta f$ (schlecht).}
+\end{center}
+
+\begin{rechnung}{Konsistenz auf zwei Gittern}
+$g(x)=(x-2)^2$, am nächsten Gitterpunkt ausgewertet. An $x=2{,}7$ (echt $g=0{,}49$):
+grobes Gitter $h=1$ rundet auf $3$, $\hat g=g(3)=1\Rightarrow c=0{,}51$;
+feines Gitter $h=\tfrac12$ rundet auf $2{,}5$, $\hat g=g(2{,}5)=0{,}25\Rightarrow c=0{,}24$.
+Kleineres $h$ ist konsistenter. \textbf{Aber}: unter einem optimalen $h$ dominieren Rundungsfehler
+-- kleiner ist \emph{nicht} automatisch besser.
+\end{rechnung}
+
+% =====================================================================
+\section{Newton- \& Sekantenverfahren}
+\teils
+
+\subsection{Was \& warum}
+Gesucht ist eine \textbf{Nullstelle} $f(x)=0$, wenn keine Formel existiert. Newton nutzt die
+\emph{Tangente}: man ersetzt $f$ lokal durch ihre Linearisierung und springt zu deren Nullstelle.
+
+\subsection{Herleitung aus Taylor (musst du können)}
+Taylor 1.\ Ordnung um $x_n$: $f(x)\approx f(x_n)+f'(x_n)(x-x_n)$. Diese Tangente $=0$ setzen und nach
+$x$ auflösen:
+\[
+  0=f(x_n)+f'(x_n)(x-x_n)\ \Longrightarrow\
+  \boxed{\,x_{n+1}=x_n-\dfrac{f(x_n)}{f'(x_n)}\,}
+\]
+Geometrisch: lege die Tangente an, lies ab, wo sie die $x$-Achse schneidet, wiederhole:
+
+\begin{center}
+\begin{tikzpicture}[scale=0.9]
+  \draw[ax](-0.2,0)--(4.0,0) node[right]{$x$};
+  \draw[ax](0,-1.4)--(0,3.3) node[above]{$f(x)$};
+  % f = 0.5 x^2 - 2, Wurzel bei x=2; f'(x)=x
+  \draw[crv,domain=1.2:3.05,samples=70,smooth] plot(\x,{0.5*\x*\x-2});
+  \fill[rose](2,0) circle(1.7pt);
+  \node[rose,below right] at (2.0,-0.05){\scriptsize Wurzel ($\sqrt4$)};
+  % x0 = 3 : f(3)=2.5, f'(3)=3, Tangente y=2.5+3(x-3) trifft x-Achse bei x1=2.1667
+  \fill[yellow](3,2.5) circle(1.7pt);
+  \draw[yellow,dashed](3,0) node[below]{\scriptsize $x_0$}--(3,2.5);
+  \draw[green,line width=1pt](3,2.5)--(2.1667,0);
+  \fill[green](2.1667,0) circle(1.5pt);
+  \node[green,above right] at (2.17,0.04){\scriptsize $x_1$};
+  \node[green] at (3.55,1.25){\scriptsize Tangente};
+\end{tikzpicture}\\[-2pt]
+{\footnotesize\color{muted}Tangente in $x_0$ $\to$ ihre Nullstelle $=x_1$ (näher an der Wurzel). Wiederholen.}
+\end{center}
+
+\subsection{Konvergenz, Kriterium, Versagen}
+\textbf{Quadratische Konvergenz} $|e_{n+1}|\le C|e_n|^2$: die Zahl korrekter Stellen \emph{verdoppelt}
+sich pro Schritt. \textbf{Kriterium}: $x_0$ nah genug an einer \emph{einfachen} Wurzel, $f\in C^2$,
+$f'\neq0$ dort. \textbf{Versagen}: $f'(x_n)=0$ (Division durch $0$), schlechter Start (Divergenz),
+oder ein Zyklus. \textbf{Sekantenverfahren}: ersetzt $f'$ durch die Vorwärtsdifferenz
+$\frac{f(x_0+h)-f(x_0)}{h}$ (Fehler $\mathcal O(h)$) bzw.\ durch die Steigung der letzten zwei Punkte
+-- ableitungsfrei, dafür langsamer (Ordnung $\approx1{,}618$) und zwei Startwerte nötig.
+
+\begin{rechnung}{Newton für $\sqrt2$ ($f=x^2-2$, $f'=2x$, $x_0=2$)}
+\[
+x_1=2-\frac{2^2-2}{2\cdot2}=2-\tfrac12=\tfrac32,\qquad
+x_2=\tfrac32-\frac{(\tfrac32)^2-2}{2\cdot\tfrac32}=\tfrac32-\frac{1/4}{\mathbf 3}=\tfrac{17}{12}\approx1{,}4167.
+\]
+Wichtig: $f'(\tfrac32)=2\cdot\tfrac32=\mathbf3$ im Nenner. ($\sqrt2\approx1{,}4142$ -- nach 2 Schritten 3 Stellen.)
+\end{rechnung}
+
+% =====================================================================
+\section{Optimierung}
+\stark
+
+\subsection{Was \& warum}
+Gesucht ist ein \textbf{Minimum} von $f$. Ein \emph{lokales} Minimum ist der kleinste Wert in einer
+Umgebung, das \emph{globale} der kleinste überhaupt. Lokale Verfahren (Gradientenabstieg, Newton)
+folgen nur lokaler Steigung und laufen ins \emph{nächste} Tal -- bei vielen Tälern verfehlen sie das
+globale:
+
+\begin{center}
+\begin{tikzpicture}[scale=0.92]
+  \draw[ax](0,0)--(8.0,0) node[right]{$x$};
+  \draw[ax](0,0)--(0,2.9) node[above]{$f(x)$};
+  \draw[crv,domain=0.5:7.5,samples=160,smooth]
+     plot(\x,{0.5*sin(1.6*\x r)+0.07*(\x-4)*(\x-4)+1.2});
+  % echte Minima: global x≈3.05, lokal x≈6.57
+  \fill[accentlt](3.05,{0.5*sin(1.6*3.05 r)+0.07*(3.05-4)*(3.05-4)+1.2}) circle(2pt);
+  \node[accentlt,below=2pt] at (3.05,{0.5*sin(1.6*3.05 r)+0.07*(3.05-4)*(3.05-4)+1.2}){\scriptsize \textbf{global}};
+  \fill[rose](6.57,{0.5*sin(1.6*6.57 r)+0.07*(6.57-4)*(6.57-4)+1.2}) circle(2pt);
+  \node[rose,below=2pt] at (6.57,{0.5*sin(1.6*6.57 r)+0.07*(6.57-4)*(6.57-4)+1.2}){\scriptsize lokal};
+  % Ball rollt von x=5.5 in das lokale (schlechtere) Tal
+  \fill[yellow](5.5,{0.5*sin(1.6*5.5 r)+0.07*(5.5-4)*(5.5-4)+1.2}) circle(2.3pt);
+  \node[yellow,above=1pt] at (5.5,{0.5*sin(1.6*5.5 r)+0.07*(5.5-4)*(5.5-4)+1.2}){\scriptsize Start};
+  \draw[yellow,-{Stealth[length=4pt]}](5.75,1.5) to[bend left=20] (6.45,1.28);
+\end{tikzpicture}\\[-2pt]
+{\footnotesize\color{muted}Ball rollt ins \emph{nächste} (lokale) Tal $x\!\approx\!6{,}6$ -- verfehlt das tiefere globale bei $x\!\approx\!3{,}1$.}
+\end{center}
+
+\subsection{Verfahren}
+\textbf{Gradientenabstieg} $x_{n+1}=x_n-\eta f'(x_n)$ (Schritt bergab; $\eta$ zu groß $\to$ Oszillation,
+zu klein $\to$ langsam). \textbf{Newton fürs Optimum} $x_{n+1}=x_n-\frac{f'(x_n)}{|f''(x_n)|}$ -- der
+Betrag $|f''|$ erzwingt einen Schritt \emph{immer bergab} (sonst liefe man bei negativer Krümmung zu
+einem Maximum); Klassifikation per $f''$: $>0$ Minimum, $<0$ Maximum. \textbf{Global}: Random Restarts
+($P=1-(1-p)^K$), Simulated Annealing (akzeptiert Verschlechterung mit $e^{-\Delta E/T}$, Abkühlen
+$T\downarrow$), Basin Hopping. Bei hochfrequenten Störtermen hilft \emph{Glätten}: Schrittweite
+$h\approx$ Periode des Störterms wählen, dann mittelt sich die Oszillation heraus.
+
+\begin{rechnung}{Konvexität \& Random Restarts}
+Ist $f$ \textbf{konvex} ($f''\ge0$ überall), gibt es nur \emph{ein} Minimum $\Rightarrow$ jedes lokale
+ist global, lokale Verfahren genügen. Sonst: $K$ zufällige Starts, Trefferchance $p=\tfrac12$ pro
+Start. $P(\ge1\text{ Treffer})=1-(1-\tfrac12)^K$. Für $P>0{,}9$: $(\tfrac12)^K<0{,}1\Rightarrow 2^K>10
+\Rightarrow K=4$ ($P=\tfrac{15}{16}$).
+\end{rechnung}
+
+% =====================================================================
+\section{Differenzialgleichungen (Euler \& Runge-Kutta)}
+\offen
+
+\subsection{Was \& warum}
+Ein Anfangswertproblem $y'=f(t,y),\ y(t_0)=y_0$ hat oft keine geschlossene Lösung. Man läuft in
+Schritten der Weite $h$ voran und schätzt die nächste Stelle aus der Steigung $f$.
+\textbf{Explizites Euler}: $y_{n+1}=y_n+h\,f(t_n,y_n)$ -- billig, aber nur für kleine $h$ stabil
+(für $y'=-\lambda y$: stabil nur bei $0<h<\tfrac2\lambda$). \textbf{Implizit} nutzt $f(t_{n+1},y_{n+1})$
+-- teurer (Gleichung lösen), dafür stabil auch bei großem $h$ (wichtig bei \emph{steifen} Problemen).
+
+\begin{center}
+\begin{tikzpicture}[scale=0.92]
+  \draw[ax](0,0)--(5.0,0) node[right]{$t$};
+  \draw[ax](0,0)--(0,3.4) node[above]{$y$};
+  % exakte Lösung y' = -0.5 y, y0=3 -> 3 e^{-0.5 t}
+  \draw[crv,domain=0:4.4,samples=80,smooth] plot(\x,{3*exp(-0.5*\x)});
+  \node[accent] at (3.7,1.1){\scriptsize exakt $3e^{-0{,}5t}$};
+  % Euler h=1: 3, 1.5, 0.75, 0.375, 0.1875
+  \draw[rose,very thick] (0,3)--(1,1.5)--(2,0.75)--(3,0.375)--(4,0.1875);
+  \foreach \p in {(0,3),(1,1.5),(2,0.75),(3,0.375),(4,0.1875)} \fill[rose]\p circle(1.5pt);
+  \node[rose] at (2.15,1.35){\scriptsize Euler ($h{=}1$)};
+  \foreach \x in {1,2,3,4} \draw[rulecol](\x,-0.07)--(\x,0.07) node[below]{\scriptsize \x};
+\end{tikzpicture}\\[-2pt]
+{\footnotesize\color{muted}Euler (rose) folgt geraden Tangentenstücken und liegt unter der Kurve -- RK4 wertet $f$ viermal pro Schritt aus und trifft fast exakt.}
+\end{center}
+
+\subsection{Runge-Kutta \& Ordnung}
+\textbf{RK4} kombiniert vier Steigungen: $y_{n+1}=y_n+\frac h6(k_1+2k_2+2k_3+k_4)$ mit
+$k_1=f(t_n,y_n)$, $k_2=f(t_n{+}\tfrac h2,y_n{+}\tfrac h2k_1)$, $k_3=f(t_n{+}\tfrac h2,y_n{+}\tfrac
+h2k_2)$, $k_4=f(t_n{+}h,y_n{+}hk_3)$. \textbf{Konvergenzordnung} $p$: globaler Fehler $\mathcal O(h^p)$
+-- Euler $p{=}1$, RK4 $p{=}4$ (darum bei gleichem $h$ enorm genauer). Ein \textbf{Butcher-Tableau}
+$\begin{smallmatrix}c&|&A\\\hline&|&b^{\top}\end{smallmatrix}$ kodiert Knoten $c_i$, Gewichte $b_i$,
+Kopplung $a_{ij}$; \emph{explizit} $\Leftrightarrow$ $A$ streng untere Dreiecksmatrix.
+
+\begin{rechnung}{Ein Euler- vs.\ ein RK4-Schritt ($y'=-y$, $y_0=1$, $h=1$, exakt $e^{-1}=0{,}368$)}
+Euler: $y_1=1+1\cdot(-1)=0$. \quad RK4: $k_1{=}-1,\ k_2{=}f(1{-}\tfrac12){=}-0{,}5,\
+k_3{=}f(1{-}0{,}25){=}-0{,}75,\ k_4{=}f(1{-}0{,}75){=}-0{,}25$,
+$y_1=1+\tfrac16(-1-1-1{,}5-0{,}25)=0{,}375$. RK4 trifft fast exakt, Euler weit daneben.
+\end{rechnung}
+
+% =====================================================================
+\section{Integration \& Interpolation}
+\ueben
+
+\subsection{Numerische Integration (Newton-Cotes)}
+Idee: $\int_a^b f\,dx$ approximieren, indem man $f$ durch ein einfaches Polynom über Stützpunkte
+ersetzt und \emph{das} integriert. Gerade $\to$ \textbf{Trapez}, Parabel $\to$ \textbf{Simpson}. Der
+\emph{Exaktheitsgrad} ist der höchste Polynomgrad, der noch fehlerfrei integriert wird (Trapez $1$,
+Simpson $\mathbf 3$). Geometrisch ersetzt Trapez die Kurve durch eine Sehne -- der Spalt dazwischen
+ist der Fehler; Simpson legt eine Parabel an und trifft Krümmung viel besser:
+
+\begin{center}
+\begin{tikzpicture}[scale=0.95]
+  \draw[ax](0,0)--(5.4,0) node[right]{$x$};
+  \draw[ax](0,0)--(0,3.2) node[above]{$f$};
+  \draw[crv,domain=0.3:5,samples=80,smooth] plot(\x,{0.6+0.12*(\x-2.5)*(\x-2.5)+0.2*\x});
+  % Trapez-Sehne von a=1 bis b=4
+  \def\fa{0.6+0.12*(1-2.5)^2+0.2*1}   % a
+  \def\fb{0.6+0.12*(4-2.5)^2+0.2*4}   % b
+  \fill[rose,opacity=0.18] (1,0)--(1,{\fa})--(4,{\fb})--(4,0)--cycle;
+  \draw[rose,very thick](1,{\fa})--(4,{\fb});
+  \draw[rulecol,dashed](1,0)node[below]{\scriptsize $a$}--(1,{\fa});
+  \draw[rulecol,dashed](4,0)node[below]{\scriptsize $b$}--(4,{\fb});
+  \node[rose] at (2.5,0.55){\scriptsize Sehne (Trapez)};
+  \node[accent] at (3.9,2.7){\scriptsize echte Kurve};
+\end{tikzpicture}\\[-2pt]
+{\footnotesize\color{muted}Der Spalt zwischen Sehne und Kurve ist der Trapez-Fehler -- bei Krümmung groß.}
+\end{center}
+
+\textbf{Zusammengesetzte Gewichte} (für $[0,2]$ mit $f_0,f_1,f_2$, $h=1$):
+\[
+  \text{Trapez: } \tfrac h2\bigl[f_0+\mathbf2 f_1+f_2\bigr],\qquad
+  \text{Simpson: } \tfrac h3\bigl[f_0+\mathbf4 f_1+f_2\bigr]\ \text{\small(„1,4,1 durch 3``)}.
+\]
+\textbf{Genau ein} innerer Term, mit Gewicht $2$ bzw.\ $4$ -- nicht $2(f_1{+}f_2)$, keine Extra-Terme.
+Weiter: \textbf{$3/8$-Regel} (Gewichte $1,3,3,1$), \textbf{Boole} ($7,32,12,32,7$),
+\textbf{Romberg} (Trapez für $h,\tfrac h2$ extrapolieren: $R=\frac{4T(h/2)-T(h)}{3}$),
+\textbf{Monte-Carlo} ($\hat I=|\Omega|\frac1N\sum f(X_i)$, Fehler $\propto 1/\sqrt N$, dimensions\-unabhängig
+$\Rightarrow$ schlägt das Gitter ($n^d$ Punkte) in hohen Dimensionen).
+
+\subsection{Interpolation}
+Durch $n{+}1$ Punkte gibt es \emph{genau ein} Polynom vom Grad $\le n$. \textbf{Lagrange}:
+$p(x)=\sum_i y_i L_i(x)$ mit $L_i(x)=\prod_{j\neq i}\frac{x-x_j}{x_i-x_j}$ ($L_i$ ist $1$ am eigenen
+Knoten, sonst $0$). \textbf{Vorsicht hoher Grad}: auf gleichmäßigen Knoten oszilliert das Polynom an
+den Rändern stark -- das \textbf{Runge-Phänomen}. Darum nicht den Grad hochdrehen, sondern
+\emph{zusammengesetzte} Regeln oder \textbf{Splines} (stückweise niedriger Grad, glatt):
+
+\begin{center}
+\begin{tikzpicture}[scale=0.9]
+  \draw[ax](-3.0,0)--(3.2,0) node[right]{$x$};
+  \draw[ax](0,0)--(0,2.7) node[above]{$y$};
+  \draw[green,very thick,domain=-2.7:2.7,samples=100,smooth] plot(\x,{2/(1+\x*\x)});
+  \node[green] at (1.75,1.5){\scriptsize wahre Funktion};
+  % hochgradiges Polynom: trifft Knoten ±1,±2, schwingt an Rändern über
+  \draw[rose,very thick,domain=-2.7:2.7,samples=160,smooth]
+     plot(\x,{2/(1+\x*\x) + 0.06*(\x*\x-1)*(\x*\x-4)});
+  \node[rose] at (-1.9,2.1){\scriptsize hoher Grad};
+  \foreach \x in {-2,-1,1,2} \fill[accentlt](\x,{2/(1+\x*\x)})circle(1.7pt);
+\end{tikzpicture}\\[-2pt]
+{\footnotesize\color{muted}Runge: das Polynom (rose) trifft die Knoten ($\bullet$), schwingt aber an den Rändern stark über -- Splines vermeiden das.}
+\end{center}
+
+\begin{rechnung}{Lagrange durch $(0,1),(1,2),(2,5)$}
+$L_0=\frac{(x-1)(x-2)}{(0-1)(0-2)}=\frac{(x-1)(x-2)}2$,\;
+$L_1=\frac{x(x-2)}{(1)(-1)}=-x(x-2)$,\;
+$L_2=\frac{x(x-1)}{(2)(1)}=\frac{x(x-1)}2$. Dann
+$p=1\!\cdot\!L_0+2\!\cdot\!L_1+5\!\cdot\!L_2=x^2+1$ (Probe: $1,2,5$ \checkmark), $p(\tfrac12)=\tfrac54$.
+\end{rechnung}
+
+% =====================================================================
+\section{Fourier-Analyse \& FFT}
+\offen
+
+\subsection{Was \& warum}
+Die Fourier-Transformation $F(\omega)=\int f(t)e^{-i\omega t}\,dt$ zerlegt ein Zeitsignal in seine
+\textbf{Frequenzen}: $|F(\omega)|$ sagt, wie stark Frequenz $\omega$ enthalten ist; die
+Rücktransformation baut das Signal wieder zusammen. Mit der Euler-Formel
+$\cos(\omega t)=\tfrac12(e^{i\omega t}+e^{-i\omega t})$ liefert jeder reelle Kosinus \emph{zwei}
+Linien bei $\pm\omega$. Ein Summensignal („Interferenz``) zeigt also pro Schwingung einen Peak:
+
+\begin{center}
+\begin{tikzpicture}[scale=0.9]
+  % links: Zeitsignal sin(2t) + 1/2 sin(4t)  (Amplituden 1 und 1/2)
+  \draw[ax](0,-1.7)--(0,1.7);
+  \draw[ax](-0.1,0)--(4.4,0) node[right]{\scriptsize $t$};
+  \draw[crv,domain=0:4,samples=160,smooth] plot(\x,{sin(2*\x r)+0.5*sin(4*\x r)});
+  % Pfeil
+  \draw[muted,-{Stealth[length=5pt]}](4.8,0)--(5.8,0) node[midway,above]{\scriptsize FFT};
+  % rechts: Spektrum -- Höhen 2:1 wie die Amplituden, Peaks bei w1 und 2 w1
+  \begin{scope}[xshift=6.3cm]
+   \draw[ax](0,0)--(3.6,0) node[right]{\scriptsize $\omega$};
+   \draw[ax](0,0)--(0,1.75) node[above]{\scriptsize $|F|$};
+   \draw[rose,line width=1.4pt](1.2,0)--(1.2,1.3); \fill[rose](1.2,1.3)circle(1.6pt);
+   \draw[rose,line width=1.4pt](2.4,0)--(2.4,0.65); \fill[rose](2.4,0.65)circle(1.6pt);
+   \node[rose,below=1pt] at (1.2,0){\scriptsize $\omega_1$};
+   \node[rose,below=1pt] at (2.4,0){\scriptsize $2\omega_1$};
+  \end{scope}
+\end{tikzpicture}\\[-1pt]
+{\footnotesize\color{muted}Summensignal (links) $\to$ Spektrum (rechts): zwei Peaks bei $\omega_1,2\omega_1$, Höhen $1:\tfrac12$ wie die Amplituden.}
+\end{center}
+
+\textbf{DFT}: $X_k=\sum_{n=0}^{N-1}x_n e^{-i2\pi kn/N}$ ($N$ diskrete Bins), Kosten $\mathcal O(N^2)$.
+Die \textbf{FFT} spaltet rekursiv in gerade/ungerade Indizes $\Rightarrow$ $\mathcal O(N\log N)$.
+Bin $k$ entspricht Frequenz $f_k=k\,\frac{f_s}{N}$; die \textbf{Nyquist}-Frequenz $f_s/2$ ist die
+höchste eindeutig darstellbare -- höhere erscheinen als \emph{Aliasing} verfälscht.
+
+\begin{rechnung}{DFT von $x=(1,0,1,0)$, $N=4$}
+$X_0=1{+}0{+}1{+}0=2$;\; $X_1=1+1\cdot e^{-i\pi}=1-1=0$;\;
+$X_2=1+1\cdot e^{-i2\pi}=2$;\; $X_3=0$. Also $|X|=(2,0,2,0)$: Gleichanteil ($X_0$) plus
+schnellste Schwingung ($X_2$, Nyquist) -- genau die Struktur von $(1,0,1,0)$.
+\end{rechnung}
+
+% =====================================================================
+\section{Modelltraining (Numerik trifft ML)}
+\ueben
+
+\subsection{Was \& warum}
+Ein lineares Modell $\hat y(x)=wx+b$ wird trainiert, indem ein \textbf{Verlust} minimiert wird --
+also Optimierung (Abschnitt 4) auf einer Verlustfunktion. Standard ist der \textbf{mittlere
+quadratische Fehler}
+\[
+  L(w,b)=\frac1n\sum_{i=1}^n\bigl(wx_i+b-y_i\bigr)^2 .
+\]
+Die Abweichungen werden \textbf{quadriert} -- sonst heben sich $+$/$-$ auf; das Quadrat bestraft große
+Fehler stärker und macht $L$ glatt/konvex. Trainiert wird per Gradientenabstieg.
+
+\subsection{Zwei Dinge, die immer drankommen}
+\textbf{(1) Erster Loss = Varianz.} Mit $w=0,\ b=\bar y$ sagt das Modell überall den Mittelwert
+voraus, also $L=\frac1n\sum(\bar y-y_i)^2=\mathrm{Var}(y)$ -- die Varianz ist das Mittel der
+\emph{quadrierten} Abweichungen. \textbf{(2) Numerik-Brille auf ML-Praktiken:}
+\begin{itemize}
+\item Überparametrisiertes Modell soll eine kleine Teilmenge auf Loss $0$ bringen -- klappt das nicht,
+  ist es ein \emph{Bug} (Modell/Loss/Daten), nicht der Optimierer (wie „Solver an bekannter Lösung testen``).
+\item Mini-Batch-SGD $\leftrightarrow$ Monte-Carlo (Gradient als Stichprobenmittel, Fehler $\propto1/\sqrt B$).
+\item Mehrere Seeds, bester Lauf $\leftrightarrow$ Random Restarts.
+\item Quantisierung $\leftrightarrow$ Präzisionswahl im Gleitkomma (kleinstes ausreichendes Format).
+\end{itemize}
+
+\begin{rechnung}{Varianz nicht ohne Quadrat!}
+$y=(2,4,6)$, $\bar y=4$. Falsch: $\tfrac13(-2+0+2)=0$. Richtig:
+$\mathrm{Var}=\tfrac13[(-2)^2+0^2+2^2]=\tfrac13(4+0+4)=\tfrac83\approx2{,}67$. Das ist der erwartete
+erste Loss; ein gedruckter Wert $\approx100$ verrät einen Bug/falsche Initialisierung.
+\end{rechnung}
+
+\vspace{4pt}
+\noindent\textcolor{rulecol}{\rule{\linewidth}{0.4pt}}\\[2pt]
+{\small\color{muted}Stand-Legende: \stark\ Themen 1,4 $\cdot$ \teils\ Themen 2,3 $\cdot$
+\ueben\ Themen 6,8 $\cdot$ \offen\ Themen 5,7. Letztere zwei kamen in der letzten Klausur nicht dran,
+gehören aber zum Stoff -- für die nächste Klausur mitnehmen.}
+
+\end{document}

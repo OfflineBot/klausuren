@@ -1,0 +1,262 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage[a4paper,top=0.8cm,bottom=1.35cm,left=0.7cm,right=0.7cm,footskip=0.85cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage[table]{xcolor}
+\usepackage{multicol}
+\usepackage{fancyhdr}
+\usepackage{array}
+
+% ---------- Farben (grün) ----------
+\definecolor{head}{rgb}{0.05,0.30,0.13}
+\definecolor{sub}{rgb}{0.13,0.49,0.24}
+\definecolor{grau}{rgb}{0.45,0.45,0.45}
+\definecolor{rot}{rgb}{0.62,0.12,0.12}
+\definecolor{ideecol}{rgb}{0.10,0.42,0.45}
+\definecolor{ideebg}{rgb}{0.90,0.96,0.95}
+
+% ---------- Layout ----------
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5pt}
+\setlength{\columnsep}{10pt}
+\setlength{\abovedisplayskip}{1.6pt}
+\setlength{\belowdisplayskip}{1.6pt}
+\setlength{\abovedisplayshortskip}{0.6pt}
+\setlength{\belowdisplayshortskip}{0.6pt}
+\renewcommand{\baselinestretch}{0.90}
+\renewcommand{\arraystretch}{1.05}
+
+% ---------- Ueberschriften ----------
+\newcommand{\Sec}[1]{\par\vspace{2pt}{\color{head}\normalsize\bfseries #1}\nopagebreak\par\vspace{-1pt}{\color{head}\rule{\linewidth}{0.9pt}}\par\nopagebreak\vspace{1pt}}
+\newcommand{\Sub}[1]{\par\vspace{1pt}{\color{sub}\bfseries #1}\nopagebreak\par\vspace{0.2pt}}
+\newcommand{\hint}[1]{{\color{grau}\itshape #1}}
+\newcommand{\fld}[1]{{\color{sub}\bfseries #1:}~}
+\newcommand{\dtag}[1]{{\setlength{\fboxsep}{1.7pt}\colorbox{head}{\textcolor{white}{\bfseries\boldmath #1}}}~}
+% Idee/Analogie (Habib-Stil): farbiges Tag + eingefärbter Kasten
+\newcommand{\bild}[1]{\par{\setlength{\fboxsep}{1.6pt}\colorbox{ideecol}{\textcolor{white}{\bfseries\footnotesize Bild}}}~{\color{ideecol}#1}\par}
+% Beispiel-Tag
+\newcommand{\bsp}{{\setlength{\fboxsep}{1.6pt}\colorbox{grau}{\textcolor{white}{\bfseries\footnotesize Bsp}}}~}
+% Merkregel-Tag
+\newcommand{\merk}{{\setlength{\fboxsep}{1.6pt}\colorbox{rot}{\textcolor{white}{\bfseries\footnotesize Merke}}}~}
+
+% ---------- Listen ----------
+\newenvironment{tl}{\begin{list}{\textbullet}{%
+  \setlength{\leftmargin}{1.1em}\setlength{\labelsep}{0.45em}%
+  \setlength{\itemsep}{0pt}\setlength{\parsep}{0pt}\setlength{\topsep}{1pt}%
+  \setlength{\partopsep}{0pt}}}{\end{list}}
+\newcounter{nlc}
+\newenvironment{nl}{\begin{list}{\color{sub}\bfseries\arabic{nlc}.}{\usecounter{nlc}%
+  \setlength{\leftmargin}{1.25em}\setlength{\labelsep}{0.35em}%
+  \setlength{\itemsep}{0pt}\setlength{\parsep}{0pt}\setlength{\topsep}{1pt}%
+  \setlength{\partopsep}{0pt}}}{\end{list}}
+
+% ---------- Kopf/Fuss ----------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\fancyfoot[L]{\footnotesize\color{grau}Analysis II — Open-Book-Formelsammlung}
+\fancyfoot[R]{\footnotesize\color{grau}Seite \thepage}
+
+\newcommand{\T}{^{\mathsf{T}}}
+
+\begin{document}
+\small
+
+\begin{center}
+{\color{head}\Large\bfseries Analysis II}\\[1pt]
+{\color{grau}\footnotesize \emph{Bild} (Anschauung) + \emph{Ablauf} + \emph{Beispiel} zu allem \ ·\ Teil 1: Differenzieren \& Vektoranalysis \ ·\ Teil 2: DGL, Integrieren, Trigonometrie, $\mathbb C$ \& Fourier}
+\end{center}
+\vspace{1pt}
+{\color{head}\large\bfseries Teil 1 — Differenzieren \& Vektoranalysis}\par\vspace{-1pt}{\color{head}\rule{\linewidth}{1pt}}
+\vspace{1pt}
+
+\begin{multicols}{2}
+
+% ============================================================
+\Sec{Stetigkeit \& Differenzierbarkeit}
+\bild{Stetig $=$ Stift beim Zeichnen \emph{nicht absetzen} (keine Sprünge/Lücken). Differenzierbar $=$ \emph{kein Knick} — die Kurve ist glatt, hat überall eine eindeutige Tangente.}
+\fld{Pyramide} Stetig-diffbar $\subset$ diffbar $\subset$ stetig. \textbf{Diffbar $\Rightarrow$ stetig} (\emph{nicht} umgekehrt: $|x|$ ist stetig, aber bei $0$ geknickt).\\
+\fld{Stetig bei $x_0$} $\lim_{x\to x_0^-}f=\lim_{x\to x_0^+}f=f(x_0)$ \hint{(links $=$ rechts $=$ Funktionswert)}.\\
+\fld{Diffbar} $f'(x_0)=\lim_{h\to0}\frac{f(x_0+h)-f(x_0)}{h}$ \hint{(Ableitung ist nur eine Grenzwertbetrachtung der Steigung)}.\\
+\fld{Ablauf stückweise Fkt.\ an Nahtstelle $x_0$}
+\begin{nl}
+\item \textbf{Stetig?} linken \& rechten Grenzwert und $f(x_0)$ ausrechnen $\to$ alle drei gleich?
+\item \textbf{Diffbar?} beide Teile ableiten, $f'_-(x_0)$ und $f'_+(x_0)$ einsetzen $\to$ gleich? \hint{(nur sinnvoll, wenn schon stetig)}
+\end{nl}
+
+% ============================================================
+\Sec{Ableitungsregeln}
+\hint{Summe einzeln; Produkt/Quotient nach Regel; Verschachtelung mit Kettenregel (äußere mal innere Abl.).}
+\begin{tl}
+\item $(a\,x^{b})'=a\,b\,x^{b-1}$,\ \ $(a\ln x)'=\tfrac{a}{x}$,\ \ $(a\,e^{x})'=a\,e^{x}$
+\item Produkt $(fg)'=f'g+fg'$;\ \ Quotient $\big(\tfrac fg\big)'=\tfrac{f'g-fg'}{g^2}$
+\item Kette $\big(g(h(x))\big)'=h'(x)\,g'(h(x))$
+\item $(\sin)'{=}\cos$, $(\cos)'{=}-\sin$, $(\tan x)'{=}\tfrac{1}{\cos^2x}{=}1{+}\tan^2x$
+\item $(\arcsin x)'{=}\tfrac{1}{\sqrt{1-x^2}}$, $(\arccos x)'{=}\tfrac{-1}{\sqrt{1-x^2}}$, $(\arctan x)'{=}\tfrac{1}{1+x^2}$
+\item $(\sinh x)'{=}\cosh x$, $(\cosh x)'{=}\sinh x$, $(\tanh x)'{=}\tfrac{1}{\cosh^2x}$
+\item $(A\sin\omega t)'{=}A\omega\cos\omega t$, $(A\cos\omega t)'{=}-A\omega\sin\omega t$
+\end{tl}
+
+% ============================================================
+\Sec{\dtag{$\nabla$}Vektoranalysis}
+\Sub{Partielle Ableitung}
+\bild{Nach \emph{einer} Variablen ableiten, alle anderen wie eine \emph{Konstante/Zahl} behandeln.} $\partial_x f$: $y$ ist „eingefroren''.
+
+\Sub{Gradient $\nabla f=(\partial_{x_1}f,\dots,\partial_{x_n}f)\T$}
+\bild{Kompass zum \emph{steilsten Anstieg}. Der Bergsteiger fragt: „wohin am steilsten bergauf?'' — $\nabla f$ zeigt dorthin, $|\nabla f|$ sagt \emph{wie} steil.}
+\bsp $f=x^2+e^{y}\Rightarrow\nabla f=\big(\begin{smallmatrix}2x\\e^{y}\end{smallmatrix}\big)$; bei $x{=}2,\,y{=}\ln3$: $\nabla f=\big(\begin{smallmatrix}4\\3\end{smallmatrix}\big)$, $|\nabla f|=\sqrt{16{+}9}=5$.
+
+\Sub{Totales Differential}
+$df=\partial_x f\,dx+\partial_y f\,dy$
+\bild{Mache kleine Schritte $dx$ \& $dy$ $\to$ wie ändert sich die Höhe insgesamt?}
+\bsp $f=10-x-y^2\Rightarrow df=-1\,dx-2y\,dy$.
+
+\Sub{Richtungsableitung}
+$D_{\vec v}f=\nabla f\cdot\dfrac{\vec v}{|\vec v|}$
+\bild{Steigung in \emph{eine gewählte} Richtung (nicht zwingend die steilste). $\vec v$ wird auf Länge $1$ normiert.}
+\fld{Ablauf} 1)~$\nabla f$ bilden\ \ 2)~Punkt einsetzen\ \ 3)~$\vec e=\vec v/|\vec v|$\ \ 4)~Skalarprodukt $\nabla f\cdot\vec e$.\\
+\bsp $f=x^2{+}y^2$ bei $(1,2)$: $\nabla f{=}(2,4)$; $\vec v{=}(3,4)$, $|\vec v|{=}5$, $\vec e{=}(0{,}6;\,0{,}8)$; $D_{\vec v}f=2(0{,}6){+}4(0{,}8)=4{,}4$.
+
+\Sub{Divergenz $\operatorname{div}\vec f=\nabla\cdot\vec f=\partial_x f_1+\partial_y f_2(+\partial_z f_3)$}
+\bild{\emph{Quelle oder Senke?} Laufen die Pfeile auseinander $\Rightarrow$ Quelle ($\operatorname{div}{>}0$, Springbrunnen); zusammen $\Rightarrow$ Senke ($<0$, Abfluss); $=0\Rightarrow$ quellenfrei.} Ergebnis ist ein \textbf{Skalar}.\\
+\bsp $\vec f=(x^2,\,y^2)\Rightarrow\operatorname{div}=2x+2y$.
+
+\Sub{Rotation $\operatorname{rot}\vec f=\nabla\times\vec f$}
+\bild{\emph{Dreht es sich?} Wie ein Strudel im Wasser. $\operatorname{rot}{>}0$ gegen, $<0$ im Uhrzeigersinn; $=0\Rightarrow$ wirbelfrei.}
+$\operatorname{rot}_{2D}\vec f=\partial_x f_2-\partial_y f_1$ \hint{(Skalar)};\quad
+$\operatorname{rot}_{3D}\vec f=\big(\begin{smallmatrix}\partial_y f_3-\partial_z f_2\\\partial_z f_1-\partial_x f_3\\\partial_x f_2-\partial_y f_1\end{smallmatrix}\big)$\\
+\bsp $\vec f=(-y,\,x)\Rightarrow\operatorname{rot}_{2D}=\partial_x x-\partial_y(-y)=1{-}({-}1)=2$.\\
+\fld{Nullstellen suchen} $\operatorname{div}/\operatorname{rot}=0$ setzen, nach Stellen lösen \hint{(Quadrat $\Rightarrow\pm$Wurzel!)}.
+
+\Sub{Kreuzprodukt \& Laplace}
+$\vec a\times\vec b=\big(\begin{smallmatrix}a_2b_3-a_3b_2\\a_3b_1-a_1b_3\\a_1b_2-a_2b_1\end{smallmatrix}\big)$,\quad $\Delta f=\operatorname{div}(\operatorname{grad}f)=\sum_i\partial_{x_i}^2f$.\\
+\merk $\operatorname{rot}(\operatorname{grad}f)=\vec0$ und $\operatorname{div}(\operatorname{rot}\vec f)=0$ \hint{(immer!)}.
+
+\Sub{Extremstelle — notwendige Bedingung}
+$\nabla f=\vec0$
+\bild{Flacher Punkt: Gipfel, Tal \emph{oder} Sattel — hier bleibt eine Kugel kurz liegen.}
+\fld{Ablauf} 1)~$\partial_x f{=}0$ und $\partial_y f{=}0$\ \ 2)~eine Gl.\ nach einer Var.\ umstellen\ \ 3)~einsetzen\ \ 4)~lösen.\\
+\merk Gefragt ist meist nur die \textbf{notwendige} Bed.\ $\nabla f{=}\vec0$ — \emph{nicht} die hinreichende (Hesse). Genau lesen!
+
+\Sub{Vektornormen}
+$\|\vec v\|_1{=}\sum_i|v_i|$ \hint{(Beträge add.)}, $\|\vec v\|_2{=}\sqrt{\sum v_i^2}$ \hint{(Länge)}, $\|\vec v\|_\infty{=}\max_i|v_i|$ \hint{(größter Betrag)}.
+
+\end{multicols}
+\newpage
+{\color{head}\large\bfseries Teil 2 — DGL, Integrieren, Trigonometrie, $\mathbb C$ \& Fourier}\par\vspace{-1pt}{\color{head}\rule{\linewidth}{1pt}}
+\vspace{1pt}
+\begin{multicols}{2}
+
+% ============================================================
+\Sec{\dtag{DGL}Differentialgleichungen}
+\bild{Eine Gleichung, die eine Funktion mit ihrer eigenen \emph{Änderungsrate} $y'$ verknüpft („das Wachstum hängt vom Bestand ab''). \textbf{Lösung ist eine Funktion} $y(x)$, keine Zahl.}
+
+\Sub{Schritt 0: Typ erkennen \hint{(erst in Form $y'=\dots$ bringen, dann rechte Seite einordnen)}}
+\begin{tl}
+\item nur $\alpha\cdot y$ ($\alpha$ feste Zahl) $\Rightarrow$ \textbf{Typ 1} (homogen, konst.)
+\item $a(x)\cdot y$ ($a$ von $x$ abh.) $\Rightarrow$ \textbf{Typ 2} (homogen)
+\item $a(x)\,y+b(x)$ (Extra-Term \emph{ohne} $y$) $\Rightarrow$ \textbf{Typ 3} (inhomogen)
+\item $x$- und $y$-Teil multipliziert ($y^2,e^{y},\tfrac1y,\dots$) $\Rightarrow$ \textbf{Typ 4} (getrennt / nichtlinear)
+\end{tl}
+
+\Sub{Typ 1 — homogen, konst.\ Koeff.\ \ $y'=\alpha y$}
+\bild{Zinseszins / Bakterien: der Zuwachs ist proportional zum aktuellen Bestand $\Rightarrow$ e-Funktion.}
+$y=c\,e^{\alpha x}$;\ mit AWP $y(x_0)=y_0$:\ $\boxed{\,y=y_0\,e^{\alpha(x-x_0)}\,}$
+\fld{Ablauf} 1)~$\alpha$ ablesen\ \ 2)~Formel hinschreiben\ \ 3)~$y_0,x_0$ einsetzen.\\
+\bsp \hint{(C14-Datierung)} $y(0){=}1000$, $y(5700){=}500$: $500{=}1000e^{5700\alpha}\Rightarrow\alpha=\tfrac{\ln(1/2)}{5700}\approx-0{,}0001216$.
+
+\Sub{Halbwertszeit / Zerfall \hint{(Anwendung Typ 1)}}
+\bild{Radioaktiver Zerfall: nach $t_{1/2}$ ist die halbe Menge übrig.}
+\fld{Ablauf} 1)~$y{=}y_0e^{\alpha t}$\ \ 2)~$\tfrac12 y_0{=}y_0e^{\alpha t_{1/2}}\Rightarrow e^{\alpha t_{1/2}}{=}\tfrac12$\ \ 3)~$\ln$: $\alpha t_{1/2}{=}\ln\tfrac12$\ \ 4)~$\alpha=\tfrac{-\ln2}{t_{1/2}}$ ($<0=$ Zerfall).\\
+\hint{Umgekehrt $t_{1/2}=\tfrac{\ln2}{-\alpha}$.}
+\bsp Eimer $y(0){=}10,\,y(1){=}5\Rightarrow\alpha{=}\ln\tfrac12$; wann $y{=}2$? $2{=}10\cdot(\tfrac12)^{t}\Rightarrow t=\tfrac{\ln0{,}2}{\ln0{,}5}\approx2{,}32$.
+
+\Sub{Typ 2 — homogen \ $y'=a(x)\,y$}
+$y=c\,e^{A(x)}$,\ $A=\int a(x)\,dx$ \hint{(kein $+c$ im Exponenten)}.
+\fld{Ablauf} 1)~$a(x)$ ablesen\ \ 2)~$A=\int a\,dx$\ \ 3)~$y=c\,e^{A}$\ \ 4)~$c$ aus Startwert.\\
+\bsp $y'=2x\,y,\ y(0){=}1$: $A=x^2$, $y=c\,e^{x^2}$, $c{=}1\Rightarrow y=e^{x^2}$.
+
+\Sub{Typ 3 — inhomogen \ $y'=a(x)\,y+b(x)$}
+$y=e^{A}\Big(y_0+\int_{x_0}^{x} b(u)\,e^{-A(u)}\,du\Big)$,\ $A=\int a\,dx$
+\hint{($e^{A}$ und $e^{-A}$ sind Kehrwerte; bei $A=\ln x$: $e^{A}=x$, $e^{-A}=\tfrac1x$).}
+\fld{Ablauf} 1)~$a,b$ ablesen\ \ 2)~$A=\int a$\ \ 3)~$e^{A},e^{-A}$\ \ 4)~$b(u)e^{-A(u)}$ kürzen\ \ 5)~$\int_{x_0}^{x}$ (Grenzen!)\ \ 6)~ausmultiplizieren.\\
+\bsp $y'=\tfrac1x y+x^2$: $A{=}\ln x$, $y=x\!\int x^2\tfrac1x dx=x\!\int x\,dx=x\cdot\tfrac12x^2=\tfrac12x^3$.
+
+\Sub{Typ 4 — getrennte Veränderliche \ $\frac{dy}{dx}=f(x)g(y)$}
+\bild{$x$ und $y$ \emph{aufräumen}: jeder auf seine Seite, dann beide Seiten integrieren.}
+$\displaystyle\int\frac{1}{g(y)}\,dy=\int f(x)\,dx$ \hint{(links Kehrwert $\tfrac1{g(y)}$ nach $y$, nicht $g$!)}
+\fld{Ablauf} 1)~trennen $\tfrac{dy}{g(y)}{=}f(x)dx$\ \ 2)~beide integrieren \hint{(nur \emph{ein} $c$ rechts)}\ \ 3)~nach $y$ auflösen\ \ 4)~$c$ aus AWP.\\
+\bsp $y'=x\,y^2,\ y(0){=}1$: $\int y^{-2}dy=\int x\,dx\Rightarrow-\tfrac1y=\tfrac12x^2+c$; $y(0){=}1\Rightarrow c{=}-1\Rightarrow y=\dfrac{2}{2-x^2}$.
+
+% ============================================================
+\Sec{\dtag{$\int$}Integralrechnung}
+\bild{Integral $=$ \emph{Fläche unter der Kurve} / alles aufsummieren. Stammfunktion $F$ $=$ „rückwärts ableiten'' ($F'=f$).}
+Bestimmtes Integral $\int_a^b f\,dx=F(b)-F(a)$ \hint{(obere minus untere Grenze)}.
+\Sub{Grundintegrale}
+\begin{tl}
+\item $\int a x^b dx=\tfrac{a}{b+1}x^{b+1}\,(b\neq-1)$,\ \ $\int\tfrac1x dx=\ln|x|$
+\item $\int e^x dx=e^x$,\ \ $\int f'e^{f}dx=e^{f}$,\ \ $\int\ln x\,dx=x\ln x-x$
+\item $\int\sin x\,dx=-\cos x$,\ \ $\int\cos x\,dx=\sin x$
+\end{tl}
+
+\Sub{Partielle Integration}
+\bild{\emph{Produktregel rückwärts}: einer wird abgeleitet, einer integriert.}
+$\int u\,v'\,dx=uv-\int u'\,v\,dx$
+\fld{Ablauf} 1)~$u$ (wird abgeleitet: Potenz/$\ln$) \& $v'$ (wird integriert: Rest)\ \ 2)~$u'$, $v{=}\int v'$\ \ 3)~$uv-\int u'v$\ \ 4)~Restintegral lösen \hint{(bleibt Produkt $\Rightarrow$ nochmal)}.\\
+\bsp $\int\ln x\,dx$: $u{=}\ln x\,(u'{=}\tfrac1x)$, $v'{=}1\,(v{=}x)$ $\Rightarrow x\ln x-\int x\tfrac1x dx=x\ln x-x$.
+
+\Sub{Substitution}
+\bild{\emph{Variablenwechsel}: innere Funktion durch $u$ ersetzen, $dx$ mit umrechnen, am Ende zurücksetzen.}
+$\int f(g(x))\,g'(x)\,dx=\int f(u)\,du$
+\fld{Ablauf} 1)~$u=$ innere Funktion\ \ 2)~$du=u'dx\Rightarrow dx=\tfrac{du}{u'}$\ \ 3)~alles durch $u$ ersetzen \& kürzen\ \ 4)~in $u$ integrieren\ \ 5)~$u$ zurück.\\
+\bsp $\int x^3(1{+}x^4)^{-1/2}dx$: $u{=}1{+}x^4$, $du{=}4x^3dx\Rightarrow x^3dx{=}\tfrac{du}{4}$; $=\tfrac14\!\int u^{-1/2}du=\tfrac12\sqrt{1{+}x^4}$.
+
+\Sub{Doppelintegral \hint{(über zwei Variablen)}}
+\bild{Volumen unter der Fläche; wie eine Zwiebel von \emph{innen nach außen} schälen.}
+$\int_{a_y}^{b_y}\!\!\int_{a_x}^{b_x} f(x,y)\,dx\,dy$
+\fld{Ablauf} 1)~inneres Int.\ nach $x$ ($y$ konstant)\ \ 2)~$x$-Grenzen\ \ 3)~äußeres nach $y$\ \ 4)~$y$-Grenzen.\\
+\hint{Produkt $\int\!\!\int f_x(x)f_y(y)=\big(\int f_x dx\big)\big(\int f_y dy\big)$; Summe: Summanden einzeln.}
+\bsp $\int_0^1\!\!\int_0^2 xy\,dx\,dy=\int_0^1[\tfrac12x^2y]_0^2dy=\int_0^1 2y\,dy=[y^2]_0^1=1$.
+
+% ============================================================
+\Sec{Trigonometrie}
+\bild{$\sin/\cos$ $=$ eine \emph{Kreisbewegung}, von der Seite betrachtet als Welle. $\sin$ ist die Höhe, $\cos$ der Vorsprung.}
+$\sin t,\cos t:\mathbb R\to[-1,1]$, Periode $2\pi$, $\cos t=\sin(t+\tfrac\pi2)$.\\
+$\sin^2t+\cos^2t=1$, $\tan t=\tfrac{\sin t}{\cos t}$, $1+\tan^2t=\tfrac1{\cos^2t}$.\\
+$\cosh^2t-\sinh^2t=1$, $\tanh t=\tfrac{\sinh t}{\cosh t}$;\ $\sec{=}\tfrac1{\cos}$, $\csc{=}\tfrac1{\sin}$, $\cot{=}\tfrac1{\tan}$.\\
+\fld{Welle} $\lambda=\tfrac1f=\tfrac{2\pi}{\omega}$ (Wellenlänge), $\omega=2\pi f$ (Kreisfreq.), $T=\tfrac1f$ (Periode), $A=$ Amplitude.\\
+\fld{Grad $\leftrightarrow$ Bogenmaß} $\mathrm{rad}=\mathrm{Grad}\cdot\tfrac{\pi}{180}$ \hint{(durch $180$, \emph{nicht} $360$!)}, $\mathrm{Grad}=\mathrm{rad}\cdot\tfrac{180}{\pi}$.\\
+\hint{$90^\circ{=}\tfrac\pi2,180^\circ{=}\pi,270^\circ{=}\tfrac{3\pi}2$;\ $\sin:0,1,0$\ $\cos:1,0,-1$ bei $(0,\tfrac\pi2,\pi)$.}\\
+\fld{Identität zeigen} eine Seite mit $\sin^2{+}\cos^2{=}1$, $\tan{=}\tfrac{\sin}{\cos}$, $1{+}\tan^2{=}\tfrac1{\cos^2}$ umformen, bis die andere dasteht.
+
+% ============================================================
+\Sec{\dtag{$\mathbb C$}Komplexe Zahlen}
+\bild{$i^2=-1$. Eine komplexe Zahl ist eine \emph{2D-Zahl} $=$ Punkt in der Ebene: Realteil $=$ x-Achse, Imaginärteil $=$ y-Achse.}
+$z=a+ib$,\ $\operatorname{Re}z{=}a$, $\operatorname{Im}z{=}b$, $\overline z{=}a-ib$, $|z|=\sqrt{a^2+b^2}$ \hint{(beide Teile quadrieren!)}.\\
+\fld{$\pm$} komponentenweise wie Vektoren: $(a_1{\pm}a_2)+i(b_1{\pm}b_2)$.\\
+\fld{Mal} $z_1z_2=(a_1a_2-b_1b_2)+i(a_1b_2+a_2b_1)$;\ $z^2=(a^2{-}b^2)+2ab\,i$.\\
+\fld{Division} Bruch mit konjug.\ Nenner $\overline z=a-ib$ erweitern $\to$ ausmult.\ ($i^2{=}-1$) $\to$ Re/Im trennen:
+$\tfrac{z_1}{z_2}=\tfrac{(a_1a_2+b_1b_2)+i(a_2b_1-a_1b_2)}{a_2^2+b_2^2}$.\\
+\bsp $z=3+4i\Rightarrow|z|=\sqrt{9{+}16}=5$.
+
+\Sub{Polarform}
+\bild{Statt $x{+}y$ beschreibe den Punkt durch \emph{Länge $r$ und Winkel $\varphi$} (Polarkoordinaten).}
+$z=r(\cos\varphi+i\sin\varphi)=r\,e^{i\varphi}$
+\fld{Ablauf} $r{=}|z|{=}\sqrt{a^2{+}b^2}$, $\varphi{=}\arctan\tfrac ba$; Potenz $z^x=r^x e^{i\varphi x}$.\\
+$e^{x+iy}=e^{x}(\cos y+i\sin y)$, $e^{i\pi}+1=0$.\\
+\bsp $z=1+i$: $r{=}\sqrt2$, $\varphi{=}\tfrac\pi4\Rightarrow z=\sqrt2\,e^{i\pi/4}$.
+
+% ============================================================
+\Sec{Fourier}
+\bild{Wie ein \emph{Prisma} weißes Licht in Farben zerlegt, zerlegt die Fourier-Transformation ein Signal $f(t)$ in seine \emph{Frequenzen} $F(\omega)$.}
+$A(\cos\omega t+i\sin\omega t)=A\,e^{i\omega t}$ \hint{(Welle als komplexe e-Funktion)}.\\
+\fld{Transformation} $F(\omega)=\int_{-\infty}^{\infty} f(t)\,e^{-i\omega t}\,dt$\\
+\fld{Rücktransformation} $f(t)=\tfrac{1}{2\pi}\int_{-\infty}^{\infty} F(\omega)\,e^{i\omega t}\,d\omega$\\
+\hint{Interferenz: gleichphasig $\to$ konstruktiv (verstärkt), gegenphasig $\to$ destruktiv (schwächt); Amplituden addieren sich.}
+
+\end{multicols}
+\end{document}

@@ -1,0 +1,176 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}
+\geometry{margin=2.0cm}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{titlesec}
+
+%================= Dark-Mode Farben (Catppuccin Mocha) =================
+\definecolor{base}{HTML}{1E1E2E}
+\definecolor{fg}{HTML}{CDD6F4}
+\definecolor{accent}{HTML}{89B4FA}
+\definecolor{accent2}{HTML}{F5C2E7}
+\definecolor{gridcolor}{HTML}{45475A}
+
+\pagecolor{base}
+
+\newcommand{\transp}{^{\mathsf{T}}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\tridiag}{\operatorname{tridiag}}
+
+\newcommand{\schwierig}[1]{\hfill\textnormal{\color{accent2}\itshape (#1)}}
+
+% Karierte Antwortfläche -- #1 = Höhe (z. B. 8cm).
+\newcommand{\karo}[1]{\par\vspace{0.3cm}\noindent
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcolor, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par\vspace{0.3cm}}
+
+\titleformat{\section}{\color{accent}\normalfont\Large\bfseries}{}{0pt}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\color{fg}\small Finite Differenzen}
+\rhead{\color{fg}\small FLA \& Analytische Geometrie}
+\cfoot{\color{fg}\thepage}
+\renewcommand{\headrule}{{\color{gridcolor}\hrule height 0.4pt}}
+
+\setlength{\parindent}{0pt}
+
+\begin{document}
+\color{fg}
+
+\thispagestyle{fancy}
+
+\begin{center}
+  {\color{accent}\LARGE\bfseries Übungsaufgaben: Finite Differenzen}\\[0.4em]
+  {\large Fortgeschrittene Lineare Algebra und Analytische Geometrie}\\[0.3em]
+  {\color{gridcolor}\rule{\linewidth}{0.4pt}}
+\end{center}
+
+\vspace{0.4em}
+
+Sechs Übungsaufgaben \emph{nur} zum Thema Finite Differenzen -- genau im Stil der Klausur
+(Randwertproblem $-u'' = f$ mit $u(0)=u(1)=0$, zentraler Differenzenquotient, tridiagonales
+Gleichungssystem $Au=b$ bzw.\ $Tu = h^2 f$). Die Aufgaben werden von Aufgabe~1 nach Aufgabe~6
+schwerer. Lösungen in \texttt{results/aufgaben/loesungen\_04.pdf}.
+
+\medskip
+\textbf{Nützliche Formeln:}
+\[
+\text{2.\ Ableitung: } u''(x_i) \approx \frac{u_{i-1} - 2u_i + u_{i+1}}{h^2},
+\qquad
+-u'' = f \ \Rightarrow\ -u_{i-1} + 2u_i - u_{i+1} = h^2 f(x_i).
+\]
+$T = \tridiag(2; -1)$ ist symmetrisch, positiv definit, tridiagonal und dünn besetzt.
+
+% ================================================================
+\clearpage
+\section*{Aufgabe 1 -- Differenzenquotienten \schwierig{leicht}}
+
+Sei $f(x) = x^3$. Approximieren Sie an der Stelle $x_0 = 1$ mit Schrittweite $h = 0{,}1$:
+\begin{enumerate}[label=\alph*)]
+  \item die erste Ableitung $f'(1)$ mit dem \textbf{Vorwärts-}, \textbf{Rückwärts-} und
+        \textbf{zentralen} Differenzenquotienten;
+  \item die zweite Ableitung $f''(1)$ mit dem zentralen Differenzenquotienten 2.\ Ordnung
+        $\dfrac{f(x_0-h) - 2f(x_0) + f(x_0+h)}{h^2}$;
+  \item Vergleichen Sie die Näherungen mit den exakten Werten $f'(1)$ und $f''(1)$. Welcher
+        Quotient ist am genauesten?
+\end{enumerate}
+
+\karo{9cm}
+
+% ================================================================
+\clearpage
+\section*{Aufgabe 2 -- Gleichungssystem aufstellen \schwierig{mittel}}
+
+Gegeben sei das Randwertproblem
+\[
+-u''(x) = 8, \qquad u(0) = u(1) = 0,
+\]
+mit den inneren Gitterpunkten $x_1 = 0{,}25,\ x_2 = 0{,}5,\ x_3 = 0{,}75$.
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie die Schrittweite $h$ und leiten Sie mit dem zentralen Differenzenquotienten
+        das lineare Gleichungssystem $A u = b$ her.
+  \item Nennen Sie vier strukturelle Eigenschaften der Matrix $A$.
+\end{enumerate}
+
+\karo{10cm}
+
+% ================================================================
+\clearpage
+\section*{Aufgabe 3 -- Gleichungssystem lösen \schwierig{mittel}}
+
+Lösen Sie das in Aufgabe 2 hergeleitete System
+\[
+\begin{pmatrix} 32 & -16 & 0 \\ -16 & 32 & -16 \\ 0 & -16 & 32 \end{pmatrix}
+\begin{pmatrix} u_1 \\ u_2 \\ u_3 \end{pmatrix}
+= \begin{pmatrix} 8 \\ 8 \\ 8 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Lösen Sie es (Tipp: aus der Symmetrie folgt $u_1 = u_3$).
+  \item Die exakte Lösung des Randwertproblems ist $u(x) = 4x(1-x)$. Vergleichen Sie Ihre
+        Näherungswerte mit $u(0{,}25), u(0{,}5), u(0{,}75)$.
+\end{enumerate}
+
+\karo{10cm}
+
+% ================================================================
+\clearpage
+\section*{Aufgabe 4 -- Feineres Gitter \schwierig{mittel--schwer}}
+
+Gegeben sei
+\[
+-u''(x) = 2, \qquad u(0) = u(1) = 0,
+\]
+diesmal mit \textbf{vier} inneren Gitterpunkten $x_1 = 0{,}2,\ x_2 = 0{,}4,\ x_3 = 0{,}6,\ x_4 = 0{,}8$.
+\begin{enumerate}[label=\alph*)]
+  \item Geben Sie $h$ an und stellen Sie das $4\times 4$-System $T u = h^2 f$ mit $T = \tridiag(2;-1)$ auf.
+  \item Lösen Sie das System (Tipp: $u_1 = u_4$ und $u_2 = u_3$).
+\end{enumerate}
+
+\karo{11cm}
+
+% ================================================================
+\clearpage
+\section*{Aufgabe 5 -- Nichtkonstante rechte Seite \schwierig{schwer}}
+
+Gegeben sei
+\[
+-u''(x) = x, \qquad u(0) = u(1) = 0,
+\]
+mit den inneren Gitterpunkten $x_1 = 0{,}25,\ x_2 = 0{,}5,\ x_3 = 0{,}75$.
+\begin{enumerate}[label=\alph*)]
+  \item Stellen Sie das System $T u = h^2 f$ auf. \textbf{Achtung:} die rechte Seite ist hier
+        \emph{nicht} konstant -- $f(x_i) = x_i$ ändert sich pro Gitterpunkt.
+  \item Lösen Sie das System.
+\end{enumerate}
+
+\karo{11cm}
+
+% ================================================================
+\clearpage
+\section*{Aufgabe 6 -- Verständnisfragen \schwierig{Theorie}}
+
+Beantworten Sie kurz und mit Begründung:
+\begin{enumerate}[label=\alph*)]
+  \item Warum koppelt jede Zeile des Systems nur $u_{i-1}, u_i, u_{i+1}$ -- und warum ist $A$
+        deshalb \textbf{tridiagonal}?
+  \item $A$ ist symmetrisch positiv definit. Welche Konsequenzen hat das für die Lösbarkeit und
+        für die Wahl des Lösungsverfahrens?
+  \item Wie sieht die rechte Seite $b$ aus, wenn $f$ \emph{nicht} konstant ist?
+  \item Der zentrale Differenzenquotient 2.\ Ordnung hat Fehlerordnung $\mathcal{O}(h^2)$. Was
+        passiert mit dem Diskretisierungsfehler ungefähr, wenn man $h$ halbiert?
+  \item Warum tauchen die Randwerte $u(0)=u(1)=0$ in $b$ \emph{nicht} explizit auf?
+\end{enumerate}
+
+\karo{10cm}
+
+\end{document}

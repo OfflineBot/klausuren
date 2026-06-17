@@ -1,0 +1,350 @@
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage[a4paper,top=0.8cm,bottom=1.35cm,left=0.7cm,right=0.7cm,footskip=0.85cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage[table]{xcolor}
+\usepackage{multicol}
+\usepackage{fancyhdr}
+\usepackage{array}
+
+% ---------- Farben (gruen) ----------
+\definecolor{head}{rgb}{0.05,0.30,0.13}
+\definecolor{sub}{rgb}{0.13,0.49,0.24}
+\definecolor{grau}{rgb}{0.45,0.45,0.45}
+\definecolor{rot}{rgb}{0.62,0.12,0.12}
+\definecolor{esel}{rgb}{0.80,0.42,0.04}   % Bernstein fuer Eselsbruecken (Habib-Stil)
+
+% ---------- Layout ----------
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5pt}
+\setlength{\columnsep}{10pt}
+\setlength{\abovedisplayskip}{1.6pt}
+\setlength{\belowdisplayskip}{1.6pt}
+\setlength{\abovedisplayshortskip}{0.6pt}
+\setlength{\belowdisplayshortskip}{0.6pt}
+\renewcommand{\baselinestretch}{0.90}
+\renewcommand{\arraystretch}{1.05}
+
+% ---------- Ueberschriften ----------
+\newcommand{\Sec}[1]{\par\vspace{2pt}{\color{head}\normalsize\bfseries #1}\nopagebreak\par\vspace{-1pt}{\color{head}\rule{\linewidth}{0.9pt}}\par\nopagebreak\vspace{1pt}}
+\newcommand{\Sub}[1]{\par\vspace{1pt}{\color{sub}\bfseries #1}\nopagebreak\par\vspace{0.2pt}}
+\newcommand{\hint}[1]{{\color{grau}\itshape #1}}
+\newcommand{\fld}[1]{{\color{sub}\bfseries #1:}~}
+\newcommand{\dtag}[1]{{\setlength{\fboxsep}{1.7pt}\colorbox{head}{\textcolor{white}{\bfseries\boldmath #1}}}~}
+% Eselsbruecke / Bild (Habib-Stil): bernsteinfarbenes Label + kursiver Vergleich
+\newcommand{\esel}[1]{{\color{esel}\bfseries$\hookrightarrow$ Bild:}~{\itshape #1}}
+\newcommand{\merk}[1]{{\setlength{\fboxsep}{1.5pt}\colorbox{esel!16}{\color{esel}\bfseries #1}}~}
+% wahr / falsch Marker
+\newcommand{\W}{{\color{head}\bfseries\,W\,}}
+\newcommand{\F}{{\color{rot}\bfseries\,F\,}}
+
+% ---------- Listen ----------
+\newenvironment{tl}{\begin{list}{\textbullet}{%
+  \setlength{\leftmargin}{1.1em}\setlength{\labelsep}{0.45em}%
+  \setlength{\itemsep}{0pt}\setlength{\parsep}{0pt}\setlength{\topsep}{1pt}%
+  \setlength{\partopsep}{0pt}}}{\end{list}}
+\newcounter{nlc}
+\newenvironment{nl}{\begin{list}{\color{sub}\bfseries\arabic{nlc}.}{\usecounter{nlc}%
+  \setlength{\leftmargin}{1.25em}\setlength{\labelsep}{0.35em}%
+  \setlength{\itemsep}{0pt}\setlength{\parsep}{0pt}\setlength{\topsep}{1pt}%
+  \setlength{\partopsep}{0pt}}}{\end{list}}
+
+% ---------- Kopf/Fuss ----------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\fancyfoot[L]{\footnotesize\color{grau}Fortgeschrittene Lineare Algebra — Open-Book (Habib-Stil: Eselsbrücken + Rezepte)}
+\fancyfoot[R]{\footnotesize\color{grau}Seite \thepage}
+
+\newcommand{\transp}{^{\mathsf{T}}}
+\newcommand{\inv}{^{-1}}
+
+\begin{document}
+\small
+
+\begin{center}
+{\color{head}\Large\bfseries Lineare Algebra II — mit Eselsbrücken}\\[1pt]
+{\color{grau}\footnotesize Zu jedem Thema: {\color{esel}\bfseries Bild} (Vergleich aus dem Alltag) \,·\, {\color{sub}\bfseries Rezept} (Schritt für Schritt) \,·\, Formel \,·\, Mini-Beispiel}
+\end{center}
+\vspace{1pt}
+{\color{head}\large\bfseries Teil 1 — Die Zerlegungen (zerlegen \& wieder zusammenbauen)}\par\vspace{-1pt}{\color{head}\rule{\linewidth}{1pt}}
+\vspace{1pt}
+
+\begin{multicols}{2}
+
+% ============================================================
+\Sec{Welche Zerlegung wann? \hint{(Überblick)}}
+\esel{Du willst ein Möbelstück transportieren — je nach Form nimmst du eine andere Zerlege-Strategie. Erst Form von $A$ anschauen, dann passende Zerlegung.}\par\vspace{1pt}
+\begin{tabular}{@{}p{1.35cm}@{\,}p{1.6cm}@{\,}p{4.25cm}@{}}
+\textbf{Zerleg.} & \textbf{Form $A$} & \textbf{wofür / Bild}\\[1pt]
+$CR$ & bel.\ $m\times n$ & Rang, Räume — \emph{Fotoalbum}\\
+$LU{=}LR$ & quadr.\ $n{\times}n$ & LGS, $\det$, Inv.\ — \emph{Lego-Haus}\\
+Chol.\ & symm.\ PD & LGS schnell — \emph{Brücken-TÜV}\\
+$QR$ & beliebig & stabil/Ausgleich — \emph{Foto geraderücken}\\
+$Q\Lambda Q\transp$ & symm. & $A^k,A\inv$, Definitheit\\
+$S\Lambda S\inv$ & diag.bar & \emph{Regal im Umzugskarton}\\
+SVD & \emph{jede} & Näherung, PCA — \emph{Drehen-Strecken}\\
+$A^{+}$ & jede & Ausgleich — \emph{3D-Spezialschlüssel}\\
+\end{tabular}\par
+\fld{Was ist am schnellsten} nimm die \emph{speziellste passende} Zerlegung (Aufwand Chol.\ $<LU<QR<$ SVD): symm.\ PD $\to$ \textbf{Cholesky}; quadr.\ normal $\to$ \textbf{$LU$}; schlecht kond./Ausgleich $\to$ \textbf{$QR$}; nicht quadr./Näherung $\to$ \textbf{SVD}.\\
+\fld{Existenz} SVD \& $CR$ \& $QR$: \emph{immer}. $LU$: quadr.\ \& führende Hauptminoren $\neq0$ (sonst $PA{=}LU$). Cholesky: nur symm.\ \emph{und} PD. Diagonalisierbar: nur mit $n$ unabh.\ EV (symm.\ $\Rightarrow$ immer).
+
+% ============================================================
+\Sec{Format \& Matrix-Sichtweisen}
+\fld{Format} $A$ ist $m\times n$: $m=$ Zeilen, $n=$ Spalten. $A\vec x$: $\vec x\in\mathbb R^n\to$ Ergebnis $\in\mathbb R^m$.\\
+\esel{$A\vec x$ ist ein \emph{Rezept zum Mischen}: nimm $x_1$-mal Spalte 1 $+$ $x_2$-mal Spalte 2 $+\dots$}
+\begin{tl}
+\item $A\vec x$ = Linearkombination der \textbf{Spalten}; $\vec y\transp A$ = der \textbf{Zeilen}.
+\item $\vec u\transp\vec v$ (inneres P., Zeile$\times$Spalte) = \textbf{Zahl}.
+\item $\vec u\,\vec v\transp$ (äußeres P., Spalte$\times$Zeile) = \textbf{Rang-1-Matrix}; $AB=\sum$ Rang-1.
+\end{tl}
+\textbf{Rang-1} $M=\vec u\,\vec v\transp$ (jede Zeile Vielfache der ersten): $\vec v\transp=$ erste Zeile, $\vec u=$ Faktoren je Zeile. Probe $\vec u\vec v\transp=M$.
+
+% ============================================================
+\Sec{Grundtechnik: LGS lösen mit Gauß}
+\esel{Treppe von oben nach unten sauber kehren: unter jeder Stufe (Pivot) den „Schmutz'' zu $0$ machen.}
+\fld{Ablauf}
+\begin{nl}
+\item \textbf{Vorwärts:} unter der Diagonale Nullen. \merk{Faktor $=\dfrac{\text{Zahl die weg soll}}{\text{Zahl genau darüber (Pivot)}}$} dann \emph{Zielzeile $-$ Faktor$\cdot$Pivotzeile}.
+\item \textbf{Rückwärts:} unterste Zeile zuerst (1 Variable), nach oben einsetzen.
+\end{nl}
+\textbf{Dreieckssysteme:} $L\vec y=\vec b$ vorwärts, $U\vec x=\vec y$ rückwärts.\\
+\hint{$0\!=\!c\,(c\neq0)$: keine Lösung. $0\!=\!0$: $\infty$ viele (freie Var.). Pivot $0$: Zeilen tauschen.}
+
+% ============================================================
+\Sec{\dtag{CR}$A=CR$ \hint{(Fotoalbum)}}
+\esel{Fotoalbum mit 3 Seiten, aber nur 2 echte Bilder hochgeladen — Seite 3 ist nur eine \emph{Collage} aus Seite 1\,\&\,2. $C=$ die echten Originalfotos (unabhängige Spalten), $R=$ das \emph{Misch-Rezept}, wie man jede Spalte aus den Originalen zusammenrührt.}
+\fld{Geht} jede $m\times n$ (keine Voraussetzung). Nicht eindeutig (Pivotwahl).\\
+\fld{Rezept} ($r=\#$Pivots)
+\begin{nl}
+\item $A$ auf RZSF bringen (Pivots $=1$, darüber+darunter $0$).
+\item $C=$ Pivot-Spalten aus \emph{original} $A$ (= Basis Spaltenraum).
+\item $R=$ Nicht-Null-Zeilen der RZSF (= Misch-Rezept). Probe $CR=A$.
+\end{nl}
+\fld{Dimensionen} $\dim C(A)=\dim C(A\transp)=r$ (Zeilenrang $=$ Spaltenrang); $\dim N(A)=n-r$; $\dim N(A\transp)=m-r$ \hint{(Rangsatz $r+\dim N(A)=n$)}.\\
+\fld{Beispiel} $A=\left(\begin{smallmatrix}1&3&5\\2&3&7\\1&3&5\end{smallmatrix}\right)$: Zeile 1\,$=$\,Zeile 3, Spalte 3 ist Mix $\Rightarrow r{=}2$. $C=\left(\begin{smallmatrix}1&3\\2&3\\1&3\end{smallmatrix}\right)$, $R=\left(\begin{smallmatrix}1&0&2\\0&1&1\end{smallmatrix}\right)$.\\
+\hint{4 Räume: Zeilenraum $\perp N(A)$, Spaltenraum $\perp N(A\transp)$; $\mathbb R^n=C(A\transp)\oplus N(A)$.}
+
+% ============================================================
+\Sec{\dtag{LU\,=\,LR}$A=LU$ \hint{(Lego-Haus / Umzug)}}
+\esel{Mehrstöckiges Lego-Haus zum Umzug in 2 Teile zerlegen, einzeln transportieren, am Zielort wieder zusammenstecken. $L=$ Fundament (untere $\Delta$, $1$en auf Diag.), $U=R=$ Aufbau (obere $\Delta$). Ziel $A=L\cdot U$.}
+\fld{Vorteil} viele rechte Seiten $\vec b$: nur \emph{einmal} zerlegen. Auch $\det$ \& Inverse.\\
+\fld{Geht} nur \textbf{quadratisch} \& führende Hauptminoren $\neq0$. Pivot $0\to PA{=}LU$. $L$ eindeutig durch $1$-Diagonale.\\
+\fld{Rezept}
+\begin{nl}
+\item Gauß-Vorwärts $\to U$. \merk{Faktor $=\frac{\text{Zahl die weg soll}}{\text{darüber}}$}; obere Zeile$\cdot$Faktor von unterer abziehen.
+\item Dieselben Faktoren (\emph{positiv!}) unter die Diagonale $\to L$.
+\item Lösen: $L\vec y=\vec b$ vorwärts, $U\vec x=\vec y$ rückwärts.
+\end{nl}
+\fld{Beispiel} $A=\left(\begin{smallmatrix}3&1&1\\6&3&4\\3&1&5\end{smallmatrix}\right)$: Faktoren $\tfrac63{=}2,\ \tfrac33{=}1,\ \tfrac{0}{\dots}$ $\Rightarrow L=\left(\begin{smallmatrix}1&0&0\\2&1&0\\1&0&1\end{smallmatrix}\right)$, $U=\left(\begin{smallmatrix}3&1&1\\0&1&2\\0&0&4\end{smallmatrix}\right)$.\\
+$\det A=u_{11}\cdots u_{nn}$ \hint{($\det L=1$; bei $k$ Zeilentauschen $\times(-1)^k$)}. Inverse: $A\vec x_i=\vec e_i$ je Spalte.\\
+\fld{Pivotisierung} Zeile tauschen $\to$ partiell $PA{=}LU$; \emph{bereits eingetragene} Faktoren in $L$ \textbf{mit-tauschen}! Spalte\,+\,Zeile tauschen $\to$ voll $PAQ{=}LU$.
+
+% ============================================================
+\Sec{\dtag{$LL\transp$}Cholesky \hint{(Brücken-TÜV)}}
+\esel{Hält eine Holzbrücke das Gewicht? „Positiv definit'' $=$ die Brücke sackt an \emph{keiner} Stelle ab. Wir prüfen von links nach rechts Stück für Stück — bestehen alle Checks, gibt's das \emph{TÜV-Siegel}.}
+\fld{Geht} nur \textbf{symm.\ \& PD}. Eindeutig ($\ell_{jj}>0$). $\sim2\times$ schneller als $LU$; \emph{Existenz beweist PD}.\\
+\Sub{Teil a) PD-Check \hint{(führende Hauptminoren $>0$)}}
+\begin{tl}
+\item Check 1: $a_{11}>0$? \quad Check 2: $\det$ der $2{\times}2$-Ecke $>0$?
+\item Check 3: $\det A>0$? \ \emph{Ein} Check $\le0\Rightarrow$ Brücke bricht (nicht PD).
+\end{tl}
+\Sub{Teil b) Cholesky bauen \hint{(„Detektivspiel'': $\ell_{ij}$ aus $A{=}LL\transp$ rückwärts puzzeln)}}
+Reihenfolge $\ell_{11},\ell_{21},\ell_{31},\ell_{22},\ell_{32},\ell_{33}$:
+\[\begin{array}{@{}l@{\ }l@{\ }l@{}}
+\ell_{11}{=}\sqrt{a_{11}} & & \\[1pt]
+\ell_{21}{=}\tfrac{a_{21}}{\ell_{11}} & \ell_{22}{=}\sqrt{a_{22}-\ell_{21}^2} & \\[1pt]
+\ell_{31}{=}\tfrac{a_{31}}{\ell_{11}} & \ell_{32}{=}\tfrac{a_{32}-\ell_{31}\ell_{21}}{\ell_{22}} & \ell_{33}{=}\sqrt{a_{33}-\ell_{31}^2-\ell_{32}^2}
+\end{array}\]
+\hint{Diagonale: Wurzel aus „$a_{jj}-$ Quadrate links''. Darunter: durch $\ell_{jj}$ teilen — \emph{nicht} $a_{jj}$!} Radikand $\le0\Rightarrow$ nicht PD.\\
+\fld{Beispiel} $A=\left(\begin{smallmatrix}16&4&8\\4&5&1\\8&1&13\end{smallmatrix}\right)$: $\ell_{11}{=}4,\ \ell_{21}{=}1,\ \ell_{31}{=}2,\ \ell_{22}{=}2,\ \ell_{32}{=}-\tfrac12,\ \ell_{33}{=}\sqrt{8{,}75}$.\\
+\fld{allg.} $\ell_{jj}{=}\sqrt{a_{jj}-\sum_{k<j}\ell_{jk}^2}$,\ $\ell_{ij}{=}\big(a_{ij}-\sum_{k<j}\ell_{ik}\ell_{jk}\big)/\ell_{jj}$. Lösen: $L\vec y{=}\vec b$, dann $L\transp\vec x{=}\vec y$.\\
+\hint{Aus $A{=}LU$ direkt: $L_c=L\sqrt{D}$ mit $D=$ Diag.\ von $U$.}
+
+% ============================================================
+\Sec{\dtag{QR}$A=QR$ \hint{(schiefes Foto geraderücken)}}
+\esel{Du fotografierst ein Dokument, hältst das Handy aber schief. $Q$ \emph{dreht} das Bild gerade (orthogonale Rotation, ändert nichts am Inhalt), $R$ ist das saubere, gerade Bild (obere $\Delta$, leicht lesbar). $A=Q\cdot R$.}
+\fld{Eigenschaften} $Q$ orthonormale Spalten ($Q\transp Q{=}E$, $Q\inv{=}Q\transp$), $R$ obere $\Delta$. Sehr \emph{stabil}.\\
+\fld{Geht} jede $m\times n$; bei vollem Rang \& $r_{ii}>0$ eindeutig.\\
+\fld{$Q\inv$ ablesen} weil orthogonal: $Q\inv=Q\transp$ — einfach 1.\ Zeile als 1.\ Spalte usw.\ \hint{z.B.\ $Q{=}\left(\begin{smallmatrix}5/13&-12/13\\12/13&5/13\end{smallmatrix}\right)\Rightarrow Q\inv{=}\left(\begin{smallmatrix}5/13&12/13\\-12/13&5/13\end{smallmatrix}\right)$.}\\
+\fld{Gram-Schmidt} $\tilde q_k=\vec v_k-\sum_{i<k}\frac{\tilde q_i\transp\vec v_k}{\|\tilde q_i\|^2}\tilde q_i$, dann $\hat q_k=\tilde q_k/\|\tilde q_k\|$; $R=Q\transp A$ \hint{($r_{ii}{=}\|\tilde q_i\|$ auf Diag.)}.\\
+\fld{LGS mit QR \hint{(VIP-Pass)}} \esel{Statt das schwere $A\vec x{=}\vec b$ direkt zu lösen, nimmst du den VIP-Hintereingang durch 2 Türen $Q$ dann $R$.}
+\[ R\vec x=Q\transp\vec b\quad\text{(nur noch rückwärts einsetzen)} \]
+\hint{Schritt 1: $\vec d=Q\transp\vec b$ (Zeile$\cdot$Spalte). Schritt 2: $R\vec x=\vec d$ rückwärts. Spart bei Regression: $X\transp X=R\transp R$.}
+
+% ============================================================
+\Sec{\dtag{$S\Lambda S\inv$}Diagonalisieren \hint{(Regal im Umzugskarton)}}
+\esel{Das Regal passt nicht ins Auto. Lösung: in Einzelteile zerlegen, im Karton transportieren, am Ziel in \emph{selber Reihenfolge} wieder zusammenbauen. $\Lambda=$ Umzugskarton (Eigenwerte sortiert auf der Diagonale), $S=$ Aufbau-Anleitung (Eigenvektoren nebeneinander). Symm.: $A=Q\Lambda Q\transp$ ($Q$ orthogonal).}
+\fld{Vorteil} $A^k=S\Lambda^k S\inv$, $A\inv=S\Lambda\inv S\inv$ (Kehrwerte der $\lambda$); Definitheit aus den $\lambda$.\\
+\fld{Geht} quadr.\ \& $n$ unabh.\ EV — \emph{nicht} jede Matrix! Symm.\ $\Rightarrow$ \emph{immer} (Spektralsatz: reelle $\lambda$, orthogonale EV, $S\inv=Q\transp$).\\
+\fld{Rezept}
+\begin{nl}
+\item $\lambda_i$ aus $\det(A-\lambda E)=0$.
+\item EV: $(A-\lambda_i E)\vec v=\vec0$, eine Komponente frei.
+\item $S=$ EV als Spalten (symm.: normieren $\to Q$), $\Lambda=\mathrm{diag}(\lambda_i)$.
+\end{nl}
+
+% ============================================================
+\Sec{\dtag{SVD}$A=U\Sigma V\transp$ \hint{(Drehen–Strecken–Drehen)}}
+\esel{Jede Matrix macht 3 Dinge nacheinander: erst \emph{drehen} ($V\transp$), dann entlang der Achsen \emph{strecken} ($\Sigma$), dann nochmal \emph{drehen} ($U$). Funktioniert für \emph{jede} Matrix — auch nicht-quadratisch.}
+\fld{Bausteine} $V$ ($n{\times}n$ orth., EV von $A\transp A$); $\Sigma$ ($m{\times}n$, $\sigma_1\ge\dots\ge\sigma_r>0$ auf Diag.\ \hint{(nicht quadr.\ falls $m\neq n$ — mit Nullen auffüllen)}); $U$ ($m{\times}m$ orth., EV von $AA\transp$).\\
+\fld{Rezept} \merk{$A$ nicht quadratisch? Erst „künstlich quadratisch'': $A\transp A$ ($=$ Kippen mal Original).}
+\begin{nl}
+\item $A\transp A$: EW $\lambda_i\ge0$, norm.\ EV $\to$ Spalten von $V$. \hint{($A\transp A$ \emph{quadriert} die Werte.)}
+\item $\sigma_i=\sqrt{\lambda_i}$ absteigend \hint{(Wurzel ziehen $=$ Gegenteil von Quadrieren)} $\to\Sigma$.
+\item $\vec u_i=\frac{1}{\sigma_i}A\vec v_i\to$ Spalten von $U$ (nur $\sigma_i\neq0$); Rest mit Gram-Schmidt/Kreuzprodukt zu ONB.
+\end{nl}
+\hint{Kleinere von $A\transp A$ / $AA\transp$ wählen! Symm.\ PD $\Rightarrow$ SVD $=$ Eigenzerlegung, $\sigma_i=|\lambda_i|$.}\\
+\fld{Liefert} Rang $=\#\{\sigma_i>0\}$; reduziert $A=U_r\Sigma_r V_r\transp$ (Nullzeilen/-spalten weg); beste Rang-$k$-Näherung (Eckart-Young); $A^{+}$; PCA.
+
+% ============================================================
+\Sec{\dtag{$A^{+}$}Pseudoinverse \hint{(3D-Spezialschlüssel)}}
+\esel{Ein völlig asymmetrisches Schloss — kein normaler (quadratischer) Schlüssel $A\inv$ passt rein. Also drucken wir einen \emph{3D-Spezialschlüssel} $A^{+}$, der sich der schiefen Form anpasst und das LGS \emph{bestmöglich} öffnet.}
+\fld{Geht} immer ($A^{+}$ ist $n\times m$). Quadr.\ \& invertierbar $\Rightarrow A^{+}=A\inv$. Stets $AA^{+}A=A$.\\
+\fld{Aus SVD} $A^{+}=V\Sigma^{+}U\transp$:
+\begin{nl}
+\item SVD $A=U\Sigma V\transp$.
+\item $\Sigma^{+}$: Kehrwerte der $\sigma_i\neq0$, dann \emph{transponieren} \hint{(umkippen + Zahlen umdrehen)}.
+\item $\vec x=A^{+}\vec b$.
+\end{nl}
+\fld{Kurzformeln} voller Spaltenrang: $A^{+}=(A\transp A)\inv A\transp$ (Linksinv., $A^{+}A{=}E$). \hint{Voller Zeilenrang: $A^{+}=A\transp(AA\transp)\inv$ (Rechtsinv., $AA^{+}{=}E$).}\\
+\fld{Nutzen} überbestimmt $\to$ kleinster Fehler $\|A\vec x-\vec b\|$; unterbestimmt $\to$ kleinste Norm $\|\vec x\|$.
+
+\end{multicols}
+\newpage
+{\color{head}\large\bfseries Teil 2 — Bausteine, Anwendungen \& Theorie}\par\vspace{-1pt}{\color{head}\rule{\linewidth}{1pt}}
+\vspace{1pt}
+\begin{multicols}{2}
+
+% ============================================================
+\Sec{Eigenwerte \& Eigenvektoren}
+$A\vec v=\lambda\vec v$ — Richtung bleibt, wird nur um $\lambda$ gestreckt.\\
+\fld{Dreiecksregel} $\Delta$-Matrix (eine Ecke nur Nullen) $\Rightarrow$ EW stehen \emph{direkt} auf der Diagonale. \hint{Auch „verstecktes'' Dreieck per Ausblenden einer Zeile/Spalte.}\\
+\fld{Sonst: $\det(A-\lambda E)=0$} \esel{Waage mit Paket: du willst den Streckungsfaktor (das „Paket'' $\lambda$) wissen — also ziehst du $\lambda$ von der Diagonale ab und schaust, was bleibt.}\\
+$2{\times}2$: $\lambda=\tfrac{\mathrm{tr}\pm\sqrt{\mathrm{tr}^2-4\det}}{2}$.\\
+\merk{Ausklammer-Trick} $(a-\lambda)(d-\lambda)$: das „$-\lambda$'' gehört wie ein \emph{Rucksack} fest zur Zahl. Wie „4 Begrüßungen'': jeder aus Klammer 1 schüttelt jedem aus Klammer 2 die Hand.\\
+\fld{Eigenvektor \hint{(Rätsel)}} $\lambda$ einsetzen, $(A-\lambda E)\vec v=\vec0$ lösen: eine Komponente \textbf{frei} wählen ($v_1{=}1$), Rest folgt. \hint{Nie $\vec v=\vec0$!}\\
+\fld{Beispiel} $A=\left(\begin{smallmatrix}5&2\\2&2\end{smallmatrix}\right)$: $\lambda^2-7\lambda+6=0\Rightarrow\lambda{=}6,1$; $\vec v_6{=}\left(\begin{smallmatrix}2\\1\end{smallmatrix}\right),\ \vec v_1{=}\left(\begin{smallmatrix}-1\\2\end{smallmatrix}\right)$.\\
+\fld{EW-Rechenregeln} $A+\gamma E$ hat EW $\lambda+\gamma$ (gleiche EV); $A\inv$ hat $1/\lambda$; $A^k$ hat $\lambda^k$. \hint{Kontrolle: $\sum\lambda_i{=}\mathrm{tr}$, $\prod\lambda_i{=}\det$.}
+
+% ============================================================
+\Sec{Determinante, Inverse, Spur}
+\fld{Det $2{\times}2$} $\det\big(\begin{smallmatrix}a&b\\c&d\end{smallmatrix}\big)=ad-bc$.\\
+\fld{Det $3{\times}3$} (Sarrus) $a(ei{-}fh)-b(di{-}fg)+c(dh{-}eg)$.\\
+\fld{Inverse $2{\times}2$} $\big(\begin{smallmatrix}a&b\\c&d\end{smallmatrix}\big)\inv=\frac{1}{ad-bc}\big(\begin{smallmatrix}d&-b\\-c&a\end{smallmatrix}\big)$ \hint{(Diag.\ tauschen, Neben-Diag.\ Vorzeichen).}\\
+\fld{Inverse allg.} Gauß-Jordan $(A\,|\,E)\to(E\,|\,A\inv)$, oder $A\vec x_i=\vec e_i$ spaltenweise.\\
+\fld{Spur} $\mathrm{tr}(A)=\sum_i a_{ii}=\sum\lambda_i$. \merk{Zyklisch} $\mathrm{tr}(ABC)=\mathrm{tr}(BCA)=\mathrm{tr}(CAB)$ \hint{(nur zyklisch drehen, nicht beliebig!)}.
+
+% ============================================================
+\Sec{Definitheit \hint{(symm.\ $A$ — Brücken-TÜV)}}
+\esel{Wie bei Cholesky: PD $=$ die „Brücke'' sackt nirgends ab ($\vec x\transp A\vec x>0\ \forall\vec x\neq0$).}
+\fld{Test 1 (EW)}
+\begin{tl}
+\item \textbf{PD:} alle $\lambda_i>0$;\quad \textbf{PSD:} $\ge0$;\quad \textbf{ND:} $<0$;\quad \textbf{NSD:} $\le0$
+\item \textbf{indefinit:} positive \emph{und} negative $\lambda_i$
+\end{tl}
+\fld{Test 2 (Sylvester)} alle führenden Hauptminoren $\Delta_1,\dots,\Delta_n>0\Leftrightarrow$ PD \hint{($\Delta_k=\det$ der linken oberen $k{\times}k$-Ecke)}.\\
+\fld{Folgerungen} PD $\Rightarrow$ invertierbar \& $\det>0$. $A\transp A$ stets PSD (PD bei unabh.\ Spalten). PSD\,$+\varepsilon E$ wird PD.
+
+% ============================================================
+\Sec{Orthogonale Matrizen}
+\esel{Perfekter Tanzpartner: $Q\vec x$ dreht/spiegelt nur — Längen \& Winkel bleiben unverändert. „Rückwärts tanzen'' ist gratis: $Q\inv=Q\transp$.}
+$Q$ orthogonal $\Leftrightarrow Q\transp Q=E\Leftrightarrow$ Spalten orthonormal $\Leftrightarrow Q\inv=Q\transp$.\\
+\fld{Prüfen} (1) jede Spalte $\|\cdot\|^2=1$ \hint{(quadrieren!)}; (2) je zwei Spalten Skalarprodukt $0$.\\
+\fld{Eigenschaften} $\det Q=\pm1$ \hint{(nicht immer $+1$!)}, alle $|\lambda_i|=1$, längenerhaltend $\|Q\vec x\|=\|\vec x\|$; $(Q\vec x)\transp(Q\vec y)=\vec x\transp\vec y$.
+
+% ============================================================
+\Sec{Inneres Produkt \& Normen}
+\esel{Normen $=$ verschiedene \emph{Lineale}: $\|\cdot\|_1$ misst Taxi-Wege im Häuserblock, $\|\cdot\|_2$ die Luftlinie, $\|\cdot\|_\infty$ nur den größten Einzelschritt.}
+\fld{Normen} $\|\vec x\|_1=\sum|x_i|$, $\|\vec x\|_2=\sqrt{\sum x_i^2}$, $\|\vec x\|_\infty=\max_i|x_i|$; $\|\vec x\|=\sqrt{\langle x,x\rangle}$.\\
+\fld{Axiome Norm} $\|\vec x\|\ge0$ ($=0\Leftrightarrow\vec x{=}\vec0$), $\|s\vec x\|=|s|\|\vec x\|$, $\|\vec x{+}\vec y\|\le\|\vec x\|{+}\|\vec y\|$ (Dreieck).\\
+\fld{Inneres Produkt} $\langle\cdot,\cdot\rangle\Leftrightarrow$ \textbf{symmetrisch} $+$ \textbf{bilinear} $+$ \textbf{positiv definit}. Form $\langle x,y\rangle=\vec x\transp A\vec y$: prüfe $A=A\transp$ \emph{und} $A$ PD. \hint{Standard $\vec x\transp\vec y$; orthogonal $\Leftrightarrow\langle x,y\rangle=0$.}\\
+\fld{Cauchy-Schwarz} $|\langle x,y\rangle|\le\|\vec x\|\|\vec y\|$ \hint{(Gleichheit $\Leftrightarrow$ lin.\ abh.)}; Pythagoras $\vec x\perp\vec y\Rightarrow\|\vec x{+}\vec y\|^2=\|\vec x\|^2{+}\|\vec y\|^2$.\\
+\fld{Metrik} $d(\vec x,\vec y)=\|\vec x-\vec y\|$ \hint{($\ge0$, symm., Dreieck)}. Jede Norm erzeugt eine Metrik.
+
+% ============================================================
+\Sec{Vektorraum \& Untervektorraum}
+\esel{Schnelltest: „Geht das Gebilde durch den Ursprung?'' Geraden/Ebenen durch $\vec0$ sind Unterräume, verschobene (affine) nicht.}
+$U\subseteq V$ Unterraum $\Leftrightarrow$ (1)~$\vec0\in U$, (2)~abgeschlossen unter $+$, (3)~abgeschlossen unter $\cdot$.\\
+\hint{Abelsche Gruppe $(V,\oplus)$: Assoz., neutrales $\vec0$, inverses Element, abgeschlossen, kommutativ. $\langle x,x\rangle$ erzeugt Norm, Norm erzeugt Metrik.}
+
+% ============================================================
+\Sec{PCA \hint{(bester Foto-Winkel)}}
+\esel{Du fotografierst eine Menschenmenge: aus dem \emph{besten Winkel} (PC1) siehst du die meiste „Spreizung'' (Varianz) der Daten. PCA findet genau diese Richtung.}
+\fld{Rezept}
+\begin{nl}
+\item \textbf{Zentrieren:} Spaltenmittel abziehen $\to A_c$.
+\item \textbf{Kovarianz:} $C=\frac{1}{n-1}A_c\transp A_c$ \hint{($n=$ \#Punkte/Zeilen)}.
+\item Größter EW von $C\to$ PC1 (norm.\ $\vec w$).
+\end{nl}
+Scores $\vec s=A_c\vec w$; Rückrechnung $A_c\approx\vec s\,\vec w\transp$ ($+$ Mittel).\\
+\textbf{Deutung:} \emph{großer} EW $\hat=$ \emph{viel Varianz} $\hat=$ wichtigere Komponente. Anteil $=\lambda_i/\sum_j\lambda_j$. \hint{SVD: $\lambda_i=\sigma_i^2/(n-1)$; PCs orthogonal/unkorreliert.}
+
+% ============================================================
+\Sec{Lineare Regression \hint{(Trendlinie)}}
+\esel{Beste Gerade durch die Punktwolke — die „Trendlinie'', die den senkrechten Gesamtfehler minimiert.}
+\fld{Rezept}
+\begin{nl}
+\item Designmatrix $X$ (1.\ Spalte $1$en, dann $x$-Werte), $\vec y$.
+\item Normalengleichung $X\transp X\,\vec c=X\transp\vec y$ \hint{($X\transp X$ symm.\ \& PSD)}.
+\item Lösen $\vec c=(X\transp X)\inv X\transp\vec y$ \hint{(via Cholesky/$QR$/SVD)}.
+\end{nl}
+$X\transp X=\big(\begin{smallmatrix}n&\sum x_i\\\sum x_i&\sum x_i^2\end{smallmatrix}\big)$, $X\transp\vec y=\big(\begin{smallmatrix}\sum y_i\\\sum x_iy_i\end{smallmatrix}\big)$.\\
+\textbf{Güte:} $R^2\in[0,1]$ groß $=$ guter Fit; $p$-Wert klein ($<0{,}05$) $=$ signifikant. \hint{$X\transp X{+}\varepsilon E$: Regularisierung.}
+
+% ============================================================
+\Sec{Hyperebenen \hint{(Zaun zwischen Herden)}}
+\esel{Ein \emph{Zaun}, der zwei Tier-Herden (Klassen) trennt. $\vec n=$ Pfeil senkrecht zum Zaun (Normalenvektor), Margin $=$ breitester Korridor ohne Tier.}
+Hyperebene im $\mathbb R^n$: \textbf{Dimension $n-1$} \hint{(Gerade im $\mathbb R^2$, Ebene im $\mathbb R^3$)}. Gleichung $\vec n\transp\vec x+b=0$; Punkt $\vec p$: $w=\vec n\transp\vec p+b$.
+\begin{tl}
+\item \textbf{Seite} $=\mathrm{sign}(w)$; $w=0$: auf dem Zaun.
+\item \textbf{Abstand} $=|w|/\|\vec n\|$ \hint{(Hesse-Normalform $\|\vec n\|{=}1$: $|w|$)}.
+\item \textbf{Margin} $=$ kleinster Abstand; trennend: Klassen $w>0$ bzw.\ $<0$.
+\end{tl}
+\textbf{Bauen:} $\vec n=$ Richtung zwischen den Klassen, $b=-\vec n\transp\vec m$ ($\vec m=$ Mittelpunkt). \hint{$b=0\Rightarrow$ durch Ursprung $=$ Unterraum; $\vec n$ nur bis auf Skalar eindeutig.}
+
+% ============================================================
+\Sec{Finite Differenzen \hint{(durchhängender Balken)}}
+\esel{Ein Balken/Seil hängt unter Last durch. Wir messen die Höhe $u_i$ nur an Gitterpunkten; jeder Punkt „spürt'' seine Nachbarn über die Koeffizienten $-1,2,-1$. Aus der DGL wird ein LGS $A\vec u=\vec b$.}
+\fld{2.\ Ableitung} $-u''(x_i)\approx\frac{-u_{i-1}+2u_i-u_{i+1}}{h^2}$ \hint{(Koeff.\ $-1,2,-1$ \emph{sind} die Matrixzeilen)}.\\
+\fld{Rezept} \hint{(Bsp.\ $-u''{=}4,\ u(0){=}u(1){=}0$, 3 Pkt., $h{=}\tfrac14$)}
+\begin{nl}
+\item $A=\frac1{h^2}\mathrm{tridiag}(-1,2,-1)=16\left(\begin{smallmatrix}2&-1&0\\-1&2&-1\\0&-1&2\end{smallmatrix}\right)$ \hint{(steht fest, ohne $u$)}.
+\item $\vec b=$ die $f$-Werte $=(4,4,4)\transp$.
+\item Lösen $A\vec u=\vec b$ mit Gauß $\Rightarrow\vec u=(\tfrac38,\tfrac12,\tfrac38)$.
+\end{nl}
+\hint{$\vec u$ ist die \emph{Unbekannte} — nie per Formel ausrechnen; kommt erst beim Lösen raus.}\\
+\Sub{Vier Matrizen \hint{(je nach Rand)}}
+\begin{tabular}{@{}p{0.7cm}@{\,}p{1.2cm}@{\,}p{1.2cm}@{\,}p{3.7cm}@{}}
+\textbf{Mat.} & \textbf{Rand} & \textbf{Diag.} & \textbf{Eigenschaften}\\[1pt]
+$K$ & fest–fest & $2,\dots,2$ & symm., PD, invertierbar\\
+$T$ & frei–fest & $1,2,\dots$ & symm., PD, invertierbar\\
+$B$ & frei–frei & $1,2{\dots}1$ & symm., PSD, singulär\\
+$C$ & zirkulär & $2,\dots,2$ & symm., PSD, singulär\\
+\end{tabular}\\
+\hint{\textbf{fest} (Dirichlet $u{=}0$) $\to2$ auf Diag; \textbf{frei} (Neumann $u'{=}0$) $\to1$. $B,C$ singulär $\Rightarrow$ nur lösbar falls $\sum_i f_i=0$.}
+
+% ============================================================
+\Sec{Rechenregeln \& Theorie-Merksätze}
+$(AB)\transp{=}B\transp A\transp$, $(AB)\inv{=}B\inv A\inv$, $(A\inv)\transp{=}(A\transp)\inv$, $(A\transp)\transp{=}A$.\\
+$|AB|{=}|A||B|$, $|A\transp|{=}|A|$, $|A\inv|{=}\tfrac1{|A|}$, $|cA|{=}c^n|A|$. \hint{$AB\neq BA$.}\\
+\Sub{Gilt / gilt nicht \hint{(W/F)}}
+\begin{tl}
+\item \W\ SVD existiert für jede Matrix; \W\ $CR,QR$ auch.
+\item \F\ „$LU$ existiert immer'' — nur mit führ.\ HM $\neq0$ (sonst $PA{=}LU$).
+\item \F\ „jede symm.\ Matrix hat Cholesky'' — nur symm.\ \emph{und} PD.
+\item \F\ „jede quadr.\ Matrix ist diagonalisierbar'' — nur mit $n$ unabh.\ EV.
+\item \W\ symm.\ $\Rightarrow$ immer orthogonal diagonalisierbar (Spektralsatz).
+\item \W\ PD $\Rightarrow$ invertierbar \& $\det>0$; $\sigma_i^2=$ EW von $A\transp A$.
+\item \F\ „$\det Q=+1$'' — orthogonal nur $\pm1$.
+\item \W\ Hyperebene Unterraum $\Leftrightarrow$ geht durch Ursprung ($b=0$).
+\end{tl}
+\textbf{Symm.\ beweisen:} $M\transp$ ausrechnen (Regeln, Reihenfolge dreht) $=M$. \hint{$(B\transp B)\transp=B\transp B$ \checkmark.}\\
+\textbf{LoRA / Eckart-Young:} $A_k=\sum_{i\le k}\sigma_i\vec u_i\vec v_i\transp=$ beste Rang-$k$-Näherung; Kompression $k(m{+}n)$ statt $mn$.
+
+\end{multicols}
+\end{document}

@@ -1,0 +1,213 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}
+\geometry{margin=2.0cm}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{titlesec}
+
+%================= Dark-Mode Farben (Catppuccin Mocha) =================
+\definecolor{base}{HTML}{1E1E2E}
+\definecolor{fg}{HTML}{CDD6F4}
+\definecolor{accent}{HTML}{89B4FA}
+\definecolor{accent2}{HTML}{F5C2E7}
+\definecolor{gridcolor}{HTML}{45475A}
+
+\pagecolor{base}
+
+\newcommand{\transp}{^{\mathsf{T}}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\tridiag}{\operatorname{tridiag}}
+\newcommand{\schwierig}[1]{\hfill\textnormal{\color{accent2}\itshape (#1)}}
+\newcommand{\fokus}[1]{\par\vspace{0.2em}{\color{accent2}\small\itshape Fokus: #1}\par\vspace{0.3em}}
+
+% Karierte Antwortfläche -- #1 = Höhe (z. B. 8cm).
+\newcommand{\karo}[1]{\par\vspace{0.3cm}\noindent
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcolor, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par\vspace{0.3cm}}
+
+\titleformat{\section}{\color{accent}\normalfont\Large\bfseries}{}{0pt}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\color{fg}\small Lukas -- gezielte Übung}
+\rhead{\color{fg}\small FLA \& Analytische Geometrie}
+\cfoot{\color{fg}\thepage}
+\renewcommand{\headrule}{{\color{gridcolor}\hrule height 0.4pt}}
+
+\setlength{\parindent}{0pt}
+
+\begin{document}
+\color{fg}
+\thispagestyle{fancy}
+
+\begin{center}
+  {\color{accent}\LARGE\bfseries Lukas -- gezielte Übungsaufgaben}\\[0.4em]
+  {\large Fortgeschrittene Lineare Algebra und Analytische Geometrie}\\[0.3em]
+  {\color{gridcolor}\rule{\linewidth}{0.4pt}}
+\end{center}
+
+\vspace{0.4em}
+\textbf{Name:}\ \rule{5cm}{0.4pt}\hfill\textbf{Datum:}\ \rule{4cm}{0.4pt}\par
+\vspace{0.6em}
+12 Aufgaben, gezielt auf die Fehler aus \emph{Probeklausur 03} zugeschnitten: $c^n$-Regel, Vorzeichen bei $PA=LU$ \& Finiten Differenzen, SVD-Struktur, $L$ vs.\ $L\transp$, Dimensionen, Beweise, Kosinus/Mahalanobis, Hyperebenen-Abstand -- plus die ausgelassenen Themen QR, Regression, PCA. Lösungen separat in \texttt{results/aufgaben/lukas\_aufgaben\_loesungen.pdf}.
+
+% =====================================================================
+\clearpage
+\section*{Aufgabe 1 -- Determinanten-Skalierung $\det(cA)=c^n\det(A)$}
+\fokus{Das $n$ im Exponenten NICHT vergessen.}
+Berechne (mit Begründung):
+\begin{enumerate}[label=\alph*)]
+  \item $A\in\mathbb{R}^{3\times3}$ mit $\det(A)=5$. Bestimme $\det(2A)$.
+  \item $B\in\mathbb{R}^{4\times4}$ mit $\det(B)=-3$. Bestimme $\det(3B)$ und $\det(-B)$.
+  \item $C\in\mathbb{R}^{2\times2}$ mit $\det(C)=2$. Bestimme $\det(5C)$.
+  \item Wahr oder falsch: ``$\det(cA)=c\cdot\det(A)$ für alle $A\in\mathbb{R}^{n\times n}$.'' Begründe.
+\end{enumerate}
+\karo{9cm}
+
+% =====================================================================
+\clearpage
+\section*{Aufgabe 2 -- $LU$-Zerlegung mit Zeilentausch ($PA=LU$)}
+\fokus{Vorzeichen bei der Elimination sauber rechnen; Permutation $P$ mitführen.}
+Gegeben sei
+\[ A=\begin{pmatrix}0&1&2\\1&2&1\\1&1&4\end{pmatrix}. \]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimme eine Zerlegung $PA=LU$ mit Permutationsmatrix $P$.
+  \item Bestimme $\det(A)$ \emph{über die Zerlegung} (denke an $\det(P)$!).
+\end{enumerate}
+\karo{10cm}
+
+% =====================================================================
+\clearpage
+\section*{Aufgabe 3 -- Finite Differenzen}
+\fokus{$h^2$ korrekt ($h=\tfrac14\Rightarrow h^2=\tfrac1{16}$), Vorzeichen, Ergebnis muss positiv sein.}
+Gegeben sei das Randwertproblem
+\[ -u''(x)=6,\qquad u(0)=u(1)=0, \]
+mit den inneren Gitterpunkten $x_1=0{,}25,\ x_2=0{,}5,\ x_3=0{,}75$.
+\begin{enumerate}[label=\alph*)]
+  \item Stelle das LGS $\tfrac{1}{h^2}K\vec u=\vec f$ auf und löse es.
+  \item Welche der vier Matrizen $K,T,B,C$ sind invertierbar/positiv definit, welche singulär/positiv semidefinit?
+\end{enumerate}
+\karo{10cm}
+
+% =====================================================================
+\clearpage
+\section*{Aufgabe 4 -- SVD vollständig}
+\fokus{$V$ = Eigenvektoren von $A\transp A$; Singulärwerte \textbf{absteigend} sortieren ($\sigma_1\ge\sigma_2$).}
+Gegeben sei
+\[ A=\begin{pmatrix}3&3\\-1&1\end{pmatrix}. \]
+\begin{enumerate}[label=\alph*)]
+  \item Berechne $A\transp A$ und dessen Eigenwerte.
+  \item Bestimme $\sigma_1\ge\sigma_2$ und die Matrix $V$.
+  \item Bestimme $U$, sodass $A=U\Sigma V\transp$.
+  \item Bestimme die Pseudoinverse $A^{+}$.
+\end{enumerate}
+\karo{10.5cm}
+
+% =====================================================================
+\clearpage
+\section*{Aufgabe 5 -- Cholesky \& Lösen ($L$ vs.\ $L\transp$!)}
+\fokus{$Ly=b$ \textbf{vorwärts} mit $L$; $L\transp x=y$ \textbf{rückwärts} mit $L\transp$. Nicht vertauschen!}
+Gegeben seien
+\[ A=\begin{pmatrix}9&3&0\\3&5&2\\0&2&5\end{pmatrix},\qquad b=\begin{pmatrix}12\\10\\7\end{pmatrix}. \]
+\begin{enumerate}[label=\alph*)]
+  \item Prüfe positive Definitheit (führende Hauptminoren) und bestimme $A=LL\transp$.
+  \item Löse $Ax=b$ über $Ly=b$ und $L\transp x=y$.
+\end{enumerate}
+\karo{10cm}
+
+% =====================================================================
+\clearpage
+\section*{Aufgabe 6 -- Vier Unterräume: Dimensionen als \emph{Zahlen}}
+\fokus{$\dim$ ist eine \textbf{Zahl} ($r$, $n-r$, $m-r$) -- keine Matrixgröße!}
+Gegeben sei
+\[ A=\begin{pmatrix}1&2&0&1\\2&4&1&3\\1&2&1&2\end{pmatrix}. \]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimme $\operatorname{rang}(A)$.
+  \item Gib $\dim C(A)$, $\dim C(A\transp)$, $\dim N(A)$, $\dim N(A\transp)$ \textbf{als Zahlen} an.
+  \item Bestimme eine Basis des Nullraums $N(A)$.
+\end{enumerate}
+\karo{10cm}
+
+% =====================================================================
+\clearpage
+\section*{Aufgabe 7 -- Beweise (Rechenregeln)}
+\fokus{Sauber per Multiplikation zeigen. NICHT $A^{-1}=A\transp$ annehmen (gilt nur orthogonal)!}
+$A$ und $B$ seien invertierbare $n\times n$-Matrizen.
+\begin{enumerate}[label=\alph*)]
+  \item Zeige: $(AB)^{-1}=B^{-1}A^{-1}$.
+  \item Zeige: $(A\transp)^{-1}=(A^{-1})\transp$.
+  \item Zeige: Ist $A$ symmetrisch und invertierbar, so ist auch $A^{-1}$ symmetrisch.
+\end{enumerate}
+\karo{10cm}
+
+% =====================================================================
+\clearpage
+\section*{Aufgabe 8 -- Winkel \& Mahalanobis-Norm}
+\fokus{$\cos(\alpha)=\dfrac{\langle x,y\rangle}{\|x\|\,\|y\|}$ (richtig herum!); $\|x\|_G=\sqrt{x\transp G\,x}$.}
+Gegeben seien
+\[ x=\begin{pmatrix}1\\2\\2\end{pmatrix},\quad y=\begin{pmatrix}2\\-1\\2\end{pmatrix},\qquad G=\diag(2,1,3). \]
+\begin{enumerate}[label=\alph*)]
+  \item Berechne $\|x\|_1$, $\|x\|_2$, $\|x\|_\infty$.
+  \item Berechne $\langle x,y\rangle$ und $\cos$ des Winkels zwischen $x$ und $y$.
+  \item Berechne $\langle x,y\rangle_G=x\transp G\,y$ und $\|x\|_G=\sqrt{x\transp G\,x}$.
+\end{enumerate}
+\karo{9.5cm}
+
+% =====================================================================
+\clearpage
+\section*{Aufgabe 9 -- Hyperebene: Abstand, Seite, Margin}
+\fokus{Direkt mit $d=\dfrac{n\transp p - b}{\|n\|}$ (vorzeichenbehaftet) -- nicht über Lotfußpunkt.}
+Gegeben seien die Hyperebene und zwei Punkte
+\[ H:\ x_1+2x_2+2x_3=6,\qquad p=\begin{pmatrix}3\\1\\2\end{pmatrix},\quad q=\begin{pmatrix}1\\1\\1\end{pmatrix}. \]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimme einen Normalenvektor $n$ und $\|n\|_2$.
+  \item Berechne den vorzeichenbehafteten Abstand von $p$ zu $H$. Auf welcher Seite liegt $p$?
+  \item Berechne den Abstand von $q$. Liegen $p$ und $q$ auf derselben Seite?
+\end{enumerate}
+\karo{9.5cm}
+
+% =====================================================================
+\clearpage
+\section*{Aufgabe 10 -- QR mit Gram-Schmidt \& Ausgleichsrechnung}
+\fokus{Das hattest du ausgelassen -- hier von Hand üben.}
+Gegeben seien
+\[ A=\begin{pmatrix}1&0\\1&1\\1&2\end{pmatrix},\qquad b=\begin{pmatrix}1\\3\\5\end{pmatrix}. \]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimme mit dem Gram-Schmidt-Verfahren die reduzierte QR-Zerlegung $A=QR$.
+  \item Löse das überbestimmte System $Ax=b$ im Sinne kleinster Quadrate über $Rx=Q\transp b$.
+\end{enumerate}
+\karo{10.5cm}
+
+% =====================================================================
+\clearpage
+\section*{Aufgabe 11 -- Lineare Regression \& Bestimmtheitsmaß}
+\fokus{Ausgelassen -- Normalengleichung $X\transp X c = X\transp y$.}
+Gegeben seien die Datenpunkte $(0,1),\ (1,1),\ (2,4)$. Gesucht ist die Ausgleichsgerade $y=c_0+c_1x$.
+\begin{enumerate}[label=\alph*)]
+  \item Stelle die Designmatrix $X$ und die Normalengleichung $X\transp X c=X\transp y$ auf und löse sie.
+  \item Bestimme das Bestimmtheitsmaß $R^2=1-\mathrm{SS_{res}}/\mathrm{SS_{tot}}$.
+\end{enumerate}
+\karo{10cm}
+
+% =====================================================================
+\clearpage
+\section*{Aufgabe 12 -- Hauptkomponentenanalyse (PCA)}
+\fokus{Ausgelassen -- Kovarianzmatrix $C=\tfrac{1}{n-1}A_c\transp A_c$, größter Eigenwert.}
+Gegeben seien die Datenpunkte
+\[ (2,1),\quad (1,2),\quad (-1,-2),\quad (-2,-1). \]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimme den Mittelwert und die zentrierten Daten $A_c$.
+  \item Bestimme die Kovarianzmatrix $C=\tfrac{1}{n-1}A_c\transp A_c$.
+  \item Bestimme die erste Hauptkomponente (Richtung des größten Eigenwerts) und den erklärten Varianzanteil.
+\end{enumerate}
+\karo{10cm}
+
+\end{document}

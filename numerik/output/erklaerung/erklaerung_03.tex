@@ -1,0 +1,307 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{geometry}
+\geometry{a4paper,margin=2.1cm}
+
+% ============ Kitty-Theme (serenity) ============
+\definecolor{bgdark}{HTML}{11121A}   % background
+\definecolor{panel}{HTML}{1B1F2C}    % Box-Hintergrund (etwas heller)
+\definecolor{fgtext}{HTML}{D5DDE8}   % foreground
+\definecolor{accent}{HTML}{91A8D0}   % color4  blau  -> Definition / Sections
+\definecolor{accentlt}{HTML}{B3CEE5} % color12 hellblau
+\definecolor{green}{HTML}{B5D4A8}    % color10 grün  -> Intuition
+\definecolor{yellow}{HTML}{E8D49A}   % color11 gold  -> Satz/Formel
+\definecolor{rose}{HTML}{D8909A}     % color1  rose  -> Stolperfalle
+\definecolor{purple}{HTML}{B69ACE}   % color5  -> Beispiel
+\definecolor{cyan}{HTML}{8FBED1}     % color6
+\definecolor{muted}{HTML}{8F9BB3}
+\definecolor{rulecol}{HTML}{4A5B78}  % color8
+\pagecolor{bgdark}
+\color{fgtext}
+\renewcommand{\normalcolor}{\color{fgtext}}
+
+\usepackage[colorlinks=true,linkcolor=accentlt,urlcolor=accentlt]{hyperref}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+
+\titleformat{\section}{\Large\bfseries\color{accent}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\large\bfseries\color{cyan}}{\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{11pt}{4pt}
+\titlespacing*{\subsection}{0pt}{7pt}{2pt}
+
+\newtcolorbox{defi}[1]{colback=panel,colframe=accent,coltext=fgtext,coltitle=bgdark,
+  colbacktitle=accent,fonttitle=\bfseries,title={#1},arc=2pt,boxrule=0.6pt,
+  left=4pt,right=4pt,top=2pt,bottom=2pt,before skip=4pt,after skip=4pt}
+\newtcolorbox{intu}[1]{colback=panel,colframe=green,coltext=fgtext,coltitle=bgdark,
+  colbacktitle=green,fonttitle=\bfseries,title={#1},arc=2pt,boxrule=0.6pt,
+  left=4pt,right=4pt,top=2pt,bottom=2pt,before skip=4pt,after skip=4pt}
+\newtcolorbox{satz}[1]{colback=panel,colframe=yellow,coltext=fgtext,coltitle=bgdark,
+  colbacktitle=yellow,fonttitle=\bfseries,title={#1},arc=2pt,boxrule=0.6pt,
+  left=4pt,right=4pt,top=2pt,bottom=2pt,before skip=4pt,after skip=4pt}
+\newtcolorbox{bsp}[1]{colback=panel,colframe=purple,coltext=fgtext,coltitle=bgdark,
+  colbacktitle=purple,fonttitle=\bfseries,title={#1},arc=2pt,boxrule=0.6pt,
+  left=4pt,right=4pt,top=2pt,bottom=2pt,before skip=4pt,after skip=4pt}
+\newtcolorbox{falle}[1]{colback=panel,colframe=rose,coltext=fgtext,coltitle=bgdark,
+  colbacktitle=rose,fonttitle=\bfseries,title={#1},arc=2pt,boxrule=0.6pt,
+  left=4pt,right=4pt,top=2pt,bottom=2pt,before skip=4pt,after skip=4pt}
+
+\setlist[itemize]{leftmargin=1.4em,itemsep=1pt,topsep=2pt}
+\setlist[enumerate]{leftmargin=1.7em,itemsep=1pt,topsep=2pt}
+
+\begin{document}
+
+\begin{center}
+{\Huge\bfseries\color{accent} Numerik -- Lückenzettel}\\[4pt]
+{\large\color{fgtext} Nur die Themen, die im Test nicht rund liefen}\\[3pt]
+{\small\color{muted} Fehleranalyse (Konsistenz) $\cdot$ Newton/Sekante $\cdot$ Integration \& Interpolation $\cdot$ Modelltraining}
+\end{center}
+\vspace{2pt}
+\noindent\textcolor{rulecol}{\rule{\linewidth}{0.4pt}}
+
+{\small\color{muted} Boxen:\;
+\textcolor{accent}{$\blacksquare$}~Definition \;
+\textcolor{green}{$\blacksquare$}~Intuition \;
+\textcolor{yellow}{$\blacksquare$}~Satz/Formel \;
+\textcolor{purple}{$\blacksquare$}~Beispiel \;
+\textcolor{rose}{$\blacksquare$}~Stolperfalle (richtige Form direkt)}
+
+{\color{muted}\tableofcontents}
+\vspace{2pt}
+\noindent\textcolor{rulecol}{\rule{\linewidth}{0.4pt}}
+
+% =====================================================================
+\section{Fehleranalyse -- die vier Eigenschaften (Fokus: Konsistenz)}
+
+\begin{intu}{Worum geht's -- Hut \& Tilde}
+$f$ = das \emph{wahre} Problem, $\hat f$ = der \emph{Algorithmus} (die Näherung), $\tilde x$ = die
+\emph{gestörte} Eingabe. Die vier Eigenschaften vergleichen diese Größen paarweise -- merk dir,
+\emph{wer} mit \emph{wem} verglichen wird:
+\end{intu}
+
+\begin{defi}{Die vier Begriffe}
+\begin{itemize}
+\item \textbf{Kondition} $\kappa=|f(x)-f(\tilde x)|$ -- wahres Problem, exakte vs.\ gestörte Eingabe.
+  \emph{Gehört zum Problem.} Klein = gut, groß = schlecht konditioniert.
+\item \textbf{Stabilität} $|\hat f(\tilde x)-\hat f(x)|\le s\,|\tilde x-x|$ -- Algorithmus, wie stark
+  verstärkt er Störungen. \emph{Gehört zum Verfahren.}
+\item \textbf{Konsistenz} $c=|\hat f(x)-f(x)|$ -- Algorithmus vs.\ Wahrheit, bei \emph{exakter}
+  Eingabe. „Wie gut nähert die Diskretisierung überhaupt?``
+\item \textbf{Konvergenz} $|\hat f(\tilde x)-f(x)|$ -- der \emph{Gesamtfehler}.
+\end{itemize}
+\textbf{Kernsatz:} Konsistenz $+$ Stabilität $\Rightarrow$ Konvergenz.
+\end{defi}
+
+\begin{bsp}{Konsistenz konkret (das war im Test leer)}
+$g(x)=(x-2)^2$, diskretisiert auf zwei Gittern: $h_1=1$ gibt $\{0,1,2,3,4\}$, $h_2=\tfrac12$ gibt
+$\{0,\tfrac12,1,\dots\}$. $\hat g$ rundet auf den \emph{nächsten} Gitterpunkt. Konsistenzfehler
+$c=|\hat g(x)-g(x)|$ an einer Stelle, die \emph{nicht} auf dem groben Gitter liegt, z.\,B.\ $x=2{,}7$
+(echter Wert $g(2{,}7)=0{,}49$):
+\begin{itemize}
+\item $h_1=1$: $2{,}7\to$ Gitterpunkt $3$, also $\hat g=g(3)=1\Rightarrow c_1=|1-0{,}49|=\mathbf{0{,}51}$.
+\item $h_2=\tfrac12$: $2{,}7\to$ Gitterpunkt $2{,}5$, also $\hat g=g(2{,}5)=0{,}25\Rightarrow
+  c_2=|0{,}25-0{,}49|=\mathbf{0{,}24}$.
+\end{itemize}
+$\Rightarrow$ Die \textbf{feinere} Schrittweite $h_2$ ist \emph{konsistenter} (Fehler skaliert mit $h$).
+\end{bsp}
+
+\begin{falle}{Zwei Sätze, die immer abgefragt werden}
+1) \textbf{Kondition $\ne$ Stabilität}: Kondition = Problem, Stabilität = Algorithmus. Ein stabiler
+Algorithmus \emph{rettet kein} schlecht konditioniertes Problem -- er erzeugt nur keine zusätzlichen
+Fehler.\\
+2) \textbf{Kleineres $h$ ist nicht zwingend besser}: feiner $\Rightarrow$ konsistenter, aber unter
+einem optimalen $h$ dominieren \emph{Rundungsfehler/Rauschen}, der Gesamtfehler steigt wieder.
+\end{falle}
+
+% =====================================================================
+\section{Newton- \& Sekantenverfahren}
+
+\begin{satz}{Herleitung aus Taylor (das musst du zeigen können)}
+Taylor 1.\ Ordnung um $x_n$:\quad $f(x)\approx f(x_n)+f'(x_n)\,(x-x_n)$.\\
+Setze die \emph{Tangente} gleich $0$ und löse nach $x$:
+\[
+  0=f(x_n)+f'(x_n)(x-x_n)\;\Longrightarrow\;
+  x_{n+1}=x_n-\frac{f(x_n)}{f'(x_n)}.
+\]
+In Worten: Newton springt zur \emph{Nullstelle der Tangente}.
+\end{satz}
+
+\begin{bsp}{Zwei Iterationen für $\sqrt2$ ($f(x)=x^2-2$, $f'(x)=2x$, $x_0=2$)}
+\[
+x_1=2-\frac{2^2-2}{2\cdot 2}=2-\frac{2}{4}=2-\tfrac12=\mathbf{\tfrac32},\qquad
+x_2=\tfrac32-\frac{(\tfrac32)^2-2}{2\cdot\tfrac32}=\tfrac32-\frac{\tfrac14}{\mathbf{3}}
+=\tfrac32-\tfrac1{12}=\mathbf{\tfrac{17}{12}}\approx1{,}4167.
+\]
+Achtung beim Nenner: $f'(\tfrac32)=2\cdot\tfrac32=\mathbf{3}$ (also $=\tfrac{12}{4}$), \emph{nicht}
+$\tfrac{18}{4}$. $\sqrt2\approx1{,}4142$ -- nach 2 Schritten schon 3 Stellen.
+\end{bsp}
+
+\begin{defi}{Kriterium \& was „quadratisch`` heißt}
+\textbf{Konvergenzkriterium:} $x_0$ nah genug an einer \emph{einfachen} Wurzel $x^\star$, $f\in C^2$,
+und $f'(x^\star)\neq 0$. \textbf{Quadratische Konvergenz} $|e_{n+1}|\le C|e_n|^2$: die Zahl
+\emph{korrekter Stellen verdoppelt} sich pro Schritt.
+\end{defi}
+
+\begin{falle}{Versagensfälle (einen nennen können)}
+$f'(x_n)=0$ (waagrechte Tangente $\to$ Division durch $0$); schlechter Startwert $\to$ Divergenz;
+Zyklus (pendelt periodisch).
+\end{falle}
+
+\begin{satz}{Sekantenverfahren -- Newton ohne Ableitung}
+Ersetze $f'(x_0)$ durch die \textbf{Vorwärtsdifferenz} $\frac{f(x_0+h)-f(x_0)}{h}$
+(Fehler $\mathcal O(h)$). Nutzt man die letzten zwei Punkte als Steigung, ergibt sich:
+\[
+  x_{n+1}=x_n-f(x_n)\,\frac{x_n-x_{n-1}}{f(x_n)-f(x_{n-1})}.
+\]
+Vorteil: braucht \emph{kein} $f'$ (gut bei Black-Box-$f$). Nachteil: langsamer (Ordnung $\approx1{,}618$),
+zwei Startwerte nötig.
+\end{satz}
+
+\begin{bsp}{Ein Sekanten-Schritt ($f=x^2-2$, $x_0=2,\ x_1=1{,}5$)}
+$f(2)=2$, $f(1{,}5)=0{,}25$:
+\[
+x_2=1{,}5-0{,}25\cdot\frac{1{,}5-2}{0{,}25-2}=1{,}5-0{,}25\cdot\frac{-0{,}5}{-1{,}75}
+=1{,}5-\tfrac1{14}=\mathbf{\tfrac{10}{7}}\approx1{,}4286.
+\]
+\end{bsp}
+
+% =====================================================================
+\section{Integration \& Interpolation (größte Lücke)}
+
+\subsection{Numerische Integration (Newton-Cotes)}
+\begin{intu}{Idee}
+Stammfunktion unbekannt? Lege ein \emph{einfaches Polynom} durch ein paar Stützpunkte und integriere
+\emph{das}. Gerade $\to$ Trapez, Parabel $\to$ Simpson.
+\end{intu}
+
+\begin{satz}{Regeln \& Exaktheitsgrad}
+Pro Intervall ($h=b-a$, Mitte $m$): \quad
+Mittelpunkt $h\,f(m)$;\;\; Trapez $\tfrac h2[f(a)+f(b)]$;\;\;
+Simpson $\tfrac h6[f(a)+4f(m)+f(b)]$.\\
+\textbf{Exaktheitsgrad} (höchster exakt integrierter Grad): Trapez $=1$, Simpson $=\mathbf 3$
+(Parabel, aber durch Symmetrie sogar bis Grad 3). Der \emph{Mittelpunkt} ist das beste Rechteck
+($\mathcal O(h^2)$ statt $\mathcal O(h)$), weil er die Krümmung mittelt.
+\end{satz}
+
+\begin{falle}{Zusammengesetzte Gewichte -- nur \emph{einen} inneren Term, richtig gewichtet}
+Für $[0,2]$ mit $f_0,f_1,f_2$ und $h=1$:
+\[
+  \text{Trapez: } \tfrac12\bigl[\,f_0+\mathbf{2}\,f_1+f_2\,\bigr],\qquad
+  \text{Simpson: } \tfrac13\bigl[\,f_0+\mathbf{4}\,f_1+f_2\,\bigr]\;\text{\small(„1,4,1 durch 3``)}.
+\]
+\textbf{Genau ein} mittlerer Punkt, Gewicht $2$ bzw.\ $4$ -- \emph{nicht} $2(f_1{+}f_2)$, keine
+Extra-Terme.
+\end{falle}
+
+\begin{bsp}{$\displaystyle\int_0^2 x^2\,dx$ (exakt $\tfrac83\approx2{,}667$), $f_0{=}0,f_1{=}1,f_2{=}4$}
+\[
+\text{Trapez}=\tfrac12[0+2\cdot1+4]=\tfrac12\cdot6=\mathbf{3}\ (\text{Fehler }\tfrac13);\quad
+\text{Simpson}=\tfrac13[0+4\cdot1+4]=\tfrac13\cdot8=\mathbf{\tfrac83}\ (\text{exakt}).
+\]
+Simpson exakt, weil $x^2$ Grad $2\le 3$; Trapez nicht, weil es nur Geraden exakt schafft.
+\end{bsp}
+
+\subsection{Lagrange-Interpolation (war komplett leer)}
+\begin{satz}{Rezept}
+Durch $n{+}1$ Punkte gibt es \emph{genau ein} Polynom vom Grad $\le n$:
+\[
+  p(x)=\sum_i y_i\,L_i(x),\qquad
+  L_i(x)=\prod_{j\neq i}\frac{x-x_j}{x_i-x_j}.
+\]
+Trick: $L_i$ ist $1$ am eigenen Knoten $x_i$ und $0$ an allen anderen. Im Zähler stehen alle
+$(x-x_j)$ \emph{außer} $j{=}i$, im Nenner dieselben mit $x_i$ eingesetzt.
+\end{satz}
+
+\begin{bsp}{Schritt für Schritt durch $(0,1),(1,2),(2,5)$}
+Knoten $x_0{=}0,x_1{=}1,x_2{=}2$, Werte $y=1,2,5$.
+\begin{align*}
+L_0&=\frac{(x-1)(x-2)}{(0-1)(0-2)}=\frac{(x-1)(x-2)}{2},\qquad
+L_1=\frac{(x-0)(x-2)}{(1-0)(1-2)}=-x(x-2),\\
+L_2&=\frac{(x-0)(x-1)}{(2-0)(2-1)}=\frac{x(x-1)}{2}.
+\end{align*}
+Einsetzen und zusammenfassen:
+\[
+p(x)=1\!\cdot\!L_0+2\!\cdot\!L_1+5\!\cdot\!L_2
+=\tfrac{(x-1)(x-2)}{2}-2x(x-2)+\tfrac{5x(x-1)}{2}=\mathbf{x^2+1}.
+\]
+Probe: $p(0)=1,\ p(1)=2,\ p(2)=5$ \checkmark.\quad Auswertung $p(\tfrac12)=\tfrac14+1=\tfrac54$.
+\end{bsp}
+
+\begin{falle}{Runge-Phänomen $\Rightarrow$ nicht den Grad hochdrehen}
+Interpolation \emph{hohen Grades} auf gleichmäßigen Knoten oszilliert wild an den Rändern. Lösung:
+\emph{nicht} höhergradig, sondern viele kleine Stücke (zusammengesetzt) oder \textbf{Splines}
+(stückweise niedriger Grad, glatt).
+\end{falle}
+
+\subsection{Monte-Carlo-Integration (war leer)}
+\begin{satz}{Schätzer \& Standardfehler}
+\[
+  \hat I=|\Omega|\,\frac1N\sum_{i=1}^N f(X_i),\qquad
+  \mathrm{SE}=\frac{|\Omega|\,\sigma_f}{\sqrt N}\ \propto\ \frac{1}{\sqrt N}.
+\]
+SE \emph{halbieren} $\Rightarrow N\times4$;\; \emph{zehnteln} $\Rightarrow N\times100$.
+Die Mittelpunktsregel ist MC mit $N=1$.
+\end{satz}
+
+\begin{bsp}{$\int_0^1 x^2\,dx$ (exakt $\tfrac13$) mit $X=0{,}1;0{,}3;0{,}6;0{,}9$}
+$f=x^2$: $0{,}01+0{,}09+0{,}36+0{,}81=1{,}27$.\;
+$\hat I=1\cdot\tfrac14\cdot1{,}27=\mathbf{0{,}3175}$ (nah an $0{,}333$).
+\end{bsp}
+
+\begin{intu}{Fluch der Dimensionen -- warum MC gewinnt}
+Ein Gitter mit $n$ Punkten pro Achse braucht in $d$ Dimensionen $n^d$ Punkte (\emph{exponentiell}).
+Der MC-Fehler $\propto 1/\sqrt N$ ist \emph{dimensionsunabhängig} $\Rightarrow$ in hohem $d$ schlägt
+Monte-Carlo das Gitter klar.
+\end{intu}
+
+% =====================================================================
+\section{Modelltraining (MSE \& Varianz)}
+
+\begin{defi}{Mittlerer quadratischer Fehler (MSE) -- mit Quadrat!}
+\[
+  L(w,b)=\frac1n\sum_{i=1}^n\bigl(\underbrace{w x_i+b}_{\hat y_i}-y_i\bigr)^2.
+\]
+Die Abweichungen werden \textbf{quadriert} -- sonst heben sich $+$ und $-$ auf. Das Quadrat bestraft
+große Fehler stärker und macht $L$ glatt/konvex.
+\end{defi}
+
+\begin{falle}{Varianz = Mittel der \emph{quadrierten} Abweichungen}
+Init $w=0,\ b=\bar y$ (Mittelwert) sagt überall $\bar y$ voraus $\Rightarrow$ erster Loss
+$=\tfrac1n\sum(\bar y-y_i)^2=\mathrm{Var}(y)$.\\
+\textbf{Quadrat nicht vergessen!} Für $y=(2,4,6)$, $\bar y=4$:
+\[
+  \mathrm{Var}=\tfrac13\bigl[(-2)^2+0^2+2^2\bigr]=\tfrac13(4+0+4)=\mathbf{\tfrac83}\approx2{,}67,
+  \quad\text{\small nicht } \tfrac13(-2+0+2)=0.
+\]
+Ein gedruckter Init-Loss $\approx100$ (statt $\tfrac83$) $\Rightarrow$ Bug / falsche Init
+(oder Summe statt Mittel); $\approx0$ wäre ebenfalls verdächtig.
+\end{falle}
+
+\begin{satz}{Numerik-Brille auf ML (Zuordnungen, oft abgefragt)}
+\begin{itemize}
+\item \textbf{Overfit-Sanity-Check}: ein überparametrisiertes Modell \emph{kann} eine kleine Teilmenge
+  trivial auf Loss $0$ bringen. Klappt das \emph{nicht}, ist es \emph{kein} Optimierer-Problem,
+  sondern ein Bug in Modell/Loss/Daten -- wie „Solver an Problem mit bekannter Lösung testen``.
+\item \textbf{Mini-Batch-SGD} $\leftrightarrow$ Monte-Carlo (Gradient als Stichprobenmittel),
+  Schätzfehler $\propto 1/\sqrt B$ ($B$ = Batch-Größe).
+\item \textbf{Mehrere Seeds, bester Lauf} $\leftrightarrow$ Random Restarts.
+\item \textbf{Quantisierung} (weniger Bits) $\leftrightarrow$ Präzisionswahl im Gleitkomma
+  (kleinstes Format, dessen Bereich \& Auflösung reicht; Inferenz verträgt weniger als Training).
+\end{itemize}
+\end{satz}
+
+\vspace{6pt}
+\noindent\textcolor{rulecol}{\rule{\linewidth}{0.4pt}}\\[2pt]
+{\small\color{muted} Lückenzettel -- 4 Themen. Wenn diese sitzen, bist du über der 50\%-Grenze.
+Die starken Themen (Zahlendarstellung, Optimierung) stehen im großen Skript \texttt{erklaerung\_01}.}
+
+\end{document}

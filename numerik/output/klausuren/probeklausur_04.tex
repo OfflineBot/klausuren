@@ -1,0 +1,253 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{tikz}
+\usepackage{needspace}
+\usepackage{geometry}
+\geometry{a4paper,margin=2.2cm}
+
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{accent}{HTML}{89B4FA}
+\definecolor{accent2}{HTML}{F9E2AF}
+\definecolor{muted}{HTML}{A6ADC8}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{rulecol}{HTML}{6A6A6A}
+\pagecolor{bgdark}
+\color{fgtext}
+\setlength{\arrayrulewidth}{0.3pt}
+\arrayrulecolor{rulecol}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+
+\newcommand{\karo}[1]{\par\noindent
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcol, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{\footnotesize\color{muted}\textsc{Numerische Methoden} $\cdot$ Pr\"ufung 04 -- Schw\"achen-Retest}
+\fancyhead[R]{\footnotesize\color{muted}Matr.-Nr.\ \textcolor{rulecol}{\rule{2.4cm}{0.3pt}}\quad \thepage}
+
+\newcommand{\aufg}[3]{%
+  \par\vspace{2pt}
+  \noindent\textcolor{rulecol}{\rule{\linewidth}{0.3pt}}\\[3pt]
+  {\large\bfseries\color{accent} Aufgabe #1\ \ \textcolor{fgtext}{\normalsize\mdseries #2}}\hfill
+  {\bfseries\color{accent2}#3 Punkte}\\[1pt]
+  \noindent\textcolor{rulecol}{\rule{\linewidth}{0.3pt}}\par\vspace{6pt}}
+\newcommand{\tp}[1]{\hfill{\small\color{muted}\textit{#1 Punkte}}}
+
+\begin{document}
+\thispagestyle{fancy}
+
+{\small\color{muted}\textsc{DHBW Ravensburg} \\ Duale Hochschule Baden-W\"urttemberg}
+
+\vspace{10pt}
+{\fontsize{34}{38}\selectfont\bfseries\color{accent} Pr\"ufung}\\[2pt]
+{\itshape\color{fgtext} Numerische Methoden $\cdot$ Pr\"ufung 04 -- gezielter Schw\"achen-Retest}
+
+\vspace{10pt}
+\noindent\textcolor{rulecol}{\rule{\linewidth}{0.4pt}}
+\vspace{4pt}
+
+\renewcommand{\arraystretch}{1.32}
+\noindent\begin{tabular}{@{}p{4.2cm}p{11cm}@{}}
+\textsc{\color{muted}Veranstaltung}   & Numerische Methoden\\
+\textsc{\color{muted}Pr\"ufer}        & Prof.\ Dr.-Ing.\ Mark Schutera\\
+\textsc{\color{muted}Datum}           & \rule{4cm}{0.3pt}\\
+\textsc{\color{muted}Bearbeitungszeit}& 100 Minuten\\
+\textsc{\color{muted}Max.\ Punktzahl} & 78 Punkte\\
+\textsc{\color{muted}Hilfsmittel}     & kein Taschenrechner. Open book.\\
+\end{tabular}
+
+\vspace{6pt}
+\noindent\textcolor{rulecol}{\rule{\linewidth}{0.4pt}}
+
+\vspace{8pt}
+{\small\color{muted}\textsc{Anweisungen}}\par
+{\small Diese Klausur \"ubt gezielt die zuletzt noch wackligen Themen: \emph{Fehleranalyse
+(v.\,a.\ Konsistenz), Newton-Herleitung \& Sekante, Integration (Gewichte!) \& Lagrange,
+Monte-Carlo sowie Varianz/MSE}. \textbf{Begr\"unden Sie Ihre Antworten} -- erkl\"aren Sie, was die
+Formeln \emph{tun}, nicht nur das Ergebnis. Br\"uche d\"urfen stehen bleiben.}
+
+\vspace{10pt}
+{\small\color{muted}\textsc{Durch Pr\"ufer auszuf\"ullen}}\par
+\vspace{3pt}
+\renewcommand{\arraystretch}{1.4}
+\noindent\begin{tabular}{|l|c|c|c|c|c|c|c|}
+\hline
+\color{muted}Aufgabe & 1 & 2 & 3 & 4 & 5 & 6 & $\Sigma$\\
+\hline
+\color{muted}Maximal & 14 & 12 & 16 & 6 & 18 & 12 & 78\\
+\hline
+\color{muted}Erreicht & & & & & & & \\
+\hline
+\end{tabular}
+
+% =====================================================================
+\clearpage
+\aufg{1}{Zahldarstellung \& Grid Search}{14}
+
+\textbf{(a)} Ein Gleitkommasystem habe normalisierte Mantisse $1{.}b_1b_2b_3$ ($3$ Mantissenbits).
+\emph{Erkl\"aren} Sie den Trade-off: Was verbessert ein zus\"atzliches \emph{Mantissen}bit, was ein
+zus\"atzliches \emph{Exponenten}bit (Auflösung vs.\ Wertebereich)? Bestimmen Sie
+$\varepsilon_{\mathrm{mach}}$ und berechnen Sie in diesem System
+\[
+   \frac{1}{\bigl(1+\tfrac{1}{20}\bigr)-1}.
+\]
+Geben Sie den Nenner nach Rundung und das Endergebnis an und erkl\"aren Sie die Auslöschung. \tp{8}
+
+\karo{8.5cm}
+
+\clearpage
+\textbf{(b)} L\"osen Sie
+$\begin{pmatrix}2&1\\1&3\end{pmatrix}\begin{pmatrix}w\\b\end{pmatrix}=\begin{pmatrix}3\\5\end{pmatrix}$
+per Grid Search \"uber $w,b\in\{0,1,2\}$. W\"ahlen Sie ein Fehlerma\ss\ (und sagen Sie, \emph{was} es
+misst), bestimmen Sie $(w^\ast,b^\ast)$ und vergleichen Sie mit der exakten L\"osung. Trifft die
+Gitter-Suche exakt? Wie verbessern Sie sie? \tp{6}
+
+\smallskip
+{\small\color{muted}\textsc{Hinweis.} Exakt: $w^\star=4/5$, $b^\star=7/5$.}
+
+\karo{8.5cm}
+
+% =====================================================================
+\clearpage
+\aufg{2}{Fehleranalyse: alle vier Eigenschaften}{12}
+
+$g(x)=(x-1)^2$ auf $[0,3]$, Gitter $h_1=1$ (Punkte $\{0,1,2,3\}$) und $h_2=\tfrac12$; Auswertung am
+n\"achsten Gitterpunkt ($\hat g$); Eingabest\"orung $\tilde x=x\pm\tfrac12$.
+
+\textbf{(i) Kondition} $\kappa=|g(x)-g(\tilde x)|$: quantifizieren Sie an $x=1$ und $x=3$ und benennen
+Sie gut/schlecht konditioniert. \tp{3}
+
+\textbf{(ii) Stabilit\"at} $s=\frac{|\hat g(\tilde x)-\hat g(x)|}{|\tilde x-x|}$: berechnen Sie an
+einem Referenzpunkt f\"ur $h_1$ und $h_2$. Welche Schrittweite ist stabiler? \tp{3}
+
+\textbf{(iii) Konsistenz} $c=|\hat g(x)-g(x)|$ an der Stelle $x=2{,}4$ (liegt \emph{nicht} auf dem
+groben Gitter): berechnen Sie $c$ f\"ur $h_1$ und $h_2$. Welche ist konsistenter? \tp{3}
+
+\textbf{(iv) Konvergenz}: verbinden Sie (ii) und (iii). F\"uhrt kleineres $h$ \emph{zwingend} zu
+besserer Approximation? Begr\"unden Sie. \tp{3}
+
+\karo{10.5cm}
+
+% =====================================================================
+\clearpage
+\aufg{3}{Newton-, Taylor- \& Sekantenverfahren}{16}
+
+\textbf{(a)} \emph{Leiten} Sie die Newton-Iteration aus der Taylor-Entwicklung erster Ordnung her.
+F\"uhren Sie f\"ur $f(x)=x^2-3$ mit $x_0=2$ \emph{zwei} Iterationen durch ($x_1,x_2$ als Bruch),
+nennen Sie das \emph{Konvergenzkriterium} und erkl\"aren Sie, was \emph{quadratische Konvergenz}
+praktisch bedeutet. \tp{9}
+
+\smallskip
+{\small\color{muted}\textsc{Tipp.} In jeder Iteration $f'$ am \emph{aktuellen} $x_n$ auswerten.}
+
+\karo{9.5cm}
+
+\clearpage
+\textbf{(b)} Nehmen Sie an, $f$ sei nur durch Funktionsauswertungen zug\"anglich. Geben Sie eine
+\emph{Vorw\"artsdifferenz} f\"ur $f'(x_0)$ an und nennen Sie die \emph{Ordnung} des
+Approximationsfehlers. Leiten Sie daraus das \emph{Sekantenverfahren} (Iterationsformel) ab und f\"uhren
+Sie f\"ur $f(x)=x^2-3$ mit $x_0=1,\ x_1=2$ \emph{einen} Schritt aus. \tp{7}
+
+\karo{9cm}
+
+% =====================================================================
+\clearpage
+\aufg{4}{Globale Optimierung: raue Landschaft}{6}
+
+\textbf{(a)} Betrachten Sie $f(x)=(x-2)^2+\tfrac12\sin(6\pi x)$. Erkl\"aren Sie, warum der
+hochfrequente Term lokale Optimierer st\"ort. Nennen Sie neben globaler Optimierung einen \emph{Glättungs}-
+Ansatz und w\"ahlen Sie eine geeignete Schrittweite $h$ (Begr\"undung \"uber die Periode). \tp{3}
+
+\karo{5.5cm}
+
+\clearpage
+\textbf{(b)} \emph{Random Restarts}: ein Start trifft das globale Becken mit $p=\tfrac12$. Berechnen Sie
+$P=1-(1-p)^K$ f\"ur $K=2$ und bestimmen Sie das kleinste $K$ mit $P>0{,}95$. \tp{3}
+
+\karo{5.5cm}
+
+% =====================================================================
+\clearpage
+\aufg{5}{Integration \& Interpolation}{18}
+
+\textbf{(a)} Geben Sie die Formeln f\"ur \emph{Rechteck}, \emph{Mittelpunkt}, \emph{Trapez} und
+\emph{Simpson} (auf $[a,b]$, $h=b-a$, $m=\tfrac{a+b}2$) an, ordnen Sie sie nach steigender Genauigkeit
+und erkl\"aren Sie, \emph{warum} der Mittelpunkt das beste Rechteck ist. \tp{4}
+
+\karo{7cm}
+
+\clearpage
+\textbf{(b)} Betrachten Sie $I=\int_0^2 (x^2+2)\,dx$ mit St\"utzwerten $f(0)=2,\ f(1)=3,\ f(2)=6$.
+Berechnen Sie den \emph{exakten} Wert, dann die N\"aherung mit der \emph{Trapezregel} ($h=1$, zwei
+Teilintervalle) und der \emph{Simpson-Regel} ($h=1$). Achten Sie auf die \emph{Gewichte}. Erkl\"aren
+Sie, warum Simpson hier exakt ist, die Trapezregel aber nicht. \tp{5}
+
+\karo{8cm}
+
+\clearpage
+\textbf{(c)} Bestimmen Sie das \emph{Lagrange}-Interpolationspolynom $p(x)$ durch
+$(0,2),(1,3),(2,6)$: stellen Sie $L_0,L_1,L_2$ auf, vereinfachen Sie $p$ und werten Sie $p(\tfrac12)$
+aus. \tp{5}
+
+\karo{8.5cm}
+
+\clearpage
+\textbf{(d)} \emph{Monte-Carlo}: Sch\"atzen Sie $\int_0^1 x^2\,dx$ (exakt $\tfrac13$) mit
+$\hat I=|\Omega|\tfrac1N\sum f(X_i)$, $|\Omega|=1$, an den $N=4$ Stellen
+$X_i=0{,}2;\,0{,}4;\,0{,}6;\,0{,}8$. Um welchen Faktor muss $N$ wachsen, um den Standardfehler zu
+\emph{halbieren}? Warum ist Monte-Carlo im Hochdimensionalen vorteilhaft? \tp{4}
+
+\karo{7.5cm}
+
+% =====================================================================
+\clearpage
+\aufg{6}{Modelltraining aus ersten Prinzipien}{12}
+
+Lineares Modell $\hat y=wx+b$, mittlerer quadratischer Fehler
+$L(w,b)=\tfrac1n\sum_i(wx_i+b-y_i)^2$. Zielwerte $y=(1,3,5)$.
+
+\textbf{(a)} Initialisierung $w=0,\ b=\bar y$. Zeigen Sie, dass der erste Loss die \emph{Varianz} der
+Zielwerte ist, und berechnen Sie ihn konkret. Was bedeutet ein gedruckter erster Loss von $\approx100$,
+was einer von $\approx0$? \tp{5}
+
+\smallskip
+{\small\color{muted}\textsc{Achtung.} Varianz $=$ Mittel der \emph{quadrierten} Abweichungen vom
+Mittelwert.}
+
+\karo{7.5cm}
+
+\clearpage
+\textbf{(b)} Man treibt den Loss auf einer \emph{kleinen} Teilmenge mit einem \emph{\"uberparametrisierten}
+Modell auf nahezu null (Overfit-Sanity-Check). Warum deutet ein \emph{Scheitern} auf einen Bug in
+Modell/Loss/Datenpipeline hin und \emph{nicht} auf den Optimierer? Welchem numerischen Grundprinzip
+entspricht das? \tp{3}
+
+\karo{6cm}
+
+\clearpage
+\textbf{(c)} Ordnen Sie jede Trainingspraktik der zugrunde liegenden \emph{numerischen Methode} zu und
+begr\"unden Sie kurz: \tp{4}
+\begin{enumerate}\setlength{\itemsep}{2pt}
+\item[(i)]   Mini-Batch-SGD (Gradient aus einer zuf\"alligen Teilmenge). Wie skaliert der Sch\"atzfehler
+             mit der Batch-Gr\"o\ss e $B$?
+\item[(ii)]  Training mit mehreren zuf\"alligen Seeds, bester Lauf gewinnt.
+\item[(iii)] Quantisierung des Modells f\"ur die Inferenz (niedrigere Bit-Pr\"azision).
+\end{enumerate}
+
+\karo{6.5cm}
+
+\end{document}
