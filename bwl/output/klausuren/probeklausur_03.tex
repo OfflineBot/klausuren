@@ -1,0 +1,207 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage[a4paper,top=2.2cm,bottom=1.8cm,left=2cm,right=2cm]{geometry}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{needspace}
+\usepackage{array}
+
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{accent}{HTML}{6FB7FF}
+\definecolor{good}{HTML}{7FD28A}
+\pagecolor{bgdark}
+\color{fgtext}
+\arrayrulecolor{gridcol}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot[C]{\textcolor{gridcol}{\small Probeklausur 03 -- BWL \;|\; Seite \thepage}}
+
+\newcommand{\karo}[1]{\par\vspace{1.5mm}\noindent%
+  \begin{tikzpicture}\draw[step=5mm, gridcol, very thin] (0,0) grid (\linewidth,#1);\end{tikzpicture}\par}
+
+\newcommand{\hauptaufgabe}[3]{\clearpage%
+  \noindent\colorbox{accent}{\parbox{\dimexpr\linewidth-2\fboxsep\relax}{%
+    \color{bgdark}\large\bfseries Aufgabe #1 \hfill #2 Punkte\\[1pt]\normalsize #3}}\par\vspace{3mm}}
+
+\newcommand{\teil}[2]{\par\vspace{1mm}\needspace{3\baselineskip}%
+  \noindent{\color{accent}\bfseries Aufgabe #1}\enspace{\color{good}\small(#2 Punkte)}\par\vspace{0.5mm}}
+
+\setlength{\parindent}{0pt}
+\linespread{1.05}
+
+\begin{document}
+
+\thispagestyle{fancy}
+\begin{center}
+  {\color{accent}\LARGE\bfseries Probeklausur 03}\\[3pt]
+  {\large Ausgewählte Themen der Digitalen Betriebswirtschaftslehre}\\[2pt]
+  {\small Data Science und Künstliche Intelligenz -- 2.\ Semester}
+\end{center}
+
+\vspace{4mm}
+\noindent\textcolor{gridcol}{\rule{\linewidth}{0.4pt}}\\[2mm]
+\begin{tabular}{@{}p{0.62\linewidth}p{0.34\linewidth}@{}}
+\textbf{Bearbeitungszeit:} 90 Minuten & \textbf{Gesamtpunkte:} 100 \\[2mm]
+\textbf{Hilfsmittel:} nicht-programmierbarer & \\
+Taschenrechner; Formeln sind angegeben & \\
+\end{tabular}\\[2mm]
+{\large Name:\enspace\textcolor{gridcol}{\rule{5.5cm}{0.4pt}}\hfill Datum:\enspace\textcolor{gridcol}{\rule{3.5cm}{0.4pt}}}\\[2mm]
+\noindent\textcolor{gridcol}{\rule{\linewidth}{0.4pt}}
+
+\vspace{4mm}
+\begin{center}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{|l|c|c|c|c|c|}
+\hline
+\textbf{Aufgabe} & 1 & 2 & 3 & 4 & $\boldsymbol{\Sigma}$\\\hline
+\textbf{max.\ Punkte} & 25 & 25 & 25 & 25 & 100\\\hline
+\textbf{erreicht} & & & & & \\\hline
+\end{tabular}
+\end{center}
+
+\vspace{3mm}
+\noindent{\color{accent}\bfseries Hinweise:} Begründen Sie Ihre Antworten. Bei Rechenaufgaben den
+\textbf{Rechenweg} angeben und Ergebnisse \textbf{interpretieren}. Jede große Aufgabe beginnt auf
+einer neuen Seite.
+
+% ===================== AUFGABE 1 =====================
+\hauptaufgabe{1}{25}{Unternehmen, Wertschöpfung und Kennzahlen}
+
+\teil{1.1}{9} \textbf{Fallstudie.} Ein stark wachsendes Start-up erzielt hohe Umsätze, schreibt
+aber über mehrere Jahre Verluste -- und ist dennoch nicht insolvent.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Wie kann ein Unternehmen Verluste machen und trotzdem zahlungsfähig bleiben? Erläutern Sie
+        den Unterschied zwischen \textbf{Erfolg} und \textbf{Liquidität}. \hfill(3 P)
+  \item Welche Rolle spielen externe \textbf{Finanzierungsquellen} (z.\,B.\ Investoren) für die
+        Liquidität? \hfill(3 P)
+  \item Ist ein Unternehmen ohne Gewinn automatisch \glqq nicht erfolgreich\grqq? Begründen Sie. \hfill(3 P)
+\end{enumerate}
+\karo{5.5cm}
+
+\teil{1.2}{8} Wertschöpfung und ökonomisches Prinzip.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Beschreiben Sie die \textbf{Wertschöpfungskette nach Porter} (Grundidee, primäre vs.\
+        unterstützende Aktivitäten). \hfill(4 P)
+  \item Erklären Sie das Unternehmen als \textbf{Wertschöpfungssystem} und geben Sie die Formel der
+        Wertschöpfung an. \hfill(2 P)
+  \item Welches \textbf{ökonomische Prinzip} liegt vor: \glqq festes Budget, möglichst viel
+        Output\grqq? \hfill(2 P)
+\end{enumerate}
+\karo{5cm}
+
+\teil{1.3}{8} Kennzahlen. Eine Fabrik fertigt \textbf{24.000 Teile} in \textbf{1.200
+Arbeitsstunden}. \textbf{Ertrag} 480.000\,€, \textbf{Aufwand} 400.000\,€, \textbf{Kapital} 500.000\,€.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Berechnen Sie die \textbf{Produktivität}. \hfill(2 P)
+  \item Berechnen Sie \textbf{Wirtschaftlichkeit}, \textbf{Gewinn}, \textbf{Rentabilität} und
+        interpretieren Sie. \hfill(4 P)
+  \item Erklären Sie \textbf{Effizienz} vs.\ \textbf{Effektivität} an einem Beispiel. \hfill(2 P)
+\end{enumerate}
+\karo{5cm}
+
+% ===================== AUFGABE 2 =====================
+\hauptaufgabe{2}{25}{Märkte und Strategie}
+
+\teil{2.1}{9} Angebot und Nachfrage. Es gelten $Q_D = 900 - 30P$ und $Q_S = 100 + 50P$.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Bestimmen Sie \textbf{Gleichgewichtspreis} und \textbf{-menge}. \hfill(4 P)
+  \item Ein Trend verschiebt die Nachfrage zu $Q_D = 1060 - 30P$. Bestimmen Sie das \textbf{neue
+        Gleichgewicht} und erklären Sie die Veränderung. \hfill(3 P)
+  \item Welche \textbf{Managemententscheidung} könnte ein Unternehmen daraus ableiten? \hfill(2 P)
+\end{enumerate}
+\karo{5.5cm}
+
+\teil{2.2}{8} Skaleneffekte. \textbf{Fixkosten} 1.000.000\,€/Jahr, variable \textbf{Stückkosten}
+5\,€. \;\textit{Formel:}\; $\text{Stückkosten}=\text{var.}+\frac{\text{Fixkosten}}{\text{Menge}}$.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Berechnen Sie die \textbf{Stückkosten} bei 10.000 und 50.000 Stück. \hfill(4 P)
+  \item Erklären Sie die \textbf{Fixkostendegression}. \hfill(2 P)
+  \item Welche \textbf{Wettbewerbsstrategie nach Porter} wird dadurch unterstützt? \hfill(2 P)
+\end{enumerate}
+\karo{5cm}
+
+\teil{2.3}{8} Portfolio und Wettbewerb.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Welche zwei Perspektiven kombiniert die \textbf{BCG-Matrix}? Nennen Sie je einen Vor- und
+        Nachteil. \hfill(4 P)
+  \item Nennen Sie die \textbf{drei Wettbewerbsstrategien nach Porter} mit je einem Beispiel. \hfill(4 P)
+\end{enumerate}
+\karo{5.5cm}
+
+% ===================== AUFGABE 3 =====================
+\hauptaufgabe{3}{25}{Marketing und digitale Kundenbeziehungen}
+
+\teil{3.1}{9} Kaufentscheidungsprozess und S-O-R-Modell.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Nennen Sie die \textbf{fünf Phasen} des Kaufentscheidungsprozesses (Kotler). \hfill(3 P)
+  \item Eine Kundin kauft eine Tafel Schokolade, weil diese Kindheitserinnerungen weckt und sie
+        sich belohnen will. Bestimmen Sie \textbf{S}, \textbf{O} und \textbf{R} im S-O-R-Modell. \hfill(4 P)
+  \item Warum reagiert Marketing gezielt auf den \textbf{Organismus} (O)? \hfill(2 P)
+\end{enumerate}
+\karo{5cm}
+
+\teil{3.2}{8} Involvement und Kaufentscheidung.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Nennen Sie \textbf{drei Merkmale}, die High- von Low-Involvement-Käufen unterscheiden. \hfill(3 P)
+  \item Nennen Sie die \textbf{vier Kaufentscheidungsarten} mit je einem Beispiel. \hfill(4 P)
+  \item Welche Kaufentscheidungsart liegt beim Autokauf vor? \hfill(1 P)
+\end{enumerate}
+\karo{5cm}
+
+\teil{3.3}{8} AIDA und E-Commerce.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Erläutern Sie die \textbf{vier AIDA-Stufen} und formulieren Sie je eine Botschaft für ein
+        Produkt Ihrer Wahl. \hfill(4 P)
+  \item Auf welchen \textbf{digitalen Informationsquellen} basiert die Kaufentscheidung im
+        E-Commerce? Warum hat der Kunde mehr Informationen als im stationären Handel? \hfill(4 P)
+\end{enumerate}
+\karo{5.5cm}
+
+% ===================== AUFGABE 4 =====================
+\hauptaufgabe{4}{25}{Beschaffung, Logistik und Personal}
+
+\teil{4.1}{9} Beschaffung und optimale Bestellmenge.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Ordnen Sie zu (Rohstoff/Hilfsstoff/Betriebsstoff): (1) Holz für Möbel, (2) Leim und Nägel,
+        (3) Strom für die Sägemaschine. \hfill(3 P)
+  \item \textbf{Optimale Bestellmenge:} $m=12.000$ Stück/Jahr, $K_B=45$\,€/Bestellung,
+        Einstandspreis $p=60$\,€, Lagerhaltungskostensatz $z=5\,\%$.\\
+        \textit{Formel:}\; $q_{\text{opt}}=\sqrt{\dfrac{2\,m\,K_B}{k_L}}$, \; $k_L=p\cdot z$.
+        Berechnen Sie $q_{\text{opt}}$, die Anzahl der Bestellungen und prüfen Sie über
+        Bestellkosten $=$ Lagerkosten. \hfill(4 P)
+  \item Erklären Sie kurz \textbf{Primär-}, \textbf{Sekundär-} und \textbf{Tertiärbedarf}. \hfill(2 P)
+\end{enumerate}
+\karo{5cm}
+
+\teil{4.2}{8} Logistik.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Nennen Sie mindestens \textbf{fünf der \glqq 7 R\grqq} der Logistik. \hfill(3 P)
+  \item Nennen Sie die \textbf{vier Teilbereiche} der Logistik. \hfill(2 P)
+  \item Erklären Sie einen \textbf{Zielkonflikt} der Logistik. \hfill(3 P)
+\end{enumerate}
+\karo{5cm}
+
+\teil{4.3}{8} Personalmanagement. Soll-Bestand \textbf{14}, aktueller Bestand \textbf{10}. Im
+nächsten Jahr: 1 Renteneintritt, 1 interne Versetzung, 2 bereits zugesagte Neueinstellungen.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Berechnen Sie den \textbf{fortgeschriebenen Bestand} und den \textbf{Netto-Personalbedarf}. \hfill(4 P)
+  \item Nennen Sie je einen \textbf{Vor-} und \textbf{Nachteil} der internen vs.\ externen
+        Beschaffung. \hfill(2 P)
+  \item Ordnen Sie den \textbf{Formen der Personalentwicklung} (into/on/near/off the job) je ein
+        Beispiel zu. \hfill(2 P)
+\end{enumerate}
+\karo{5cm}
+
+\end{document}

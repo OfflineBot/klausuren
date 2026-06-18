@@ -1,0 +1,231 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{geometry}
+\geometry{a4paper,margin=2cm}
+
+\definecolor{accent}{HTML}{1A4E8A}
+\definecolor{accent2}{HTML}{8A5A00}
+\definecolor{accent3}{HTML}{2E6E3A}
+\definecolor{boxbg}{HTML}{F2F6FB}
+\definecolor{rulecol}{HTML}{B0B0B0}
+
+\newcommand{\aufg}[2]{%
+  \par\vspace{8pt}
+  {\large\bfseries\color{accent} Aufgabe #1}\hfill{\small\color{accent2}\bfseries #2}\par
+  \noindent\textcolor{accent}{\rule{\linewidth}{0.8pt}}\par\vspace{3pt}}
+\newcommand{\teil}[2]{\par\vspace{5pt}{\bfseries\color{accent2}(#1)}~\textit{#2}\par\vspace{1pt}}
+\newcommand{\erg}[1]{\fcolorbox{accent3}{boxbg}{$\displaystyle #1$}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3pt}
+
+\begin{document}
+
+\begin{center}
+  {\Large\bfseries\color{accent} Numerische Methoden -- Probeklausur 00}\\[1pt]
+  {\normalsize\bfseries Musterlösung mit vollständigem Rechenweg}\\[2pt]
+  {\small Prüfung von Prof.\ Dr.-Ing.\ Mark Schutera \;·\; DHBW Ravensburg \;·\; 25 Punkte}
+\end{center}
+\noindent\textcolor{rulecol}{\rule{\linewidth}{0.4pt}}
+
+{\footnotesize Alle Zwischen- und Endergebnisse wurden nachgerechnet. Endergebnisse sind
+\erg{\text{umrandet}}. Brüche bleiben stehen; es wird kein Taschenrechner benötigt.}
+
+% =====================================================================
+\aufg{1}{Gleitkomma, Gitter-Suche \& Fehleranalyse \hfill 16 Punkte}
+
+\teil{a}{Gleitkommasystem, Maschinenepsilon, Auslöschung \hfill 4 P}
+
+\textbf{Trade-off Mantisse vs.\ Exponent.} Bei fester Bitzahl gilt:
+\begin{itemize}\setlength{\itemsep}{1pt}
+  \item Ein zusätzliches \textbf{Mantissenbit} verbessert die \emph{Auflösung}
+        (resolution): das Maschinenepsilon halbiert sich, benachbarte Zahlen rücken
+        enger zusammen, der relative Rundungsfehler sinkt. Der Wertebereich bleibt gleich.
+  \item Ein zusätzliches \textbf{Exponentenbit} vergrößert den \emph{Wertebereich}
+        (dynamic range): die größte darstellbare Zahl wächst, die kleinste sinkt
+        (mehr Größenordnungen). Die Auflösung pro Größenordnung bleibt gleich.
+\end{itemize}
+Es ist ein Tausch: feine Auflösung \emph{oder} großer Wertebereich.
+
+\textbf{Maschinenepsilon.} Mit $2$ Mantissenbits (normalisiert $1{.}b_1b_2$) ist die
+nächste darstellbare Zahl über $1{.}00$ gerade $1{.}01_2 = 1+2^{-2}$, also
+\[
+  \varepsilon_{\mathrm{mach}} = 2^{-2} = \erg{\tfrac14 = 0{,}25}.
+\]
+
+\textbf{Auswertung von $\dfrac{1}{(1+0{,}1)-1}$.} Darstellbare Mantissen in $[1,2)$:
+$1{,}00\!=\!1$, $1{,}01\!=\!1{,}25$, $1{,}10\!=\!1{,}5$, $1{,}11\!=\!1{,}75$ (Abstand $0{,}25$).
+Runden von $1{,}1$:
+\[
+  |1{,}1-1{,}0| = 0{,}1 \;<\; |1{,}1-1{,}25| = 0{,}15
+  \;\Rightarrow\; \mathrm{fl}(1{,}1)=1{,}0 .
+\]
+Damit ist der \textbf{Nenner nach Rundung}
+\[
+  \mathrm{fl}(1{,}1)-1 = 1{,}0-1{,}0 = \erg{0},
+  \qquad\text{Endergebnis } \frac{1}{0} = \erg{\infty\ (\text{Overflow})}.
+\]
+\textbf{Vergleich \& Auslöschung.} Mathematisch ist
+$\frac{1}{1{,}1-1}=\frac{1}{0{,}1}=10$. Die beiden fast gleichen Zahlen $1{,}1$ und $1$
+werden subtrahiert; da $1{,}1$ schon auf $1{,}0$ gerundet wurde, löschen sich bei der
+Subtraktion \emph{alle} signifikanten Stellen aus -- der Nenner wird exakt $0$ statt
+$0{,}1$. Der reine Rundungsfehler dominiert das Ergebnis, die anschließende Division
+verstärkt ihn katastrophal ($\infty$ statt $10$). Das ist \emph{catastrophic cancellation}.
+
+\teil{b}{Gitter-Suche für das lineare System \hfill 4 P}
+
+System: $\;w+2b=4,\quad 3w+b=5$.
+
+\textbf{Fehlermaß.} Summe der absoluten Residuen (L1) -- misst direkt die Verletzung
+\emph{beider} Gleichungen, ist ohne Taschenrechner auswertbar und robust:
+\[
+  E(w,b) = |\,w+2b-4\,| + |\,3w+b-5\,| .
+\]
+\textbf{Auswertung über $w,b\in\{0,1,2\}$:}
+\begin{center}\small
+\begin{tabular}{c|ccc}
+\toprule
+$E(w,b)$ & $b=0$ & $b=1$ & $b=2$\\
+\midrule
+$w=0$ & $9$ & $6$ & $3$\\
+$w=1$ & $5$ & $2$ & $\mathbf{1}$\\
+$w=2$ & $3$ & $2$ & $5$\\
+\bottomrule
+\end{tabular}
+\end{center}
+Kleinster Fehler $E=1$ bei \erg{(w^\ast,b^\ast)=(1,2)}.
+\emph{(Beispiel $(1,2)$: $|1+4-4|+|3+2-5|=1+0=1$.)}
+
+\textbf{Vergleich mit der exakten Lösung} $w^\star=\tfrac65=1{,}2$, $b^\star=\tfrac75=1{,}4$:
+Die Gitter-Suche liefert $(1,2)$ -- $w$ passt grob, $b=2$ liegt aber deutlich neben
+$1{,}4$. Die Gitter-Suche \textbf{löst das System nicht exakt}, da die exakte Lösung
+$(1{,}2;\,1{,}4)$ \emph{nicht} auf dem Gitter $\{0,1,2\}^2$ liegt.
+
+\textbf{Verbesserung.} Feineres Gitter / kleinere Schrittweite, am besten adaptiv um den
+besten Gitterpunkt verdichten. Eine \emph{exakte} Lösung findet die Methode nur, wenn die
+Lösung zufällig auf dem Gitter liegt -- mit endlichem Gitter im Allgemeinen also nicht,
+aber durch Verfeinerung beliebig genau approximierbar (exakt löst man besser direkt, z.\,B.\
+per Elimination).
+
+\teil{c}{Fehleranalyse von $g(x)=(x-\tfrac32)^2$ auf $[0,4]$ \hfill 8 P}
+
+Gitter $h_1=1$: $\{0,1,2,3,4\}$; \quad Gitter $h_2=\tfrac12$: $\{0;0{,}5;1;1{,}5;\dots;4\}$.
+$\hat g$ wird am nächsten Gitterpunkt ausgewertet; Störung $\tilde x = x\pm\tfrac12$.
+
+\textbf{Kondition} $\kappa(x)=|g(x)-g(\tilde x)|$ (Eigenschaft des \emph{Problems}, vom
+Gitter unabhängig):
+\[
+  \kappa(1{,}5)=|g(1{,}5)-g(2)| = |0-0{,}25| = \erg{0{,}25}\ (\text{gut, flach}),
+\]
+\[
+  \kappa(4)=|g(4)-g(3{,}5)| = |6{,}25-4| = \erg{2{,}25}\ (\text{schlecht, steil}).
+\]
+Im flachen Bereich um das Minimum $x=1{,}5$ ist $\kappa$ klein (gut konditioniert), im
+steilen Randbereich groß (schlecht konditioniert) -- $\kappa$ folgt der Steigung von $g$.
+
+\textbf{Stabilität} der diskretisierten $\hat g$: $|\hat g(\tilde x)-\hat g(x)|\le s\,|\tilde x-x|$,
+$|\tilde x-x|=0{,}5$. Referenzpunkt $x=2$:
+\begin{itemize}\setlength{\itemsep}{1pt}
+  \item $h_1=1$: Die Zelle um $x=2$ ist $(1{,}5;\,2{,}5)$, dort $\hat g\equiv g(2)=0{,}25$.
+        Die Störung $\tilde x=2\pm0{,}5$ erreicht gerade die Zellgrenzen; im Zellinneren
+        ändert sich nichts $\Rightarrow s\approx 0$, sehr stabil.
+  \item $h_2=\tfrac12$: Zelle um $x=2$ ist $(1{,}75;\,2{,}25)$. $\tilde x=2{,}5\to \hat g=g(2{,}5)=1{,}0$
+        (Sprung $0{,}75$), $\tilde x=1{,}5\to \hat g=g(1{,}5)=0$ (Sprung $0{,}25$).
+        $s=\tfrac{0{,}75}{0{,}5}=\erg{1{,}5}$, weniger stabil.
+\end{itemize}
+$\Rightarrow$ \textbf{$h_1=1$ ist stabiler}: das grobe Gitter (Zellbreite $1>0{,}5$) fängt
+die Störung innerhalb einer Zelle ab; beim feinen Gitter (Zellbreite $0{,}5$) überspringt
+die Störung Zellen und erzeugt Sprünge.
+
+\textbf{Konsistenz} $|\hat g(x)-g(x)|\le c$ -- am Minimum:
+\begin{itemize}\setlength{\itemsep}{1pt}
+  \item $h_1=1$: $g$-Werte $\{2{,}25;\,0{,}25;\,0{,}25;\,2{,}25;\,6{,}25\}$, diskretes
+        Minimum $0{,}25$ (bei $x=1,2$). Wahres Minimum $g(1{,}5)=0$ liegt \emph{zwischen}
+        den Gitterpunkten $\Rightarrow c=|0{,}25-0|=\erg{0{,}25}$.
+  \item $h_2=\tfrac12$: $1{,}5$ ist Gitterpunkt, $\hat g(1{,}5)=g(1{,}5)=0$ $\Rightarrow c=\erg{0}$.
+\end{itemize}
+$\Rightarrow$ \textbf{$h_2$ ist konsistenter}: das feinere Gitter trifft das Minimum exakt.
+
+\textbf{Konvergenz} (Stabilität $+$ Konsistenz nahe dem Minimum):
+$h_1$ hat Konsistenzfehler $0{,}25$ (verfehlt das Minimum), ist aber stabil gegen die
+Störung; $h_2$ trifft das Minimum exakt (Konsistenzfehler $0$), ist aber instabiler
+(unter $\pm0{,}5$ springt $\hat g$ um bis zu $0{,}75$). \textbf{Eine kleinere Schrittweite
+führt also nicht zwingend zu einer besseren Approximation}: der Konsistenzgewinn wird bei
+verrauschter Eingabe durch den Stabilitätsverlust teils aufgehoben. Konvergenz verlangt
+die Balance beider -- der klassische Konsistenz-Stabilität-Trade-off.
+
+% =====================================================================
+\aufg{2}{Newton-Verfahren \& raue Verlustlandschaft \hfill 9 Punkte}
+
+\teil{a}{Newton auf $f(x)=x^3-3x+3$, $x_0=\tfrac32$ \hfill 7 P}
+
+Ableitung $f'(x)=3x^2-3$.
+
+\textbf{Iteration 1.}
+\[
+  f(\tfrac32)=\tfrac{27}{8}-\tfrac92+3=\tfrac{27-36+24}{8}=\tfrac{15}{8},\qquad
+  f'(\tfrac32)=3\cdot\tfrac94-3=\tfrac{27-12}{4}=\tfrac{15}{4}.
+\]
+\[
+  x_1=\tfrac32-\frac{15/8}{15/4}=\tfrac32-\tfrac12=\erg{1}.
+\]
+\textbf{Iteration 2.}
+\[
+  f(1)=1-3+3=1,\qquad f'(1)=3-3=0
+  \;\Rightarrow\; x_2 = 1-\frac{1}{0} = \erg{\text{undefiniert}}.
+\]
+\textbf{Beobachtung.} Newton landet \emph{exakt} im kritischen Punkt $x_1=1$ mit $f'(1)=0$
+(waagrechte Tangente). Die Tangente schneidet die $x$-Achse nie, der nächste Schritt
+divergiert -- \textbf{Versagensmodus: verschwindende Ableitung}. (Die einzige reelle
+Nullstelle liegt bei $x\approx-2{,}10$ und wird so nie erreicht.)
+
+\textbf{Anderer Punkt mit ähnlicher Beobachtung.} $f'(x)=3x^2-3=0\Rightarrow x=\pm1$; also
+\erg{x=-1} (das zweite Extremum, ein lokales Maximum) -- auch dort $f'=0$.
+
+\textbf{Konvergenzkriterium.} $|x_{n+1}-x_n|<\varepsilon$ (bzw.\ $|f(x_n)|<\varepsilon$);
+Newton konvergiert (quadratisch), wenn der Start hinreichend nahe an einer \emph{einfachen}
+Nullstelle mit $f'\neq0$ liegt.
+
+\textbf{Numerische Approximation von $f'(x_0)$.} Vorwärtsdifferenz
+\[
+  D_h(x_0)=\frac{f(x_0+h)-f(x_0)}{h}.
+\]
+Aus der Taylor-Entwicklung $f(x_0+h)=f(x_0)+f'(x_0)h+\tfrac{h^2}{2}f''(x_0)+\dots$ folgt
+\[
+  D_h(x_0)=f'(x_0)+\tfrac{h}{2}f''(x_0)+\mathcal O(h^2),
+  \quad\text{Approximationsfehler } \erg{\approx \tfrac{h}{2}\,f''(x_0)=\mathcal O(h)}
+\]
+(eine \emph{zentrale} Differenz wäre $\mathcal O(h^2)$).
+
+\textbf{Wie ändert sich die Beobachtung?} Die Differenzenquotient-Steigung mittelt über
+$[x,x+h]$ und ist auch nahe $x=1$ in der Regel $\neq0$. Damit entfällt die exakte Division
+durch $0$ -- das Verfahren macht einen endlichen Schritt statt zu divergieren. Daraus
+abgeleitet: das \textbf{Sekantenverfahren}
+\[
+  x_{n+1}=x_n-f(x_n)\,\frac{x_n-x_{n-1}}{f(x_n)-f(x_{n-1})},
+\]
+ableitungsfrei; es ersetzt $f'$ durch die Sekantensteigung aus zwei Punkten und umgeht so
+den Versagensmodus der (analytisch) verschwindenden Ableitung.
+
+\teil{b}{Raue Landschaft $f(x)=(x-1)^2+\tfrac12\sin(2\pi x)$ auf $[0,2]$ \hfill 2 P}
+
+\textbf{Warum problematisch?} Der hochfrequente Sinus-Term überlagert die Parabel mit
+vielen kleinen lokalen Minima. Der Gradient wechselt häufig das Vorzeichen; ein
+\emph{lokaler} Optimierer (Gradientenabstieg/Newton) bleibt im nächstgelegenen kleinen Tal
+hängen und erreicht das globale Minimum (nahe $x=1$) nicht.
+
+\textbf{Weiterer Ansatz \& Schrittweite.} Glättung der Verlustlandschaft durch numerische
+Integration/Mittelung (gleitender Mittelwert bzw.\ Faltung über ein Fenster). Geeignete
+Schrittweite ist die \emph{Periode} des Stör-Sinus: $\sin(2\pi x)$ hat
+$T=\tfrac{2\pi}{2\pi}=1$, also \erg{h=1} (oder ein ganzzahliges Vielfaches), damit sich der
+Sinus-Term über das Fenster zu null mittelt und nur die glatte Parabel übrig bleibt.
+
+\end{document}

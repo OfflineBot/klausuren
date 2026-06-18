@@ -1,0 +1,204 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage[a4paper,top=2.2cm,bottom=1.8cm,left=2cm,right=2cm]{geometry}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{needspace}
+\usepackage{array}
+
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{accent}{HTML}{6FB7FF}
+\definecolor{good}{HTML}{7FD28A}
+\pagecolor{bgdark}
+\color{fgtext}
+\arrayrulecolor{gridcol}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot[C]{\textcolor{gridcol}{\small Probeklausur 02 -- BWL \;|\; Seite \thepage}}
+
+\newcommand{\karo}[1]{\par\vspace{1.5mm}\noindent%
+  \begin{tikzpicture}\draw[step=5mm, gridcol, very thin] (0,0) grid (\linewidth,#1);\end{tikzpicture}\par}
+
+\newcommand{\hauptaufgabe}[3]{\clearpage%
+  \noindent\colorbox{accent}{\parbox{\dimexpr\linewidth-2\fboxsep\relax}{%
+    \color{bgdark}\large\bfseries Aufgabe #1 \hfill #2 Punkte\\[1pt]\normalsize #3}}\par\vspace{3mm}}
+
+\newcommand{\teil}[2]{\par\vspace{1mm}\needspace{3\baselineskip}%
+  \noindent{\color{accent}\bfseries Aufgabe #1}\enspace{\color{good}\small(#2 Punkte)}\par\vspace{0.5mm}}
+
+\setlength{\parindent}{0pt}
+\linespread{1.05}
+
+\begin{document}
+
+\thispagestyle{fancy}
+\begin{center}
+  {\color{accent}\LARGE\bfseries Probeklausur 02}\\[3pt]
+  {\large Ausgewählte Themen der Digitalen Betriebswirtschaftslehre}\\[2pt]
+  {\small Data Science und Künstliche Intelligenz -- 2.\ Semester}
+\end{center}
+
+\vspace{4mm}
+\noindent\textcolor{gridcol}{\rule{\linewidth}{0.4pt}}\\[2mm]
+\begin{tabular}{@{}p{0.62\linewidth}p{0.34\linewidth}@{}}
+\textbf{Bearbeitungszeit:} 90 Minuten & \textbf{Gesamtpunkte:} 100 \\[2mm]
+\textbf{Hilfsmittel:} nicht-programmierbarer & \\
+Taschenrechner; Formeln sind angegeben & \\
+\end{tabular}\\[2mm]
+{\large Name:\enspace\textcolor{gridcol}{\rule{5.5cm}{0.4pt}}\hfill Datum:\enspace\textcolor{gridcol}{\rule{3.5cm}{0.4pt}}}\\[2mm]
+\noindent\textcolor{gridcol}{\rule{\linewidth}{0.4pt}}
+
+\vspace{4mm}
+\begin{center}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{|l|c|c|c|c|c|}
+\hline
+\textbf{Aufgabe} & 1 & 2 & 3 & 4 & $\boldsymbol{\Sigma}$\\\hline
+\textbf{max.\ Punkte} & 25 & 25 & 25 & 25 & 100\\\hline
+\textbf{erreicht} & & & & & \\\hline
+\end{tabular}
+\end{center}
+
+\vspace{3mm}
+\noindent{\color{accent}\bfseries Hinweise:} Begründen Sie Ihre Antworten. Bei Rechenaufgaben den
+\textbf{Rechenweg} angeben und Ergebnisse \textbf{interpretieren}. Jede große Aufgabe beginnt auf
+einer neuen Seite.
+
+% ===================== AUFGABE 1 =====================
+\hauptaufgabe{1}{25}{Grundlagen, Daten und Unternehmensziele}
+
+\teil{1.1}{8} Daten als Produktionsfaktor.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Die klassischen Produktionsfaktoren werden heute ergänzt. Erklären Sie \textbf{Daten als
+        Produktionsfaktor} (Kette: Daten $\to$ Analyse $\to$ Entscheidung $\to$ Wertschöpfung). \hfill(4 P)
+  \item Nennen Sie \textbf{zwei Beispiele}, wie Daten konkret Wertschöpfung schaffen. \hfill(2 P)
+  \item Wann sind Daten überhaupt ein \textbf{Produktionsfaktor}? \hfill(2 P)
+\end{enumerate}
+\karo{5cm}
+
+\teil{1.2}{9} Unternehmensziele.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Erläutern Sie den Unterschied zwischen \textbf{Sachzielen} und \textbf{Formalzielen}
+        mit je einem Beispiel. \hfill(4 P)
+  \item Das Ziel \glqq Wir wollen bald deutlich erfolgreicher sein\grqq{} ist nicht \textbf{SMART}.
+        Formulieren Sie es SMART um (alle fünf Kriterien sichtbar). \hfill(3 P)
+  \item Beurteilen Sie zwei Zielpaare (komplementär/konkurrierend/indifferent): (1) kurze Lieferzeit
+        $\leftrightarrow$ hohe Kundenzufriedenheit; (2) kurzfristiger Gewinn $\leftrightarrow$ hohe
+        Forschungsinvestitionen. \hfill(2 P)
+\end{enumerate}
+\karo{5cm}
+
+\teil{1.3}{8} Kennzahlen. Ein Softwarehaus erzielt einen \textbf{Ertrag} von 1.000.000\,€ bei
+einem \textbf{Aufwand} von 800.000\,€; das \textbf{Kapital} beträgt 1.250.000\,€. Es werden
+\textbf{50.000 Codezeilen} in \textbf{2.500 Arbeitsstunden} erstellt.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Berechnen Sie die \textbf{Produktivität} (Zeilen/Stunde). \hfill(2 P)
+  \item Berechnen Sie \textbf{Wirtschaftlichkeit}, \textbf{Gewinn} und \textbf{Rentabilität}. \hfill(4 P)
+  \item Die Produktivität soll um \textbf{25\,\%} steigen. Zielwert? Nennen Sie eine Maßnahme und
+        ordnen Sie sie dem Minimum- oder Maximumprinzip zu. \hfill(2 P)
+\end{enumerate}
+\karo{5cm}
+
+% ===================== AUFGABE 2 =====================
+\hauptaufgabe{2}{25}{Interessensgruppen und digitale Märkte}
+
+\teil{2.1}{9} Stakeholder.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Nennen Sie \textbf{vier Stakeholder} (zwei interne, zwei externe) und jeweils deren
+        \textbf{Anspruch} gegenüber dem Unternehmen. \hfill(4 P)
+  \item Erklären Sie den Unterschied zwischen \textbf{Stakeholder-} und \textbf{Shareholder-Ansatz}. \hfill(3 P)
+  \item Beschreiben Sie einen möglichen \textbf{Zielkonflikt} zwischen zwei Anspruchsgruppen. \hfill(2 P)
+\end{enumerate}
+\karo{5.5cm}
+
+\teil{2.2}{8} Principal-Agent-Theorie.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Wer ist \textbf{Principal}, wer \textbf{Agent}? Worin besteht das Grundproblem
+        (Stichwort \textbf{Informationsasymmetrie})? \hfill(4 P)
+  \item Nennen und erläutern Sie \textbf{zwei Mechanismen}, um das Problem zu verringern. \hfill(4 P)
+\end{enumerate}
+\karo{5.5cm}
+
+\teil{2.3}{8} Digitale Märkte und Plattformen.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Was kennzeichnet einen \textbf{Plattformmarkt}? Nennen Sie ein Beispiel. \hfill(2 P)
+  \item Erklären Sie \textbf{Netzwerkeffekt} und \textbf{Lock-in-Effekt} mit je einem Beispiel. \hfill(4 P)
+  \item Warum können Netzwerkeffekte zu \textbf{schnellem Wachstum} und zur Dominanz einzelner
+        Plattformen führen? \hfill(2 P)
+\end{enumerate}
+\karo{5cm}
+
+% ===================== AUFGABE 3 =====================
+\hauptaufgabe{3}{25}{Strategie: SWOT, Produktstrategie und Lebenszyklus}
+
+\teil{3.1}{9} SWOT-Analyse für ein Startup mit einer KI-Ernährungs-App.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Erklären Sie Ziel und Aufbau der \textbf{SWOT-Analyse} (intern vs.\ extern). \hfill(3 P)
+  \item Nennen Sie je \textbf{zwei} Stärken, Schwächen, Chancen und Risiken. \hfill(4 P)
+  \item Leiten Sie \textbf{zwei Normstrategien} ab (z.\,B.\ Ausbauen/Aufholen/Absichern/Vermeiden)
+        und benennen Sie die kombinierten Felder. \hfill(2 P)
+\end{enumerate}
+\karo{5.5cm}
+
+\teil{3.2}{8} Produktstrategie.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Ordnen Sie zu (Variation/Differenzierung/Beibehaltung/Elimination): (1) Modell mit besserer
+        Kamera neu aufgelegt und altes ersetzt; (2) zusätzlich Pro- und Mini-Version; (3) veraltetes
+        Produkt aus dem Sortiment genommen; (4) bewährtes Produkt unverändert weitergeführt. \hfill(4 P)
+  \item Erklären Sie den Unterschied zwischen \textbf{Produktvariation} und
+        \textbf{Produktdifferenzierung}. \hfill(2 P)
+  \item Wann ist eine \textbf{Produktelimination} sinnvoll? \hfill(2 P)
+\end{enumerate}
+\karo{5cm}
+
+\teil{3.3}{8} Produktlebenszyklus.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Nennen Sie die \textbf{Phasen} des Produktlebenszyklus in richtiger Reihenfolge. \hfill(3 P)
+  \item \textbf{Skizzieren} Sie den typischen Verlauf von Umsatz/Absatz über die Zeit. \hfill(3 P)
+  \item Nennen Sie einen \textbf{Kritikpunkt} am Modell. \hfill(2 P)
+\end{enumerate}
+\karo{6cm}
+
+% ===================== AUFGABE 4 =====================
+\hauptaufgabe{4}{25}{Marketing-Mix und Beschaffung}
+
+\teil{4.1}{9} Konsumentenverhalten.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Erklären Sie den Unterschied zwischen \textbf{S-R-} und \textbf{S-O-R-Modell}
+        (Stichwort \glqq Black Box\grqq). \hfill(4 P)
+  \item Nennen Sie die \textbf{vier Arten der Kaufentscheidung} (habitualisiert, impulsiv,
+        extensiv, limitiert) mit je einem Beispiel. \hfill(4 P)
+  \item Wovon hängt das \textbf{Involvement} ab? \hfill(1 P)
+\end{enumerate}
+\karo{5cm}
+
+\teil{4.2}{8} Marketing-Mix.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Nennen Sie die \textbf{vier P} des Marketing-Mix und jeweils ihre \textbf{Bedeutung}
+        (ein Satz). \hfill(4 P)
+  \item Entwickeln Sie für eine \textbf{Fitness-App} je eine Maßnahme pro P. \hfill(4 P)
+\end{enumerate}
+\karo{5.5cm}
+
+\teil{4.3}{8} Sourcing und Supply Chain.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Erklären Sie \textbf{Single Sourcing} vs.\ \textbf{Multiple Sourcing} mit je einem Vor- und
+        Nachteil. \hfill(4 P)
+  \item Erklären Sie \textbf{Global Sourcing} vs.\ \textbf{Domestic Sourcing}. \hfill(2 P)
+  \item Nennen Sie zwei \textbf{Ziele des Supply Chain Managements}. \hfill(2 P)
+\end{enumerate}
+\karo{5cm}
+
+\end{document}

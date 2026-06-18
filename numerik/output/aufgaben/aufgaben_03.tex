@@ -1,0 +1,308 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{tikz}
+\usepackage{needspace}
+\usepackage{enumitem}
+\usepackage{geometry}
+\geometry{a4paper,margin=2.2cm}
+
+% ----- Dark Mode (Pflicht) -----
+\definecolor{bgdark}{HTML}{1E1E1E}   % dunkler Hintergrund
+\definecolor{fgtext}{HTML}{E6E6E6}   % heller Text
+\definecolor{accent}{HTML}{89B4FA}   % Akzent (hellblau)
+\definecolor{accent2}{HTML}{F9E2AF}  % Akzent (gelb)
+\definecolor{gridcol}{HTML}{4A4A4A}  % gedämpfte Gitterfarbe
+\definecolor{rulecol}{HTML}{6A6A6A}  % helle Linienfarbe
+\pagecolor{bgdark}
+\color{fgtext}
+\setlength{\arrayrulewidth}{0.3pt}
+\arrayrulecolor{rulecol}
+
+% ----- Karo-Raster zum Ausfüllen -----
+% #1 = Höhe des Karobereichs (z. B. 5cm)
+\newcommand{\karo}[1]{\par\noindent
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcol, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par}
+
+% ----- Kopf -----
+\newcommand{\kopf}{%
+  \noindent
+  {\large\bfseries\color{accent} Numerische Methoden\, --\, Übungsklausur 03}\\[2pt]
+  {\small\color{fgtext} Klausurnahe Rechenaufgaben im Stil der Probeklausur \;·\; Open Book, kein Taschenrechner}\\[6pt]
+  \noindent\textcolor{rulecol}{\rule{\linewidth}{0.4pt}}\\[4pt]
+  {\small Name:\; \textcolor{rulecol}{\rule{6cm}{0.3pt}} \hfill Datum:\; \textcolor{rulecol}{\rule{4cm}{0.3pt}}}\\[2pt]
+  \noindent\textcolor{rulecol}{\rule{\linewidth}{0.4pt}}
+  \par\vspace{8pt}
+}
+
+% ----- Aufgabenkopf: #1 Nr/Titel, #2 Punkte, #3 Schwierigkeit -----
+\newcommand{\aufg}[3]{%
+  \needspace{3\baselineskip}
+  \par\vspace{2pt}
+  {\large\bfseries\color{accent2} Aufgabe #1}\hfill
+  {\small\color{fgtext}#2 Punkte \;·\; #3}\\[2pt]
+  \noindent\textcolor{rulecol}{\rule{\linewidth}{0.3pt}}
+  \par\vspace{6pt}
+}
+
+\setlist[enumerate]{leftmargin=2.2em,itemsep=2pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+
+\begin{document}
+
+\kopf
+
+Bearbeitungshinweise: Begründen Sie Ihre Antworten kurz; eine reine Zahl ohne
+Rechenweg gibt keine volle Punktzahl. Brüche dürfen stehen bleiben. Wo nötig
+dürfen Zwischenwerte auf wenige Stellen gerundet werden. Nutzen Sie das
+Karo-Raster für Ihre Rechnung.
+
+% =====================================================================
+\clearpage
+\aufg{1 \;--\; Gleitkommasystem \& Maschinenepsilon}{11}{mittel}
+
+Betrachten Sie ein normalisiertes Gleitkommasystem (floating-point system) mit
+$1$ Vorzeichenbit, einer Mantisse $1{.}b_1b_2b_3$ mit $3$ Bits und implizitem
+führenden Bit sowie einem Exponentenfeld $E \in \{0,1,\dots,7\}$ aus $3$ Bits,
+das mit Bias $3$ interpretiert wird (tatsächlicher Exponent $e = E-3$). Es gibt
+keine reservierten Muster für $0$ oder $\infty$.
+
+\textbf{(a)} Bestimmen Sie das Maschinenepsilon (machine epsilon)
+$\varepsilon_{\mathrm{mach}}$ dieses Systems und begründen Sie, wovon es
+abhängt. \hfill\textit{(3 P)}
+
+\textbf{(b)} Geben Sie die größte und die kleinste \emph{positive normalisierte}
+darstellbare Zahl an. \hfill\textit{(4 P)}
+
+\textbf{(c)} Runden Sie $x = 1{,}1$ (dezimal) auf die nächste Maschinenzahl
+dieses Systems. Geben Sie $\mathrm{fl}(1{,}1)$ und den \emph{relativen}
+Rundungsfehler an. \hfill\textit{(4 P)}
+
+\karo{9cm}
+
+% =====================================================================
+\clearpage
+\aufg{2 \;--\; Auslöschung \& numerisch stabile Umformung}{8}{mittel}
+
+Zu berechnen ist der Wert $d = \sqrt{10001} - \sqrt{10000}$ in einem Rechner,
+der mit $5$ \emph{signifikanten} Dezimalstellen arbeitet
+($\sqrt{10001} = 100{,}004999\ldots$).
+
+\textbf{(a)} Werten Sie $d$ \emph{direkt} aus (beide Wurzeln auf $5$
+signifikante Stellen runden, dann subtrahieren). Welches Ergebnis erhalten Sie,
+und was ist hier passiert? \hfill\textit{(3 P)}
+
+\textbf{(b)} Formen Sie $d$ durch Erweitern mit
+$\sqrt{10001}+\sqrt{10000}$ in einen mathematisch gleichwertigen, aber
+\emph{auslöschungsfreien} Ausdruck um und werten Sie diesen (wieder mit $5$
+Stellen) aus. \hfill\textit{(3 P)}
+
+\textbf{(c)} Benennen Sie das Phänomen aus (a) und erklären Sie in einem Satz,
+warum die Umformung in (b) es vermeidet. \hfill\textit{(2 P)}
+
+\karo{8cm}
+
+% =====================================================================
+\clearpage
+\aufg{3 \;--\; Kondition eines Problems}{8}{mittel}
+
+Betrachten Sie die Auswertung von
+\[
+  f(x) = \frac{1}{1-x}, \qquad x < 1 .
+\]
+
+\textbf{(a)} Leiten Sie die \emph{relative Konditionszahl}
+$\kappa(x) = \left|\dfrac{x\,f'(x)}{f(x)}\right|$ als geschlossenen Ausdruck in
+$x$ her. \hfill\textit{(3 P)}
+
+\textbf{(b)} Werten Sie $\kappa$ an den Stellen $x = 0{,}5$ und $x = 0{,}99$ aus.
+Welcher Bereich ist gut, welcher schlecht konditioniert? \hfill\textit{(3 P)}
+
+\textbf{(c)} Ist die Kondition eine Eigenschaft des \emph{Problems} oder des
+\emph{Algorithmus}? Was bedeutet das für die erreichbare Genauigkeit bei
+$x = 0{,}99$? \hfill\textit{(2 P)}
+
+\karo{9cm}
+
+% =====================================================================
+\clearpage
+\aufg{4 \;--\; Newton-Verfahren ($\sqrt{2}$)}{11}{mittel}
+
+Gesucht ist die positive Nullstelle (root) von $f(x) = x^2 - 2$, also $\sqrt2$.
+
+\textbf{(a)} Zeigen Sie, dass die Newton-Iteration (Newton's method) auf die
+Form
+\[
+  x_{n+1} = \tfrac12\!\left(x_n + \tfrac{2}{x_n}\right)
+\]
+führt. \hfill\textit{(2 P)}
+
+\textbf{(b)} Berechnen Sie ausgehend von $x_0 = 1$ die Iterierten $x_1, x_2, x_3$
+(als Bruch bzw. Dezimalzahl). \hfill\textit{(4 P)}
+
+\textbf{(c)} Bestimmen Sie die Fehler $|x_2-\sqrt2|$ und $|x_3-\sqrt2|$
+($\sqrt2 \approx 1{,}414214$) und weisen Sie damit die \emph{quadratische
+Konvergenz} nach. \hfill\textit{(3 P)}
+
+\textbf{(d)} Nennen Sie das Konvergenzkriterium (convergence criterion) des
+Newton-Verfahrens für einfache Nullstellen. \hfill\textit{(2 P)}
+
+\karo{9cm}
+
+% =====================================================================
+\clearpage
+\aufg{5 \;--\; Sekantenverfahren}{8}{mittel}
+
+Gesucht ist eine Nullstelle von $f(x) = x^3 - x - 1$ (reelle Wurzel
+$\approx 1{,}3247$).
+
+\textbf{(a)} Geben Sie die Iterationsformel des Sekantenverfahrens (secant
+method) an und erklären Sie, wodurch es die Ableitung $f'$ ersetzt.
+\hfill\textit{(2 P)}
+
+\textbf{(b)} Führen Sie mit den Startwerten $x_0 = 1$ und $x_1 = 2$ zwei
+Schritte durch und bestimmen Sie $x_2$ und $x_3$. \hfill\textit{(4 P)}
+
+\textbf{(c)} Geben Sie die Konvergenzordnung des Verfahrens an und nennen Sie je
+einen Vor- und Nachteil gegenüber dem Newton-Verfahren. \hfill\textit{(2 P)}
+
+\karo{9cm}
+
+% =====================================================================
+\clearpage
+\aufg{6 \;--\; Globale Optimierung \& Gradientenabstieg}{11}{mittel}
+
+\textbf{(a)} \emph{Random Restarts.} Ein zufälliger Neustart findet das globale
+Minimum mit Wahrscheinlichkeit $p = \tfrac13$. Geben Sie die
+Erfolgs\-wahr\-schein\-lich\-keit $P$ nach $K$ unabhängigen Neustarts an und
+bestimmen Sie das kleinste $K$ mit $P \ge 0{,}95$. \hfill\textit{(4 P)}
+
+\textbf{(b)} \emph{Simulated Annealing.} Eine Verschlechterung um
+$\Delta E = 2$ wird mit $P_{\text{akz}} = e^{-\Delta E/T}$ akzeptiert. Berechnen
+Sie $P_{\text{akz}}$ für $T = 1$ und $T = 4$ und erklären Sie die Rolle der
+sinkenden Temperatur. \hfill\textit{(3 P)}
+
+\textbf{(c)} \emph{Gradientenabstieg.} Minimieren Sie $f(x) = x^2$ mit
+$x_{n+1} = x_n - \eta\,f'(x_n)$, Lernrate $\eta = 0{,}1$, Start $x_0 = 1$.
+Berechnen Sie $x_1$ und $x_2$ und geben Sie an, für welche $\eta$ das Verfahren
+\emph{divergiert}. \hfill\textit{(4 P)}
+
+\karo{9cm}
+
+% =====================================================================
+\clearpage
+\aufg{7 \;--\; Anfangswertproblem: Euler \& Runge-Kutta}{11}{schwer}
+
+Gegeben sei das Anfangswertproblem
+\[
+  y'(t) = -y(t) + t, \qquad y(0) = 1,
+  \qquad \text{exakte Lösung } y(t) = t - 1 + 2e^{-t}.
+\]
+Gesucht ist eine Näherung für $y(1)$ ($y(1) = 2/e \approx 0{,}7358$).
+
+\textbf{(a)} Führen Sie mit dem \emph{expliziten} Euler-Verfahren
+$y_{n+1} = y_n + h\,f(t_n,y_n)$ und Schrittweite $h = \tfrac12$ \emph{zwei}
+Schritte aus. Geben Sie $y(1) \approx y_2$ und den Fehler an.
+\hfill\textit{(4 P)}
+
+\textbf{(b)} Führen Sie mit dem klassischen Runge-Kutta-Verfahren RK4
+\[
+  y_{n+1} = y_n + \tfrac{h}{6}\,(k_1 + 2k_2 + 2k_3 + k_4)
+\]
+\emph{einen} Schritt mit $h = 1$ aus (alle $k_i$ angeben). Vergleichen Sie den
+Fehler mit (a). \hfill\textit{(5 P)}
+
+\textbf{(c)} Nennen Sie die Konvergenzordnung von explizitem Euler und RK4.
+\hfill\textit{(2 P)}
+
+\karo{10cm}
+
+% =====================================================================
+\clearpage
+\aufg{8 \;--\; Numerische Integration (Newton-Cotes)}{10}{mittel}
+
+Betrachten Sie $\displaystyle \int_1^2 \frac{1}{x}\,dx$ (exakter Wert
+$\ln 2 \approx 0{,}6931$).
+
+\textbf{(a)} Berechnen Sie die \emph{Trapezregel} mit einem Intervall $[1,2]$.
+Geben Sie den Fehler an. \hfill\textit{(3 P)}
+
+\textbf{(b)} Berechnen Sie die \emph{Simpson-Regel} mit den Stützstellen
+$1,\ \tfrac32,\ 2$ ($h = \tfrac12$). Vergleichen Sie den Fehler mit (a).
+\hfill\textit{(4 P)}
+
+\textbf{(c)} Berechnen Sie die \emph{zusammengesetzte Trapezregel} mit zwei
+Teilintervallen ($h = \tfrac12$, Stützstellen $1, \tfrac32, 2$) und ordnen Sie
+die drei Ergebnisse nach Genauigkeit. \hfill\textit{(3 P)}
+
+\karo{9cm}
+
+% =====================================================================
+\clearpage
+\aufg{9 \;--\; Lagrange-Interpolation}{8}{mittel}
+
+Gegeben seien die Stützpunkte $(-1, 2),\ (0, 1),\ (2, 11)$.
+
+\textbf{(a)} Stellen Sie die Lagrange-Basispolynome $L_0, L_1, L_2$ auf.
+\hfill\textit{(3 P)}
+
+\textbf{(b)} Bestimmen Sie das Interpolationspolynom $p(x)$ und vereinfachen Sie
+es zur Standardform $ax^2+bx+c$. \hfill\textit{(3 P)}
+
+\textbf{(c)} Werten Sie $p$ an der Stelle $x = 1$ aus und nennen Sie die Anzahl
+der Stützpunkte, die ein Polynom vom Grad $\le 2$ eindeutig festlegt.
+\hfill\textit{(2 P)}
+
+\karo{9cm}
+
+% =====================================================================
+\clearpage
+\aufg{10 \;--\; Monte-Carlo-Integration}{8}{mittel}
+
+Geschätzt werden soll $\displaystyle \int_0^1 3x^2\,dx$ (exakt $1$) per
+Monte-Carlo, $\;I \approx |\Omega|\,\tfrac1N \sum_{i=1}^N f(X_i)$ mit
+$|\Omega| = 1$.
+
+\textbf{(a)} Berechnen Sie die Schätzung für die $N = 4$ Stützstellen
+$X_i = 0{,}2;\ 0{,}4;\ 0{,}6;\ 0{,}8$ und vergleichen Sie mit dem exakten Wert.
+\hfill\textit{(3 P)}
+
+\textbf{(b)} Der Standardfehler ist $\mathrm{SE} = |\Omega|\,\sigma_f/\sqrt{N}$.
+Um welchen Faktor müssen Sie $N$ erhöhen, um den Fehler zu \emph{halbieren}?
+\hfill\textit{(2 P)}
+
+\textbf{(c)} Erklären Sie den \emph{Fluch der Dimensionen} (curse of
+dimensionality) und warum Monte-Carlo in hohen Dimensionen einem regelmäßigen
+Gitter überlegen ist. \hfill\textit{(3 P)}
+
+\karo{8cm}
+
+% =====================================================================
+\clearpage
+\aufg{11 \;--\; Diskrete Fourier-Transformation (DFT)}{9}{schwer}
+
+\textbf{(a)} Berechnen Sie die DFT
+$X_k = \sum_{n=0}^{N-1} x_n\,e^{-i 2\pi k n/N}$ der Folge $x = (1,2,3,4)$ mit
+$N = 4$ für $k = 0,1,2,3$. \hfill\textit{(5 P)}
+
+\textit{Hinweis. $e^{-i2\pi/4} = -i$, also $X_k = \sum_{n} x_n\,(-i)^{kn}$ mit
+$(-i)^0=1,\ (-i)^1=-i,\ (-i)^2=-1,\ (-i)^3=i$ (periodisch mod $4$).}
+
+\textbf{(b)} Bestätigen Sie die Symmetrie $X_3 = \overline{X_1}$ und erklären
+Sie, warum sie für reelle Eingaben gilt. \hfill\textit{(2 P)}
+
+\textbf{(c)} Geben Sie die Komplexität der direkten DFT und der FFT an und
+begründen Sie, warum die FFT für große $N$ entscheidend ist. \hfill\textit{(2 P)}
+
+\karo{8cm}
+
+\end{document}

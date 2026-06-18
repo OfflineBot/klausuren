@@ -11,3 +11,4 @@ projektbericht/Projektbericht_Docker_vs_Nix_v3.pdf
 *.log
 *.toc
 *.out
+*dont*

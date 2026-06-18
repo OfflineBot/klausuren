@@ -1,0 +1,267 @@
+\documentclass[11pt,a4paper]{article}
+
+% --- Encoding & Schrift ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[ngerman]{babel}
+
+% --- Layout ---
+\usepackage[a4paper,top=2cm,bottom=2cm,left=2cm,right=2cm]{geometry}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{pifont}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage[most]{tcolorbox}
+\usepackage{titlesec}
+\usepackage[colorlinks=true,linkcolor=black,urlcolor=blue]{hyperref}
+
+% --- Farben ---
+\definecolor{dhbwrot}{RGB}{180,20,40}
+\definecolor{jagruen}{RGB}{30,130,40}
+\definecolor{neinrot}{RGB}{190,30,30}
+\definecolor{groborange}{RGB}{210,130,0}
+\definecolor{kopfgrau}{RGB}{60,60,60}
+
+% --- Status-Symbole ---
+\newcommand{\ja}{\textcolor{jagruen}{\ding{51}}}
+\newcommand{\nein}{\textcolor{neinrot}{\ding{55}}}
+\newcommand{\grob}{\textcolor{groborange}{\ding{115}}}
+
+% --- Überschriften ---
+\titleformat{\section}{\Large\bfseries\color{dhbwrot}}{}{0pt}{}[\titlerule]
+\titleformat{\subsection}{\large\bfseries\color{kopfgrau}}{}{0pt}{}
+
+% --- Tabellenkopf ---
+\newcommand{\tabkopf}{%
+  \rowcolor{kopfgrau!90}%
+  \textcolor{white}{\textbf{Folie}} &
+  \textcolor{white}{\textbf{Thema}} &
+  \textcolor{white}{\textbf{Status}} &
+  \textcolor{white}{\textbf{Anmerkung der Dozentin}}\\}
+
+% --- Längstabellen-Spaltentyp ---
+\newcolumntype{F}{>{\raggedright\arraybackslash}p{1.0cm}}
+\newcolumntype{T}{>{\raggedright\arraybackslash}p{6.0cm}}
+\newcolumntype{A}{>{\raggedright\arraybackslash}p{5.4cm}}
+
+\captionsetup{font=small,labelfont=bf,labelsep=period}
+\setlength{\parindent}{0pt}
+
+% --- Bildbefehl ---
+\newcommand{\folie}[3]{%
+\begin{figure}[H]\centering
+\includegraphics[width=#2\textwidth]{figures/#1}
+\caption{#3}
+\end{figure}}
+
+\begin{document}
+
+% ============ TITEL ============
+\begin{center}
+{\Huge\bfseries\color{dhbwrot} BWL -- Klausurübersicht}\\[4pt]
+{\large Ausgewählte Themen der Digitalen Betriebswirtschaftslehre}\\[2pt]
+{\normalsize Themen-Mapping nach dem Folien-Durchgang mit der Dozentin}
+\end{center}
+
+\vspace{4pt}
+
+\begin{tcolorbox}[colback=dhbwrot!6,colframe=dhbwrot,boxrule=0.8pt,arc=2pt]
+\textbf{Rahmen der Klausur:} 4 große Aufgaben. \quad
+\textbf{Grundregel:} \emph{Verständnis statt Auswendiglernen} --
+\glqq sehr viel geht durch, wenn man \textbf{begründet}\grqq.\\[4pt]
+\textbf{Legende:}\quad
+\ja~= klausurrelevant \quad
+\nein~= kommt \textbf{nicht} dran \quad
+\grob~= nur grob / nur Bedeutung verstehen
+\end{tcolorbox}
+
+\vspace{6pt}
+
+% ============ VL 1 ============
+\section*{}
+\section{VL 1 -- Einführung in die Betriebswirtschaftslehre}
+
+\begin{longtable}{F T c A}
+\tabkopf \endfirsthead
+\tabkopf \endhead
+6 & Was untersucht die BWL? (Bedürfnisse, Knappheit, Wirtschaften) & \ja & \glqq worauf basiert BWL\grqq\\\midrule
+7 & Unternehmen als Wertschöpfungssystem (Input $\to$ Transformation $\to$ Output; Wertschöpfung = Output $-$ Input) & \ja & \glqq Wertschöpfungssystem\grqq\\\midrule
+8 & Wertschöpfungskette (Porter) & \ja & \glqq Wertschöpfungskette\grqq\\\midrule
+9--11 & Wichtige Ansätze der BWL (produktions-, entscheidungs-, system-, institutionenökonomisch) & \grob & \glqq Ansätze \textbf{nicht auswendig}\grqq\\\midrule
+12 & Case Study HelloFresh (Erfolg vs.\ Liquidität) & \ja & \glqq Case Studys\grqq\\\midrule
+13 & Klassische Produktionsfaktoren (Gutenberg) & \nein & \glqq Produktionsfaktor kommt nicht dran\grqq\\\midrule
+14--15 & \textbf{Daten} als Produktionsfaktor (Daten $\to$ Analyse $\to$ Entscheidung $\to$ Wertschöpfung) & \ja & \glqq Daten\grqq\\\midrule
+16 & Unternehmensziele (Definition) & \ja & \glqq Unternehmensziele\grqq\\\midrule
+17 & Zielinhalt: Sach- vs.\ Formalziele & \ja & \glqq Formalziele über Sachziele\grqq\\\midrule
+19 & Das ökonomische Prinzip (Minimum / Maximum / Optimum) & \ja & \glqq wichtig \textbf{anhand Bsp.}\grqq\\\midrule
+20 & Effizienz vs.\ Effektivität (\glqq Dinge richtig machen\grqq{} vs.\ \glqq die richtigen Dinge\grqq) & \ja & \glqq Unterschied erkennen\grqq\\\midrule
+21 & Formalziele -- \textbf{Formeln}: Produktivität, Wirtschaftlichkeit, Gewinn, Rentabilität & \ja & \glqq Formeln können, interpretieren \& Stärken erklären, Übungsaufgabe\grqq\\\midrule
+24 & Zielbeziehungen (Zielpaare) \& Rangordnung & \ja & \glqq Zielpaare anschauen\grqq\\\midrule
+25 & SMART (Zielformulierung) & \ja & \glqq SMART\grqq\\\midrule
+27 & Interessensgruppen / Stakeholder (Anspruch gegenüber dem Unternehmen) & \ja & \glqq Interessensgruppen\grqq\\\midrule
+28 & Shareholder- vs.\ Stakeholder-Ansatz & \ja & \glqq Stakeholder/Shareholder\grqq\\\midrule
+29 & Principal-Agent-Theorie (Informationsasymmetrie, Anreiz-/Kontrollsysteme) & \ja & \glqq Principal-Agent-Theorie\grqq\\
+\end{longtable}
+
+{\small\textit{Nicht genannt $\to$ unwichtig: Folien 5, 18, 22, 23, 26.}}
+
+\folie{vl1_wertschoepfungskette.png}{0.82}{Wertschöpfungskette nach Porter (VL1, Folie 8)}
+\folie{vl1_oekonomisches_prinzip.png}{0.82}{Das ökonomische Prinzip: Minimum / Maximum / Optimum (VL1, Folie 19)}
+\folie{vl1_principal_agent.png}{0.82}{Principal-Agent-Theorie (VL1, Folie 29)}
+
+% ============ VL 2 ============
+\section{VL 2 -- Unternehmen und Märkte}
+
+\begin{longtable}{F T c A}
+\tabkopf \endfirsthead
+\tabkopf \endhead
+3 & Was ist ein Markt? Angebot \& Nachfrage (Preis\,$\uparrow$\,$\to$\,Nachfrage\,$\downarrow$; Preis\,$\uparrow$\,$\to$\,Angebot\,$\uparrow$) & \ja & \glqq Markt, Angebot und Nachfrage\grqq\\\midrule
+4 & Marktgleichgewicht: Gleichgewichtspreis, Angebots-/Nachfrageüberschuss & \ja & \glqq Gleichgewichtspreis\grqq\\\midrule
+5--6 & Marktformen (Polypol, Oligopol, Monopol) + Wettbewerb & \ja & \glqq Monopol etc.\grqq\\\midrule
+8 & Digitale Märkte \& Plattformen (Netzwerkeffekte, Lock-in) & \ja & \glqq Digitale Märkte / Plattform\grqq\\
+\end{longtable}
+
+\begin{tcolorbox}[colback=groborange!10,colframe=groborange,boxrule=0.6pt,arc=2pt]
+\textbf{Wichtig:} \glqq \textbf{Allgemein alle Übungsaufgaben anschauen}\grqq{} $\to$ v.\,a.\
+\texttt{Übungsaufgabe\_Angebot und Nachfrage.pdf} und \texttt{01\_Übungsaufgaben\dots pdf}.
+\end{tcolorbox}
+
+\folie{vl2_marktformen.png}{0.82}{Marktformen-Matrix: Anbieter $\times$ Nachfrager (VL2, Folie 5)}
+
+% ============ VL 3 ============
+\section{VL 3 -- Entscheidungsfindung im Unternehmen}
+\begin{tcolorbox}[colback=neinrot!8,colframe=neinrot,boxrule=0.8pt,arc=2pt]
+\nein~\textbf{Komplettes Kapitel gestrichen} -- \glqq Entscheidungsfindungskapitel gestrichen\grqq.
+\end{tcolorbox}
+
+% ============ VL 4 ============
+\section{VL 4 -- Unternehmensstrategie}
+
+\begin{longtable}{F T c A}
+\tabkopf \endfirsthead
+\tabkopf \endhead
+2 & Strategische Entscheidungen (Langfristigkeit, Wettbewerbsorientierung) & \nein & \glqq Strategieentscheidung nicht wissen\grqq\\\midrule
+4 & BCG-Matrix -- \textbf{Vor- und Nachteile} & \ja & \glqq BCG-Matrix Vor-/Nachteile\grqq\\\midrule
+5 & McKinsey-Portfolioanalyse & \nein & \glqq McKinsey nicht können\grqq\\\midrule
+6 & Wettbewerbsstrategie nach \textbf{Porter} (Preisführerschaft, Differenzierung, Fokussierung) & \ja & \glqq Wettbewerbsstrategie nach Porter\grqq\\\midrule
+7 & Skaleneffekte (Economies of Scale, Fixkostendegression, Erfahrungskurve) & \ja & \glqq Skaleneffekte\grqq\\\midrule
+8 & SWOT-Analyse & \ja & \glqq SWOT-Analyse\grqq\\\midrule
+10 & Wettbewerbsvorteile \& Kundennutzen (USP; ökon./funkt./emot./sozialer Nutzen) & \ja & \glqq Kundennutzen \textbf{wichtig}\grqq\\\midrule
+11 & Kundennutzen-/Konkurrenzanalyse (Grafiken) & \ja\,\grob & \glqq Grafiken nicht selbst erstellen, aber \textbf{verstehen}\grqq\\\midrule
+12 & Produktstrategie (Variation, Differenzierung, Diversifikation, Beibehaltung, Elimination) & \ja & \glqq Produktstrategie\grqq\\\midrule
+13--14 & Produktlebenszyklus (Phasen + Kritik) & \ja & \glqq Phasen anschauen + \textbf{Grafik anfertigen}\grqq\\\midrule
+15 & Diversifikationsstrategien & \nein & \glqq Diversifikation nicht können\grqq\\\midrule
+16 & Unternehmenskultur & \nein & \glqq \dots\ und Kultur nicht können\grqq\\
+\end{longtable}
+
+\folie{vl4_bcg.png}{0.82}{BCG-Matrix -- Vor- und Nachteile (VL4, Folie 4)}
+\folie{vl4_porter.png}{0.82}{Wettbewerbsstrategien nach Porter (VL4, Folie 6)}
+\folie{vl4_swot.png}{0.82}{SWOT-Analyse (VL4, Folie 8)}
+\folie{vl4_produktlebenszyklus.png}{0.82}{Produktlebenszyklus -- diese Grafik solltest du selbst zeichnen können (VL4, Folie 13)}
+
+% ============ VL 5 ============
+\section{VL 5 -- Marketing und digitale Kundenbeziehungen}
+
+\begin{tcolorbox}[colback=neinrot!8,colframe=neinrot,boxrule=0.6pt,arc=2pt]
+\glqq \textbf{Ganz viel kommt nicht dran -- bis zum Kaufentscheidungsprozess}\grqq{} $\to$ Folien 2--4 (Marketing-Definition, Managementprozess, digitales Zeitalter) sind unwichtig.
+\end{tcolorbox}
+
+\vspace{4pt}
+
+\begin{longtable}{F T c A}
+\tabkopf \endfirsthead
+\tabkopf \endhead
+5 & Kaufentscheidungsprozess nach Kotler (Problemerkennung $\to$ Info $\to$ Bewertung $\to$ Kauf $\to$ Nachkauf) & \ja & roter Faden des Kapitels\\\midrule
+6--9 & Konsumentenverhalten: \textbf{S-R-Modell} und \textbf{S-O-R-Modell} (+ Beispiel) & \ja & \glqq S-R-Modell / S-O-R\grqq\\\midrule
+10 & Bedürfnispyramide (Maslow) & \nein & \glqq keine Bedürfnispyramide\grqq\\\midrule
+12 & Informationssuche (persönliche / kommerzielle / öffentliche Quellen) & \ja & \glqq wie sucht der Kunde nach Infos\grqq\\\midrule
+17 & Involvement: \textbf{High- vs.\ Low-Involvement} & \ja & \glqq Unterschiede erkennen\grqq\\\midrule
+20--21 & Kaufentscheidung: habitualisiert / impulsiv / extensiv / limitiert & \ja & \glqq Kaufentscheidung ist \textbf{wichtig}\grqq\\\midrule
+23 & AIDA-Modell (Attention, Interest, Desire, Action) & \ja & \glqq AIDA-Modell\grqq\\\midrule
+24 & Marketing-Mix -- die 4\,P (Product, Price, Place, Promotion) & \grob & \glqq PPPP \textbf{nur Bedeutung}\grqq\\\midrule
+25--29 & Produkt-, Preis-, Distributions-, Kommunikationspolitik, Case & \nein & \glqq danach viel weglassen\grqq\\
+\end{longtable}
+
+\folie{vl5_kotler.png}{0.82}{Kaufentscheidungsprozess nach Kotler (VL5, Folie 5)}
+\folie{vl5_sor.png}{0.82}{S-O-R-Modell des Konsumentenverhaltens (VL5, Folie 8)}
+\folie{vl5_aida.png}{0.78}{AIDA-Modell (VL5, Folie 23)}
+
+% ============ VL 6 ============
+\section{VL 6 -- Digitale Vertriebskanäle und E-Commerce}
+
+\begin{longtable}{F T c A}
+\tabkopf \endfirsthead
+\tabkopf \endhead
+2 & Marktformen & \nein & \glqq Marktformen-Kapitel kommt nicht dran\grqq\\\midrule
+3 & Informationsquellen im E-Commerce -- v.\,a.\ \textbf{Kundenbewertungen} (+ Recommendation Engines, Testberichte) & \ja & \glqq Kundenbewertung\grqq\\\midrule
+6,\,9 & Elevator Pitch / \glqq Build \& Pitch your Startup\grqq & \nein & \glqq Pitches nicht wissen\grqq\\
+\end{longtable}
+
+{\small\textit{Nicht genannt $\to$ unwichtig: Folie 4 (Vertriebsstrategien), 7--8 (Business Model Canvas).}}
+
+% ============ VL 7 ============
+\section{VL 7 -- Beschaffung, Supply Chain Management und Logistik}
+
+\begin{longtable}{F T c A}
+\tabkopf \endfirsthead
+\tabkopf \endhead
+3 & Beschaffung -- \textbf{Vokabeln} (Roh-/Hilfs-/Betriebsstoffe; Aufgaben) & \ja & \glqq Beschaffung Vokabeln, Aufgaben\grqq\\\midrule
+4 & Make-or-Buy + Sourcing-Strategien & \ja & \glqq kaufen / selber machen\grqq\\\midrule
+6 & ABC-Analyse & \nein & \glqq keine ABC-Analyse\grqq\\\midrule
+7 & XYZ-Analyse & \nein & \glqq \dots\ und XYZ\grqq\\\midrule
+8 & \textbf{Optimale Bestellmenge} (Trade-off Bestell- vs.\ Lagerkosten) & \ja & \glqq Formel wird gegeben\grqq\\\midrule
+9 & Einordnung Logistik \& Beschaffung in die Leistungserstellung & \nein & \glqq Logistik Leistungserstellung nicht können\grqq\\\midrule
+10--11 & Logistik (7\,R, Teilbereiche, Zielkonflikte) & \grob & \glqq nur grober High-Level-Ablauf\grqq\\\midrule
+12 & Supply Chain Management & \ja & \glqq Supply Chain Management\grqq\\
+\end{longtable}
+
+\begin{tcolorbox}[colback=groborange!10,colframe=groborange,boxrule=0.6pt,arc=2pt]
+\textbf{Optimale Bestellmenge:} Die \textbf{Formel ist gegeben} $\to$ Verständnis \& Anwendung zählt, nicht Auswendiglernen.
+\end{tcolorbox}
+
+\folie{vl7_bestellmenge.png}{0.82}{Ermittlung der optimalen Bestellmenge (VL7, Folie 8)}
+\folie{vl7_logistik7r.png}{0.82}{Die 7\,R der Logistik \& zentrale Teilbereiche (VL7, Folie 11)}
+\folie{vl7_scm.png}{0.82}{Supply Chain Management (VL7, Folie 12)}
+
+% ============ VL 8 ============
+\section{VL 8 -- Personalmanagement und Operations}
+
+\begin{longtable}{F T c A}
+\tabkopf \endfirsthead
+\tabkopf \endhead
+2 & Personalbeschaffung: \textbf{intern vs.\ extern}, Personalbedarf (quant./qual.) & \ja & \glqq Intern/Extern, Personalbedarf ermitteln\grqq\\\midrule
+3 & Anforderungs-/Fähigkeitsprofil & \nein & \glqq keine Fähigkeiten\grqq\\\midrule
+5 & Personalentwicklung (into / on / near / off the job) & \ja & \glqq Personal weiterentwickeln\grqq\\\midrule
+6 & Personalbeurteilung / Anreizsysteme / Vergütung & \nein & \glqq keine Vergütung\grqq\\\midrule
+7 & Einstufungsmethode & \nein & \glqq keine Einstufung\grqq\\\midrule
+8 & Personalfreisetzung & \nein & \glqq keine Personalfreisetzung\grqq\\\midrule
+9--10 & Führungsstile (Management-by-\dots) & \nein & \glqq \dots\ Führungsstile\grqq\\\midrule
+11 & Übungsaufgabe \textbf{Personalbedarf} (Netto-Personalbedarf rechnen) & \ja & passt zu \glqq Personalbedarf ermitteln\grqq\\
+\end{longtable}
+
+% ============ KOMPAKT ============
+\section{Kompakt: Das musst du können}
+
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item \textbf{VL1:} Wertschöpfung(skette), Daten als Produktionsfaktor, Unternehmensziele inkl.\ \textbf{Formeln} (Produktivität / Wirtschaftlichkeit / Gewinn / Rentabilität) + interpretieren, ökonomisches Prinzip mit Bsp., Effizienz vs.\ Effektivität, SMART, Stakeholder/Shareholder, Principal-Agent.
+\item \textbf{VL2:} Angebot/Nachfrage, Gleichgewichtspreis, Marktformen, digitale Plattformen. \textbf{Übungsaufgaben rechnen.}
+\item \textbf{VL4:} BCG (Vor-/Nachteile), Porter, Skaleneffekte, SWOT, Kundennutzen/USP, Produktstrategie, Produktlebenszyklus (\textbf{Grafik zeichnen}).
+\item \textbf{VL5:} Kaufentscheidungsprozess (Kotler), S-R/S-O-R, Informationssuche, High/Low Involvement, Kaufentscheidungsarten, AIDA, 4\,P (nur Bedeutung).
+\item \textbf{VL6:} Kundenbewertungen als Info-Quelle.
+\item \textbf{VL7:} Beschaffungs-Vokabeln, Make-or-Buy, optimale Bestellmenge (\textbf{Formel gegeben}), SCM, Logistik nur grob.
+\item \textbf{VL8:} intern/extern, Personalbedarf ermitteln (+ Übungsaufgabe), Personalentwicklung.
+\end{enumerate}
+
+\begin{tcolorbox}[colback=jagruen!8,colframe=jagruen,boxrule=0.8pt,arc=2pt]
+\textbf{\ding{72}~Wichtigster Tipp der Dozentin:} Verständnis schlägt Auswendiglernen --
+\textbf{wer begründet, kommt durch.}
+\end{tcolorbox}
+
+\end{document}

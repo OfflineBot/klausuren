@@ -1,0 +1,332 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage[a4paper,top=2.4cm,bottom=2cm,left=2cm,right=2cm]{geometry}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+
+% ---------- Dark Mode ----------
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{accent}{HTML}{6FB7FF}
+\definecolor{easy}{HTML}{7FD28A}
+\definecolor{med}{HTML}{F0C45A}
+\definecolor{hard}{HTML}{F08A7A}
+\pagecolor{bgdark}
+\color{fgtext}
+
+% ---------- Kopf-/Fußzeile ----------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyfoot[C]{\textcolor{gridcol}{\small BWL -- Übungsaufgaben 01 \;|\; Seite \thepage}}
+
+% ---------- Karo-Ausfüllfeld ----------
+\newcommand{\karo}[1]{\par\vspace{2mm}\noindent%
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcol, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par}
+
+% ---------- Schwierigkeits-Badge ----------
+\newcommand{\diff}[2]{\colorbox{#1}{\textcolor{bgdark}{\small\textbf{#2}}}}
+
+% ---------- Aufgaben-Kopf (immer neue Seite) ----------
+\newcommand{\aufgabe}[3]{\clearpage%
+  \noindent{\color{accent}\Large\bfseries #1}\hfill #2\par
+  \vspace{1mm}\noindent\textcolor{gridcol}{\rule{\linewidth}{0.4pt}}\par
+  \vspace{1mm}\noindent#3\par}
+
+\setlength{\parindent}{0pt}
+\linespread{1.05}
+
+\begin{document}
+
+% ===================== TITELSEITE =====================
+\thispagestyle{empty}
+\vspace*{1cm}
+\begin{center}
+  {\color{accent}\Huge\bfseries BWL -- Übungsaufgaben}\\[4pt]
+  {\Large Ausgewählte Themen der Digitalen Betriebswirtschaftslehre}\\[10pt]
+  {\large Klausurvorbereitung -- Aufgabenblatt 01}\\[2pt]
+  {\small (Aufgaben zum Ausfüllen -- Lösungen separat)}
+\end{center}
+
+\vspace{1.4cm}
+\noindent\textcolor{gridcol}{\rule{\linewidth}{0.4pt}}\\[3mm]
+{\large Name:\enspace\textcolor{gridcol}{\rule{6cm}{0.4pt}}\hfill Datum:\enspace\textcolor{gridcol}{\rule{4cm}{0.4pt}}}\\[3mm]
+\noindent\textcolor{gridcol}{\rule{\linewidth}{0.4pt}}
+
+\vspace{1.2cm}
+\noindent{\color{accent}\large\bfseries Hinweise}
+\begin{itemize}[leftmargin=*]
+  \item 12 Aufgaben, gemischte Schwierigkeit:\enspace
+        \diff{easy}{leicht}\enspace \diff{med}{mittel}\enspace \diff{hard}{schwer}.
+  \item Es zählt \textbf{Verständnis statt Auswendiglernen} -- begründe deine Antworten.
+  \item Bei Rechenaufgaben: Rechenweg angeben, Ergebnisse interpretieren.
+  \item Benötigte Formeln sind in der jeweiligen Aufgabe angegeben.
+  \item Jede Aufgabe beginnt auf einer neuen Seite, darunter ist Platz zum Ausfüllen.
+\end{itemize}
+
+\vspace{0.6cm}
+\noindent{\color{accent}\large\bfseries Abgedeckte Themen}\\[1mm]
+VL1 Einführung \;$\cdot$\; VL2 Märkte \;$\cdot$\; VL4 Strategie \;$\cdot$\;
+VL5 Marketing \;$\cdot$\; VL7 Beschaffung/SCM \;$\cdot$\; VL8 Personal
+
+% ===================== AUFGABE 1 =====================
+\aufgabe{Aufgabe 1 -- Ökonomisches Prinzip}{\diff{easy}{leicht} \;(8 P)}{%
+VL1 -- Einführung}
+
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Ordnen Sie jede Situation dem \textbf{Minimum-}, \textbf{Maximum-} oder
+        \textbf{Optimum-Prinzip} zu und begründen Sie kurz:
+  \begin{enumerate}[label=(\arabic*), leftmargin=*]
+    \item Eine Spedition will mit einem fest vorgegebenen Budget von 50.000\,€ möglichst
+          viele Pakete ausliefern.
+    \item Ein Cloud-Anbieter will eine vertraglich fest zugesagte Rechenleistung mit
+          möglichst geringem Energieeinsatz bereitstellen.
+    \item Ein Start-up sucht das günstigste Verhältnis aus Entwicklungskosten und
+          Funktionsumfang einer App.
+  \end{enumerate}
+  \item Erläutern Sie den Unterschied zwischen \textbf{Effizienz} und \textbf{Effektivität}.
+  \item Ein Team programmiert ein Feature mit minimalem Ressourceneinsatz -- das am Ende
+        aber kein Kunde nutzen will. Ist das Vorgehen effizient, effektiv, beides oder
+        keines? Begründen Sie.
+\end{enumerate}
+\karo{13cm}
+
+% ===================== AUFGABE 2 =====================
+\aufgabe{Aufgabe 2 -- Produktivität, Wirtschaftlichkeit, Rentabilität}{\diff{med}{mittel} \;(12 P)}{%
+VL1 -- Einführung}
+
+Ein Hersteller von Sensoren fertigt in einem Jahr \textbf{20.000 Sensoren} und setzt dafür
+\textbf{4.000 Arbeitsstunden} ein. Der gesamte \textbf{Aufwand} beträgt \textbf{480.000\,€},
+der \textbf{Ertrag} (Umsatzerlös) \textbf{600.000\,€}. Das durchschnittlich eingesetzte
+\textbf{Kapital} beträgt \textbf{400.000\,€}.
+
+\smallskip
+\textit{Formeln:}\;
+$\text{Produktivität}=\dfrac{\text{Output}}{\text{Input}}$,\quad
+$\text{Wirtschaftlichkeit}=\dfrac{\text{Ertrag}}{\text{Aufwand}}$,\quad
+$\text{Gewinn}=\text{Ertrag}-\text{Aufwand}$,\quad
+$\text{Rentabilität}=\dfrac{\text{Gewinn}}{\text{Kapital}}\cdot 100$.
+
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Berechnen Sie die \textbf{Arbeitsproduktivität}, die \textbf{Wirtschaftlichkeit},
+        den \textbf{Gewinn} und die \textbf{Rentabilität}.
+  \item Interpretieren Sie die Wirtschaftlichkeit: Arbeitet das Unternehmen wirtschaftlich?
+  \item Die Produktivität soll um \textbf{20\,\%} steigen. Bestimmen Sie den Zielwert und
+        nennen Sie zwei Maßnahmen -- ordnen Sie diese dem Minimum- bzw.\ Maximum-Prinzip zu.
+\end{enumerate}
+\karo{12cm}
+
+% ===================== AUFGABE 3 =====================
+\aufgabe{Aufgabe 3 -- SMART-Ziele und Zielbeziehungen}{\diff{easy}{leicht} \;(8 P)}{%
+VL1 -- Einführung}
+
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Ein Unternehmen formuliert: \glqq Wir wollen bald deutlich besser im Markt sein.\grqq{}
+        Erklären Sie, warum dieses Ziel \textbf{nicht SMART} ist, und formulieren Sie es als
+        \textbf{SMART}-Ziel neu (alle fünf Kriterien sichtbar).
+  \item Beurteilen Sie die folgenden Zielpaare als \textbf{komplementär},
+        \textbf{konkurrierend} oder \textbf{indifferent}:
+  \begin{enumerate}[label=(\arabic*), leftmargin=*]
+    \item Senkung der Lieferzeit \;$\leftrightarrow$\; Erhöhung der Kundenzufriedenheit
+    \item Maximierung des kurzfristigen Gewinns \;$\leftrightarrow$\; hohe Investitionen in Forschung
+    \item Umstellung der Kantine auf vegane Gerichte \;$\leftrightarrow$\; Erhöhung der Server-Verfügbarkeit
+  \end{enumerate}
+\end{enumerate}
+\karo{14cm}
+
+% ===================== AUFGABE 4 =====================
+\aufgabe{Aufgabe 4 -- Stakeholder und Principal-Agent}{\diff{med}{mittel} \;(11 P)}{%
+VL1 -- Einführung}
+
+Die \textit{DataFlow GmbH} entwickelt eine SaaS-Plattform. Das Management wird von den
+Eigentümern eingesetzt und geführt.
+
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Nennen Sie \textbf{vier Stakeholder} (zwei interne, zwei externe) und jeweils deren
+        \textbf{Anspruch} gegenüber dem Unternehmen.
+  \item Erklären Sie den Unterschied zwischen \textbf{Stakeholder-} und \textbf{Shareholder-Ansatz}.
+  \item Wenden Sie die \textbf{Principal-Agent-Theorie} an: Wer ist Principal, wer Agent?
+        Worin besteht das Grundproblem (Stichwort \textbf{Informationsasymmetrie})?
+        Nennen Sie \textbf{zwei Mechanismen}, um es zu verringern.
+\end{enumerate}
+\karo{12.5cm}
+
+% ===================== AUFGABE 5 =====================
+\aufgabe{Aufgabe 5 -- Marktgleichgewicht}{\diff{med}{mittel} \;(12 P)}{%
+VL2 -- Unternehmen und Märkte}
+
+Auf einem Wettbewerbsmarkt für USB-Ladegeräte gelten:
+\[
+\text{Nachfrage:}\quad Q_D = 1800 - 30\,P
+\qquad\qquad
+\text{Angebot:}\quad Q_S = 200 + 50\,P
+\]
+($Q$ = Menge, $P$ = Preis in €).
+
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Bestimmen Sie \textbf{Gleichgewichtspreis} und \textbf{Gleichgewichtsmenge}.
+  \item Der Staat setzt einen \textbf{Höchstpreis von $P=10$\,€} fest. Berechnen Sie Angebot
+        und Nachfrage. Liegt ein Angebots- oder Nachfrageüberschuss vor (Höhe)? Was passiert
+        am Markt?
+  \item Ein Trend verschiebt die Nachfrage zu $Q_D = 2200 - 30\,P$. Bestimmen Sie das
+        \textbf{neue Gleichgewicht} und erklären Sie die Veränderung.
+  \item Welche Rolle spielen \textbf{Daten} (z.\,B.\ Verkaufszahlen, Suchanfragen) für die
+        Schätzung der Nachfrage -- und warum ist das ein Wettbewerbsvorteil?
+\end{enumerate}
+\karo{11cm}
+
+% ===================== AUFGABE 6 =====================
+\aufgabe{Aufgabe 6 -- Marktformen und digitale Plattformen}{\diff{easy}{leicht} \;(9 P)}{%
+VL2 -- Unternehmen und Märkte}
+
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Ordnen Sie jede Situation einer \textbf{Marktform} (Polypol, Oligopol, Monopol) zu
+        und begründen Sie über \textbf{Marktmacht} und \textbf{Wettbewerb}:
+  \begin{enumerate}[label=(\arabic*), leftmargin=*]
+    \item viele kleine Bäckereien in einer Großstadt
+    \item drei große Mobilfunknetzbetreiber in einem Land
+    \item der einzige regionale Wasserversorger
+  \end{enumerate}
+  \item Ein Lieferdienst-Marktplatz vermittelt zwischen Restaurants und Gästen. Erklären Sie
+        \textbf{Netzwerkeffekt} und \textbf{Lock-in-Effekt} mit je einem Beispiel.
+  \item Nennen Sie \textbf{zwei Markteintrittsbarrieren} und je eine Folge für den Wettbewerb.
+\end{enumerate}
+\karo{12.5cm}
+
+% ===================== AUFGABE 7 =====================
+\aufgabe{Aufgabe 7 -- BCG, Porter und Skaleneffekte}{\diff{med}{mittel} \;(12 P)}{%
+VL4 -- Unternehmensstrategie}
+
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Nennen Sie je \textbf{einen Vorteil} und \textbf{einen Nachteil} der \textbf{BCG-Matrix}.
+  \item Ordnen Sie jedem Unternehmen die passende \textbf{Wettbewerbsstrategie nach Porter}
+        (Preisführerschaft, Differenzierung, Fokussierung) zu und begründen Sie:
+  \begin{enumerate}[label=(\arabic*), leftmargin=*]
+    \item ein Lebensmittel-Discounter
+    \item ein Hersteller von Premium-Smartphones
+    \item ein Anbieter von Spezialsoftware nur für Zahnarztpraxen
+  \end{enumerate}
+  \item \textbf{Skaleneffekte:} Die Fixkosten betragen \textbf{600.000\,€/Jahr}, die variablen
+        Stückkosten \textbf{8\,€}. Berechnen Sie die \textbf{Stückkosten} bei 10.000 und bei
+        60.000 Stück. Erklären Sie die \textbf{Fixkostendegression} und den Bezug zur
+        Preisführerschaft.\\[1mm]
+        \textit{Hinweis:} $\text{Stückkosten}=\text{var.\ Stückkosten}+\dfrac{\text{Fixkosten}}{\text{Menge}}$
+\end{enumerate}
+\karo{10.5cm}
+
+% ===================== AUFGABE 8 =====================
+\aufgabe{Aufgabe 8 -- SWOT und Kundennutzen}{\diff{med}{mittel} \;(11 P)}{%
+VL4 -- Unternehmensstrategie}
+
+Ein Start-up bietet eine \textbf{KI-gestützte Ernährungs-App} an.
+
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Erstellen Sie eine \textbf{SWOT-Analyse} mit je \textbf{zwei} Punkten zu Stärken,
+        Schwächen, Chancen und Risiken.
+  \item Leiten Sie \textbf{zwei Normstrategien} ab (z.\,B.\ Ausbauen / Aufholen / Absichern /
+        Vermeiden) und benennen Sie, welche SWOT-Felder Sie kombinieren.
+  \item Definieren Sie \textbf{USP} und nennen Sie einen möglichen USP der App. Ordnen Sie den
+        vier Nutzenarten -- \textbf{ökonomisch, funktional, emotional, sozial} -- je ein
+        Beispiel zu.
+\end{enumerate}
+\karo{12cm}
+
+% ===================== AUFGABE 9 =====================
+\aufgabe{Aufgabe 9 -- Produktstrategie und Produktlebenszyklus}{\diff{med}{mittel} \;(11 P)}{%
+VL4 -- Unternehmensstrategie}
+
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Ordnen Sie jede Maßnahme einer \textbf{Produktstrategie} zu (Produktvariation,
+        Produktdifferenzierung, Produktbeibehaltung, Produktelimination):
+  \begin{enumerate}[label=(\arabic*), leftmargin=*]
+    \item Ein Smartphone-Modell wird mit besserer Kamera neu aufgelegt und ersetzt das alte.
+    \item Es werden zusätzlich eine \glqq Pro\grqq- und eine \glqq Mini\grqq-Version angeboten.
+    \item Ein veraltetes Modell wird aus dem Sortiment genommen.
+    \item Das bewährte Ladegerät wird unverändert weitergeführt.
+  \end{enumerate}
+  \item Nennen Sie die \textbf{Phasen des Produktlebenszyklus} in richtiger Reihenfolge und
+        \textbf{skizzieren} Sie den typischen Verlauf von Umsatz/Absatz über die Zeit
+        (im Karofeld). Ordnen Sie zwei Phasen je eine sinnvolle Maßnahme zu.
+  \item Nennen Sie \textbf{einen Kritikpunkt} am Modell.
+\end{enumerate}
+\karo{11cm}
+
+% ===================== AUFGABE 10 =====================
+\aufgabe{Aufgabe 10 -- Konsumentenverhalten und AIDA}{\diff{med}{mittel} \;(12 P)}{%
+VL5 -- Marketing}
+
+Vergleichen Sie den Kauf eines \textbf{Laptops} mit dem eines \textbf{Kaugummis}.
+
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Erklären Sie den Unterschied zwischen \textbf{S-R-Modell} und \textbf{S-O-R-Modell}
+        (Stichwort \glqq Black Box\grqq).
+  \item Ordnen Sie Laptop und Kaugummi je \textbf{High-} oder \textbf{Low-Involvement} zu und
+        nennen Sie die passende \textbf{Kaufentscheidungsart} (extensiv, limitiert, impulsiv,
+        habitualisiert).
+  \item Nennen Sie die \textbf{drei Arten von Informationsquellen} der Informationssuche mit je
+        einem Beispiel.
+  \item Entwickeln Sie für eine \textbf{Marketing-Botschaft} des Laptops je eine Aussage für
+        die vier \textbf{AIDA}-Stufen.
+\end{enumerate}
+\karo{11cm}
+
+% ===================== AUFGABE 11 =====================
+\aufgabe{Aufgabe 11 -- Beschaffung und optimale Bestellmenge}{\diff{hard}{schwer} \;(14 P)}{%
+VL7 -- Beschaffung, SCM und Logistik}
+
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Ordnen Sie jedes Gut der richtigen \textbf{Materialart} zu (Rohstoff, Hilfsstoff,
+        Betriebsstoff) -- für einen Fahrradhersteller:
+  \begin{enumerate}[label=(\arabic*), leftmargin=*]
+    \item Aluminium für die Rahmen
+    \item Schrauben und Klebstoff
+    \item Schmieröl für die Fertigungsmaschinen
+  \end{enumerate}
+  \item \textbf{Make-or-Buy:} Nennen Sie zwei Entscheidungskriterien und entscheiden Sie
+        beispielhaft, ob die Rahmen selbst gefertigt oder zugekauft werden sollten.
+  \item \textbf{Optimale Bestellmenge:} Ein Bauteil wird mit \textbf{Jahresbedarf
+        $m = 8000$ Stück} benötigt. Die \textbf{Bestellkosten} betragen $K_B = 40$\,€ pro
+        Bestellung, der \textbf{Einstandspreis} $p = 50$\,€/Stück und der
+        \textbf{Lagerhaltungskostensatz} $z = 8\,\%$ pro Jahr.\\[1mm]
+        \textit{Formel (Andler):}\;
+        $\displaystyle q_{\text{opt}}=\sqrt{\frac{2\cdot m\cdot K_B}{k_L}}$\;\; mit \;
+        $k_L = p\cdot z$ \;(Lagerkosten je Stück und Jahr).\\[1mm]
+        Berechnen Sie (i) die \textbf{optimale Bestellmenge}, (ii) die \textbf{Anzahl der
+        Bestellungen} pro Jahr und (iii) prüfen Sie über
+        $\text{Bestellkosten}=\text{Lagerkosten}$.
+\end{enumerate}
+\karo{9.5cm}
+
+% ===================== AUFGABE 12 =====================
+\aufgabe{Aufgabe 12 -- Personalbedarf und Personalmanagement}{\diff{med}{mittel} \;(11 P)}{%
+VL8 -- Personalmanagement}
+
+Die Logistikabteilung der \textit{NovaTech GmbH} plant das nächste Jahr. Wegen eines neuen
+Lagers wird ein \textbf{Sollbestand (Bruttopersonalbedarf) von 18} Mitarbeitenden benötigt.
+Aktuell sind \textbf{14} beschäftigt. Im nächsten Jahr: \textbf{2} gehen in Rente,
+\textbf{1} wechselt in eine andere Abteilung, \textbf{1} kehrt aus der Elternzeit zurück und
+\textbf{1} bereits unterschriebener neuer Vertrag beginnt.
+
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Berechnen Sie den \textbf{fortgeschriebenen (zukünftigen) Personalbestand} und den
+        \textbf{Netto-Personalbedarf}. Wie viele Personen müssen zusätzlich beschafft werden?
+  \item Nennen Sie je einen \textbf{Vorteil} der \textbf{internen} und der \textbf{externen}
+        Personalbeschaffung.
+  \item Ordnen Sie drei Personalentwicklungsmaßnahmen den Formen zu
+        (\textit{into / on / near / off the job}): Trainee-Programm, Job Rotation,
+        berufsbegleitendes Studium.
+\end{enumerate}
+\karo{11.5cm}
+
+\end{document}

@@ -1,0 +1,261 @@
+\documentclass[a4paper,10pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage[landscape,margin=1.1cm]{geometry}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{mdframed}
+
+%================= Dark-Mode Farben (Catppuccin Mocha) =================
+\definecolor{base}{HTML}{1E1E2E}     % Hintergrund
+\definecolor{fg}{HTML}{CDD6F4}       % Text
+\definecolor{accent}{HTML}{89B4FA}   % Themen-Überschrift (Blau)
+\definecolor{accent2}{HTML}{A6E3A1}  % Merke (Grün)
+\definecolor{warn}{HTML}{FAB387}     % Fehlerfalle (Orange)
+\definecolor{boxbg}{HTML}{313244}    % Boxhintergrund
+\definecolor{rule}{HTML}{45475A}
+\pagecolor{base}
+
+\makeatletter
+\newenvironment{psmallmatrix}{\left(\begin{smallmatrix}}{\end{smallmatrix}\right)}
+\makeatother
+
+\newcommand{\transp}{^{\mathsf{T}}}
+\newcommand{\norm}[1]{\lVert #1 \rVert}
+\newcommand{\inner}[2]{\langle #1,\, #2 \rangle}
+\newcommand{\rang}{\operatorname{rang}}
+\newcommand{\spur}{\operatorname{spur}}
+\newcommand{\diag}{\operatorname{diag}}
+
+% Themen-Überschrift
+\newcommand{\thema}[1]{\vspace{0.35em}\par\noindent{\color{accent}\bfseries #1}\par\vspace{0.15em}}
+% Merke (grün) und Fehlerfalle (orange)
+\newcommand{\merke}[1]{{\color{accent2}$\blacktriangleright$ \textit{#1}}}
+\newcommand{\falle}[1]{{\color{warn}$\triangle$ \textbf{Fehlerfalle:} #1}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.25em}
+\setlength{\columnsep}{0.7cm}
+\setlength{\columnseprule}{0.4pt}
+\renewcommand{\columnseprulecolor}{\color{rule}}
+\pagestyle{empty}
+
+\begin{document}
+\color{fg}\small
+
+\begin{center}
+  {\color{accent}\Large\bfseries Lernzettel -- Fortgeschrittene Lineare Algebra \& Analytische Geometrie}\\[0.2em]
+  {\footnotesize Alle Themen mit Nachholbedarf (ohne CR-Zerlegung -- die sitzt). \;
+  {\color{accent2}$\blacktriangleright$ Merke} \quad {\color{warn}$\triangle$ Fehlerfalle (das hattest du falsch)}}
+\end{center}
+\vspace{0.2em}{\color{rule}\hrule}\vspace{0.3em}
+
+\begin{multicols}{3}
+
+%====================================================
+\thema{1 \;Matrix-Rechenregeln}
+$(A+B)\transp=A\transp+B\transp$,\quad $(AB)\transp=B\transp A\transp$ \;(\textbf{Reihenfolge dreht!})\\
+$(AB)^{-1}=B^{-1}A^{-1}$,\quad $(A\transp)^{-1}=(A^{-1})\transp$\\
+$EA=A$,\ \ $AA^{-1}=E$. \quad Allgemein \textbf{nicht}: $AB=BA$.
+
+\falle{$(A+B)^2=A^2+\mathbf{AB+BA}+B^2$, \emph{nicht} $A^2+2AB+B^2$ (nur falls $AB=BA$).}
+
+\merke{Beweise sind \textbf{allgemein} (mit Buchstaben), kein Zahlenbeispiel!}\\
+$A^{-1}$ symm., wenn $A$ symm.: $(A^{-1})\transp=(A\transp)^{-1}=A^{-1}$.\\
+Zerlegung: $A=\underbrace{\tfrac12(A+A\transp)}_{\text{symm.}}+\underbrace{\tfrac12(A-A\transp)}_{\text{schiefsymm.}}$\\
+\hspace*{1em}symm.: $S\transp=S$; \; schiefsymm.: $W\transp=-W$.
+
+%====================================================
+\thema{2 \;Merksätze (Wahr/Falsch)}
+\begin{itemize}[leftmargin=1.1em,nosep]
+  \item $\det(A+B)\neq\det A+\det B$ \;(\textbf{falsch}).
+  \item Ähnliche Matrizen $B=S^{-1}AS$: \textbf{gleiche} Eigenwerte.
+  \item $m\times n$ mit $m<n$: \textbf{kein} voller Spaltenrang ($\rang\le m$).
+  \item Singulärwerte $\sigma_i=\sqrt{\lambda_i(A\transp A)}\ge0\neq$ Eigenwerte.
+  \item $\lambda$ EW von $A\Rightarrow\lambda^k$ EW von $A^k$.
+  \item $N(A)\perp C(A\transp)$ (Nullraum $\perp$ Zeilenraum).
+  \item $A\transp A$ stets symm.\ \& positiv semidefinit.
+\end{itemize}
+
+%====================================================
+\thema{3 \;LGS-Lösbarkeit (Gauß)}
+Auf Zeilenstufenform bringen, dann:
+\begin{itemize}[leftmargin=1.1em,nosep]
+  \item Widerspruch $0=c\ (c\neq0)$ $\Rightarrow$ \textbf{keine} Lösung.
+  \item $\rang=$ Variablenzahl $\Rightarrow$ \textbf{genau eine}.
+  \item $\rang<$ Variablenzahl (konsistent) $\Rightarrow$ \textbf{unendlich viele}; freie Variablen $=n-\rang$.
+\end{itemize}
+\falle{Wenn eine Zeile von anderen abhängt (z.\,B.\ $Z_3=Z_1+Z_2$), gibt es \emph{unendlich viele} Lösungen -- nicht eine! Lösung als $\vec x_p+t\,\vec v$ schreiben.}
+
+%====================================================
+\thema{4 \;Vier Unterräume \& Orthogonalität}
+Für $A\in\mathbb{R}^{m\times n}$, $\rang=r$:\\
+$\dim C(A)=\dim C(A\transp)=r$\\
+$\dim N(A)=n-r$,\quad $\dim N(A\transp)=m-r$.\\
+\textbf{Orthogonalität:} $C(A\transp)\perp N(A)$, \; $C(A)\perp N(A\transp)$.\\
+Nullraumbasis: freie Variablen $=1$ setzen, Pivotvars ausdrücken.\\
+$N(A\transp)$: Zeilen-Abhängigkeit $\vec y\transp A=\vec 0\transp$.
+
+%====================================================
+\thema{5 \;Äußeres Produkt / Rang-1}
+$\vec u\vec v\transp$ ist eine $m\times n$-Matrix mit \textbf{Rang 1}.
+\merke{$\vec u$ = irgendeine Spalte $\neq0$; $\vec v$ aus den Zeilen-Verhältnissen (jede Zeile $\propto\vec v\transp$).}\\
+Rang 1 $\Rightarrow\det=0$ (bei quadr.).\\
+Einziger EW $\neq0$: $\lambda=\vec v\transp\vec u=\spur(\vec u\vec v\transp)$, Rest $=0$.
+
+%====================================================
+\thema{6 \;Determinante \& Spur}
+\textbf{Sarrus} ($3\times3$): Summe der 3 $\searrow$-Diagonalen $-$ Summe der 3 $\swarrow$-Diagonalen.\\
+$\spur(A)=\sum a_{ii}=\sum\lambda_i$,\quad $\det(A)=\prod\lambda_i$.\\
+Rechenregeln:
+\begin{itemize}[leftmargin=1.1em,nosep]
+  \item $\det(AB)=\det A\cdot\det B$
+  \item $\det(cA)=c^{\,n}\det A$ \;($n\times n$!)
+  \item $\det(A^{-1})=1/\det A$
+  \item $\det(A\transp)=\det A$
+\end{itemize}
+\falle{$\det(2A)=2^{n}\det A$ (z.\,B.\ $2^3$ bei $3\times3$), \emph{nicht} $2\det A$. Und: bei „A statt B'' eingesetzt $\to$ \textbf{anderes} Ergebnis, weil $\det A\neq\det B$! Vorzeichen mitnehmen.}
+
+%====================================================
+\thema{7 \;$PA=LU$ (mit Zeilentausch)}
+Pivot $a_{11}=0\Rightarrow$ unbrauchbar (Division durch 0) $\to$ Zeilen tauschen via Permutationsmatrix $P$.\\
+$L$: Multiplikatoren $\ell_{ij}$ (unter Diag.), Diag.\ $=1$.\\
+$U$: obere Dreiecksmatrix nach Elimination von $PA$.\\
+$\det A=\dfrac{\det(PA)}{\det P}$, \; $\det P=(-1)^{\#\text{Tausche}}$, \; $\det(PA)=\prod u_{ii}$.\\
+Lösen: $Pb$ bilden $\to$ $L\vec y=Pb$ (vorwärts) $\to$ $U\vec x=\vec y$ (rückwärts).
+
+%====================================================
+\thema{8 \;Cholesky $A=LL\transp$}
+Nur für \textbf{symm.\ positiv definite} $A$.\\
+$\ell_{jj}=\sqrt{a_{jj}-\sum_{k<j}\ell_{jk}^2}$,\quad
+$\ell_{ij}=\dfrac{a_{ij}-\sum_{k<j}\ell_{ik}\ell_{jk}}{\ell_{jj}}$.\\
+Lösen: $L\vec y=b$, dann $L\transp\vec x=\vec y$.\\
+\merke{Keine Cholesky, wenn nicht pos.\ def.\ (Wurzel aus neg.\ Zahl).}
+
+%====================================================
+\thema{9 \;QR über Gram-Schmidt}
+$\vec q_1=\dfrac{\vec a_1}{\norm{\vec a_1}}$;\quad
+$\vec w_2=\vec a_2-\inner{\vec a_2}{\vec q_1}\vec q_1$,\;
+$\vec q_2=\dfrac{\vec w_2}{\norm{\vec w_2}}$.\\
+$Q=[\vec q_1\,\vec q_2]$,\quad $R=Q\transp A=\begin{psmallmatrix}\norm{\vec a_1}&\inner{\vec a_2}{\vec q_1}\\0&\norm{\vec w_2}\end{psmallmatrix}$.\\
+Lösen $A\vec x=b$: \;$R\vec x=Q\transp b$ (rückwärts).
+
+%====================================================
+\thema{10 \;Orthogonale Matrizen}
+Spalten = Orthonormalbasis $\Leftrightarrow Q\transp Q=E$.
+\merke{$Q^{-1}=Q\transp$ -- \textbf{kein} Gauß-Jordan nötig!}\\
+$\det Q=\pm1$: \;$+1\Rightarrow$ \textbf{Drehung}, \;$-1\Rightarrow$ \textbf{Spiegelung}.\\
+Längenerhaltung: $\norm{Q\vec x}=\norm{\vec x}$.\\
+\falle{„orthogonal'' braucht orthogonal \emph{und} normiert -- auch die Spalten\textbf{längen} ($=1$) prüfen!}
+
+%====================================================
+\thema{11 \;Eigenwerte \& Diagonalisierung}
+$\chi_A(\lambda)=\det(A-\lambda E)=0$ $\to$ EW $\lambda_i$.\\
+EV: $(A-\lambda_i E)\vec v=\vec0$ lösen.\\
+$A=SDS^{-1}$, $S=[\vec v_1\,\vec v_2]$, $D=\diag(\lambda_i)$.\\
+$2\times2$: $S^{-1}=\dfrac1{\det S}\begin{psmallmatrix}d&-b\\-c&a\end{psmallmatrix}$.\\
+\textbf{Potenz:} $A^k=S\,D^k\,S^{-1}$ \;($D^k=\diag(\lambda_i^k)$).
+
+%====================================================
+\thema{12 \;Eigenwert-Regeln}
+\textbf{Dreiecksmatrix:} EW $=$ Diagonale.\\
+$A+\gamma E:\ \lambda+\gamma$;\quad $A^{-1}:\ 1/\lambda$;\\
+$A^k:\ \lambda^k$;\quad $cA:\ c\lambda$.\\
+$\det A\neq0\Leftrightarrow$ alle $\lambda\neq0\Leftrightarrow$ invertierbar.
+
+%====================================================
+\thema{13 \;Spektralzerlegung (symm.)}
+Symm.\ $A$: $A=Q\Lambda Q\transp$, $Q$ orthogonal (ON-EV), $\Lambda=\diag(\lambda_i)$.\\
+$A^{-1}=Q\Lambda^{-1}Q\transp$, \; $A^k=Q\Lambda^kQ\transp$.\\
+\merke{Blockstruktur nutzen: $\begin{psmallmatrix}a&0\\0&M\end{psmallmatrix}$ getrennt behandeln.}\\
+$\begin{psmallmatrix}p&q\\q&p\end{psmallmatrix}$: EW $p\pm q$, EV $(1,1),(1,-1)$.
+
+%====================================================
+\thema{14 \;Definitheit}
+Symm.\ $A$, führende Hauptminoren $\Delta_k$:
+\begin{itemize}[leftmargin=1.1em,nosep]
+  \item alle $\Delta_k>0$ $\Rightarrow$ \textbf{positiv definit} (alle $\lambda>0$).
+  \item Vorzeichen $-,+,-,\dots$ $\Rightarrow$ \textbf{negativ definit} ($\lambda<0$).
+  \item $\Delta_k\ge0$, ein $\Delta=0$ $\Rightarrow$ \textbf{semidefinit} ($\lambda\ge0$).
+  \item $\Delta_2<0$ (gemischt) $\Rightarrow$ \textbf{indefinit}.
+\end{itemize}
+Indefinit: $\vec x$ mit $\vec x\transp A\vec x<0$ angeben.
+
+%====================================================
+\thema{15 \;Inneres Produkt nachweisen}
+$\inner{\vec x}{\vec y}=\vec x\transp A\vec y$ ist inneres Produkt
+$\Leftrightarrow A$ \textbf{symm.\ \& positiv definit}.\\
+Form $\to$ Matrix: Koeffizienten von $x_iy_j$ ablesen ($a_{ij}$, symmetrisch).\\
+$A$-Norm: $\norm{\vec u}_A=\sqrt{\vec u\transp A\vec u}$; \;$A$-orthog.: $\vec u\transp A\vec v=0$.\\
+\textbf{Mahalanobis:} $d=\sqrt{\vec x\transp\Sigma^{-1}\vec x}$.
+
+%====================================================
+\thema{16 \;Untervektorraum-Test}
+$U\subseteq\mathbb{R}^n$ UVR $\Leftrightarrow$
+(1) $\vec0\in U$, (2) abg.\ unter $+$, (3) abg.\ unter $\cdot$.\\
+\merke{Homogene lineare Gleichung ($=0$) $\to$ ja. \;
+Inhomogen ($=c\neq0$) $\to$ nein ($\vec0\notin U$). \;
+$xy=0$, $x\ge0$, $x^2=y^2$ $\to$ nein.}
+
+%====================================================
+\thema{17 \;Winkel \& Cauchy-Schwarz}
+$\cos\alpha=\dfrac{\inner{\vec x}{\vec y}}{\norm{\vec x}\,\norm{\vec y}}$,\quad
+$|\inner{\vec x}{\vec y}|\le\norm{\vec x}\norm{\vec y}$.\\
+Normen: $\norm{\vec x}_1=\sum|x_i|$, $\norm{\vec x}_2=\sqrt{\sum x_i^2}$, $\norm{\vec x}_\infty=\max|x_i|$.
+
+%====================================================
+\thema{18 \;SVD (voll \& reduziert)}
+$A=U\Sigma V\transp$. \;$V$: ON-EV von $A\transp A$; \;$\sigma_i=\sqrt{\lambda_i}$ (absteigend); \;$\vec u_i=\tfrac1{\sigma_i}A\vec v_i$.\\
+\textbf{voll:} $U\,(m\times m)$, $\Sigma\,(m\times n)$, $V\,(n\times n)$ -- $U$ mit ONB ergänzen.\\
+\textbf{reduziert:} nur $r$ Spalten/Werte: $A=\sum_{i}\sigma_i\vec u_i\vec v_i\transp$.
+
+%====================================================
+\thema{19 \;Pseudoinverse \& Ausgleich}
+Voller Spaltenrang: $A^{+}=(A\transp A)^{-1}A\transp$, \;$A^{+}A=E$.\\
+Kleinste Fehlerquadrate: $\vec x=A^{+}b$ (Normalengl.\ $A\transp A\vec x=A\transp b$).
+
+%====================================================
+\thema{20 \;Lineare Regression}
+$y=c_0+c_1x$: \;$X\transp X\,\vec c=X\transp\vec y$, \;
+$X\transp X=\begin{psmallmatrix}n&\sum x_i\\\sum x_i&\sum x_i^2\end{psmallmatrix}$, $X\transp\vec y=\begin{psmallmatrix}\sum y_i\\\sum x_iy_i\end{psmallmatrix}$.\\
+\merke{$R^2\approx1$: Modell erklärt fast alle Streuung. \;$p<0{,}05$: Zusammenhang signifikant.}
+
+%====================================================
+\thema{21 \;PCA}
+Daten zentrieren (Spaltenmittel abziehen). \;
+$C=\tfrac1{n-1}A_c\transp A_c$ (Kovarianz).\\
+EW/EV von $C$; \;PC1 $=$ normierter EV zum größten $\lambda$.\\
+Varianzanteil PC1 $=\dfrac{\lambda_1}{\sum\lambda_i}$.
+
+%====================================================
+\thema{22 \;Hyperebene \& Margin}
+$E:\ \vec n\transp\vec x=c$. \;Normalenvektor $\vec n$; \;Dim $=n-1$; \;durch $0\Leftrightarrow c=0$.\\
+Abstand: $d=\dfrac{|\vec n\transp p-c|}{\norm{\vec n}}$.\\
+\textbf{Classifier:} $\vec n=\vec m_A-\vec m_B$, $b=-\vec n\transp\vec m$ ($\vec m=$ Mittelpunkt).
+Klasse via $\operatorname{sign}(\vec n\transp p+b)$; \;Margin $=$ kleinster Punktabstand.
+
+%====================================================
+\thema{23 \;Finite Differenzen}
+$u''(x_i)\approx\dfrac{u_{i-1}-2u_i+u_{i+1}}{h^2}$;\;
+$-u''=f\Rightarrow K\vec u=h^2\vec f$.\\
+$K_n$ (fest-fest) \& $T_n$ (fest-frei): pos.\ def., \textbf{invertierbar}.\\
+$B_n$ (frei-frei) \& $C_n$ (zyklisch): \textbf{singulär}, Nullraumvektor $(1,\dots,1)\transp$.
+
+%====================================================
+\thema{24 \;LoRA / beste Rang-$k$}
+$A_k=\sum_{i=1}^{k}\sigma_i\vec u_i\vec v_i\transp$ (kleinste $\sigma$ weglassen).\\
+Fehler: $\norm{A-A_k}_2=\sigma_{k+1}$; \;$\norm{A-A_k}_F=\sqrt{\sum_{i>k}\sigma_i^2}$.\\
+Rang $=\#\{\sigma_i\neq0\}$. \;Speicher: $k(m+n)$ statt $m\cdot n$.
+
+\end{multicols}
+
+\vspace{0.2em}{\color{rule}\hrule}\vspace{0.2em}
+\begin{center}\footnotesize\color{warn}
+Orange-Punkte = genau die Stellen aus Blatt 05, die du falsch hattest -- die zuerst draufschauen!
+\end{center}
+
+\end{document}

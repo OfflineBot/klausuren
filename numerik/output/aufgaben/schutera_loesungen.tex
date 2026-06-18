@@ -1,0 +1,381 @@
+\documentclass[a4paper,10pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{geometry}
+\geometry{a4paper,margin=1.8cm}
+
+% ----- Light Mode -----
+\definecolor{accent}{HTML}{1A4E8A}   % dunkelblau (Kapitel)
+\definecolor{accent2}{HTML}{8A5A00}  % braun/gold (Aufgaben)
+\definecolor{accent3}{HTML}{2E6E3A}  % grün (Lösung)
+\definecolor{boxbg}{HTML}{F2F6FB}    % heller Kasten
+\definecolor{rulecol}{HTML}{B0B0B0}
+
+\newcommand{\kapitel}[1]{%
+  \par\vspace{6pt}
+  {\large\bfseries\color{accent} #1}\par
+  \noindent\textcolor{accent}{\rule{\linewidth}{0.8pt}}
+  \par\vspace{2pt}
+}
+
+% Aufgabenkopf
+\newcommand{\aufg}[2]{%
+  \par\vspace{4pt}
+  {\bfseries\color{accent2} #1}~~{\footnotesize\color{accent2}[#2]}\par\vspace{1pt}
+}
+% Lösungsmarke
+\newcommand{\loes}{\textbf{\color{accent3} Lösung.}~}
+% Ergebnis hervorheben
+\newcommand{\erg}[1]{\fcolorbox{accent3}{boxbg}{$\displaystyle #1$}}
+
+\setlist[enumerate]{leftmargin=1.8em,itemsep=1pt,topsep=1pt,parsep=0pt}
+\setlist[itemize]{leftmargin=1.3em,itemsep=1pt,topsep=1pt,parsep=0pt,label=\textcolor{accent3}{\textbullet}}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{2pt}
+
+\begin{document}
+
+\begin{center}
+  {\Large\bfseries\color{accent} Numerische Methoden -- Lösungen}\\[1pt]
+  {\small Vollständige Rechenwege zu den Übungsaufgaben aus den Aufschrieben von
+   Prof.\ Dr.-Ing.\ Mark Schutera}
+\end{center}
+\noindent\textcolor{rulecol}{\rule{\linewidth}{0.4pt}}
+
+{\footnotesize Hinweis: Alle Zahlenwerte sind eigenständig nachgerechnet.
+Wenige numerische Beispiele im Skript enthalten Übertragungsfehler (z.\,B.\ wird
+in Kap.\ 5 der Monte-Carlo-Wert versehentlich auch für Mittelpunkt- und
+Trapezregel angegeben); hier stehen die korrekten Werte.}
+
+% =====================================================================
+\kapitel{Kapitel 1 \;--\; Enter Numerical Methods}
+
+\aufg{1.0 \;--\; Minimum von $\sin(x)$ auf $[-3,1]$}{Handrechnung}
+\loes \textbf{(a)} $f'(x)=\cos(x)=0\Rightarrow x=-\tfrac{\pi}{2}\approx-1{,}571$
+(einziger kritischer Punkt im Intervall). Werte vergleichen: $\sin(-\tfrac\pi2)=-1$,
+Ränder $\sin(-3)\approx-0{,}141$, $\sin(1)\approx0{,}841$. Minimum
+$\erg{f=-1 \text{ bei } x=-\tfrac{\pi}{2}}$.
+\textbf{(b)} Grid $h=1$: $\sin(-3)=-0{,}141$, $\sin(-2)=-0{,}909$,
+$\sin(-1)=-0{,}841$, $\sin(0)=0$, $\sin(1)=0{,}841$. Kleinster Wert
+$\erg{-0{,}909 \text{ bei } x=-2}$.
+\textbf{(c)} Fehler $=|-1-(-0{,}909)|=0{,}091$ -- das Gitter trifft das wahre
+Minimum bei $-\tfrac\pi2$ nicht.
+
+\aufg{1.1 \;--\; Lineares System per Grid-Search}{Handrechnung}
+\loes Für jedes Paar $(w,b)$ aus dem $5\times5$-Raster berechnet man
+$\mathrm{error}_1+\mathrm{error}_2 = |2w+b-11|+|5w+b-13|$. Die analytisch exakte
+Lösung erhält man durch Subtraktion der Gleichungen:
+$3w=2\Rightarrow w=\tfrac23\approx0{,}667$, $b=11-2w=\tfrac{29}{3}\approx9{,}667$.
+Im groben Raster liegt der kleinste Fehler beim nächstgelegenen Gitterpunkt:
+\[
+  (w,b)=(0,\;10):\quad \mathrm{error}_1=|0+10-11|=1,\;\; \mathrm{error}_2=|0+10-13|=3
+  \;\Rightarrow\; \text{Gesamtfehler } \erg{4}.
+\]
+\textbf{(b)} Es waren $5\times5=\mathbf{25}$ Auswertungen. Der Aufwand wächst mit
+der Rasterfeinheit \emph{linear} und mit der Variablenzahl $d$ \emph{exponentiell}
+($k^d$ Punkte) -- darum lohnt sich später ein gezielteres Verfahren statt
+Brute-Force.
+
+\aufg{1.2 \;/\; Selbstreflexion}{kurz}
+Feineres $h$ $\Rightarrow$ höhere Genauigkeit, aber mehr Rechenzeit (mehr
+Auswertungen) und irgendwann Rundungsdominanz. Das Intervall $[a,b]$ muss das
+gesuchte Extremum enthalten, sonst wird es nie gefunden. Die Diskretisierung
+ersetzt unendlich viele Punkte durch endlich viele -- exakte Extrema/Nullstellen
+fallen i.\,A.\ zwischen die Gitterpunkte.
+
+% =====================================================================
+\kapitel{Kapitel 2 \;--\; Error Analysis}
+
+\aufg{2.1 \;--\; Minimum von $\sin(x)$ auf $[-3,1]$}{Handrechnung}
+
+\textbf{Kondition} $\kappa=|f(x)-f(\tilde x)|$, $\tilde x=x\pm0{,}25$ -- hängt nur
+vom Problem ab:
+\[
+  \kappa(-1,+0{,}25)=|\sin(-1)-\sin(-0{,}75)|=|-0{,}8415+0{,}6816|=0{,}1599,
+\]
+\[
+  \kappa(-1,-0{,}25)=|\sin(-1)-\sin(-1{,}25)|=|-0{,}8415+0{,}9490|=0{,}1074,
+\]
+\[
+  \kappa(0,\pm0{,}25)=|\sin 0-\sin(\pm0{,}25)|=0{,}2474.
+\]
+Um $x=-1$ (das Minimum) ist $\kappa\approx0{,}11\text{--}0{,}16$ klein
+$\Rightarrow$ \textbf{gut konditioniert}; um $x=0$ ist $\kappa\approx0{,}25$
+größer $\Rightarrow$ \textbf{schlecht konditioniert} (Sinus dort am steilsten).
+
+\textbf{Stabilität} $|\hat f(\tilde x)-\hat f(x)|\le s\,|\tilde x-x|$, betrachte
+$\tilde x=x+0{,}25$ bei $x=-1$:
+\begin{itemize}
+  \item $h=1$: beide Werte fallen auf denselben Gitterpunkt
+        $\Rightarrow \hat f(\tilde x)=\hat f(x)$, also $s\approx0$ -- \emph{sehr stabil}.
+  \item $h=0{,}2$: $\hat f(-0{,}8)-\hat f(-1)=-0{,}7174-(-0{,}8415)=0{,}1241$,
+        $s=\dfrac{0{,}1241}{0{,}25}\approx \erg{0{,}496}$ -- spürbar weniger stabil.
+\end{itemize}
+
+\textbf{Konsistenz} $|\hat f(x)-f(x)|\le c$ (Vergleich mit exakter Lösung
+$f(-\tfrac{\pi}{2})=-1$): Je kleiner $h$, desto näher liegt ein Gitterpunkt am
+wahren Minimum $-\tfrac{\pi}{2}$, also $c_{h=1}\approx0{,}159 > c_{h=0{,}2}\approx0{,}051$.
+Konsistenz \emph{verbessert} sich mit kleinerem $h$.
+
+\textbf{Konvergenz} $|\hat f(\tilde x)-f(x)|$ kombiniert beides. Für $h=1$ ergibt
+sich $\approx0{,}16$. Für $h=0{,}2$ \emph{verbessert} sie sich trotz besserer
+Konsistenz \emph{nicht}, weil die geringere Stabilität die Störung $\tilde x$
+verstärkt. \textbf{Merke:} Konvergenz $=$ Stabilität $+$ Konsistenz; ein gutes
+$c$ nützt nichts, wenn $s$ die Datenstörung aufbläst.
+
+\aufg{2.2 \;--\; Stabilität $=$ Kondition im Grenzfall}{Beweis}
+\loes Für $h\to0$ wird das numerische Verfahren exakt, $\hat f\to f$. Dann
+\[
+  |\hat f(\tilde x)-\hat f(x)| \;\xrightarrow{h\to0}\; |f(\tilde x)-f(x)| = \kappa.
+\]
+Die rechte Seite ist gerade die Kondition. Folglich misst $s\,|\tilde x-x|$ im
+Grenzfall nichts anderes als die Problemkondition: Bei perfekter Diskretisierung
+erbt das Verfahren genau die Empfindlichkeit des Problems. $\square$
+
+\aufg{2.3 \;/\; Selbstreflexion}{kurz}
+Konvergenz und Stabilität hängen über die Datenstörung zusammen: gute Konsistenz
+(kleiner Bias) plus gute Stabilität (kleine Varianz) ergibt gute Konvergenz. Für
+$h\to0$ stößt man an die \emph{Maschinengenauigkeit} -- weitere Verkleinerung
+bringt nur noch Rundungsrauschen (\,,,weiteres Problem``). Es gibt also ein
+optimales $h$.
+
+% =====================================================================
+\kapitel{Kapitel 3 \;--\; Newton Methods}
+
+\aufg{3.0 \;--\; Newton vs.\ Grid-Search für $\sin(x)=0$}{Handrechnung}
+\loes \textbf{(a)} Grid $h=0{,}3$: $f(2{,}5)\approx0{,}599$, $f(2{,}8)\approx0{,}335$,
+$\mathbf{f(3{,}1)\approx0{,}042}$, $f(3{,}4)\approx-0{,}256,\dots$ Am nächsten an
+Null ist $x=3{,}1$ ($6$ Auswertungen), Fehler $|3{,}1-\pi|\approx0{,}042$.
+\textbf{(b)} Newton, $f'=\cos$, $x_0=3{,}5$:
+$x_1=3{,}5-\frac{\sin3{,}5}{\cos3{,}5}=3{,}5-\frac{-0{,}351}{-0{,}936}=3{,}5-0{,}375=3{,}125$;
+$x_2=3{,}125-\frac{0{,}0008}{-0{,}9999}\approx \erg{3{,}14159}$.
+\textbf{(c)} Newton erreicht nach $2$ Schritten ($\approx4$ Auswertungen) Fehler
+$<10^{-5}$, Grid-Search nur $0{,}042$ -- die Ableitung lenkt die Suche viel
+effizienter.
+
+\aufg{3.1 \;--\; Newton von Hand}{Handrechnung}
+\loes $f(x)=x^3-x$, $f'(x)=3x^2-1$, Iteration
+$x_{n+1}=x_n-\dfrac{x_n^3-x_n}{3x_n^2-1}$, Start $x_0=1{,}4$:
+\[
+  x_1=1{,}4-\frac{1{,}4^3-1{,}4}{3\cdot1{,}4^2-1}
+      =1{,}4-\frac{1{,}344}{4{,}88}=1{,}4-0{,}2754\approx 1{,}1246,
+\]
+\[
+  x_2=1{,}1246-\frac{1{,}1246^3-1{,}1246}{3\cdot1{,}1246^2-1}
+      \approx1{,}1246-\frac{0{,}2977}{2{,}794}\approx 1{,}0180,
+\]
+\[
+  x_3\approx 1{,}0005,\qquad x_4\approx 1{,}0000.
+\]
+Quadratische Konvergenz gegen \erg{x^\star=1}: die Anzahl korrekter Stellen
+verdoppelt sich pro Schritt.
+
+\aufg{3.2 \;--\; Sekantenverfahren von Hand}{Handrechnung}
+\loes $x_{n+1}=x_n-f(x_n)\dfrac{x_n-x_{n-1}}{f(x_n)-f(x_{n-1})}$ mit $x_0=1{,}2$,
+$x_1=1{,}4$. Funktionswerte: $f(1{,}2)=1{,}728-1{,}2=0{,}528$,
+$f(1{,}4)=2{,}744-1{,}4=1{,}344$.
+\[
+  x_2=1{,}4-1{,}344\cdot\frac{1{,}4-1{,}2}{1{,}344-0{,}528}
+     =1{,}4-1{,}344\cdot\frac{0{,}2}{0{,}816}=1{,}4-0{,}329\approx 1{,}0706.
+\]
+$f(1{,}0706)\approx0{,}1565$, damit
+\[
+  x_3=1{,}0706-0{,}1565\cdot\frac{1{,}0706-1{,}4}{0{,}1565-1{,}344}\approx 1{,}0272,
+  \qquad x_4\approx 1{,}0026 \;\to\; \erg{x^\star=1}.
+\]
+Etwas langsamer als Newton (Konvergenzordnung $\approx1{,}618$), aber \emph{ohne}
+Ableitung.
+
+\aufg{3.3 \;--\; Geometrische Fehlersuche}{Handrechnung}
+\loes Newton-Abbildung $N(x)=x-\dfrac{x^3-x}{3x^2-1}=\dfrac{2x^3}{3x^2-1}$.
+\begin{enumerate}
+  \item \textbf{Verschwindende Ableitung:} $f'(x_0)=3x_0^2-1=0\Rightarrow
+        x_0=\pm\tfrac{1}{\sqrt3}\approx \erg{\pm0{,}5774}$. Division durch $0$,
+        Tangente waagrecht $\Rightarrow$ Schritt nach $\pm\infty$.
+  \item \textbf{Falsche Nullstelle:} Start mit kleinem $|x_0|$, z.\,B.\
+        $x_0=0{,}4$, landet im Einzugsgebiet von $x=0$ statt der Zielnullstelle
+        $x=1$.
+  \item \textbf{Oszillation:} Suche $x_0$ mit $N(x_0)=-x_0$:
+        $\dfrac{2x_0^3}{3x_0^2-1}=-x_0\Rightarrow 5x_0^2=1\Rightarrow
+        x_0=\tfrac{1}{\sqrt5}\approx \erg{0{,}4472}$. Dann springt das Verfahren
+        ewig zwischen $+0{,}4472$ und $-0{,}4472$.
+\end{enumerate}
+
+\aufg{3.4 \;/\; Selbstreflexion}{kurz}
+Newton nutzt Steigungsinformation (lineare Taylor-Näherung) und konvergiert
+\emph{quadratisch}: von Fehler $10^{-1}$ auf $10^{-16}$ genügen wegen
+Stellenverdopplung nur $\sim4$ Schritte ($1\!\to\!2\!\to\!4\!\to\!8\!\to\!16$).
+Sekante, wenn $f'$ teuer/unbekannt ist; nicht, wenn zwei gute Startwerte fehlen
+oder $f$ stark gekrümmt ist.
+
+% =====================================================================
+\kapitel{Kapitel 4 \;--\; Global Optimization}
+
+\aufg{4.1 \;--\; Random Restarts: Wahrscheinlichkeit}{Handrechnung}
+\loes $P=1-(1-p)^K$, $p=0{,}15$.
+\[
+  \textbf{(a)}\quad P=1-0{,}85^{10}=1-0{,}1969=\erg{0{,}803}\;(\approx80\,\%).
+\]
+\[
+  \textbf{(b)}\quad K=\frac{\ln(1-0{,}99)}{\ln(1-0{,}15)}
+   =\frac{\ln0{,}01}{\ln0{,}85}=\frac{-4{,}605}{-0{,}1625}=28{,}3
+   \;\Rightarrow\; \erg{K=29}.
+\]
+\textbf{(c)} gleiches $99\,\%$-Ziel:
+\[
+  p=0{,}05:\;K=\frac{-4{,}605}{\ln0{,}95}=\frac{-4{,}605}{-0{,}0513}=89{,}8\;\Rightarrow\;90;
+  \qquad
+  p=0{,}01:\;K=\frac{-4{,}605}{\ln0{,}99}=458{,}2\;\Rightarrow\;459.
+\]
+Je kleiner das globale Becken, desto \emph{drastisch} mehr Neustarts.
+
+\aufg{4.2--4.8 \;/\; Code \& Konzept}{Modellantworten}
+\begin{itemize}
+  \item \textbf{4.2/4.3 (Shekel, Basins):} Newton/Gradientenabstieg konvergieren
+        zum \emph{nächsten} Foxhole $\Rightarrow$ Ergebnis hängt von $x_0$ ab.
+        Das größte Einzugsgebiet gehört meist zum globalen Minimum; seine relative
+        Größe ist genau das $p$ aus 4.1.
+  \item \textbf{4.4:} Becken sind schwer abgrenzbar bei hochfrequenten/verrauschten
+        Funktionen, z.\,B.\ $g(x)=\sin(x)+0{,}1\sin(50x)$ -- viele ineinander
+        verschachtelte Mini-Becken.
+  \item \textbf{4.5 ($|f''|$-Trick):} Vorzeichen der Krümmung im Nenner
+        erzwingen $\Rightarrow$ Schritt zeigt immer bergab; geometrisch wird die
+        Tangente so gespiegelt, dass sie nie ,,bergauf`` projiziert.
+        \emph{Maxima statt Minima:} Vorzeichen umkehren, also
+        $x_{n+1}=x_n+\frac{f'(x_n)}{|f''(x_n)|}$ -- dann läuft der Schritt stets
+        \emph{bergauf} (in Richtung des positiven Gradienten).
+  \item \textbf{4.6:} Basin Hopping (lokale Sprünge vom aktuellen Minimum aus)
+        braucht meist \emph{weniger} Funktionsauswertungen als Random Restarts,
+        weil es Nähe ausnutzt; zu kleine Sprünge $\to$ stecken bleiben, zu große
+        $\to$ reines Zufallssuchen.
+  \item \textbf{4.7:} Heuristik: Sprungweite vergrößern bei Stagnation,
+        verkleinern nach Erfolg (adaptiv); ,,disastrous jumps`` durch Clipping/
+        Akzeptanzkriterium (Metropolis) verhindern.
+  \item \textbf{4.8:} Mini-Batches liefern eine \emph{verrauschte} Loss-Landschaft;
+        das Rauschen ,,schüttelt`` den Optimierer aus flachen lokalen Minima
+        heraus (Glättungseffekt).
+\end{itemize}
+
+\aufg{4.9 \;--\; Basins kartieren}{Handrechnung}
+\loes Foxholes bei $x=0,4,7$; ein lokaler Optimierer geht zum nächstgelegenen.
+\textbf{(a)} Grenzen liegen mittig zwischen benachbarten Foxholes:
+$\tfrac{0+4}{2}=2$ und $\tfrac{4+7}{2}=5{,}5$. Also
+\[
+  \text{Basin}(0)=(-\infty,2),\quad \text{Basin}(4)=(2,\,5{,}5),\quad
+  \text{Basin}(7)=(5{,}5,\infty).
+\]
+\textbf{(b)} Globales Minimum bei $x\approx4$, sein Becken ist $(2;\,5{,}5)$.
+Ein Sprung $\epsilon\sim\mathrm{Uniform}(-3,3)$ ab $x^\circ=7$ landet bei
+$7+\epsilon\in(4,10)$. Treffer ins globale Becken heißt $7+\epsilon<5{,}5$, also
+$\epsilon<-1{,}5$, d.\,h.\ $\epsilon\in(-3;-1{,}5)$:
+\[
+  P=\frac{\text{günstige Länge}}{\text{Gesamtlänge}}=\frac{1{,}5}{6}=\erg{0{,}25}.
+\]
+\textbf{(c)} Basin Hopping springt aus dem aktuellen Minimum $x=7$ in das
+\emph{benachbarte} globale Becken bei $4$ -- die Nähe wird ausgenutzt. Random
+Restarts würfeln dagegen gleichverteilt über den ganzen (großen) Suchraum, in
+dem das globale Becken nur einen kleinen Anteil hat.
+
+% =====================================================================
+\kapitel{Kapitel 5 \;--\; Numerical Integration}
+
+\noindent Exakter Referenzwert:
+$\tilde I=\int_{-2}^{-1}\sin x\,dx=[-\cos x]_{-2}^{-1}=-\cos(-1)+\cos(-2)
+=\erg{-0{,}9564491}$.\\
+Benötigte Funktionswerte: $\sin(-2)=-0{,}90930$, $\sin(-1{,}75)=-0{,}98399$,
+$\sin(-1{,}5)=-0{,}99750$, $\sin(-1{,}25)=-0{,}94898$, $\sin(-1)=-0{,}84147$.
+
+\aufg{5.1 \;--\; Mittelpunktsregel, $n=1$}{Handrechnung}
+\loes Mittelpunkt $m=\tfrac{-2+(-1)}{2}=-1{,}5$:
+\[
+  \hat I=(b-a)\,f(m)=1\cdot\sin(-1{,}5)=\erg{-0{,}99750},\qquad
+  \text{Fehler}=|{-0{,}95645}+0{,}99750|=0{,}04105.
+\]
+
+\aufg{5.2 \;--\; Mittelpunktsregel, $n=2$}{Handrechnung}
+\loes $h=0{,}5$, Mittelpunkte $-1{,}75$ und $-1{,}25$:
+\[
+  \hat I=h\,[f(-1{,}75)+f(-1{,}25)]=0{,}5\,[-0{,}98399-0{,}94898]=\erg{-0{,}96649},
+\]
+Fehler $=0{,}01004$ -- viertelt sich gegenüber $n=1$ (Ordnung $2$, doppelte
+Intervallzahl $\Rightarrow$ Faktor $\tfrac14$).
+
+\aufg{5.3 \;--\; Trapezregel, $n=2$}{Handrechnung}
+\loes Stützstellen $-2,-1{,}5,-1$:
+\[
+  T_2=\frac{h}{2}[f(-2)+2f(-1{,}5)+f(-1)]
+   =0{,}25\,[-0{,}90930-1{,}99499-0{,}84147]=\erg{-0{,}93644},
+\]
+Fehler $=0{,}02001$. Erwartungsgemäß rund \emph{doppelt} so groß wie der
+Mittelpunktsfehler und mit \emph{umgekehrtem} Vorzeichen (Trapez über-, Mittelpunkt
+unterschätzt).
+
+\aufg{5.4 \;--\; Simpson-Regel, $n=2$}{Handrechnung}
+\loes Simpson $=\tfrac13(2\cdot\text{Mittelpunkt}+\text{Trapez})$, hier direkt:
+\[
+  S_2=\frac{h}{3}[f(-2)+4f(-1{,}5)+f(-1)]
+   =\frac{0{,}5}{3}\,[-0{,}90930-3{,}98998-0{,}84147]=\erg{-0{,}95679},
+\]
+Fehler $=0{,}00034$ -- winzig (Ordnung $4$, exakt für Polynome bis Grad $3$). Nicht
+\emph{exakt} null, da $\sin$ kein Kubikpolynom ist, aber praktisch
+vernachlässigbar.
+
+\aufg{5.4b \;--\; Simpson-Gewichte via Lagrange}{Herleitung}
+\loes Mit $x_0=a$, $x_1=m$, $x_2=b$ und $m-a=b-m=h$ (wobei hier
+$h=\frac{b-a}{2}$ den halben Intervallabstand meint) lautet das
+Lagrange-Interpolationspolynom $P(x)=f(a)L_a+f(m)L_m+f(b)L_b$ mit
+$L_a=\frac{(x-m)(x-b)}{(a-m)(a-b)}$ usw. Integriert man die drei Basispolynome
+über $[a,b]$, erhält man die Gewichte
+\[
+  A=\int_a^b L_a\,dx=\frac{h}{6}(b-a),\quad B=\frac{2h}{3}(b-a)\;\text{-Anteil},
+  \quad C=\frac{h}{6},
+\]
+kompakt: $A=C=\frac{b-a}{6}$, $B=\frac{4(b-a)}{6}$, also
+\[
+  \int_a^b f(x)\,dx\approx \frac{b-a}{6}\big[f(a)+4f(m)+f(b)\big].
+\]
+Da ein Polynom vom Grad $\le2$ durch seine Parabel \emph{exakt} interpoliert wird,
+ist Simpson für quadratische (und sogar kubische) Funktionen exakt. $\square$
+
+\aufg{5.5 \;--\; Monte Carlo, $N=4$}{Handrechnung}
+\loes Stichproben und Werte:
+$f(-1{,}95)=-0{,}92896$, $f(-1{,}55)=-0{,}99978$, $f(-1{,}15)=-0{,}91276$,
+$f(-1{,}05)=-0{,}86742$.
+\[
+  \hat I=(b-a)\frac1N\sum_i f(X_i)=1\cdot\frac{-3{,}70893}{4}=\erg{-0{,}92723},
+\]
+Fehler $=0{,}02922$. (Mit nur $4$ Punkten erwartungsgemäß ungenauer als die
+Quadraturregeln.)
+
+\aufg{5.6 \;--\; Monte-Carlo-Fehlerabschätzung}{Handrechnung}
+\loes Stichprobenmittel $\bar f=-0{,}92723$. Abweichungen$^2$:
+\[
+  \sigma_f^2=\frac{1}{N-1}\sum_i (f(X_i)-\bar f)^2
+   =\frac{1}{3}\,(9{,}05\cdot10^{-3})=\erg{3{,}02\cdot10^{-3}},
+\]
+\[
+  \sigma_f=\sqrt{0{,}00302}=0{,}05493,\qquad
+  \mathrm{SE}=\frac{(b-a)\,\sigma_f}{\sqrt N}=\frac{0{,}05493}{2}=\erg{0{,}02747}.
+\]
+\textbf{(a)} $\mathrm{SE}\propto 1/\sqrt N$: von $N=4$ auf $N=16$ wächst $\sqrt N$
+von $2$ auf $4$ $\Rightarrow$ Fehler \emph{halbiert} sich auf $\approx0{,}0137$.
+\textbf{(b)} In $\mathrm{SE}=\sigma_f/\sqrt N$ taucht die Dimension $d$ \emph{nicht}
+auf -- der MC-Fehler ist dimensionsunabhängig. Gitterquadratur braucht dagegen
+$k^d$ Punkte (Fluch der Dimensionalität).
+
+\aufg{5.7 \;/\; Selbstreflexion}{kurz}
+Genauigkeitsrangfolge hier: Simpson ($10^{-4}$) $\gg$ Mittelpunkt ($10^{-2}$)
+$>$ Trapez ($2\!\cdot\!10^{-2}$) $\approx$ Monte Carlo. Deterministische Quadratur
+gewinnt bei glatten, niedrigdimensionalen Integralen; Monte Carlo gewinnt in hohen
+Dimensionen ($d\gtrsim4\text{--}8$), weil sein Fehler $\propto1/\sqrt N$ nicht von
+$d$ abhängt. Der Mini-Batch-Mittelwert in SGD ist genau eine
+Monte-Carlo-Schätzung des Gradienten -- ihr Rauschen hilft, lokalen Minima zu
+entkommen.
+
+\end{document}

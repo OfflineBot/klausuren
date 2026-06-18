@@ -1,0 +1,357 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}
+\geometry{margin=2.0cm}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{titlesec}
+\usepackage{array}
+\usepackage{colortbl}
+
+%================= Dark-Mode Farben (Catppuccin Mocha) =================
+\definecolor{base}{HTML}{1E1E2E}     % Hintergrund
+\definecolor{fg}{HTML}{CDD6F4}       % Text (heller Vordergrund)
+\definecolor{accent}{HTML}{89B4FA}   % Überschriften / Akzent
+\definecolor{accent2}{HTML}{F5C2E7}  % Punkteangabe
+\definecolor{gridcolor}{HTML}{45475A}% Karo-Gitter / Linien (dezent)
+
+\pagecolor{base}
+
+\newcommand{\transp}{^{\mathsf{T}}}
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+\newcommand{\inner}[2]{\left\langle #1,\, #2 \right\rangle}
+\newcommand{\rang}{\operatorname{rang}}
+\newcommand{\spur}{\operatorname{spur}}
+\newcommand{\diag}{\operatorname{diag}}
+
+% Punkteangabe rechtsbündig an der Aufgabenüberschrift
+\newcommand{\pkt}[1]{\hfill\textnormal{\color{accent2}\itshape (#1)}}
+
+% Karierte Antwortfläche (Karopapier) -- #1 = Höhe des Bereichs (z. B. 5cm).
+\newcommand{\karo}[1]{\par\vspace{0.3cm}\noindent
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcolor, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par\vspace{0.3cm}}
+
+% Ankreuzkästchen
+\newcommand{\kasten}{{\color{gridcolor}$\square$}}
+
+%================= Überschriften in Akzentfarbe =================
+\titleformat{\section}{\color{accent}\normalfont\Large\bfseries}{}{0pt}{}
+
+%================= Kopf-/Fußzeile =================
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\color{fg}\small FLA \& Analytische Geometrie}
+\rhead{\color{fg}\small Probeklausur 03 (Gesamtüberblick)}
+\cfoot{\color{fg}\thepage}
+\renewcommand{\headrule}{{\color{gridcolor}\hrule height 0.4pt}}
+
+\arrayrulecolor{gridcolor}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+\color{fg}
+
+\thispagestyle{fancy}
+
+\begin{center}
+  {\color{accent}\LARGE\bfseries Probeklausur (Gesamtüberblick)}\\[0.3em]
+  {\color{fg}\large Fortgeschrittene Lineare Algebra und Analytische Geometrie}\\[0.6em]
+  {\color{gridcolor}\rule{\linewidth}{0.4pt}}
+\end{center}
+
+\vspace{0.4em}
+
+% ---------------- Kopf: Name / Datum ----------------
+\renewcommand{\arraystretch}{1.6}
+\begin{tabular}{@{}p{0.5\linewidth}@{}p{0.5\linewidth}@{}}
+  Name: \ \rule[-2pt]{0.7\linewidth}{0.4pt} &
+  Datum: \ \rule[-2pt]{0.55\linewidth}{0.4pt}
+\end{tabular}
+
+\vspace{0.6em}
+
+\begin{tabular}{@{}l p{0.72\linewidth}@{}}
+  \textbf{\color{accent}Bearbeitungszeit:} & 180 Minuten \\
+  \textbf{\color{accent}Gesamtpunkte:}     & 144 Punkte \\
+  \textbf{\color{accent}Hilfsmittel:}      & ein beidseitig handbeschriebenes Formelblatt (DIN A4), nicht-programmierbarer Taschenrechner \\
+\end{tabular}
+
+\vspace{0.4em}
+
+\textit{\color{fg}\small Hinweis: Diese Klausur deckt den \textbf{gesamten} Stoff ab: alle Zerlegungen (CR, LU/$PA{=}LU$, Cholesky, QR, SVD, Spektralzerlegung), Eigenwerte \& Diagonalisierung, Pseudoinverse \& Ausgleichsrechnung, Normen \& innere Produkte (inkl.\ Mahalanobis), Orthogonalität \& Untervektorräume, Geometrie/Hyperebenen \& Margin, Regression \& PCA, Finite Differenzen sowie zwei Beweise. Alle Ergebnisse sind nachvollziehbar zu begründen.}
+
+\vspace{0.9em}
+
+% ---------------- Punktetabelle ----------------
+\renewcommand{\arraystretch}{1.5}
+\noindent
+\begin{tabular}{|c|*{17}{c|}c|}
+\hline
+\scriptsize\textbf{Aufg.} & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & 16 & 17 & \textbf{$\Sigma$} \\
+\hline
+\scriptsize\textbf{max.} & 8 & 8 & 10 & 9 & 8 & 9 & 9 & 8 & 12 & 8 & 8 & 8 & 8 & 8 & 9 & 6 & 8 & \textbf{144} \\
+\hline
+\scriptsize\textbf{erm.} & & & & & & & & & & & & & & & & & & \\
+\hline
+\end{tabular}
+
+\renewcommand{\arraystretch}{1.0}
+
+% ================================================================
+\clearpage
+\section*{Aufgabe 1 -- Quickies \pkt{8 Punkte}}
+Sind die folgenden Aussagen \emph{wahr} oder \emph{falsch}? Kreuzen Sie an.
+\vspace{0.5em}
+\begin{enumerate}[label=\alph*)]
+  \item Jede reelle symmetrische Matrix ist orthogonal diagonalisierbar ($A = Q\Lambda Q\transp$). \hfill \kasten\ wahr \quad \kasten\ falsch
+  \item Für jede Matrix $A$ ist $A\transp A$ symmetrisch und positiv semidefinit. \hfill \kasten\ wahr \quad \kasten\ falsch
+  \item Die Singulärwerte von $A$ sind die Eigenwerte von $A\transp A$. \hfill \kasten\ wahr \quad \kasten\ falsch
+  \item Für $A \in \mathbb{R}^{n\times n}$ gilt $\det(cA) = c\cdot\det(A)$. \hfill \kasten\ wahr \quad \kasten\ falsch
+  \item Eine orthogonale Matrix $Q$ erfüllt $\det(Q) = \pm 1$. \hfill \kasten\ wahr \quad \kasten\ falsch
+  \item Für invertierbares $A$ stimmt die Pseudoinverse $A^{+}$ mit $A^{-1}$ überein. \hfill \kasten\ wahr \quad \kasten\ falsch
+  \item Eine Hyperebene $\{x : a\transp x = b\}$ mit $b \neq 0$ ist ein Untervektorraum. \hfill \kasten\ wahr \quad \kasten\ falsch
+  \item Die Spur einer Matrix ist gleich der Summe ihrer Eigenwerte. \hfill \kasten\ wahr \quad \kasten\ falsch
+\end{enumerate}
+\karo{6cm}
+
+% ================================================================
+\clearpage
+\section*{Aufgabe 2 -- Lineares Gleichungssystem (Gauß) \pkt{8 Punkte}}
+Gegeben sei das Gleichungssystem
+\[
+\begin{aligned}
+ x_1 + 2x_2 + \phantom{3}x_3 &= 3,\\
+2x_1 + 5x_2 + 3x_3 &= 8,\\
+3x_1 + 7x_2 + 4x_3 &= 11.
+\end{aligned}
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Bringen Sie das System mit dem Gauß-Verfahren auf Zeilenstufenform. \pkt{4}
+  \item Bestimmen Sie die \textbf{allgemeine} Lösung (Partikulärlösung $+$ Nullraumanteil). \pkt{4}
+\end{enumerate}
+\karo{13cm}
+
+% ================================================================
+\clearpage
+\section*{Aufgabe 3 -- CR-Zerlegung \& vier Unterräume \pkt{10 Punkte}}
+Gegeben sei
+\[
+A = \begin{pmatrix} 1 & 3 & 1 & 4 \\ 2 & 6 & 1 & 7 \\ 1 & 3 & 2 & 5 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie $\rang(A)$ und die CR-Zerlegung $A = CR$. \pkt{4}
+  \item Geben Sie eine Basis des Spaltenraums $C(A)$ an. \pkt{2}
+  \item Bestimmen Sie eine Basis des Nullraums $N(A)$. \pkt{2}
+  \item Geben Sie $\dim C(A),\ \dim C(A\transp),\ \dim N(A),\ \dim N(A\transp)$ an. \pkt{2}
+\end{enumerate}
+\karo{14cm}
+
+% ================================================================
+\clearpage
+\section*{Aufgabe 4 -- LU-Zerlegung mit Zeilentausch ($PA = LU$) \pkt{9 Punkte}}
+Gegeben sei
+\[
+A = \begin{pmatrix} 0 & 1 & 1 \\ 1 & 2 & 1 \\ 2 & 2 & 3 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie eine Zerlegung $PA = LU$ mit einer Permutationsmatrix $P$. \pkt{5}
+  \item Bestimmen Sie $\det(A)$. \pkt{2}
+  \item Erklären Sie, warum hier ein Zeilentausch nötig ist und welche Rolle $P$ spielt. \pkt{2}
+\end{enumerate}
+\karo{14cm}
+
+% ================================================================
+\clearpage
+\section*{Aufgabe 5 -- Cholesky-Zerlegung \& Lösen \pkt{8 Punkte}}
+Gegeben seien
+\[
+A = \begin{pmatrix} 4 & 6 & 2 \\ 6 & 10 & 5 \\ 2 & 5 & 9 \end{pmatrix},
+\qquad
+b = \begin{pmatrix} 12 \\ 21 \\ 16 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Prüfen Sie die positive Definitheit (führende Hauptminoren) und bestimmen Sie die Cholesky-Zerlegung $A = LL\transp$. \pkt{5}
+  \item Lösen Sie $Ax = b$ über $Ly = b$ und $L\transp x = y$. \pkt{3}
+\end{enumerate}
+\karo{14cm}
+
+% ================================================================
+\clearpage
+\section*{Aufgabe 6 -- QR-Zerlegung (Gram-Schmidt) \& Ausgleichsrechnung \pkt{9 Punkte}}
+Gegeben seien
+\[
+A = \begin{pmatrix} 1 & 1 \\ 1 & 0 \\ 1 & 2 \end{pmatrix},
+\qquad
+b = \begin{pmatrix} 1 \\ 2 \\ 3 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie mit dem Gram-Schmidt-Verfahren die (reduzierte) QR-Zerlegung $A = QR$. \pkt{6}
+  \item Lösen Sie das überbestimmte System $Ax = b$ im Sinne kleinster Quadrate über $Rx = Q\transp b$. \pkt{3}
+\end{enumerate}
+\karo{14cm}
+
+% ================================================================
+\clearpage
+\section*{Aufgabe 7 -- Eigenwerte, Diagonalisierung \& Matrixpotenz \pkt{9 Punkte}}
+Gegeben sei
+\[
+A = \begin{pmatrix} 4 & 1 \\ 2 & 3 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie die Eigenwerte. \pkt{3}
+  \item Bestimmen Sie Eigenvektoren sowie $V$ und $D$ mit $A = V D V^{-1}$. \pkt{3}
+  \item Berechnen Sie $A^2$ über die Diagonalisierung $A^2 = V D^2 V^{-1}$. \pkt{3}
+\end{enumerate}
+\karo{13cm}
+
+% ================================================================
+\clearpage
+\section*{Aufgabe 8 -- Spektralzerlegung symmetrischer Matrizen \pkt{8 Punkte}}
+Gegeben sei die symmetrische Matrix
+\[
+A = \begin{pmatrix} 2 & 1 \\ 1 & 2 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie die Eigenwerte und \textbf{orthonormale} Eigenvektoren. \pkt{4}
+  \item Stellen Sie die Spektralzerlegung $A = Q\Lambda Q\transp$ auf und prüfen Sie sie nach. \pkt{2}
+  \item Begründen Sie mit dem Spektralsatz, warum die Eigenvektoren orthogonal gewählt werden können. \pkt{2}
+\end{enumerate}
+\karo{13cm}
+
+% ================================================================
+\clearpage
+\section*{Aufgabe 9 -- SVD, Pseudoinverse \& beste Rang-1-Näherung \pkt{12 Punkte}}
+Gegeben sei
+\[
+A = \begin{pmatrix} 2 & 2 \\ -1 & 1 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Berechnen Sie $A\transp A$ und dessen Eigenwerte. \pkt{2}
+  \item Bestimmen Sie die Singulärwerte $\sigma_1 \ge \sigma_2$ und die Matrix $V$. \pkt{2}
+  \item Bestimmen Sie $U$, sodass $A = U\Sigma V\transp$. \pkt{4}
+  \item Bestimmen Sie die Pseudoinverse $A^{+}$. \pkt{2}
+  \item Bestimmen Sie die beste Rang-1-Näherung $A_1 = \sigma_1 u_1 v_1\transp$ und den Fehler $\norm{A - A_1}_2$. Wie viele Zahlen spart eine Rang-$k$-Näherung einer $m\times n$-Matrix gegenüber der vollen Speicherung? \pkt{2}
+\end{enumerate}
+\karo{14cm}
+
+% ================================================================
+\clearpage
+\section*{Aufgabe 10 -- Determinante, Inverse, Spur \& Rechenregeln \pkt{8 Punkte}}
+\begin{enumerate}[label=\alph*)]
+  \item Berechnen Sie $\det(M)$ für $M = \begin{pmatrix} 2 & 0 & 1 \\ 1 & 3 & 2 \\ 0 & 1 & 2 \end{pmatrix}$ (z.\,B.\ mit Sarrus). \pkt{3}
+  \item Berechnen Sie die Inverse von $N = \begin{pmatrix} 3 & 2 \\ 4 & 3 \end{pmatrix}$. \pkt{2}
+  \item Bestimmen Sie $\det(3M)$ mithilfe der Regel $\det(cA) = c^{n}\det(A)$. \pkt{2}
+  \item Bestimmen Sie $\spur(M)$ und erläutern Sie den Zusammenhang zu den Eigenwerten. \pkt{1}
+\end{enumerate}
+\karo{13cm}
+
+% ================================================================
+\clearpage
+\section*{Aufgabe 11 -- Normen, innere Produkte \& Mahalanobis-Abstand \pkt{8 Punkte}}
+Gegeben seien
+\[
+x = \begin{pmatrix} 2 \\ -1 \\ 2 \end{pmatrix},
+\qquad
+y = \begin{pmatrix} 1 \\ 2 \\ 2 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Berechnen Sie $\norm{x}_1$, $\norm{x}_2$ und $\norm{x}_\infty$. \pkt{3}
+  \item Berechnen Sie $\inner{x}{y}$ und den Kosinus des Winkels zwischen $x$ und $y$. \pkt{3}
+  \item Sei $G = \diag(2,1,2)$. Berechnen Sie das gewichtete innere Produkt $\inner{x}{y}_G = x\transp G\,y$ und die zugehörige Norm $\norm{x}_G = \sqrt{x\transp G\,x}$ (Mahalanobis-Norm). \pkt{2}
+\end{enumerate}
+\karo{12cm}
+
+% ================================================================
+\clearpage
+\section*{Aufgabe 12 -- Orthogonale Matrizen \& Untervektorraum-Test \pkt{8 Punkte}}
+\begin{enumerate}[label=\alph*)]
+  \item Prüfen Sie, ob
+  $Q = \dfrac{1}{3}\begin{pmatrix} 1 & 2 & 2 \\ 2 & 1 & -2 \\ 2 & -2 & 1 \end{pmatrix}$
+  orthogonal ist. Bestimmen Sie $\det(Q)$ und deuten Sie das Ergebnis (Drehung/Spiegelung). \pkt{4}
+  \item Ist $U = \{\, x \in \mathbb{R}^3 : x_1 - 2x_2 + x_3 = 0 \,\}$ ein Untervektorraum von $\mathbb{R}^3$? Und $W = \{\, x \in \mathbb{R}^3 : x_1 + x_3 = 2 \,\}$? Begründen Sie jeweils mit den Untervektorraum-Kriterien. \pkt{4}
+\end{enumerate}
+\karo{13cm}
+
+% ================================================================
+\clearpage
+\section*{Aufgabe 13 -- Lineare Regression \& Bestimmtheitsmaß \pkt{8 Punkte}}
+Gegeben seien die Datenpunkte
+\[
+(0,1),\quad (1,1),\quad (2,4).
+\]
+Gesucht ist die Ausgleichsgerade $y = c_0 + c_1 x$.
+\begin{enumerate}[label=\alph*)]
+  \item Stellen Sie die Designmatrix $X$ und die Normalengleichung $X\transp X\,c = X\transp y$ auf und lösen Sie sie. \pkt{5}
+  \item Bestimmen Sie das Bestimmtheitsmaß $R^2 = 1 - \mathrm{SS}_{\text{res}}/\mathrm{SS}_{\text{tot}}$. \pkt{3}
+\end{enumerate}
+\karo{13cm}
+
+% ================================================================
+\clearpage
+\section*{Aufgabe 14 -- Hauptkomponentenanalyse (PCA) \pkt{8 Punkte}}
+Gegeben seien die Datenpunkte
+\[
+(2,1),\quad (1,2),\quad (-1,-2),\quad (-2,-1).
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie den Mittelwert und die zentrierten Daten $A_c$. \pkt{2}
+  \item Bestimmen Sie die Kovarianzmatrix $C = \tfrac{1}{n-1} A_c\transp A_c$. \pkt{3}
+  \item Bestimmen Sie die erste Hauptkomponente (Richtung des größten Eigenwerts) und den erklärten Varianzanteil. \pkt{3}
+\end{enumerate}
+\karo{13cm}
+
+% ================================================================
+\clearpage
+\section*{Aufgabe 15 -- Finite Differenzen \& die vier Matrizen \pkt{9 Punkte}}
+Gegeben sei das Randwertproblem
+\[
+-u''(x) = 2, \qquad u(0) = u(1) = 0,
+\]
+mit den inneren Gitterpunkten $x_1 = 0{,}25,\ x_2 = 0{,}5,\ x_3 = 0{,}75$.
+\begin{enumerate}[label=\alph*)]
+  \item Leiten Sie mit dem zentralen Differenzenquotienten das lineare Gleichungssystem $K u = h^2 f$ her (mit $K$ und rechter Seite) und lösen Sie es. \pkt{5}
+  \item Die vier Standardmatrizen der finiten Differenzen lauten
+  \[
+  K = \begin{pmatrix} 2 & -1 & 0 \\ -1 & 2 & -1 \\ 0 & -1 & 2 \end{pmatrix},\
+  T = \begin{pmatrix} 1 & -1 & 0 \\ -1 & 2 & -1 \\ 0 & -1 & 2 \end{pmatrix},\
+  B = \begin{pmatrix} 1 & -1 & 0 \\ -1 & 2 & -1 \\ 0 & -1 & 1 \end{pmatrix},\
+  C = \begin{pmatrix} 2 & -1 & -1 \\ -1 & 2 & -1 \\ -1 & -1 & 2 \end{pmatrix}.
+  \]
+  Geben Sie für jede an, ob sie invertierbar bzw.\ positiv definit oder singulär ist, und begründen Sie kurz. \pkt{4}
+\end{enumerate}
+\karo{13cm}
+
+% ================================================================
+\clearpage
+\section*{Aufgabe 16 -- Beweise (Rechenregeln) \pkt{6 Punkte}}
+$A$ und $B$ seien invertierbare $n\times n$-Matrizen.
+\begin{enumerate}[label=\alph*)]
+  \item Zeigen Sie: $(AB)^{-1} = B^{-1}A^{-1}$. \pkt{3}
+  \item Zeigen Sie: $(A\transp)^{-1} = (A^{-1})\transp$. \pkt{3}
+\end{enumerate}
+\karo{12cm}
+
+% ================================================================
+\clearpage
+\section*{Aufgabe 17 -- Hyperebene, Abstand \& Margin \pkt{8 Punkte}}
+Gegeben sei die Hyperebene
+\[
+H:\quad 2x_1 + x_2 - 2x_3 = 6
+\]
+sowie die Punkte $p = (4,1,1)\transp$ und $q = (1,1,1)\transp$.
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie einen Normalenvektor $n$ und $\norm{n}_2$. \pkt{2}
+  \item Berechnen Sie den (vorzeichenbehafteten) Abstand von $p$ zu $H$. Auf welcher Seite liegt $p$? \pkt{3}
+  \item Berechnen Sie den Abstand von $q$ zu $H$. Liegen $p$ und $q$ auf derselben Seite (Margin-Klassifikation)? \pkt{3}
+\end{enumerate}
+\karo{12cm}
+
+\end{document}

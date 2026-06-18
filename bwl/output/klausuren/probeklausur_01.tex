@@ -1,0 +1,218 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage[a4paper,top=2.2cm,bottom=1.8cm,left=2cm,right=2cm]{geometry}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{needspace}
+\usepackage{array}
+
+% ---------- Dark Mode ----------
+\definecolor{bgdark}{HTML}{1E1E1E}
+\definecolor{fgtext}{HTML}{E6E6E6}
+\definecolor{gridcol}{HTML}{4A4A4A}
+\definecolor{accent}{HTML}{6FB7FF}
+\definecolor{good}{HTML}{7FD28A}
+\pagecolor{bgdark}
+\color{fgtext}
+\arrayrulecolor{gridcol}
+
+% ---------- Kopf-/Fußzeile ----------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot[C]{\textcolor{gridcol}{\small Probeklausur 01 -- BWL \;|\; Seite \thepage}}
+
+% ---------- Karo-Ausfüllfeld ----------
+\newcommand{\karo}[1]{\par\vspace{1.5mm}\noindent%
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcol, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par}
+
+% ---------- Große Aufgabe (immer neue Seite) ----------
+\newcommand{\hauptaufgabe}[3]{\clearpage%
+  \noindent\colorbox{accent}{\parbox{\dimexpr\linewidth-2\fboxsep\relax}{%
+    \color{bgdark}\large\bfseries Aufgabe #1 \hfill #2 Punkte\\[1pt]
+    \normalsize #3}}\par\vspace{3mm}}
+
+% ---------- Teilaufgabe ----------
+\newcommand{\teil}[2]{\par\vspace{1mm}\needspace{3\baselineskip}%
+  \noindent{\color{accent}\bfseries Aufgabe #1}\enspace{\color{good}\small(#2 Punkte)}\par\vspace{0.5mm}}
+
+\setlength{\parindent}{0pt}
+\linespread{1.05}
+
+\begin{document}
+
+% ===================== KLAUSUR-KOPF =====================
+\thispagestyle{fancy}
+\begin{center}
+  {\color{accent}\LARGE\bfseries Probeklausur 01}\\[3pt]
+  {\large Ausgewählte Themen der Digitalen Betriebswirtschaftslehre}\\[2pt]
+  {\small Data Science und Künstliche Intelligenz -- 2.\ Semester}
+\end{center}
+
+\vspace{4mm}
+\noindent\textcolor{gridcol}{\rule{\linewidth}{0.4pt}}\\[2mm]
+\begin{tabular}{@{}p{0.62\linewidth}p{0.34\linewidth}@{}}
+\textbf{Bearbeitungszeit:} 90 Minuten & \textbf{Gesamtpunkte:} 100 \\[2mm]
+\textbf{Hilfsmittel:} nicht-programmierbarer & \\
+Taschenrechner; Formeln sind angegeben & \\
+\end{tabular}\\[2mm]
+{\large Name:\enspace\textcolor{gridcol}{\rule{5.5cm}{0.4pt}}\hfill Datum:\enspace\textcolor{gridcol}{\rule{3.5cm}{0.4pt}}}\\[2mm]
+\noindent\textcolor{gridcol}{\rule{\linewidth}{0.4pt}}
+
+\vspace{4mm}
+\begin{center}
+\renewcommand{\arraystretch}{1.5}
+\begin{tabular}{|l|c|c|c|c|c|}
+\hline
+\textbf{Aufgabe} & 1 & 2 & 3 & 4 & $\boldsymbol{\Sigma}$\\\hline
+\textbf{max.\ Punkte} & 25 & 25 & 25 & 25 & 100\\\hline
+\textbf{erreicht} & & & & & \\\hline
+\end{tabular}
+\end{center}
+
+\vspace{3mm}
+\noindent{\color{accent}\bfseries Hinweise:} Begründen Sie Ihre Antworten -- es zählt das
+Verständnis. Bei Rechenaufgaben den \textbf{Rechenweg} angeben und Ergebnisse
+\textbf{interpretieren}. Jede große Aufgabe beginnt auf einer neuen Seite.
+
+% ===================== AUFGABE 1 =====================
+\hauptaufgabe{1}{25}{Einführung und Märkte}
+
+\teil{1.1}{9} Wertschöpfung und Kennzahlen.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Erklären Sie das Unternehmen als \textbf{Wertschöpfungssystem} (Input--Transformation--Output)
+        und geben Sie die Formel der \textbf{Wertschöpfung} an. \hfill(2 P)
+  \item Eine Bäckerei produziert in einer Woche \textbf{12.000 Brötchen} mit \textbf{300 Arbeitsstunden}.
+        Berechnen Sie die \textbf{Arbeitsproduktivität}. \hfill(2 P)
+  \item Der \textbf{Ertrag} beträgt 9.000\,€, der \textbf{Aufwand} 6.000\,€, das eingesetzte
+        \textbf{Kapital} 20.000\,€. Berechnen Sie \textbf{Wirtschaftlichkeit}, \textbf{Gewinn} und
+        \textbf{Rentabilität} und interpretieren Sie die Wirtschaftlichkeit. \hfill(5 P)
+\end{enumerate}
+\karo{5cm}
+
+\teil{1.2}{8} Ökonomisches Prinzip.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Erläutern Sie \textbf{Minimum-}, \textbf{Maximum-} und \textbf{Optimumprinzip}. \hfill(3 P)
+  \item Ordnen Sie zu: (1) Eine Spedition liefert mit fixem Budget möglichst viele Pakete aus.
+        (2) Ein Cloud-Anbieter stellt eine fest zugesagte Leistung mit minimaler Energie bereit. \hfill(2 P)
+  \item Erklären Sie den Unterschied zwischen \textbf{Effizienz} und \textbf{Effektivität}
+        an einem Beispiel. \hfill(3 P)
+\end{enumerate}
+\karo{5cm}
+
+\teil{1.3}{8} Angebot und Nachfrage. Es gelten
+$Q_D = 600 - 20P$ \;und\; $Q_S = 100 + 30P$ \;($Q$ = Menge, $P$ = Preis in €).
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Bestimmen Sie \textbf{Gleichgewichtspreis} und \textbf{-menge}. \hfill(4 P)
+  \item Der Staat setzt einen \textbf{Höchstpreis von $P=6$\,€}. Berechnen Sie Angebot und Nachfrage.
+        Liegt ein Angebots- oder Nachfrageüberschuss vor (Höhe)? Was passiert am Markt? \hfill(3 P)
+  \item Welche Rolle spielen \textbf{Daten} für die Schätzung der Nachfrage? \hfill(1 P)
+\end{enumerate}
+\karo{5.5cm}
+
+% ===================== AUFGABE 2 =====================
+\hauptaufgabe{2}{25}{Unternehmensstrategie}
+
+\teil{2.1}{8} Portfolio und Wettbewerbsstrategie.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Wozu dient die \textbf{BCG-Matrix}? Nennen Sie je einen \textbf{Vorteil} und einen
+        \textbf{Nachteil}. \hfill(4 P)
+  \item Ordnen Sie jedem Unternehmen die passende \textbf{Wettbewerbsstrategie nach Porter} zu und
+        begründen Sie: (1) Lebensmittel-Discounter, (2) Premium-Smartphone-Hersteller,
+        (3) Anbieter von Spezialsoftware nur für Zahnarztpraxen. \hfill(4 P)
+\end{enumerate}
+\karo{5.5cm}
+
+\teil{2.2}{9} Skaleneffekte. Die \textbf{Fixkosten} betragen 800.000\,€/Jahr, die variablen
+\textbf{Stückkosten} 12\,€. \;\textit{Formel:}\; $\text{Stückkosten}=\text{var.\ Stückkosten}+\frac{\text{Fixkosten}}{\text{Menge}}$.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Was versteht man unter \textbf{Skaleneffekten} bzw.\ \textbf{Fixkostendegression}? \hfill(3 P)
+  \item Berechnen Sie die \textbf{Stückkosten} bei 8.000 und bei 40.000 Stück. \hfill(4 P)
+  \item Welchen Bezug haben Skaleneffekte zur \textbf{Preisführerschaft}? \hfill(2 P)
+\end{enumerate}
+\karo{5cm}
+
+\teil{2.3}{8} Wettbewerbsvorteile und Kundennutzen.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Definieren Sie den Begriff \textbf{USP} (Unique Selling Proposition). \hfill(2 P)
+  \item Nennen Sie die \textbf{vier Nutzenarten} (ökonomisch, funktional, emotional, sozial) mit je
+        einem Beispiel. \hfill(4 P)
+  \item Erklären Sie die Aussage: \glqq Kunden kaufen nicht Produkte, sondern Nutzen.\grqq \hfill(2 P)
+\end{enumerate}
+\karo{5.5cm}
+
+% ===================== AUFGABE 3 =====================
+\hauptaufgabe{3}{25}{Marketing und digitale Kundenbeziehungen}
+
+\teil{3.1}{9} Kaufentscheidungsprozess und Konsumentenverhalten.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Nennen Sie die \textbf{fünf Phasen} des Kaufentscheidungsprozesses nach Kotler. \hfill(3 P)
+  \item Erklären Sie das \textbf{S-O-R-Modell} und den Unterschied zum \textbf{S-R-Modell}. \hfill(4 P)
+  \item Nennen Sie die \textbf{drei Arten von Informationsquellen} mit je einem Beispiel. \hfill(2 P)
+\end{enumerate}
+\karo{5cm}
+
+\teil{3.2}{8} Involvement und Kaufentscheidung.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Nennen Sie \textbf{drei Unterschiede} zwischen High- und Low-Involvement-Käufen. \hfill(3 P)
+  \item Ordnen Sie \textbf{Laptop} und \textbf{Schokoriegel} je High-/Low-Involvement zu und nennen
+        Sie die passende \textbf{Kaufentscheidungsart}. \hfill(3 P)
+  \item Welche Konsequenz hat das jeweils für das Marketing? \hfill(2 P)
+\end{enumerate}
+\karo{5cm}
+
+\teil{3.3}{8} AIDA und E-Commerce.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Erläutern Sie die \textbf{vier Stufen des AIDA-Modells} und formulieren Sie für eine App je
+        eine passende Botschaft. \hfill(4 P)
+  \item Welche Rolle spielen \textbf{Kundenbewertungen} im E-Commerce? Nennen Sie zwei weitere
+        digitale Informationsquellen. \hfill(4 P)
+\end{enumerate}
+\karo{5.5cm}
+
+% ===================== AUFGABE 4 =====================
+\hauptaufgabe{4}{25}{Beschaffung, Supply Chain Management und Personal}
+
+\teil{4.1}{9} Beschaffung und optimale Bestellmenge.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Ordnen Sie für einen Fahrradhersteller zu (Rohstoff/Hilfsstoff/Betriebsstoff):
+        (1) Aluminium für Rahmen, (2) Schrauben \& Klebstoff, (3) Schmieröl für Maschinen. \hfill(3 P)
+  \item \textbf{Make-or-Buy:} Nennen Sie zwei Kriterien und entscheiden Sie beispielhaft. \hfill(2 P)
+  \item \textbf{Optimale Bestellmenge:} $m=9000$ Stück/Jahr, $K_B=40$\,€/Bestellung,
+        Einstandspreis $p=80$\,€, Lagerhaltungskostensatz $z=2{,}5\,\%$.\\
+        \textit{Formel (Andler):}\; $q_{\text{opt}}=\sqrt{\dfrac{2\,m\,K_B}{k_L}}$, \; $k_L=p\cdot z$.
+        Berechnen Sie $q_{\text{opt}}$, die Anzahl der Bestellungen und prüfen Sie über
+        Bestellkosten $=$ Lagerkosten. \hfill(4 P)
+\end{enumerate}
+\karo{5cm}
+
+\teil{4.2}{8} Supply Chain Management und Logistik.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Was ist \textbf{Supply Chain Management}? Nennen Sie zwei Ziele. \hfill(3 P)
+  \item Nennen Sie die \textbf{vier zentralen Teilbereiche} der Logistik. \hfill(2 P)
+  \item Erklären Sie \textbf{einen Zielkonflikt} der Logistik. \hfill(3 P)
+\end{enumerate}
+\karo{5cm}
+
+\teil{4.3}{8} Personalmanagement. Die Soll-Größe (\textbf{Bruttopersonalbedarf}) beträgt
+\textbf{20}, der aktuelle Bestand \textbf{15}. Im nächsten Jahr: 2 Renteneintritte,
+2 Kündigungen, 1 Rückkehr aus der Elternzeit, 1 bereits unterschriebener neuer Vertrag.
+\begin{enumerate}[label=\textbf{\alph*)}, leftmargin=*]
+  \item Berechnen Sie den \textbf{fortgeschriebenen Bestand} und den \textbf{Netto-Personalbedarf}. \hfill(4 P)
+  \item Nennen Sie je einen Vorteil der \textbf{internen} und der \textbf{externen} Beschaffung. \hfill(2 P)
+  \item Ordnen Sie zu (into/on/near/off the job): Trainee-Programm, Job Rotation,
+        berufsbegleitendes Studium. \hfill(2 P)
+\end{enumerate}
+\karo{5cm}
+
+\end{document}

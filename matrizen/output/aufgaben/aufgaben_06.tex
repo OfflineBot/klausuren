@@ -1,0 +1,459 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}
+\geometry{margin=2.0cm}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{titlesec}
+
+%================= Dark-Mode Farben (Catppuccin Mocha) =================
+\definecolor{base}{HTML}{1E1E2E}
+\definecolor{fg}{HTML}{CDD6F4}
+\definecolor{accent}{HTML}{89B4FA}
+\definecolor{accent2}{HTML}{F5C2E7}
+\definecolor{gridcolor}{HTML}{45475A}
+\pagecolor{base}
+
+\makeatletter
+\newenvironment{psmallmatrix}{\left(\begin{smallmatrix}}{\end{smallmatrix}\right)}
+\makeatother
+
+\newcommand{\transp}{^{\mathsf{T}}}
+\newcommand{\norm}[1]{\left\lVert #1 \right\rVert}
+\newcommand{\inner}[2]{\left\langle #1,\, #2 \right\rangle}
+\newcommand{\rang}{\operatorname{rang}}
+\newcommand{\spur}{\operatorname{spur}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\sgn}{\operatorname{sign}}
+\newcommand{\schwierig}[1]{\hfill\textnormal{\color{accent2}\itshape (#1)}}
+
+\newcommand{\karo}[1]{\par\vspace{0.3cm}\noindent
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcolor, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par\vspace{0.3cm}}
+
+\titleformat{\section}{\color{accent}\normalfont\Large\bfseries}{}{0pt}{}
+
+\pagestyle{fancy}\fancyhf{}
+\lhead{\color{fg}\small Fortgeschrittene Lineare Algebra und Analytische Geometrie}
+\rhead{\color{fg}\small Übungsblatt 06}
+\cfoot{\color{fg}\thepage}
+\renewcommand{\headrule}{{\color{gridcolor}\hrule height 0.4pt}}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+\color{fg}
+\thispagestyle{fancy}
+
+\begin{center}
+  {\color{accent}\LARGE\bfseries Übungsblatt 06 -- Gezieltes Training}\\[0.4em]
+  {\large Fortgeschrittene Lineare Algebra und Analytische Geometrie}\\[0.8em]
+\end{center}
+
+\noindent
+\begin{tabular}{@{}p{0.6\textwidth}p{0.35\textwidth}@{}}
+  \textbf{Name:} \textcolor{fg}{\hrulefill} & \textbf{Datum:} \textcolor{fg}{\hrulefill}
+\end{tabular}
+
+\vspace{0.4em}{\color{gridcolor}\hrule}\vspace{0.6em}
+
+\textit{Dieses Blatt enthält \textbf{neue} Aufgaben zu allen Themen, die auf Blatt 05 noch offen oder
+fehlerhaft waren (die CR-Zerlegung ist nicht dabei -- die sitzt schon). Schwerpunkt liegt auf den
+Stolperstellen: Matrix-Rechenregeln \& Beweise, Determinanten-Rechenregeln, Lösbarkeit von LGS
+(unendlich viele Lösungen!) und orthogonale Matrizen ($Q^{-1}=Q\transp$). Notation wie in der
+Vorlesung; $E$ = Einheitsmatrix. „Glatte`` Wurzeln ausrechnen, „krumme`` dürfen stehen bleiben.}
+
+\vspace{0.6em}
+
+%==================================================================
+\clearpage
+\section*{Aufgabe 1 -- Matrix-Rechenregeln \& Beweise\schwierig{mittel}}
+$A,B$ seien quadratisch und invertierbar.
+\begin{enumerate}[label=\alph*)]
+  \item Vereinfachen Sie soweit wie möglich:
+        \[ \text{(i)}\ \big((A^{-1})\transp\big)^{-1},\qquad
+           \text{(ii)}\ A\,(A^{-1}+B^{-1})\,B,\qquad
+           \text{(iii)}\ (AB^{-1})^{-1}A. \]
+  \item Welche der folgenden Gleichungen gilt für \emph{alle} quadratischen $A,B$? Begründen Sie bzw.\
+        geben Sie ein Gegenbeispiel.
+        \[ \text{(1)}\ (A\transp)\transp=A,\quad \text{(2)}\ (AB)\transp=A\transp B\transp,\quad
+           \text{(3)}\ A\transp A=AA\transp,\quad \text{(4)}\ (A^2)\transp=(A\transp)^2. \]
+  \item Zeigen Sie: Für \emph{jede} (auch nicht-quadratische) Matrix $A$ ist $A\transp A$ symmetrisch.
+  \item Zeigen Sie: Sind $A,B$ symmetrisch, so ist $AB$ symmetrisch \emph{genau dann}, wenn $AB=BA$.
+\end{enumerate}
+\karo{8.5cm}
+
+%==================================================================
+\clearpage
+\section*{Aufgabe 2 -- Quickies (Wahr oder Falsch)\schwierig{leicht}}
+Entscheiden Sie für jede Aussage, ob sie \emph{wahr} oder \emph{falsch} ist, und begründen Sie kurz.
+\begin{enumerate}[label=\alph*)]
+  \item Für invertierbare $A$ gilt $(A^{-1})^{-1}=A$.
+  \item Es gilt stets $\det(A\transp)=\det(A)$.
+  \item Eine orthogonale Matrix besitzt stets $\det=1$.
+  \item Ist $A$ diagonalisierbar, so ist $A$ invertierbar.
+  \item Jede symmetrische Matrix ist mit einer \emph{orthonormalen} Eigenvektorbasis diagonalisierbar.
+  \item Die Determinante einer Dreiecksmatrix ist das Produkt der Diagonaleinträge.
+  \item Es gilt $\rang(AB)\le\min\{\rang(A),\rang(B)\}$.
+  \item Aus $A^2=0$ folgt $A=0$.
+\end{enumerate}
+\karo{7cm}
+
+%==================================================================
+\clearpage
+\section*{Aufgabe 3 -- Skalarprodukt, Winkel \& Cauchy-Schwarz\schwierig{leicht}}
+Gegeben seien
+\[
+  \vec x = \begin{pmatrix} 1 \\ -2 \\ 2 \end{pmatrix},\qquad
+  \vec y = \begin{pmatrix} 2 \\ 2 \\ 1 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Berechnen Sie $\norm{\vec x}_1$, $\norm{\vec x}_2$ und $\norm{\vec x}_\infty$.
+  \item Berechnen Sie $\inner{\vec x}{\vec y}$. Sind $\vec x,\vec y$ orthogonal? Welcher Winkel ergibt sich?
+  \item Überprüfen Sie die Cauchy-Schwarz-Ungleichung $|\inner{\vec x}{\vec y}|\le\norm{\vec x}_2\norm{\vec y}_2$.
+  \item Bestimmen Sie den Winkel $\alpha$ zwischen $\vec u=(1,1,0)\transp$ und $\vec v=(0,1,1)\transp$.
+\end{enumerate}
+\karo{6.5cm}
+
+%==================================================================
+\clearpage
+\section*{Aufgabe 4 -- Lösbarkeit von LGS (Gauß)\schwierig{mittel}}
+Untersuchen Sie jedes System auf Lösbarkeit und geben Sie die \emph{vollständige} Lösungsmenge an.
+\begin{enumerate}[label=\alph*)]
+  \item $\begin{aligned}[t] 2x_1+x_2+x_3&=7\\ x_1+2x_2+x_3&=8\\ x_1+x_2+2x_3&=9 \end{aligned}$
+  \item $\begin{aligned}[t] x_1+2x_2+x_3&=3\\ 2x_1+4x_2+2x_3&=7\\ x_1\phantom{+2x_2}+x_3&=2 \end{aligned}$
+  \item $\begin{aligned}[t] x_1+x_2+2x_3&=4\\ 2x_1+x_2+3x_3&=7\\ 3x_1+2x_2+5x_3&=11 \end{aligned}$
+\end{enumerate}
+\karo{8.5cm}
+
+%==================================================================
+\clearpage
+\section*{Aufgabe 5 -- Die vier Unterräume \& ihre Orthogonalität\schwierig{schwer}}
+Gegeben sei
+\[
+  A = \begin{pmatrix} 1 & 2 & 1 & 0 \\ 2 & 4 & 3 & 1 \\ 1 & 2 & 2 & 1 \end{pmatrix}\in\mathbb{R}^{3\times4}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie den Rang $r$ und die Dimensionen aller vier Unterräume
+        ($\dim C(A),\ \dim C(A\transp),\ \dim N(A),\ \dim N(A\transp)$).
+  \item Bestimmen Sie eine Basis des Nullraums $N(A)$.
+  \item Bestätigen Sie an Ihren Basisvektoren, dass $N(A)\perp C(A\transp)$ gilt.
+  \item Bestimmen Sie eine Basis des Linksnullraums $N(A\transp)$ ($\vec y\transp A=\vec0\transp$).
+\end{enumerate}
+\karo{9cm}
+
+%==================================================================
+\clearpage
+\section*{Aufgabe 6 -- Äußeres Produkt \& Rang-1\schwierig{mittel}}
+Gegeben sei
+\[
+  A = \begin{pmatrix} 3 & 6 & 9 \\ 1 & 2 & 3 \\ 2 & 4 & 6 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Schreiben Sie $A$ als äußeres Produkt $A=\vec u\,\vec v\transp$ und geben Sie $\vec u,\vec v$ an.
+  \item Welchen Rang hat $A$? Wie groß ist $\det(A)$?
+  \item Bestimmen Sie den einzigen von $0$ verschiedenen Eigenwert $\lambda=\vec v\transp\vec u$ und
+        überprüfen Sie $\spur(A)=\lambda$.
+\end{enumerate}
+\karo{7.5cm}
+
+%==================================================================
+\clearpage
+\section*{Aufgabe 7 -- Determinante (Sarrus) \& Rechenregeln\schwierig{mittel}}
+\begin{enumerate}[label=\alph*)]
+  \item Berechnen Sie $\det(A)$ mit der Regel von Sarrus und geben Sie $\spur(A)$ an für
+        \[ A = \begin{pmatrix} 1 & 2 & -1 \\ 0 & 3 & 1 \\ 2 & 1 & 2 \end{pmatrix}. \]
+  \item Für zwei $3\times3$-Matrizen gelte $\det(A)=15$ und $\det(B)=5$. Bestimmen Sie
+        \[ \det(AB),\quad \det(3A),\quad \det(A^{-1}),\quad \det(2B),\quad \det(A^2). \]
+        (Achten Sie bei $\det(3A)$ und $\det(2B)$ auf den Exponenten $n$!)
+\end{enumerate}
+\karo{7.5cm}
+
+%==================================================================
+\clearpage
+\section*{Aufgabe 8 -- $2\times2$-Inverse \& Rechenregel-Beweis\schwierig{mittel}}
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie mit der $2\times2$-Formel die Inverse von
+        $B=\begin{psmallmatrix}4&7\\1&2\end{psmallmatrix}$ und machen Sie die Probe $BB^{-1}=E$.
+  \item Beweisen Sie für invertierbares $A$ die Regel $(A\transp)^{-1}=(A^{-1})\transp$.
+\end{enumerate}
+\karo{7.5cm}
+
+%==================================================================
+\clearpage
+\section*{Aufgabe 9 -- LU mit Zeilentausch ($PA=LU$)\schwierig{schwer}}
+Gegeben seien
+\[
+  A = \begin{pmatrix} 0 & 2 & 1 \\ 1 & 1 & 2 \\ 2 & 6 & 5 \end{pmatrix},\qquad
+  b = \begin{pmatrix} 3 \\ 4 \\ 13 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Warum ist das Pivotelement $a_{11}$ ein Problem? Geben Sie die Permutationsmatrix $P$ an.
+  \item Bestimmen Sie $L$ und $U$ mit $PA=LU$.
+  \item Bestimmen Sie $\det(A)$ (Vorzeichen durch den Zeilentausch beachten!).
+  \item Lösen Sie $A\vec x=b$ über $L\vec y=Pb$ (vorwärts) und $U\vec x=\vec y$ (rückwärts).
+\end{enumerate}
+\karo{9cm}
+
+%==================================================================
+\clearpage
+\section*{Aufgabe 10 -- Cholesky-Zerlegung\schwierig{mittel}}
+Gegeben seien
+\[
+  A = \begin{pmatrix} 9 & 3 & -3 \\ 3 & 5 & 1 \\ -3 & 1 & 18 \end{pmatrix},\qquad
+  b = \begin{pmatrix} 9 \\ 9 \\ 16 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Zeigen Sie mit den führenden Hauptminoren, dass $A$ positiv definit ist.
+  \item Bestimmen Sie $L$ mit $A=LL\transp$.
+  \item Lösen Sie $A\vec x=b$ über $L\vec y=b$ und $L\transp\vec x=\vec y$.
+  \item Warum besitzt $M=\begin{psmallmatrix}2&3\\3&2\end{psmallmatrix}$ keine Cholesky-Zerlegung?
+\end{enumerate}
+\karo{8.5cm}
+
+%==================================================================
+\clearpage
+\section*{Aufgabe 11 -- QR über Gram-Schmidt\schwierig{schwer}}
+Gegeben seien
+\[
+  A = \begin{pmatrix} 2 & 5 \\ 1 & 4 \\ 2 & 2 \end{pmatrix},\qquad b = \begin{pmatrix} 7 \\ 5 \\ 4 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie mit dem Gram-Schmidt-Verfahren $\vec q_1,\vec q_2$ und geben Sie $Q$ an.
+  \item Bestimmen Sie $R=Q\transp A$ und machen Sie die Probe $QR=A$.
+  \item Lösen Sie $A\vec x=b$ über $R\vec x=Q\transp b$ (Rückwärtseinsetzen).
+\end{enumerate}
+\karo{8.5cm}
+
+%==================================================================
+\clearpage
+\section*{Aufgabe 12 -- Inneres Produkt nachweisen\schwierig{mittel}}
+$\inner{\vec x}{\vec y}=\vec x\transp A\vec y$ auf $\mathbb{R}^2$ ist genau dann ein inneres Produkt, wenn
+$A$ symmetrisch und positiv definit ist. Entscheiden Sie für jede Form (Symmetrie + Hauptminoren):
+\begin{enumerate}[label=\alph*)]
+  \item $\inner{\vec x}{\vec y}=\vec x\transp\begin{psmallmatrix}3&1\\1&2\end{psmallmatrix}\vec y$
+  \item $\inner{\vec x}{\vec y}=\vec x\transp\begin{psmallmatrix}2&3\\3&2\end{psmallmatrix}\vec y$
+  \item $\inner{\vec x}{\vec y}=2x_1y_1+x_1y_2+x_2y_1+3x_2y_2$ \;(zuerst als $\vec x\transp A\vec y$ schreiben).
+\end{enumerate}
+Geben Sie für die \emph{nicht} positiv definite Form ein $\vec x\neq\vec0$ mit $\vec x\transp A\vec x<0$ an.
+\karo{8cm}
+
+%==================================================================
+\clearpage
+\section*{Aufgabe 13 -- Orthogonale Matrizen\schwierig{mittel}}
+Gegeben sei
+\[
+  Q = \frac{1}{3}\begin{pmatrix} 2 & 2 & -1 \\ -1 & 2 & 2 \\ 2 & -1 & 2 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Zeigen Sie, dass $Q$ orthogonal ist (Spalten paarweise orthonormal -- auch die Längen!).
+  \item Geben Sie $Q^{-1}$ \emph{ohne} Rechnung an (Begründung) und bestimmen Sie $\det(Q)$.
+        Drehung oder Spiegelung?
+  \item Überprüfen Sie die Längenerhaltung $\norm{Q\vec x}=\norm{\vec x}$ für $\vec x=(1,2,2)\transp$.
+\end{enumerate}
+\karo{7.5cm}
+
+%==================================================================
+\clearpage
+\section*{Aufgabe 14 -- Eigenwerte, Diagonalisierung \& Potenz\schwierig{mittel}}
+Gegeben sei
+\[
+  A = \begin{pmatrix} 1 & 4 \\ 2 & 3 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie die Eigenwerte über $\chi_A(\lambda)$ und zu jedem einen Eigenvektor.
+  \item Geben Sie $S$ und $D$ mit $A=SDS^{-1}$ an (inklusive $S^{-1}$).
+  \item Berechnen Sie mit $A^k=SD^kS^{-1}$ die Potenz $A^3$.
+  \item Überprüfen Sie $\spur(A)=\sum_i\lambda_i$ und $\det(A)=\prod_i\lambda_i$.
+\end{enumerate}
+\karo{8.5cm}
+
+%==================================================================
+\clearpage
+\section*{Aufgabe 15 -- Eigenwert-Regeln (Dreiecksmatrix)\schwierig{mittel}}
+Gegeben sei die obere Dreiecksmatrix
+\[
+  A = \begin{pmatrix} 4 & 2 & 1 \\ 0 & -1 & 3 \\ 0 & 0 & 2 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Geben Sie die Eigenwerte direkt an und bestätigen Sie $\spur(A)=\sum_i\lambda_i$ und
+        $\det(A)=\prod_i\lambda_i$.
+  \item Bestimmen Sie \emph{ohne} neue charakteristische Gleichung die Eigenwerte von $A+2E$, $A^{-1}$
+        und $A^2$.
+  \item Ist $A$ invertierbar? Begründen Sie über die Eigenwerte.
+\end{enumerate}
+\karo{7.5cm}
+
+%==================================================================
+\clearpage
+\section*{Aufgabe 16 -- Spektralzerlegung ($3\times3$)\schwierig{schwer}}
+Gegeben sei die symmetrische Matrix
+\[
+  A = \begin{pmatrix} 4 & 0 & 0 \\ 0 & 5 & 2 \\ 0 & 2 & 5 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie die Eigenwerte und eine \emph{orthonormale} Eigenvektorbasis (Blockstruktur nutzen).
+  \item Geben Sie die Spektralzerlegung $A=Q\Lambda Q\transp$ an.
+  \item Berechnen Sie $A^{-1}=Q\Lambda^{-1}Q\transp$.
+\end{enumerate}
+\karo{8.5cm}
+
+%==================================================================
+\clearpage
+\section*{Aufgabe 17 -- Definitheit klassifizieren\schwierig{mittel}}
+Klassifizieren Sie über die führenden Hauptminoren \emph{und} die Eigenwerte:
+\[
+  A=\begin{psmallmatrix}4&2\\2&3\end{psmallmatrix},\quad
+  B=\begin{psmallmatrix}-3&1\\1&-2\end{psmallmatrix},\quad
+  C=\begin{psmallmatrix}4&2\\2&1\end{psmallmatrix},\quad
+  D=\begin{psmallmatrix}2&3\\3&2\end{psmallmatrix}.
+\]
+Geben Sie für die \emph{indefinite} Matrix zusätzlich ein $\vec x$ mit $\vec x\transp(\text{Matrix})\vec x<0$ an.
+\karo{8cm}
+
+%==================================================================
+\clearpage
+\section*{Aufgabe 18 -- Inneres Produkt $\vec x\transp A\vec y$ \& Mahalanobis\schwierig{mittel}}
+\begin{enumerate}[label=\alph*)]
+  \item Ist $\inner{\vec x}{\vec y}=\vec x\transp A\vec y$ mit $A=\begin{psmallmatrix}3&-1\\-1&3\end{psmallmatrix}$
+        ein inneres Produkt? Begründen Sie.
+  \item Berechnen Sie $\inner{\vec u}{\vec v}$ und $\norm{\vec u}_A$ für $\vec u=(1,1)\transp,\ \vec v=(1,-1)\transp$.
+        Sind $\vec u,\vec v$ orthogonal bzgl.\ $A$?
+  \item Berechnen Sie den Mahalanobis-Abstand $\sqrt{\vec x\transp\Sigma^{-1}\vec x}$ für
+        $\vec x=(3,2)\transp,\ \Sigma=\begin{psmallmatrix}9&0\\0&4\end{psmallmatrix}$.
+\end{enumerate}
+\karo{8cm}
+
+%==================================================================
+\clearpage
+\section*{Aufgabe 19 -- Untervektorraum-Test\schwierig{leicht}}
+Entscheiden Sie für jede Menge, ob sie ein Untervektorraum ist, und begründen Sie kurz.
+\begin{enumerate}[label=\alph*)]
+  \item $U_1=\{(x,y)\transp\in\mathbb{R}^2 : y=-2x\}$
+  \item $U_2=\{(x,y)\transp\in\mathbb{R}^2 : |x|=|y|\}$
+  \item $U_3=\{(x,y,z)\transp\in\mathbb{R}^3 : x+2y-z=0\}$
+  \item $U_4=\{(x,y,z)\transp\in\mathbb{R}^3 : x+y+z=2\}$
+  \item $U_5=\{(x,y)\transp\in\mathbb{R}^2 : xy\ge0\}$
+\end{enumerate}
+\karo{7.5cm}
+
+%==================================================================
+\clearpage
+\section*{Aufgabe 20 -- SVD (volle \& reduzierte Form)\schwierig{schwer}}
+Gegeben sei
+\[
+  A = \begin{pmatrix} 1 & 1 \\ 1 & -1 \\ 1 & 1 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Berechnen Sie $A\transp A$ und bestimmen Sie die Singulärwerte (absteigend).
+  \item Bestimmen Sie $V$, $\Sigma$ und $U=[\vec u_1\ \vec u_2\ \vec u_3]$ der \emph{vollen} SVD
+        $A=U\Sigma V\transp$.
+  \item Geben Sie die \emph{reduzierte} SVD an und bestätigen Sie
+        $A=\sigma_1\vec u_1\vec v_1\transp+\sigma_2\vec u_2\vec v_2\transp$.
+\end{enumerate}
+\karo{8.5cm}
+
+%==================================================================
+\clearpage
+\section*{Aufgabe 21 -- Pseudoinverse \& Ausgleichsrechnung\schwierig{mittel}}
+Gegeben seien
+\[
+  A = \begin{pmatrix} 1 & 2 \\ 1 & 1 \\ 1 & 0 \end{pmatrix},\qquad b = \begin{pmatrix} 4 \\ 0 \\ 2 \end{pmatrix}.
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Berechnen Sie $A\transp A$ und $(A\transp A)^{-1}$.
+  \item Bestimmen Sie $A^{+}=(A\transp A)^{-1}A\transp$ und verifizieren Sie $A^{+}A=E$.
+  \item Lösen Sie $A\vec x\approx b$ bestmöglich ($\vec x=A^{+}b$).
+\end{enumerate}
+\karo{8cm}
+
+%==================================================================
+\clearpage
+\section*{Aufgabe 22 -- Lineare Regression \& Deutung\schwierig{schwer}}
+Zu den Datenpunkten $(x,y)\in\{(0,2),(1,3),(2,3),(3,6)\}$ soll die Ausgleichsgerade $y=c_0+c_1x$
+bestimmt werden.
+\begin{enumerate}[label=\alph*)]
+  \item Stellen Sie $X$ und $\vec y$ auf und notieren Sie die Normalengleichung
+        $X\transp X\,\vec c=X\transp\vec y$.
+  \item Lösen Sie nach $\vec c$ auf und geben Sie die Geradengleichung an.
+  \item \emph{Deutung:} Was bedeutet $R^2\approx1$, und was ein kleiner $p$-Wert ($<0{,}05$)?
+\end{enumerate}
+\karo{8.5cm}
+
+%==================================================================
+\clearpage
+\section*{Aufgabe 23 -- Hauptkomponentenanalyse (PCA)\schwierig{schwer}}
+Gegeben seien die Datenpunkte (als Zeilen)
+\[
+  (2,1),\quad (1,2),\quad (-1,-2),\quad (-2,-1).
+\]
+\begin{enumerate}[label=\alph*)]
+  \item Zeigen Sie, dass die Daten zentriert sind, und bestimmen Sie $C=\tfrac1{n-1}A_c\transp A_c$.
+  \item Bestimmen Sie die Eigenwerte von $C$ und die erste Hauptkomponente (normiert).
+  \item Welcher Anteil der Gesamtvarianz wird durch PC1 erklärt?
+\end{enumerate}
+\karo{8.5cm}
+
+%==================================================================
+\clearpage
+\section*{Aufgabe 24 -- Hyperebene, Abstand \& Margin-Classifier\schwierig{mittel}}
+\textbf{Teil 1.} Gegeben sei die Ebene $E:\ x_1+2x_2-2x_3=9$.
+\begin{enumerate}[label=\alph*)]
+  \item Geben Sie einen Normalenvektor $\vec n$ und die Dimension von $E$ im $\mathbb{R}^3$ an.
+        Verläuft $E$ durch den Ursprung?
+  \item Liegt $p=(1,1,0)\transp$ auf $E$? Berechnen Sie den Abstand $d$ von $p$ zu $E$.
+\end{enumerate}
+\textbf{Teil 2.} Zwei Klassen: $\;A:\ (2,1),(2,-1)\qquad B:\ (-2,1),(-2,-1)$.
+\begin{enumerate}[label=\alph*),start=3]
+  \item Bestimmen Sie $\vec n=\vec m_A-\vec m_B$ und $b=-\vec n\transp\vec m$ ($\vec m=$ Mittelpunkt) und
+        geben Sie die trennende Ebene an.
+  \item Klassifizieren Sie $p=(1,3)\transp$ über das Vorzeichen von $\vec n\transp p+b$.
+  \item Bestimmen Sie den Margin (kleinster Abstand eines Klassenpunktes zur Ebene).
+\end{enumerate}
+\karo{8.5cm}
+
+%==================================================================
+\clearpage
+\section*{Aufgabe 25 -- Finite Differenzen \& die vier Matrizen\schwierig{schwer}}
+\begin{enumerate}[label=\alph*)]
+  \item Geben Sie den zentralen Differenzenquotienten für $u''(x)$ an und leiten Sie für $-u''=f$ mit
+        $u=0$ am Rand das LGS $T\vec u=h^2\vec f$ her.
+  \item Lösen Sie $-u''(x)=24$, $u(0)=u(1)=0$ mit $x_1=0{,}25,\ x_2=0{,}5,\ x_3=0{,}75$
+        ($h=\tfrac14$, also $T=K_3$). Nutzen Sie die Symmetrie $u_1=u_3$.
+  \item Klassifizieren Sie die vier Matrizen
+        \[
+          K_3=\begin{psmallmatrix}2&-1&0\\-1&2&-1\\0&-1&2\end{psmallmatrix},\
+          T_3=\begin{psmallmatrix}1&-1&0\\-1&2&-1\\0&-1&2\end{psmallmatrix},\
+          B_3=\begin{psmallmatrix}1&-1&0\\-1&2&-1\\0&-1&1\end{psmallmatrix},\
+          C_3=\begin{psmallmatrix}2&-1&-1\\-1&2&-1\\-1&-1&2\end{psmallmatrix}.
+        \]
+        Welche sind invertierbar/positiv definit, welche singulär? Nullraumvektor für die singulären.
+\end{enumerate}
+\karo{8.5cm}
+
+%==================================================================
+\clearpage
+\section*{Aufgabe 26 -- LoRA / beste Rang-$k$-Näherung\schwierig{mittel}}
+\textbf{Teil 1.} Gegeben sei $A=\begin{psmallmatrix}6&0\\0&3\\0&0\end{psmallmatrix}$ mit Singulärwerten
+$\sigma_1=6$ ($\vec u_1=(1,0,0)\transp,\ \vec v_1=(1,0)\transp$) und
+$\sigma_2=3$ ($\vec u_2=(0,1,0)\transp,\ \vec v_2=(0,1)\transp$).
+\begin{enumerate}[label=\alph*)]
+  \item Bestimmen Sie die beste Rang-1-Näherung $A_1=\sigma_1\vec u_1\vec v_1\transp$.
+  \item Wie groß sind die Fehler $\norm{A-A_1}_2$ und $\norm{A-A_1}_F$?
+\end{enumerate}
+\textbf{Teil 2.} Ein Bild liege als $A\in\mathbb{R}^{6\times4}$ vor mit Singulärwerten
+$\sigma_1=10,\ \sigma_2=7,\ \sigma_3=4,\ \sigma_4=1$.
+\begin{enumerate}[label=\alph*),start=3]
+  \item Welchen Rang hat $A$? Geben Sie die Fehler $\norm{A-A_2}_2$ und $\norm{A-A_2}_F$ der besten
+        Rang-2-Näherung $A_2$ an.
+  \item Wie viele Zahlen muss man für die Rang-2-Näherung speichern ($k(m+n)$) im Vergleich zu $m\cdot n$?
+\end{enumerate}
+\karo{8cm}
+
+\end{document}
