@@ -1,0 +1,479 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[ngerman]{babel}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage{needspace}
+\usepackage{geometry}
+\geometry{a4paper,top=1.4cm,bottom=1.4cm,left=1.8cm,right=1.8cm}
+
+% ----- Dark Mode (kitty-Theme: kitty.conf) -----
+\definecolor{bgdark}{HTML}{11121A}   % kitty background
+\definecolor{fgtext}{HTML}{D5DDE8}   % kitty foreground
+\definecolor{accent}{HTML}{91A8D0}   % kitty color4 (blau) -- Kapitel
+\definecolor{accent2}{HTML}{E8D49A}  % kitty color11 (gelb) -- Aufgaben
+\definecolor{accent3}{HTML}{B5D4A8}  % kitty color10 (grün) -- Selbstreflexion
+\definecolor{accent4}{HTML}{D4BCE6}  % kitty color13 (violett) -- Denkanstoß
+\definecolor{rulecol}{HTML}{4A5B78}  % kitty color8
+\definecolor{gridcol}{HTML}{3A4A63}  % Karo
+\pagecolor{bgdark}
+\color{fgtext}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+
+% Karo-Raster; #1 = Höhe in cm
+\newcommand{\karo}[1]{\par\noindent
+  \begin{tikzpicture}
+    \draw[step=5mm, gridcol, very thin] (0,0) grid (\linewidth,#1);
+  \end{tikzpicture}\par}
+
+\newcommand{\kapitel}[1]{%
+  \clearpage
+  {\Large\bfseries\color{accent} #1}\par
+  \noindent\textcolor{accent}{\rule{\linewidth}{0.8pt}}\par\vspace{4pt}}
+
+% Aufgabenkopf; #1 = ID/Titel, #2 = Typ
+\newcommand{\aufg}[2]{%
+  \par\vspace{4pt}
+  {\bfseries\color{accent2} #1}~~{\footnotesize\color{rulecol}[#2]}\par\vspace{2pt}}
+
+\newcommand{\teaser}[1]{%
+  \par\vspace{2pt}{\color{accent4}\textbf{Denkanstoß.}}~#1\par}
+\newcommand{\marg}[1]{\par\vspace{1pt}{\footnotesize\itshape\color{rulecol}Randnotiz: #1}\par}
+\newcommand{\reflexion}{%
+  \par\vspace{2pt}{\bfseries\color{accent3} Selbstreflexionsfragen}\par\vspace{1pt}}
+
+\setlist[itemize]{leftmargin=1.4em,itemsep=1pt,topsep=1pt,parsep=0pt,label=\textcolor{accent3}{\textbullet}}
+
+\begin{document}
+
+% ---------- Titelkopf ----------
+{\Large\bfseries\color{accent} Numerische Methoden -- Aufgabenblatt}\\[4pt]
+{\small\color{fgtext} Alle Aufgaben aus dem Vorlesungsskript \emph{``Numerical Methods''}
+(Prof.\ Dr.-Ing.\ M.\ Schutera) -- 1:1 extrahiert, mit Platz zum Ausfüllen.}\\[10pt]
+\noindent\textcolor{rulecol}{\rule{\linewidth}{0.6pt}}\\[6pt]
+{\small\color{fgtext}\textbf{Name:} \rule{6cm}{0.3pt} \hfill \textbf{Datum:} \rule{4cm}{0.3pt}}\\[8pt]
+\noindent\textcolor{rulecol}{\rule{\linewidth}{0.6pt}}
+
+% #####################################################################
+\kapitel{Kapitel 1 \;--\; Einstieg in die Numerischen Methoden}
+
+\needspace{19cm}
+\aufg{1.1 \;--\; Minimum der Sinusfunktion}{Handrechnung}
+Bestimmen Sie das Minimum von $\sin(x)$ auf $[-3,1]$, indem Sie die Funktion mit
+Schrittweite $h$ diskretisieren, an den Gitterpunkten auswerten und den kleinsten
+Wert auswählen. Vergleichen Sie mit dem analytisch exakten Minimum.
+\karo{16}
+
+\needspace{20cm}
+\aufg{1.2 \;--\; Grid-Search}{Handrechnung}
+Führen Sie eine Grid-Search für $w,b$ mit Schrittweite $2{,}5$ über
+$\{0;2{,}5;5;7{,}5;10\}$ durch (System
+$\big(\begin{smallmatrix}2&1\\5&1\end{smallmatrix}\big)\big(\begin{smallmatrix}w\\b\end{smallmatrix}\big)=\big(\begin{smallmatrix}11\\13\end{smallmatrix}\big)$).
+Fehler $\mathrm{error}_1=|2w+b-11|$, $\mathrm{error}_2=|5w+b-13|$. Wählen Sie das
+Paar $(w,b)$ mit kleinstem akkumuliertem Fehler.
+\karo{16}
+
+\needspace{11cm}
+\aufg{1.3 \;--\; Enter the machine}{Code}
+Setzen Sie die Grid-Search im vorgehosteten Jupyter-Notebook (Python-Vorlage) um.
+Nutzen Sie die Selbstreflexionsfragen als Leitfaden.
+\karo{7}
+
+\needspace{8cm}
+\teaser{Fällt Ihnen eine einfache Möglichkeit ein, das Verhältnis von Genauigkeit zu
+Rechenaufwand der Grid-Search zu verbessern?}
+\karo{5}
+
+\needspace{12cm}
+\reflexion
+\begin{itemize}
+  \item Warum ist die Wahl der Schrittweite $h$ wichtig (Genauigkeit vs.\ Rechenzeit)?
+  \item Wie beeinflusst das Intervall $[a,b]$ Ergebnisse und Lage der Extrema?
+  \item Unterschiede stetige vs.\ diskretisierte Funktion -- Implikationen?
+\end{itemize}
+\karo{8}
+
+% #####################################################################
+\kapitel{Kapitel 2 \;--\; Gleitkomma-Arithmetik}
+
+\needspace{20cm}
+\aufg{2.1 \;--\; Rundungsfehler}{Handrechnung}
+Betrachten Sie $10/3$. Schreiben Sie die Dezimalentwicklung aus und bestimmen Sie den
+Rundungsfehler beim Abschneiden nach drei Nachkommastellen.
+\karo{17}
+
+\needspace{19cm}
+\aufg{2.2 \;--\; 2-Bit-Mantisse \& Maschinenepsilon}{Handrechnung}
+Eine unnormalisierte Mantisse hat $2$ Bit ($0{.}xx_2$). Bestimmen Sie alle
+darstellbaren Werte und $\varepsilon_{\mathrm{mach}}=2^{-t}$. Relative vs.\ absolute
+Präzision?
+\karo{16}
+
+\needspace{20cm}
+\aufg{2.3 \;--\; Auslöschung von Hand}{Handrechnung}
+Zwei Zahlen, $8$ signifikante Stellen.
+\textbf{(a)} $a=12345678{,}5$, $b=12345678{,}0$: $\tilde a,\tilde b,\ \tilde a-\tilde b$
+vs.\ $a-b$.
+\textbf{(b)} $a=12345678{,}4$, $b=12345678{,}0$: ebenso. Beobachtung beim relativen
+Fehler?
+\karo{15}
+
+\needspace{18cm}
+\aufg{2.4 \;--\; Festkomma-Skalierung}{Handrechnung}
+Bereich $[-1000,1000]$, 32-Bit-Integer, Skalierungsfaktor $10^{6}$. Wie wird
+$1{,}234567$ gespeichert? Präzision (kleinste Differenz) und maximaler Rundungsfehler?
+\karo{16}
+
+\needspace{12cm}
+\aufg{2.5 \;--\; Maschinenepsilon (hands on)}{Code}
+Bestimmen Sie das Maschinenepsilon eines Systems per Pseudocode. Festkomma vs.\
+Gleitkomma? Welcher Datentyp für einen Taschenrechner und warum?
+\karo{8}
+
+\needspace{10cm}
+\aufg{2.6 \;--\; Auslöschung demonstrieren (hands on)}{Code}
+Wie demonstrieren Sie Auslöschung am Rechner? Schreiben Sie Pseudocode auf, bevor Sie
+weiterlesen.
+\karo{7}
+
+\needspace{13cm}
+\aufg{2.7 \;--\; Argumentation}{Konzept}
+Wie leistet $f(\epsilon)=\dfrac{1}{a+\epsilon-b}$ für kleines $\epsilon$ und $a=b$
+dies? Was erwarten Sie für sehr kleines $\epsilon$?
+\marg{Was passiert für $a>b$? Denken Sie in signifikanten Stellen.}
+\karo{8}
+
+\needspace{8cm}
+\teaser{Fallen Ihnen Metriken für numerische Verfahren ein, basierend auf den
+besprochenen Approximationen und Fehlern?}
+\karo{5}
+
+\needspace{12cm}
+\reflexion
+\begin{itemize}
+  \item Aufbau und Komponenten der Gleitkommadarstellung?
+  \item Was ist das Maschinenepsilon, Bezug zur Genauigkeit?
+  \item Praktische Auswirkungen auf numerische Berechnungen?
+\end{itemize}
+\karo{8}
+
+% #####################################################################
+\kapitel{Kapitel 3 \;--\; Fehleranalyse}
+
+\needspace{22cm}
+\aufg{3.1 \;--\; Minimum der Sinusfunktion (Eigenschaften)}{Handrechnung}
+Minimum von $\sin(x)$ auf $[-3,1]$ erneut; diskretisiert mit $h=1$ und $h=0{,}2$;
+Eingabe gestört $\tilde x=x\pm0{,}25$. Analysieren und quantifizieren Sie
+\textbf{Kondition}, \textbf{Stabilität}, \textbf{Konsistenz} und \textbf{Konvergenz}
+in beiden Fällen mit den Formeln aus dem vorigen Abschnitt.
+\karo{18}
+
+\needspace{20cm}
+\aufg{3.2 \;--\; Stabilität und Kondition}{Beweis}
+Zeigen Sie: Die Stabilität entspricht der Kondition des Systems für $h\to0$.
+\karo{17}
+
+\needspace{12cm}
+\aufg{3.3 \;--\; Compute-getriebene Fehleranalyse (hands on)}{Code}
+Brute-forcen Sie die Fehleranalyse beim Lösen des Zwei-Gleichungs-Systems aus Kap.\,1;
+bestimmen und optimieren Sie Kondition/Stabilität/Konsistenz/Konvergenz.
+\karo{8}
+
+\needspace{14cm}
+\reflexion
+\begin{itemize}
+  \item Konditionierung des Zwei-Gleichungs-Systems (vgl.\ $\min\sin$)?
+  \item Konvergiert die Stabilität mit kleineren Schrittweiten? Wogegen?
+  \item Wirkung von Eingabestörungen; Zusammenspiel mit $h$?
+  \item Konvergenz vs.\ Stabilität \& Konsistenz (Bias/Varianz)?
+  \item Genauigkeitsgrenze für immer kleinere $h$? Warum?
+  \item Welches weitere Problem beim Verfeinern von $h$?
+\end{itemize}
+\karo{8}
+
+\needspace{8cm}
+\teaser{Fällt Ihnen eine Möglichkeit ein, Brute-Force zu verfeinern, um mit weniger
+Aufwand bessere Ergebnisse zu erzielen?}
+\karo{5}
+
+% #####################################################################
+\kapitel{Kapitel 4 \;--\; Newton-Verfahren}
+
+\needspace{20cm}
+\aufg{4.1 \;--\; Newton für $\sqrt{2}$}{Handrechnung}
+Berechnen Sie $\sqrt{2}$ mit Newton ($f(x)=x^2-2$), Start $x_0=2$. Einige
+Iterationen; beobachten Sie das Quadrieren des Fehlers.
+\karo{16}
+
+\needspace{20cm}
+\aufg{4.2 \;--\; Newton vs.\ Grid-Search für $\sin(x)=0$}{Handrechnung}
+Nullstelle von $\sin(x)=0$ auf $[2{,}5;4]$ (nahe $\pi$).
+\textbf{(a)} Grid-Search, $h=0{,}3$. \textbf{(b)} Newton ($f'=\cos$), $x_0=3{,}5$.
+\textbf{(c)} Genauigkeit \& Auswertungen vergleichen.
+\karo{15}
+
+\needspace{18cm}
+\aufg{4.3 \;--\; Denksportaufgabe: Versagensmodi}{Schaubild}
+Visualisieren Sie die Versagensmodi des Newton-Verfahrens im Schaubild von
+$f(x)=x^3-x$.
+\karo{15}
+
+\needspace{20cm}
+\aufg{4.4 \;--\; Newton von Hand}{Handrechnung}
+Nullstelle von $f(x)=x^3-x=0$ (Nullstellen $-1,0,1$), erst geometrisch, dann von Hand;
+gesucht $x=1$ ab $x_0=1{,}4$.
+\karo{16}
+
+\needspace{20cm}
+\aufg{4.5 \;--\; Sekantenverfahren von Hand}{Handrechnung}
+Sekantenverfahren auf $f(x)=x^3-x$ mit $x_0=1{,}2$, $x_1=1{,}4$; erst geometrisch,
+dann von Hand.
+\karo{16}
+
+\needspace{19cm}
+\aufg{4.6 \;--\; Geometrische Fehlersuche}{Handrechnung}
+Startpunkte $x_0$ für drei Versagensmodi: verschwindende Ableitung; Konvergenz gegen
+eine Nicht-Ziel-Nullstelle; Oszillation zwischen Punkten.
+\karo{16}
+
+\needspace{11cm}
+\aufg{4.7 \;--\; Enter the machine}{Code}
+Konvergenz(-raten) von Grid-Search, Newton, Sekanten in Python; Versagensmodi über
+$x_0$ erkunden (geometrisch, analytisch, im Code).
+\karo{7}
+
+\needspace{12cm}
+\reflexion
+\begin{itemize}
+  \item Hauptvorteil von Newton gegenüber Grid-Search?
+  \item Warum genügt lineare Approximation (Taylor)?
+  \item Mächtigkeit quadratischer Konvergenz ($10^{-1}\!\to\!10^{-16}$?).
+  \item Wann Sekanten vorziehen, wann nicht?
+\end{itemize}
+\karo{8}
+
+\needspace{8cm}
+\teaser{Wie stellen wir sicher, dass wir die globale Lösung finden, nicht nur eine
+lokale?}
+\karo{5}
+
+% #####################################################################
+\kapitel{Kapitel 5 \;--\; Globale Optimierung}
+
+\needspace{11cm}
+\aufg{5.1 \;--\; Newton auf Shekel, weiterer Startpunkt}{Code}
+Newton auf der 1D-Shekel-Funktion von verschiedenen Startpunkten; wohin konvergiert es?
+Diskutieren Sie das allgemeine Verhalten.
+\marg{Wie ändern Sie die Update-Regel, um stattdessen Maxima zu finden?}
+\karo{7}
+
+\needspace{20cm}
+\aufg{5.2 \;--\; Random Restarts}{Handrechnung}
+$5$ lokale Minima, globales Becken $p=0{,}15$. $P$ bei $K=10$ ($P=1-(1-p)^K$); $K$ für
+$99\%$ ($K=\frac{\ln(1-P)}{\ln(1-p)}$); dann $K$ für $p=0{,}05$ und $p=0{,}01$.
+\karo{15}
+
+\needspace{11cm}
+\aufg{5.3 \;--\; Eigene 1D-Shekel-Funktion}{Code}
+Eigene 1D-Shekel-Funktion entwerfen; lokale Verfahren anwenden, Newton-Versagen zeigen;
+verschiedene $x_0$ untersuchen.
+\karo{7}
+
+\needspace{11cm}
+\aufg{5.4 \;--\; Die Suche zu Minima lenken}{Konzept + Code}
+$|f''|$-Trick: Vorzeichen der Krümmung im Nenner umkehren $\to$ Schritt geht stets
+bergab. Geometrische Bedeutung? Dann im Code testen.
+\karo{8}
+
+\needspace{12cm}
+\aufg{5.5 \;--\; Einzugsgebiet (Basin of Attraction)}{Schaubild}
+Markieren Sie in den Shekel-Plots die Einzugsgebiete jedes lokalen Minimums und
+schätzen Sie ihre relativen Größen. Welches ist global? Bezug zur Random-Restart-Wahrscheinlichkeit?
+\karo{9}
+
+\needspace{11cm}
+\aufg{5.6 \;--\; Lokalen Minima entkommen}{Code}
+Random Restarts und Basin Hopping auf Ihrer Shekel-Funktion; Funktionsiterationen bis
+zum globalen Minimum vergleichen. Einfluss der Schrittweitenverteilung?
+\karo{7}
+
+\needspace{9cm}
+\aufg{5.7 \;--\; Nicht-konvexe Becken}{Konzept}
+Notieren Sie eine Funktion, bei der die Einzugsgebiete nicht leicht abzugrenzen sind.
+\karo{6}
+
+\needspace{10cm}
+\aufg{5.8 \;--\; Adaptive Schrittweite}{Konzept + Code}
+Geschickter Weg, die Schrittweitenverteilung automatisch anzupassen? Gute Heuristik?
+Wie katastrophale Sprünge verhindern? Implementieren.
+\karo{7}
+
+\needspace{9cm}
+\aufg{5.9 \;--\; Noise and landscape engineering}{Konzept}
+Wie wirkt das Approximieren der Loss-Landschaft auf Mini-Batches (unterschiedliche
+Punktauswahl)?
+\karo{6}
+
+\needspace{10cm}
+\aufg{5.10 \;--\; Code-Übung: Restarts vs.\ Basin Hopping}{Code}
+Random Restarts und Basin Hopping auf der 1D-Shekel-Funktion implementieren;
+Funktionsauswertungen bis zum globalen Minimum bei $x\approx4$ vergleichen.
+\karo{7}
+
+\needspace{20cm}
+\aufg{5.11 \;--\; Einzugsgebiete kartieren}{Handrechnung}
+Lokaler Optimierer $\to$ nächstes Foxhole.
+\textbf{(a)} Einzugsgebiete der Foxholes bei $x=0,4,7$ skizzieren -- Basin-Grenzen?
+\textbf{(b)} Sprung $\delta\sim\mathrm{Uniform}(-3,3)$ ab $x^{\circ}=7$: $P$(im
+globalen Becken)?
+\textbf{(c)} Warum Basin Hopping hier evtl.\ schneller als Random Restarts?
+\karo{14}
+
+\needspace{14cm}
+\reflexion
+\begin{itemize}
+  \item Warum versagt lokale Optimierung auf nicht-konvexen Landschaften?
+  \item Aufwand vs.\ Größe des globalen Beckens (Random Restarts)?
+  \item Basin Hopping vs.\ Random Restarts?
+  \item Was sagt $f''(x_n)$ über die Loss-Landschaft, wie nutzbar machen?
+  \item Wie helfen verrauschte (Mini-Batch-)Schätzungen beim Entkommen?
+  \item $x_0$ in einem lokalen Becken: Wege zum Entkommen -- Wirksamkeit?
+\end{itemize}
+\karo{8}
+
+\needspace{8cm}
+\teaser{Was, wenn wir einer hochfrequenten Version von Shekels Foxholes
+gegenüberstehen? Welches Problem tritt auf?}
+\karo{5}
+
+% #####################################################################
+\kapitel{Kapitel 6 \;--\; Numerische Integration}
+
+\needspace{18cm}
+\aufg{6.1 \;--\; Exakter Wert}{Handrechnung}
+Berechnen Sie $\int_{-2}^{-1}\sin(x)\,dx$ exakt (Referenzwert).
+\karo{16}
+
+\needspace{18cm}
+\aufg{6.2 \;--\; Mittelpunktsregel von Hand}{Handrechnung}
+$\int_{-2}^{-1}\sin(x)\,dx$ mit der Mittelpunktsregel, $n=1$.
+\karo{16}
+
+\needspace{18cm}
+\aufg{6.3 \;--\; Mittelpunktsregel mit mehr Intervallen}{Handrechnung}
+Mittelpunktsregel mit $n=2$ (Mittelpunkte $-1{,}75$ und $-1{,}25$).
+\marg{Berechnen Sie die Approximation auch an den Endpunkten und vergleichen Sie.}
+\karo{15}
+
+\needspace{18cm}
+\aufg{6.4 \;--\; Trapezregel von Hand}{Handrechnung}
+Trapezregel, $n=2$; Stützstellen $-2,-1{,}5,-1$.
+\karo{16}
+
+\needspace{18cm}
+\aufg{6.5 \;--\; Simpson-Regel von Hand}{Handrechnung}
+Simpson-Regel, $n=2$; Stützstellen $-2,-1{,}5,-1$.
+\marg{Mehr Intervalle; zusammengesetzte Simpson-/Trapezregeln.}
+\karo{15}
+
+\needspace{18cm}
+\aufg{6.6 \;--\; Monte Carlo von Hand}{Handrechnung}
+Monte Carlo, $N=4$, Stichproben $X_1=-1{,}95$, $X_2=-1{,}55$, $X_3=-1{,}15$,
+$X_4=-1{,}05$.
+\karo{15}
+
+\needspace{19cm}
+\aufg{6.7 \;--\; Monte Carlo: Fehler \& $N$ erhöhen}{Konzept}
+Stichprobenvarianz und Standardfehler bestimmen. Was passiert bei $N=16$? Warum ist
+der MC-Fehler dimensionsunabhängig?
+\karo{15}
+
+\needspace{20cm}
+\aufg{6.8 \;--\; Simpson-Gewichte via Lagrange}{Herleitung}
+Leiten Sie die Simpson-Gewichte her, indem Sie die Lagrange-Basispolynome über
+$[a,b]$ integrieren.
+\marg{Beginnen Sie mit $x=0$; was passiert, wenn Sie eine lineare Funktion quadratisch
+approximieren?}
+\karo{15}
+
+\needspace{11cm}
+\aufg{6.9 \;--\; Höhere Dimensionen (on your machine)}{Code}
+MC-Integration für ein $d$-dimensionales Integral (multivariate Gauß über
+Hyperwürfel); Fehler über $d$; Versagen der Gitter-Quadratur.
+\karo{7}
+
+\needspace{16cm}
+\reflexion
+\begin{itemize}
+  \item Fehlervergleich Mittelpunkt/Trapez/Simpson/Monte Carlo?
+  \item Warum Mittelpunkt besser als Links-/Rechts-Endpunkt?
+  \item Zusammengesetzte Methoden: Genauigkeit \& Trade-off?
+  \item Warum versagt deterministische Quadratur in hohen Dimensionen?
+  \item Mittelpunkt als Spezialfall von Monte Carlo?
+  \item Intuition: warum ``explodiert'' MC in hohen Dim.\ nicht?
+  \item Wann Simpson, wann Monte Carlo?
+  \item Mini-Batch-Mittelwert in SGD und Monte Carlo?
+  \item Wie hilft die Gradientenschätzung in SGD beim Entkommen?
+\end{itemize}
+\karo{8}
+
+\needspace{8cm}
+\teaser{Warum werden hochgradige Quadraturmethoden instabil, wenn sie Polynome
+niedrigen Grades approximieren?}
+\karo{5}
+
+% #####################################################################
+\kapitel{Kapitel 7 \;--\; Modelltraining}
+
+\needspace{20cm}
+\aufg{7.1 \;--\; Loss bei Initialisierung}{Handrechnung}
+$\hat y=wx+b$, $L=\tfrac1n\sum_i(wx_i+b-y_i)^2$, Init $w=0,\ b=\bar y$. Zeigen Sie
+$L(0,\bar y)=\mathrm{Var}(y)$. Mit $\bar y=231/14=16{,}5$, $\sum(y_i-\bar y)^2=1401{,}5$:
+erster Loss-Wert? Bedeutung von $5000$ bzw.\ $0{,}0001$?
+\karo{15}
+
+\needspace{13cm}
+\aufg{7.2 \;--\; Overfitting als Sanity-Check}{Konzept}
+Grad-4-Polynom durch zwei Punkte ($(4{,}0;4)$, $(9{,}5;21)$). Wie viele Null-Loss-Kurven
+gehen durch beide Punkte, und was sagt das über die Geometrie der Verlustlandschaft?
+\karo{9}
+
+\needspace{12cm}
+\aufg{7.3 \;--\; Mini-Batch-SGD}{Konzept}
+In welchem Sinn ist Mini-Batch-SGD ein Monte-Carlo-Schätzer (was wird worüber
+gemittelt)? Ab welchem $n$ kippt der Engpass, gegeben Fehler $\propto 1/\sqrt{B}$?
+\karo{8}
+
+\needspace{11cm}
+\aufg{7.4 \;--\; Mehrere Random Seeds}{Konzept}
+$\hat y=w^2x+b$: warum ist der Ursprung ein Sattel, warum ist Null-Init eine Falle?
+Wozu Training aus mehreren Random Seeds?
+\karo{8}
+
+\needspace{11cm}
+\aufg{7.5 \;--\; Quantisierung für Inferenz}{Konzept}
+Warum versendet man Modelle in float32, wenn int hier fast gleich gut war? Warum lässt
+sich hochpräzise trainiert niedrigpräzise einsetzen, während Training niedrigpräzise
+scheitert?
+\karo{8}
+
+\needspace{12cm}
+\reflexion
+\begin{itemize}
+  \item Warum entdeckt Loss$\to0$ bei Überparametrisierung Pipeline-Bugs statt
+        Optimierer-Bugs?
+  \item Was sagt ein erster Loss von $5000$ bzw.\ $0{,}0001$ (statt $\approx100$)?
+  \item Mini-Batch-SGD als Monte-Carlo-Schätzer -- in welchem Sinn?
+  \item $\hat y=w^2x+b$: Ursprung als Sattel, Null-Init als Falle?
+  \item Hochpräzise trainieren, niedrigpräzise einsetzen -- warum geht das?
+\end{itemize}
+\karo{8}
+
+\end{document}
